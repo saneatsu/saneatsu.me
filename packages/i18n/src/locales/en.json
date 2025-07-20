@@ -1,0 +1,48 @@
+{
+	"navigation": {
+		"home": "Home",
+		"blog": "Blog",
+		"about": "About",
+		"tags": "Tags"
+	},
+	"theme": {
+		"light": "Light",
+		"dark": "Dark",
+		"system": "System",
+		"toggle": "Toggle theme"
+	},
+	"language": {
+		"japanese": "日本語",
+		"english": "English",
+		"switch": "Switch language"
+	},
+	"loading": "Loading...",
+	"error": {
+		"title": "An error occurred",
+		"message": "Sorry, an unexpected error has occurred.",
+		"retry": "Retry",
+		"goHome": "Go Home"
+	},
+	"article": {
+		"publishedAt": "Published",
+		"readMore": "Read more",
+		"backToList": "Back to articles",
+		"notFound": {
+			"title": "Article not found",
+			"message": "The article you're looking for doesn't exist or may have been deleted."
+		},
+		"tags": {
+			"title": "Tags",
+			"viewMore": "View all tags"
+		}
+	},
+	"tag": {
+		"title": "All Tags",
+		"articleCount": "{count} articles",
+		"articles": "articles",
+		"notFound": {
+			"title": "Tag not found",
+			"message": "The tag you're looking for doesn't exist or may have been deleted."
+		}
+	}
+}

@@ -1,0 +1,48 @@
+{
+	"navigation": {
+		"home": "ホーム",
+		"blog": "ブログ",
+		"about": "About",
+		"tags": "タグ"
+	},
+	"theme": {
+		"light": "ライト",
+		"dark": "ダーク",
+		"system": "システム",
+		"toggle": "テーマを切り替え"
+	},
+	"language": {
+		"japanese": "日本語",
+		"english": "English",
+		"switch": "言語を切り替え"
+	},
+	"loading": "読み込み中...",
+	"error": {
+		"title": "エラーが発生しました",
+		"message": "申し訳ございません。予期しないエラーが発生しました。",
+		"retry": "再試行",
+		"goHome": "ホームに戻る"
+	},
+	"article": {
+		"publishedAt": "公開日",
+		"readMore": "続きを読む",
+		"backToList": "記事一覧に戻る",
+		"notFound": {
+			"title": "記事が見つかりません",
+			"message": "お探しの記事は存在しないか、削除された可能性があります。"
+		},
+		"tags": {
+			"title": "タグ",
+			"viewMore": "タグ一覧を見る"
+		}
+	},
+	"tag": {
+		"title": "タグ一覧",
+		"articleCount": "{count}件の記事",
+		"articles": "記事",
+		"notFound": {
+			"title": "タグが見つかりません",
+			"message": "お探しのタグは存在しないか、削除された可能性があります。"
+		}
+	}
+}
