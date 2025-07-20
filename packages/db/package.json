@@ -1,0 +1,20 @@
+{
+	"name": "@saneatsu/db",
+	"version": "0.1.0",
+	"private": true,
+	"description": "Database schema and utilities",
+	"main": "./src/index.ts",
+	"types": "./src/index.ts",
+	"scripts": {
+		"build": "tsc",
+		"dev": "tsc --watch",
+		"lint": "biome check .",
+		"lint:fix": "biome check --write ."
+	},
+	"dependencies": {
+		"drizzle-orm": "^0.33.0"
+	},
+	"devDependencies": {
+		"typescript": "workspace:*"
+	}
+}

@@ -1,0 +1,25 @@
+{
+	"name": "@saneatsu/web",
+	"version": "0.1.0",
+	"private": true,
+	"description": "Next.js frontend application",
+	"scripts": {
+		"build": "next build",
+		"dev": "next dev",
+		"start": "next start",
+		"lint": "biome check .",
+		"lint:fix": "biome check --write ."
+	},
+	"dependencies": {
+		"next": "^15.0.0",
+		"react": "^18.0.0",
+		"react-dom": "^18.0.0",
+		"@saneatsu/schemas": "workspace:*",
+		"@saneatsu/i18n": "workspace:*"
+	},
+	"devDependencies": {
+		"typescript": "workspace:*",
+		"@types/react": "^18.0.0",
+		"@types/react-dom": "^18.0.0"
+	}
+}

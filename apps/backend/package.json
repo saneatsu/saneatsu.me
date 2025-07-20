@@ -1,0 +1,23 @@
+{
+	"name": "@saneatsu/backend",
+	"version": "0.1.0",
+	"private": true,
+	"description": "Hono API server",
+	"scripts": {
+		"build": "tsc",
+		"dev": "tsx watch src/index.ts",
+		"start": "node dist/index.js",
+		"lint": "biome check .",
+		"lint:fix": "biome check --write ."
+	},
+	"dependencies": {
+		"hono": "^4.0.0",
+		"@saneatsu/db": "workspace:*",
+		"@saneatsu/schemas": "workspace:*"
+	},
+	"devDependencies": {
+		"typescript": "workspace:*",
+		"tsx": "^4.0.0",
+		"@types/node": "workspace:*"
+	}
+}

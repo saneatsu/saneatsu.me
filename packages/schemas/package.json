@@ -1,0 +1,21 @@
+{
+	"name": "@saneatsu/schemas",
+	"version": "0.1.0",
+	"private": true,
+	"description": "Zod schemas for validation with i18n support",
+	"main": "./src/index.ts",
+	"types": "./src/index.ts",
+	"scripts": {
+		"build": "tsc",
+		"dev": "tsc --watch",
+		"lint": "biome check .",
+		"lint:fix": "biome check --write ."
+	},
+	"dependencies": {
+		"zod": "^3.22.0",
+		"@saneatsu/i18n": "workspace:*"
+	},
+	"devDependencies": {
+		"typescript": "workspace:*"
+	}
+}
