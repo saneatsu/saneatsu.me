@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
+import remarkGfm from "remark-gfm";
 import { articlesService } from "../../../services/articles";
 
 interface ArticlePageProps {
@@ -19,7 +19,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 					year: "numeric",
 					month: "long",
 					day: "numeric",
-			  })
+				})
 			: null;
 
 		return (
@@ -68,9 +68,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 									</p>
 								),
 								ul: ({ children }) => (
-									<ul className="mb-4 ml-6 list-disc space-y-1">
-										{children}
-									</ul>
+									<ul className="mb-4 ml-6 list-disc space-y-1">{children}</ul>
 								),
 								ol: ({ children }) => (
 									<ol className="mb-4 ml-6 list-decimal space-y-1">
@@ -89,9 +87,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 											</code>
 										);
 									}
-									return (
-										<code className={className}>{children}</code>
-									);
+									return <code className={className}>{children}</code>;
 								},
 								pre: ({ children }) => (
 									<pre className="bg-muted p-4 rounded-lg overflow-x-auto mb-4">
