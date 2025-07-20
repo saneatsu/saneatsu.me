@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 import type { Article } from "../types/api";
 
 interface ArticleCardProps {
@@ -6,12 +7,18 @@ interface ArticleCardProps {
 }
 
 export function ArticleCard({ article }: ArticleCardProps) {
+	const locale = useLocale();
+	const t = useTranslations("article");
+
 	const publishedDate = article.publishedAt
-		? new Date(article.publishedAt).toLocaleDateString("ja-JP", {
-				year: "numeric",
-				month: "long",
-				day: "numeric",
-			})
+		? new Date(article.publishedAt).toLocaleDateString(
+				locale === "ja" ? "ja-JP" : "en-US",
+				{
+					year: "numeric",
+					month: "long",
+					day: "numeric",
+				}
+			)
 		: null;
 
 	return (
@@ -26,7 +33,13 @@ export function ArticleCard({ article }: ArticleCardProps) {
 								color: "hsl(var(--secondary-foreground))",
 							}}
 						>
-							{article.status === "published" ? "公開" : "下書き"}
+							{article.status === "published"
+								? locale === "ja"
+									? "公開"
+									: "Published"
+								: locale === "ja"
+									? "下書き"
+									: "Draft"}
 						</span>
 					</div>
 					{publishedDate && (
@@ -41,7 +54,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
 
 				<div>
 					<h3 className="font-semibold text-lg transition-colors group-hover:text-blue-600">
-						<Link href={`/articles/${article.slug}`}>
+						<Link href={`/${locale}/articles/${article.slug}`}>
 							<span className="absolute inset-0" />
 							{article.title}
 						</Link>
@@ -66,11 +79,11 @@ export function ArticleCard({ article }: ArticleCardProps) {
 					style={{ color: "hsl(var(--muted-foreground))" }}
 				>
 					<Link
-						href={`/articles/${article.slug}`}
+						href={`/${locale}/articles/${article.slug}`}
 						className="font-medium hover:underline"
 						style={{ color: "hsl(var(--primary))" }}
 					>
-						続きを読む →
+						{t("readMore")} →
 					</Link>
 				</div>
 			</div>

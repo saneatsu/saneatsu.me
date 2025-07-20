@@ -1,5 +1,6 @@
 "use client";
 
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { articlesService } from "../services/articles";
 import type { Article } from "../types/api";
@@ -9,7 +10,11 @@ interface ArticlesListProps {
 	lang?: string;
 }
 
-export function ArticlesList({ lang = "ja" }: ArticlesListProps) {
+export function ArticlesList({ lang }: ArticlesListProps = {}) {
+	const locale = useLocale();
+	const t = useTranslations();
+	const currentLang = lang || locale;
+
 	const [articles, setArticles] = useState<Article[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -19,21 +24,19 @@ export function ArticlesList({ lang = "ja" }: ArticlesListProps) {
 			try {
 				setLoading(true);
 				const response = await articlesService.getArticles({
-					lang,
+					lang: currentLang,
 					limit: 10,
 				});
 				setArticles(response.data);
 			} catch (err) {
-				setError(
-					err instanceof Error ? err.message : "記事の取得に失敗しました"
-				);
+				setError(err instanceof Error ? err.message : t("error.message"));
 			} finally {
 				setLoading(false);
 			}
 		}
 
 		fetchArticles();
-	}, [lang]);
+	}, [currentLang, t]);
 
 	if (loading) {
 		return (
@@ -66,7 +69,7 @@ export function ArticlesList({ lang = "ja" }: ArticlesListProps) {
 		return (
 			<div className="text-center py-12">
 				<div className="text-destructive text-lg font-medium mb-2">
-					エラーが発生しました
+					{t("error.title")}
 				</div>
 				<p className="text-muted-foreground">{error}</p>
 				<button
@@ -74,7 +77,7 @@ export function ArticlesList({ lang = "ja" }: ArticlesListProps) {
 					onClick={() => window.location.reload()}
 					className="mt-4 inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2"
 				>
-					再試行
+					{t("error.retry")}
 				</button>
 			</div>
 		);
@@ -83,9 +86,13 @@ export function ArticlesList({ lang = "ja" }: ArticlesListProps) {
 	if (articles.length === 0) {
 		return (
 			<div className="text-center py-12">
-				<div className="text-lg font-medium mb-2">記事がありません</div>
+				<div className="text-lg font-medium mb-2">
+					{locale === "ja" ? "記事がありません" : "No articles found"}
+				</div>
 				<p className="text-muted-foreground">
-					まだ公開された記事がありません。
+					{locale === "ja"
+						? "まだ公開された記事がありません。"
+						: "No published articles yet."}
 				</p>
 			</div>
 		);
@@ -94,9 +101,12 @@ export function ArticlesList({ lang = "ja" }: ArticlesListProps) {
 	return (
 		<div className="space-y-8">
 			<div className="flex items-center justify-between">
-				<h2 className="text-2xl font-bold">最新の記事</h2>
+				<h2 className="text-2xl font-bold">
+					{locale === "ja" ? "最新の記事" : "Latest Articles"}
+				</h2>
 				<div className="text-sm text-muted-foreground">
-					{articles.length}件の記事
+					{articles.length}
+					{locale === "ja" ? "件の記事" : " articles"}
 				</div>
 			</div>
 
