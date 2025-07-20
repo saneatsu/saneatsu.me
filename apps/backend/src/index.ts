@@ -1,3 +1,8 @@
+import dotenv from "dotenv";
+
+// 環境変数をロード
+dotenv.config();
+
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
@@ -22,6 +27,10 @@ app.get("/api/health", (c) => {
 		status: "ok",
 		timestamp: new Date().toISOString(),
 		service: "saneatsu-blog-api",
+		database: {
+			url: process.env.TURSO_DATABASE_URL,
+			hasToken: !!process.env.TURSO_AUTH_TOKEN,
+		},
 	});
 });
 
