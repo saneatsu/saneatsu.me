@@ -11,7 +11,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
 				year: "numeric",
 				month: "long",
 				day: "numeric",
-		  })
+			})
 		: null;
 
 	return (
@@ -19,12 +19,21 @@ export function ArticleCard({ article }: ArticleCardProps) {
 			<div className="flex flex-col space-y-3">
 				<div className="flex items-center justify-between">
 					<div className="flex items-center space-x-2">
-						<span className="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium" style={{backgroundColor: 'hsl(var(--secondary))', color: 'hsl(var(--secondary-foreground))'}}>
+						<span
+							className="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium"
+							style={{
+								backgroundColor: "hsl(var(--secondary))",
+								color: "hsl(var(--secondary-foreground))",
+							}}
+						>
 							{article.status === "published" ? "公開" : "下書き"}
 						</span>
 					</div>
 					{publishedDate && (
-						<time className="text-sm" style={{color: 'hsl(var(--muted-foreground))'}}>
+						<time
+							className="text-sm"
+							style={{ color: "hsl(var(--muted-foreground))" }}
+						>
 							{publishedDate}
 						</time>
 					)}
@@ -39,7 +48,10 @@ export function ArticleCard({ article }: ArticleCardProps) {
 					</h3>
 				</div>
 
-				<div className="text-sm line-clamp-3" style={{color: 'hsl(var(--muted-foreground))'}}>
+				<div
+					className="text-sm line-clamp-3"
+					style={{ color: "hsl(var(--muted-foreground))" }}
+				>
 					{article.content
 						.replace(/^#.*$/gm, "") // Remove headers
 						.replace(/```[\s\S]*?```/g, "") // Remove code blocks
@@ -49,10 +61,14 @@ export function ArticleCard({ article }: ArticleCardProps) {
 					...
 				</div>
 
-				<div className="flex items-center justify-between text-sm" style={{color: 'hsl(var(--muted-foreground))'}}>
+				<div
+					className="flex items-center justify-between text-sm"
+					style={{ color: "hsl(var(--muted-foreground))" }}
+				>
 					<Link
 						href={`/articles/${article.slug}`}
-						className="font-medium hover:underline" style={{color: 'hsl(var(--primary))'}}
+						className="font-medium hover:underline"
+						style={{ color: "hsl(var(--primary))" }}
 					>
 						続きを読む →
 					</Link>
