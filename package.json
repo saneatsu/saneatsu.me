@@ -3,20 +3,26 @@
 	"version": "0.1.0",
 	"private": true,
 	"description": "My portfolio",
+	"type": "module",
 	"packageManager": "pnpm@9.0.0",
 	"scripts": {
 		"build": "turbo build",
 		"dev": "turbo dev",
 		"lint": "turbo lint",
 		"test": "turbo test",
-		"clean": "turbo clean"
+		"clean": "turbo clean",
+		"type-check": "tsc --noEmit",
+		"check": "biome check .",
+		"prepare": "lefthook install"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.1.2",
 		"@commitlint/cli": "^19.8.1",
 		"@commitlint/config-conventional": "^19.8.1",
 		"@types/node": "^24.0.15",
+		"@vitest/coverage-v8": "^3.2.4",
 		"@vitest/ui": "^3.2.4",
+		"lefthook": "^1.12.2",
 		"turbo": "^2.5.5",
 		"typescript": "^5.8.3",
 		"vitest": "^3.2.4"

@@ -1,0 +1,22 @@
+# Lefthook configuration
+# https://lefthook.dev/configuration/
+
+# pre-commit フック設定
+pre-commit:
+  parallel: true
+  jobs:
+    # Biomeでコードフォーマットとlintを実行
+    - name: biome
+      run: pnpm exec biome check --write --no-errors-on-unmatched {staged_files}
+      glob: "*.{js,jsx,ts,tsx,mjs,cjs,json,md,yml,yaml}"
+      
+    # TypeScriptの型チェック
+    - name: type-check
+      run: pnpm type-check
+      # 型チェックは全体を対象にするため、staged_filesは使わない
+
+# commit-msg フック設定
+commit-msg:
+  commands:
+    commitlint:
+      run: pnpm exec commitlint --edit {1}
