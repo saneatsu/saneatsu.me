@@ -9,12 +9,21 @@
 		"build": "tsc",
 		"dev": "tsc --watch",
 		"lint": "biome check .",
-		"lint:fix": "biome check --write ."
+		"lint:fix": "biome check --write .",
+		"test": "vitest",
+		"test:coverage": "vitest run --coverage",
+		"db:generate": "drizzle-kit generate",
+		"db:migrate": "drizzle-kit migrate",
+		"db:push": "drizzle-kit push",
+		"db:studio": "drizzle-kit studio"
 	},
 	"dependencies": {
+		"better-sqlite3": "^12.2.0",
 		"drizzle-orm": "^0.33.0"
 	},
 	"devDependencies": {
+		"@types/better-sqlite3": "^7.6.13",
+		"drizzle-kit": "^0.31.4",
 		"typescript": "^5.8.3"
 	}
 }
