@@ -16,6 +16,6 @@
 		"@saneatsu/i18n": "workspace:*"
 	},
 	"devDependencies": {
-		"typescript": "workspace:*"
+		"typescript": "^5.8.3"
 	}
 }

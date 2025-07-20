@@ -16,8 +16,8 @@
 		"@saneatsu/schemas": "workspace:*"
 	},
 	"devDependencies": {
-		"typescript": "workspace:*",
+		"typescript": "^5.8.3",
 		"tsx": "^4.0.0",
-		"@types/node": "workspace:*"
+		"@types/node": "^24.0.15"
 	}
 }
