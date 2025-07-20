@@ -43,3 +43,11 @@ Thumbs.db
 # Temporary files
 tmp/
 temp/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# TypeScript build info
+tsconfig.tsbuildinfo
