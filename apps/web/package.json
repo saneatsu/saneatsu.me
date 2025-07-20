@@ -8,7 +8,9 @@
 		"dev": "next dev",
 		"start": "next start",
 		"lint": "biome check .",
-		"lint:fix": "biome check --write ."
+		"lint:fix": "biome check --write .",
+		"test": "vitest",
+		"test:coverage": "vitest run --coverage"
 	},
 	"dependencies": {
 		"next": "^15.0.0",
