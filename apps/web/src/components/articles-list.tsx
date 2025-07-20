@@ -38,7 +38,9 @@ export function ArticlesList({ lang = "ja" }: ArticlesListProps) {
 	if (loading) {
 		return (
 			<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-				{Array.from({ length: 6 }, (_, i) => ({ id: `skeleton-${Date.now()}-${i}` })).map((item) => (
+				{Array.from({ length: 6 }, (_, i) => ({
+					id: `skeleton-${Date.now()}-${i}`,
+				})).map((item) => (
 					<div
 						key={item.id}
 						className="animate-pulse border rounded-lg p-6 space-y-3"
