@@ -51,3 +51,6 @@ temp/
 
 # TypeScript build info
 tsconfig.tsbuildinfo
+
+# Git hooks
+.husky/
