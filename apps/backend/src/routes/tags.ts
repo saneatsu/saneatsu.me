@@ -1,4 +1,11 @@
-import { articleTags, articleTranslations, articles, db, tags, tagTranslations } from "@saneatsu/db";
+import {
+	articles,
+	articleTags,
+	articleTranslations,
+	db,
+	tags,
+	tagTranslations,
+} from "@saneatsu/db";
 import { and, eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
 
@@ -102,11 +109,13 @@ tagsRoute.get("/:slug/articles", async (c) => {
 				articleTranslations,
 				eq(articles.id, articleTranslations.articleId)
 			)
-			.where(and(
-				eq(articleTags.tagId, tag[0].id),
-				eq(articles.status, "published"),
-				eq(articleTranslations.language, lang as "ja" | "en")
-			))
+			.where(
+				and(
+					eq(articleTags.tagId, tag[0].id),
+					eq(articles.status, "published"),
+					eq(articleTranslations.language, lang as "ja" | "en")
+				)
+			)
 			.limit(limit)
 			.offset(offset);
 
@@ -115,10 +124,9 @@ tagsRoute.get("/:slug/articles", async (c) => {
 			.select({ count: sql<number>`COUNT(*)` })
 			.from(articles)
 			.innerJoin(articleTags, eq(articles.id, articleTags.articleId))
-			.where(and(
-				eq(articleTags.tagId, tag[0].id),
-				eq(articles.status, "published")
-			));
+			.where(
+				and(eq(articleTags.tagId, tag[0].id), eq(articles.status, "published"))
+			);
 
 		return c.json({
 			data: articleList,

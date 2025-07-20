@@ -39,10 +39,12 @@ articlesRoute.get("/", async (c) => {
 				articleTranslations,
 				eq(articles.id, articleTranslations.articleId)
 			)
-			.where(and(
-				eq(articles.status, "published"),
-				eq(articleTranslations.language, lang)
-			))
+			.where(
+				and(
+					eq(articles.status, "published"),
+					eq(articleTranslations.language, lang)
+				)
+			)
 			.limit(limit)
 			.offset(offset);
 
@@ -103,10 +105,9 @@ articlesRoute.get("/:slug", async (c) => {
 				articleTranslations,
 				eq(articles.id, articleTranslations.articleId)
 			)
-			.where(and(
-				eq(articles.slug, slug),
-				eq(articleTranslations.language, lang)
-			))
+			.where(
+				and(eq(articles.slug, slug), eq(articleTranslations.language, lang))
+			)
 			.limit(1);
 
 		if (article.length === 0) {
