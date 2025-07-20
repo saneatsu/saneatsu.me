@@ -1,25 +1,33 @@
 import { notFound } from "next/navigation";
+import { useTranslations } from "next-intl";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
-import { articlesService } from "../../../services/articles";
+import { articlesService } from "../../../../services/articles";
 
 interface ArticlePageProps {
-	params: Promise<{ slug: string }>;
+	params: Promise<{ slug: string; locale: string }>;
 }
 
 export default async function ArticlePage({ params }: ArticlePageProps) {
-	const { slug } = await params;
+	const { slug, locale } = await params;
+	const t = useTranslations("article");
 
 	try {
-		const article = await articlesService.getArticle(slug, "ja");
+		const article = await articlesService.getArticle(
+			slug,
+			locale as "ja" | "en"
+		);
 
 		const publishedDate = article.publishedAt
-			? new Date(article.publishedAt).toLocaleDateString("ja-JP", {
-					year: "numeric",
-					month: "long",
-					day: "numeric",
-				})
+			? new Date(article.publishedAt).toLocaleDateString(
+					locale === "ja" ? "ja-JP" : "en-US",
+					{
+						year: "numeric",
+						month: "long",
+						day: "numeric",
+					}
+				)
 			: null;
 
 		return (
@@ -31,11 +39,17 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 							<div className="flex items-center space-x-4 text-sm text-muted-foreground">
 								{publishedDate && (
 									<time dateTime={article.publishedAt || undefined}>
-										{publishedDate}
+										{t("publishedAt")}: {publishedDate}
 									</time>
 								)}
 								<span className="inline-flex items-center rounded-md bg-secondary px-2 py-1 text-xs font-medium text-secondary-foreground">
-									{article.status === "published" ? "公開" : "下書き"}
+									{article.status === "published"
+										? locale === "ja"
+											? "公開"
+											: "Published"
+										: locale === "ja"
+											? "下書き"
+											: "Draft"}
 								</span>
 							</div>
 
@@ -109,10 +123,10 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 					<footer className="mt-12 pt-8 border-t">
 						<div className="flex items-center justify-center">
 							<a
-								href="/"
+								href={`/${locale}`}
 								className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2"
 							>
-								← 記事一覧に戻る
+								← {t("backToList")}
 							</a>
 						</div>
 					</footer>

@@ -1,4 +1,4 @@
-import { locales, type Locale } from "@saneatsu/i18n";
+import { type Locale, locales } from "@saneatsu/i18n";
 import { notFound } from "next/navigation";
 import { getRequestConfig } from "next-intl/server";
 

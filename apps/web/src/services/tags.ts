@@ -1,5 +1,5 @@
 import { apiClient } from "../lib/api-client";
-import type { Tag, Article, PaginatedResponse } from "../types/api";
+import type { Article, PaginatedResponse, Tag } from "../types/api";
 
 export const tagsService = {
 	async getTags(lang?: string) {
@@ -16,9 +16,8 @@ export const tagsService = {
 			lang?: string;
 		}
 	) {
-		return apiClient.get<PaginatedResponse<Article>>(
-			`/tags/${slug}/articles`,
-			{ params }
-		);
+		return apiClient.get<PaginatedResponse<Article>>(`/tags/${slug}/articles`, {
+			params,
+		});
 	},
 };

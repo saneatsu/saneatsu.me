@@ -30,14 +30,16 @@ export function ThemeProvider({
 }: ThemeProviderProps) {
 	const [theme, setTheme] = useState<Theme>(() => {
 		if (typeof globalThis !== "undefined" && globalThis.localStorage) {
-			return (globalThis.localStorage.getItem(storageKey) as Theme) || defaultTheme;
+			return (
+				(globalThis.localStorage.getItem(storageKey) as Theme) || defaultTheme
+			);
 		}
 		return defaultTheme;
 	});
 
 	useEffect(() => {
 		if (typeof document === "undefined") return;
-		
+
 		const root = document.documentElement;
 
 		root.classList.remove("light", "dark");
