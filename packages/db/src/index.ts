@@ -1,13 +1,22 @@
-import Database from "better-sqlite3";
-import { drizzle } from "drizzle-orm/better-sqlite3";
+import { createClient } from "@libsql/client";
+import { drizzle } from "drizzle-orm/libsql";
+import dotenv from "dotenv";
 import * as schema from "./schema";
 
+// 環境変数をロード
+dotenv.config();
+
 /**
- * SQLiteデータベースの初期化
- * 開発環境ではローカルのsqlite.dbを使用
+ * Tursoデータベースの初期化
+ * 本番環境ではTursoクラウドデータベースを使用
+ * 開発環境では環境変数で制御可能
  */
-const sqlite = new Database("./sqlite.db");
-export const db = drizzle(sqlite, { schema });
+const client = createClient({
+  url: process.env.TURSO_DATABASE_URL!,
+  authToken: process.env.TURSO_AUTH_TOKEN!,
+});
+
+export const db = drizzle(client, { schema });
 
 // スキーマのエクスポート
 export * from "./schema";
