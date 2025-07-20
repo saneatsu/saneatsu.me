@@ -8,16 +8,20 @@
 		"dev": "tsx watch src/index.ts",
 		"start": "node dist/index.js",
 		"lint": "biome check .",
-		"lint:fix": "biome check --write ."
+		"lint:fix": "biome check --write .",
+		"test": "vitest",
+		"test:coverage": "vitest run --coverage"
 	},
 	"dependencies": {
-		"hono": "^4.0.0",
+		"@hono/node-server": "^1.17.0",
 		"@saneatsu/db": "workspace:*",
-		"@saneatsu/schemas": "workspace:*"
+		"@saneatsu/schemas": "workspace:*",
+		"drizzle-orm": "^0.33.0",
+		"hono": "^4.0.0"
 	},
 	"devDependencies": {
-		"typescript": "^5.8.3",
+		"@types/node": "^24.0.15",
 		"tsx": "^4.0.0",
-		"@types/node": "^24.0.15"
+		"typescript": "^5.8.3"
 	}
 }
