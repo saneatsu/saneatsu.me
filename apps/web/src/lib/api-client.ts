@@ -14,9 +14,9 @@ class ApiClient {
 		options: FetchOptions = {}
 	): Promise<T> {
 		const { params, ...fetchOptions } = options;
-		
+
 		let url = `${this.baseUrl}${endpoint}`;
-		
+
 		if (params) {
 			const searchParams = new URLSearchParams();
 			Object.entries(params).forEach(([key, value]) => {
@@ -67,5 +67,5 @@ class ApiClient {
 
 // Create a singleton instance
 export const apiClient = new ApiClient(
-	process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api"
+	process.env.NEXT_PUBLIC_API_URL || "/api"
 );
