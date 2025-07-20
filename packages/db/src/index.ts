@@ -12,8 +12,8 @@ dotenv.config();
  * 開発環境では環境変数で制御可能
  */
 const client = createClient({
-	url: process.env.TURSO_DATABASE_URL!,
-	authToken: process.env.TURSO_AUTH_TOKEN!,
+	url: process.env.TURSO_DATABASE_URL || "",
+	authToken: process.env.TURSO_AUTH_TOKEN || "",
 });
 
 export const db = drizzle(client, { schema });
