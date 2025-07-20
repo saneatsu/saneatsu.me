@@ -93,6 +93,9 @@ importers:
       next:
         specifier: ^15.4.2
         version: 15.4.2(@playwright/test@1.54.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      next-intl:
+        specifier: ^3.22.4
+        version: 3.26.5(next@15.4.2(@playwright/test@1.54.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
       react:
         specifier: ^19.1.0
         version: 19.1.0
