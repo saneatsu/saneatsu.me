@@ -3,7 +3,7 @@ import { useTranslations } from "next-intl";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
-import { articlesService } from "../../../../services/articles";
+import { articlesService } from "../../../../entities/article";
 
 interface ArticlePageProps {
 	params: Promise<{ slug: string; locale: string }>;

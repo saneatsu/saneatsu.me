@@ -1,4 +1,4 @@
-import { ArticlesList } from "../../components/articles-list";
+import { ArticlesList } from "../../widgets/articles-list";
 
 export default function HomePage() {
 	return (

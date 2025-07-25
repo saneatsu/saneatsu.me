@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import type { ReactNode } from "react";
-import { Footer } from "../../components/layout/footer";
-import { Header } from "../../components/layout/header";
-import { ThemeProvider } from "../../components/theme-provider";
+import { Footer } from "../../widgets/footer";
+import { Header } from "../../widgets/header";
+import { ThemeProvider } from "../../shared";
 import "../globals.css";
 
 export const metadata: Metadata = {
