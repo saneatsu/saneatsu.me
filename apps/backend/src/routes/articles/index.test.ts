@@ -1,11 +1,7 @@
 import { testClient } from "hono/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { setupDbMocks } from "../../utils/drizzle-test";
-import {
-	createMockArticle,
-	createMockArticleTranslation,
-	createMockArticleWithTranslation,
-} from "../../utils/vitest";
+import { createMockArticleWithTranslation } from "../../utils/vitest";
 import { articlesRoute } from "./index";
 
 // モックの設定
@@ -79,7 +75,8 @@ describe("GET /articles", () => {
 
 		// Act
 		const client = testClient(articlesRoute);
-		const res = await (client as any).$get({
+		// @ts-expect-error testClientはOpenAPIのメソッドを完全にサポートしていない
+		const res = await client.$get({
 			query: {},
 		});
 
@@ -233,7 +230,8 @@ describe("GET /articles", () => {
 
 		// Act
 		const client = testClient(articlesRoute);
-		const res = await (client as any).$get({
+		// @ts-expect-error testClientはOpenAPIのメソッドを完全にサポートしていない
+		const res = await client.$get({
 			query: {},
 		});
 

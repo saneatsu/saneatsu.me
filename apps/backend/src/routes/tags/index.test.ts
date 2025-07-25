@@ -23,7 +23,18 @@ vi.mock("@saneatsu/db", () => ({
 /**
  * タグと翻訳を組み合わせたモックデータを作成するヘルパー
  */
-const createMockTagWithTranslation = (overrides: any = {}) => {
+const createMockTagWithTranslation = (
+	overrides: {
+		tag?: Parameters<typeof createMockTag>[0];
+		translation?: Parameters<typeof createMockTagTranslation>[0];
+		combined?: Partial<{
+			id: string;
+			slug: string;
+			name: string;
+			articleCount: number;
+		}>;
+	} = {}
+) => {
 	const tag = createMockTag(overrides.tag);
 	const translation = createMockTagTranslation({
 		tagId: tag.id,

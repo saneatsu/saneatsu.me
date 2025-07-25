@@ -15,17 +15,19 @@ vi.mock("@hono/node-server", () => ({
 }));
 
 // ルートのモック
-vi.mock("./routes/articles", () => ({
-	articlesRoute: {
-		fetch: vi.fn(),
-	},
-}));
+vi.mock("./routes/articles", () => {
+	const { OpenAPIHono } = require("@hono/zod-openapi");
+	return {
+		articlesRoute: new OpenAPIHono(),
+	};
+});
 
-vi.mock("./routes/tags", () => ({
-	tagsRoute: {
-		fetch: vi.fn(),
-	},
-}));
+vi.mock("./routes/tags", () => {
+	const { OpenAPIHono } = require("@hono/zod-openapi");
+	return {
+		tagsRoute: new OpenAPIHono(),
+	};
+});
 
 describe("Unit Test", () => {
 	let app: AppType;
@@ -34,6 +36,9 @@ describe("Unit Test", () => {
 		// 環境変数を設定
 		process.env.TURSO_DATABASE_URL = "file:./test.db";
 		process.env.TURSO_AUTH_TOKEN = "test-token";
+
+		// viのモックをリセット
+		vi.resetModules();
 
 		// モジュールを動的にインポート（モックが適用された状態で）
 		const module = await import("./index");
@@ -155,9 +160,13 @@ describe("Integration Test", () => {
 			const res = await testClient(app).api.health.$get({});
 
 			// Assert
-			const text = await res.text();
-			// Pretty JSONは改行を含むはず
-			expect(text).toMatch(/\n/);
+			expect(res.status).toBe(200);
+			const data = await res.json();
+			// ヘルスチェックのレスポンスが正しい形式であることを確認
+			expect(data).toHaveProperty("status", "ok");
+			expect(data).toHaveProperty("service", "saneatsu-blog-api");
+			expect(data).toHaveProperty("timestamp");
+			expect(data).toHaveProperty("database");
 		});
 	});
 });
