@@ -36,10 +36,11 @@ export function ArticleFilter({
 		<div className="flex flex-col sm:flex-row gap-4">
 			{/* タグフィルター */}
 			<div className="flex flex-col gap-2">
-				<label className="text-sm font-medium text-foreground">
+				<label htmlFor="tag-filter" className="text-sm font-medium text-foreground">
 					{t("filterByTag")}
 				</label>
 				<select
+					id="tag-filter"
 					value={selectedTagId || ""}
 					onChange={(e) => {
 						const value = e.target.value;
@@ -58,10 +59,11 @@ export function ArticleFilter({
 
 			{/* ステータスフィルター */}
 			<div className="flex flex-col gap-2">
-				<label className="text-sm font-medium text-foreground">
+				<label htmlFor="status-filter" className="text-sm font-medium text-foreground">
 					{t("filterByStatus")}
 				</label>
 				<select
+					id="status-filter"
 					value={selectedStatus}
 					onChange={(e) => {
 						onStatusSelect(e.target.value as "all" | "published" | "draft");
@@ -78,6 +80,7 @@ export function ArticleFilter({
 			{(selectedTagId || selectedStatus !== "all") && (
 				<div className="flex flex-col justify-end">
 					<button
+						type="button"
 						onClick={() => {
 							onTagSelect(undefined);
 							onStatusSelect("all");

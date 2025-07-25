@@ -64,7 +64,8 @@ describe("Unit Test", () => {
 			const input = screen.getByRole("textbox");
 
 			fireEvent.change(input, { target: { value: "test query" } });
-			fireEvent.submit(input.closest("form")!);
+			const form = input.closest("form");
+			if (form) fireEvent.submit(form);
 
 			expect(mockOnSearch).toHaveBeenCalledWith("test query");
 		});
@@ -150,7 +151,8 @@ describe("Integration Test", () => {
 
 			// フォームが再利用可能な状態であることを確認
 			fireEvent.change(input, { target: { value: "TypeScript" } });
-			fireEvent.submit(input.closest("form")!);
+			const form = input.closest("form");
+			if (form) fireEvent.submit(form);
 			expect(mockOnSearch).toHaveBeenCalledWith("TypeScript");
 		});
 

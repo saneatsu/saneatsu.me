@@ -61,7 +61,10 @@ export function ArticleSearch({
 						fill="none"
 						stroke="currentColor"
 						viewBox="0 0 24 24"
+						role="img"
+						aria-label="検索"
 					>
+						<title>検索</title>
 						<path
 							strokeLinecap="round"
 							strokeLinejoin="round"
