@@ -51,7 +51,7 @@ const listArticlesRoute = createRoute({
 /**
  * GET /api/articles - 記事一覧取得
  */
-articlesRoute.openapi(listArticlesRoute, async (c) => {
+articlesRoute.openapi(listArticlesRoute, (async (c: any) => {
 	try {
 		const {
 			page: pageStr = "1",
@@ -116,7 +116,7 @@ articlesRoute.openapi(listArticlesRoute, async (c) => {
 			500
 		);
 	}
-});
+}) as any);
 
 /**
  * 記事詳細取得のルート定義
@@ -162,7 +162,7 @@ const getArticleRoute = createRoute({
 /**
  * GET /api/articles/:slug - 記事詳細取得
  */
-articlesRoute.openapi(getArticleRoute, async (c) => {
+articlesRoute.openapi(getArticleRoute, (async (c: any) => {
 	try {
 		const { slug } = c.req.valid("param");
 		const { lang = "ja" } = c.req.valid("query");
@@ -215,4 +215,4 @@ articlesRoute.openapi(getArticleRoute, async (c) => {
 			500
 		);
 	}
-});
+}) as any);

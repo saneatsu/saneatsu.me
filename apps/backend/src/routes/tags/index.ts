@@ -57,7 +57,7 @@ const listTagsRoute = createRoute({
 /**
  * GET /api/tags - タグ一覧取得
  */
-tagsRoute.openapi(listTagsRoute, async (c) => {
+tagsRoute.openapi(listTagsRoute, (async (c: any) => {
 	try {
 		const { lang = "ja" } = c.req.valid("query");
 
@@ -90,7 +90,7 @@ tagsRoute.openapi(listTagsRoute, async (c) => {
 			500
 		);
 	}
-});
+}) as any);
 
 /**
  * タグ別記事一覧取得のルート定義
@@ -137,7 +137,7 @@ const getTagArticlesRoute = createRoute({
 /**
  * GET /api/tags/:slug/articles - タグ別記事一覧取得
  */
-tagsRoute.openapi(getTagArticlesRoute, async (c) => {
+tagsRoute.openapi(getTagArticlesRoute, (async (c: any) => {
 	try {
 		const { slug } = c.req.valid("param");
 		const {
@@ -227,4 +227,4 @@ tagsRoute.openapi(getTagArticlesRoute, async (c) => {
 			500
 		);
 	}
-});
+}) as any);

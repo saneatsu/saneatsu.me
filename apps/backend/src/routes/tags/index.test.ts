@@ -100,7 +100,7 @@ describe("GET /tags", () => {
 		mockDb.select.mockReturnValue(tagListMock);
 
 		// Act
-		const res = await testClient(tagsRoute).$get({
+		const res = await (testClient(tagsRoute) as any).$get({
 			query: {},
 		});
 
@@ -148,7 +148,7 @@ describe("GET /tags", () => {
 		mockDb.select.mockReturnValue(tagListMock);
 
 		// Act
-		const res = await testClient(tagsRoute).$get({
+		const res = await (testClient(tagsRoute) as any).$get({
 			query: {
 				lang: "en",
 			},
@@ -180,7 +180,7 @@ describe("GET /tags", () => {
 		mockDb.select.mockReturnValue(tagListMock);
 
 		// Act
-		const res = await testClient(tagsRoute).$get({
+		const res = await (testClient(tagsRoute) as any).$get({
 			query: {},
 		});
 
@@ -270,7 +270,7 @@ describe("GET /tags/:slug/articles", () => {
 			.mockReturnValueOnce(countMock); // 総記事数取得
 
 		// Act
-		const res = await testClient(tagsRoute).javascript.articles.$get({
+		const res = await (testClient(tagsRoute) as any).javascript.articles.$get({
 			query: {},
 		});
 
@@ -304,7 +304,7 @@ describe("GET /tags/:slug/articles", () => {
 		mockDb.select.mockReturnValue(tagMock);
 
 		// Act
-		const res = await testClient(tagsRoute)["non-existent-tag"].articles.$get({
+		const res = await (testClient(tagsRoute) as any)["non-existent-tag"].articles.$get({
 			query: {},
 		});
 
@@ -369,7 +369,7 @@ describe("GET /tags/:slug/articles", () => {
 			.mockReturnValueOnce(countMock);
 
 		// Act
-		const res = await testClient(tagsRoute).javascript.articles.$get({
+		const res = await (testClient(tagsRoute) as any).javascript.articles.$get({
 			query: {
 				page: "3",
 				limit: "5",
@@ -445,7 +445,7 @@ describe("GET /tags/:slug/articles", () => {
 			.mockReturnValueOnce(countMock);
 
 		// Act
-		const res = await testClient(tagsRoute).javascript.articles.$get({
+		const res = await (testClient(tagsRoute) as any).javascript.articles.$get({
 			query: {
 				lang: "en",
 			},

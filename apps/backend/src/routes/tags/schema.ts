@@ -17,7 +17,7 @@ export const TagSchema = z.object({
 		example: "javascript",
 		description: "タグのスラッグ",
 	}),
-	name: z.string().openapi({
+	name: z.string().nullable().openapi({
 		example: "JavaScript",
 		description: "タグ名",
 	}),

@@ -74,7 +74,7 @@ describe("GET /articles", () => {
 			.mockReturnValueOnce(countMock); // 総記事数取得
 
 		// Act
-		const client = testClient(articlesRoute);
+		const client = testClient(articlesRoute) as any;
 		const res = await client.$get({
 			query: {},
 		});
@@ -129,7 +129,7 @@ describe("GET /articles", () => {
 			.mockReturnValueOnce(countMock);
 
 		// Act
-		const res = await testClient(articlesRoute).$get({
+		const res = await (testClient(articlesRoute) as any).$get({
 			query: {
 				page: "2",
 				limit: "5",
@@ -188,7 +188,7 @@ describe("GET /articles", () => {
 			.mockReturnValueOnce(countMock);
 
 		// Act
-		const res = await testClient(articlesRoute).$get({
+		const res = await (testClient(articlesRoute) as any).$get({
 			query: {
 				lang: "en",
 			},
@@ -228,7 +228,7 @@ describe("GET /articles", () => {
 			.mockReturnValueOnce(countMock);
 
 		// Act
-		const client = testClient(articlesRoute);
+		const client = testClient(articlesRoute) as any;
 		const res = await client.$get({
 			query: {},
 		});
@@ -283,7 +283,7 @@ describe("GET /articles/:slug", () => {
 		mockDb.select.mockReturnValue(articleMock);
 
 		// Act
-		const res = await testClient(articlesRoute)["test-article"].$get({
+		const res = await (testClient(articlesRoute) as any)["test-article"].$get({
 			query: {},
 		});
 
@@ -313,7 +313,7 @@ describe("GET /articles/:slug", () => {
 		mockDb.select.mockReturnValue(articleMock);
 
 		// Act
-		const res = await testClient(articlesRoute)["non-existent-article"].$get({
+		const res = await (testClient(articlesRoute) as any)["non-existent-article"].$get({
 			query: {},
 		});
 
@@ -358,7 +358,7 @@ describe("GET /articles/:slug", () => {
 		mockDb.select.mockReturnValue(articleMock);
 
 		// Act
-		const res = await testClient(articlesRoute)["test-article"].$get({
+		const res = await (testClient(articlesRoute) as any)["test-article"].$get({
 			query: {
 				lang: "en",
 			},
