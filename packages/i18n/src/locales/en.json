@@ -45,6 +45,16 @@
 			"message": "The tag you're looking for doesn't exist or may have been deleted."
 		}
 	},
+	"common": {
+		"search": "Search",
+		"allTags": "All Tags",
+		"filterByTag": "Filter by Tag",
+		"filterByStatus": "Filter by Status",
+		"allStatus": "All",
+		"published": "Published",
+		"draft": "Draft",
+		"clearFilters": "Clear Filters"
+	},
 	"validation": {
 		"required": "This field is required",
 		"tooSmall": {

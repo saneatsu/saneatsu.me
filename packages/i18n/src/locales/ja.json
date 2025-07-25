@@ -45,6 +45,16 @@
 			"message": "お探しのタグは存在しないか、削除された可能性があります。"
 		}
 	},
+	"common": {
+		"search": "検索",
+		"allTags": "すべてのタグ",
+		"filterByTag": "タグで絞り込み",
+		"filterByStatus": "ステータスで絞り込み",
+		"allStatus": "すべて",
+		"published": "公開",
+		"draft": "下書き",
+		"clearFilters": "フィルターをクリア"
+	},
 	"validation": {
 		"required": "このフィールドは必須です",
 		"tooSmall": {
