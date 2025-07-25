@@ -14,7 +14,7 @@ export function setupDbMocks() {
 	 * 基本的なモックチェーンを作成するヘルパー
 	 * .from().where().limit().offset() のようなメソッドチェーン用
 	 */
-	const createMockChain = (finalResult: any) => ({
+	const createMockChain = (finalResult: unknown[]) => ({
 		from: vi.fn().mockReturnValue({
 			leftJoin: vi.fn().mockReturnValue({
 				where: vi.fn().mockReturnValue({
@@ -35,7 +35,7 @@ export function setupDbMocks() {
 	 * シンプルなモックチェーンを作成するヘルパー
 	 * .from().where() で終わるような単純なクエリ用
 	 */
-	const createSimpleMockChain = (finalResult: any) => ({
+	const createSimpleMockChain = (finalResult: unknown[]) => ({
 		from: vi.fn().mockReturnValue({
 			where: vi.fn().mockResolvedValue(finalResult),
 		}),
@@ -44,7 +44,7 @@ export function setupDbMocks() {
 	/**
 	 * LEFT JOINを含むクエリ用のモックチェーン
 	 */
-	const createJoinMockChain = (finalResult: any) => ({
+	const createJoinMockChain = (finalResult: unknown[]) => ({
 		from: vi.fn().mockReturnValue({
 			leftJoin: vi.fn().mockReturnValue({
 				where: vi.fn().mockReturnValue({
