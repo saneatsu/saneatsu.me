@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { i18nMessage } from "./i18n";
 
 /**
  * 共通のバリデーション定義
@@ -6,36 +7,36 @@ import { z } from "zod";
 
 /** 言語コード */
 export const languageSchema = z.enum(["ja", "en"], {
-	errorMap: () => ({ message: "言語は日本語または英語を選択してください" }),
+	errorMap: () => i18nMessage("validation.custom.common.languageInvalid"),
 });
 
 /** 記事ステータス */
 export const articleStatusSchema = z.enum(["published", "draft", "archived"], {
-	errorMap: () => ({ message: "無効なステータスです" }),
+	errorMap: () => i18nMessage("validation.custom.common.statusInvalid"),
 });
 
 /** スラッグ（URL用文字列） */
 export const slugSchema = z
 	.string()
-	.min(1, "スラッグを入力してください")
-	.max(100, "スラッグは100文字以内で入力してください")
-	.regex(/^[a-z0-9-]+$/, "スラッグは小文字の英数字とハイフンのみ使用できます");
+	.min(1, i18nMessage("validation.custom.common.slugRequired"))
+	.max(100, i18nMessage("validation.custom.common.slugTooLong"))
+	.regex(/^[a-z0-9-]+$/, i18nMessage("validation.custom.common.slugInvalid"));
 
 /** メールアドレス */
 export const emailSchema = z
 	.string()
-	.email("正しいメールアドレスを入力してください");
+	.email(i18nMessage("validation.custom.common.emailInvalid"));
 
 /** 日時文字列（ISO 8601形式） */
-export const dateTimeSchema = z.string().datetime({
-	message: "正しい日時形式で入力してください",
-});
+export const dateTimeSchema = z.string().datetime(
+	i18nMessage("validation.custom.common.datetimeInvalid")
+);
 
 /** ID（正の整数） */
 export const idSchema = z
 	.number()
 	.int()
-	.positive("IDは正の整数である必要があります");
+	.positive(i18nMessage("validation.custom.common.idPositive"));
 
 /** オプショナルなCloudflare Images ID */
 export const cloudflareImageIdSchema = z.string().optional();

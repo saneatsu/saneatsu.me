@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { dateTimeSchema, idSchema, languageSchema, slugSchema } from "./common";
+import { i18nMessage } from "./i18n";
 
 /**
  * タグ関連のスキーマ定義
@@ -10,8 +11,8 @@ export const tagTranslationSchema = z.object({
 	id: idSchema,
 	name: z
 		.string()
-		.min(1, "タグ名を入力してください")
-		.max(50, "タグ名は50文字以内で入力してください"),
+		.min(1, i18nMessage("validation.custom.tag.nameRequired"))
+		.max(50, i18nMessage("validation.custom.tag.nameTooLong")),
 	language: languageSchema,
 	tagId: idSchema,
 });
@@ -38,8 +39,8 @@ export const createTagSchema = z.object({
 	slug: slugSchema,
 	translations: z
 		.array(createTagTranslationSchema)
-		.min(1, "少なくとも1つの言語でタグ名を入力してください")
-		.max(2, "最大2言語まで対応しています"),
+		.min(1, i18nMessage("validation.custom.tag.atLeastOneTranslation"))
+		.max(2, i18nMessage("validation.custom.tag.maxTranslations")),
 });
 
 /** タグ更新時の入力スキーマ */
@@ -88,7 +89,7 @@ export const tagArticlesQuerySchema = z.object({
 		.transform((val) => Number.parseInt(val, 10))
 		.refine(
 			(val) => !Number.isNaN(val) && val > 0,
-			"ページ番号は正の整数である必要があります"
+			i18nMessage("validation.custom.pagination.pagePositive")
 		)
 		.default("1"),
 	limit: z
@@ -96,7 +97,7 @@ export const tagArticlesQuerySchema = z.object({
 		.transform((val) => Number.parseInt(val, 10))
 		.refine(
 			(val) => !Number.isNaN(val) && val > 0 && val <= 100,
-			"制限数は1-100の範囲で指定してください"
+			i18nMessage("validation.custom.pagination.limitRange")
 		)
 		.default("10"),
 	language: languageSchema.default("ja"),

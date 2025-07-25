@@ -1,7 +1,8 @@
 import { z } from "@hono/zod-openapi";
 
 /**
- * 記事オブジェクトのスキーマ
+ * 記事オブジェクトのスキーマ（APIレスポンス用）
+ * DBスキーマとは別にOpenAPI用の定義を行う
  */
 export const ArticleSchema = z.object({
 	id: z.string().openapi({

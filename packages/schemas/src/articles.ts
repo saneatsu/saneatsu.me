@@ -7,6 +7,7 @@ import {
 	languageSchema,
 	slugSchema,
 } from "./common";
+import { i18nMessage } from "./i18n";
 
 /**
  * 記事関連のスキーマ定義
@@ -17,12 +18,12 @@ export const articleTranslationSchema = z.object({
 	id: idSchema,
 	title: z
 		.string()
-		.min(1, "タイトルを入力してください")
-		.max(200, "タイトルは200文字以内で入力してください"),
+		.min(1, i18nMessage("validation.custom.article.titleRequired"))
+		.max(200, i18nMessage("validation.custom.article.titleTooLong")),
 	content: z
 		.string()
-		.min(1, "本文を入力してください")
-		.max(50000, "本文は50000文字以内で入力してください"),
+		.min(1, i18nMessage("validation.custom.article.contentRequired"))
+		.max(50000, i18nMessage("validation.custom.article.contentTooLong")),
 	language: languageSchema,
 	articleId: idSchema,
 });
@@ -56,12 +57,12 @@ export const createArticleSchema = z.object({
 	publishedAt: z.string().datetime().optional(),
 	translations: z
 		.array(createArticleTranslationSchema)
-		.min(1, "少なくとも1つの言語で記事を作成してください")
-		.max(2, "最大2言語まで対応しています"),
+		.min(1, i18nMessage("validation.custom.article.atLeastOneTranslation"))
+		.max(2, i18nMessage("validation.custom.article.maxTranslations")),
 	tagIds: z
 		.array(idSchema)
-		.min(1, "少なくとも1つのタグを選択してください")
-		.max(10, "タグは最大10個まで選択できます"),
+		.min(1, i18nMessage("validation.custom.article.atLeastOneTag"))
+		.max(10, i18nMessage("validation.custom.article.maxTags")),
 });
 
 /** 記事更新時の入力スキーマ */
@@ -80,8 +81,8 @@ export const updateArticleSchema = z.object({
 		.optional(),
 	tagIds: z
 		.array(idSchema)
-		.min(1, "少なくとも1つのタグを選択してください")
-		.max(10, "タグは最大10個まで選択できます")
+		.min(1, i18nMessage("validation.custom.article.atLeastOneTag"))
+		.max(10, i18nMessage("validation.custom.article.maxTags"))
 		.optional(),
 });
 
@@ -92,7 +93,7 @@ export const articleListQuerySchema = z.object({
 		.transform((val) => Number.parseInt(val, 10))
 		.refine(
 			(val) => !Number.isNaN(val) && val > 0,
-			"ページ番号は正の整数である必要があります"
+			i18nMessage("validation.custom.pagination.pagePositive")
 		)
 		.default("1"),
 	limit: z
@@ -100,7 +101,7 @@ export const articleListQuerySchema = z.object({
 		.transform((val) => Number.parseInt(val, 10))
 		.refine(
 			(val) => !Number.isNaN(val) && val > 0 && val <= 100,
-			"制限数は1-100の範囲で指定してください"
+			i18nMessage("validation.custom.pagination.limitRange")
 		)
 		.default("10"),
 	status: articleStatusSchema.optional(),

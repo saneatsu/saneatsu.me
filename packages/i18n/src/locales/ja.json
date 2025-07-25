@@ -44,5 +44,96 @@
 			"title": "タグが見つかりません",
 			"message": "お探しのタグは存在しないか、削除された可能性があります。"
 		}
+	},
+	"validation": {
+		"required": "このフィールドは必須です",
+		"tooSmall": {
+			"string": {
+				"exact": "正確に{minimum}文字である必要があります",
+				"inclusive": "{minimum}文字以上である必要があります",
+				"notInclusive": "{minimum}文字より多い必要があります"
+			},
+			"number": {
+				"exact": "正確に{minimum}である必要があります",
+				"inclusive": "{minimum}以上である必要があります",
+				"notInclusive": "{minimum}より大きい必要があります"
+			},
+			"array": {
+				"exact": "正確に{minimum}個の要素が必要です",
+				"inclusive": "{minimum}個以上の要素が必要です",
+				"notInclusive": "{minimum}個より多い要素が必要です"
+			}
+		},
+		"tooBig": {
+			"string": {
+				"exact": "正確に{maximum}文字である必要があります",
+				"inclusive": "{maximum}文字以下である必要があります",
+				"notInclusive": "{maximum}文字より少ない必要があります"
+			},
+			"number": {
+				"exact": "正確に{maximum}である必要があります",
+				"inclusive": "{maximum}以下である必要があります",
+				"notInclusive": "{maximum}より小さい必要があります"
+			},
+			"array": {
+				"exact": "正確に{maximum}個の要素が必要です",
+				"inclusive": "{maximum}個以下の要素が必要です",
+				"notInclusive": "{maximum}個より少ない要素が必要です"
+			}
+		},
+		"invalidType": {
+			"string": "文字列である必要があります",
+			"number": "数値である必要があります",
+			"boolean": "真偽値である必要があります",
+			"date": "日付である必要があります",
+			"object": "オブジェクトである必要があります",
+			"array": "配列である必要があります"
+		},
+		"invalidString": {
+			"email": "有効なメールアドレスを入力してください",
+			"url": "有効なURLを入力してください",
+			"uuid": "有効なUUIDを入力してください",
+			"datetime": "有効な日時を入力してください",
+			"date": "有効な日付を入力してください",
+			"time": "有効な時刻を入力してください",
+			"ip": "有効なIPアドレスを入力してください",
+			"regex": "形式が正しくありません"
+		},
+		"custom": {
+			"article": {
+				"titleRequired": "タイトルを入力してください",
+				"titleTooLong": "タイトルは200文字以内で入力してください",
+				"contentRequired": "本文を入力してください",
+				"contentTooLong": "本文は50000文字以内で入力してください",
+				"slugRequired": "スラッグを入力してください",
+				"slugInvalid": "スラッグは半角英数字とハイフンのみ使用できます",
+				"atLeastOneTranslation": "少なくとも1つの言語で記事を作成してください",
+				"maxTranslations": "最大2言語まで対応しています",
+				"atLeastOneTag": "少なくとも1つのタグを選択してください",
+				"maxTags": "タグは最大10個まで選択できます"
+			},
+			"tag": {
+				"nameRequired": "タグ名を入力してください",
+				"nameTooLong": "タグ名は50文字以内で入力してください",
+				"slugRequired": "スラッグを入力してください",
+				"slugInvalid": "スラッグは半角英数字とハイフンのみ使用できます",
+				"atLeastOneTranslation": "少なくとも1つの言語でタグ名を入力してください",
+				"maxTranslations": "最大2言語まで対応しています"
+			},
+			"pagination": {
+				"pagePositive": "ページ番号は正の整数である必要があります",
+				"limitRange": "制限数は1-100の範囲で指定してください"
+			},
+			"common": {
+				"languageInvalid": "言語は日本語または英語を選択してください",
+				"statusInvalid": "無効なステータスです",
+				"slugRequired": "スラッグを入力してください",
+				"slugTooLong": "スラッグは100文字以内で入力してください",
+				"slugInvalid": "スラッグは小文字の英数字とハイフンのみ使用できます",
+				"emailInvalid": "正しいメールアドレスを入力してください",
+				"datetimeInvalid": "正しい日時形式で入力してください",
+				"idPositive": "IDは正の整数である必要があります"
+			}
+		}
 	}
 }
