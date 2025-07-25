@@ -1,12 +1,12 @@
 import { testClient } from "hono/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { setupDbMocks } from "../utils/drizzle-test";
+import { setupDbMocks } from "../../utils/drizzle-test";
 import {
 	createMockArticleWithTranslation,
 	createMockTag,
 	createMockTagTranslation,
-} from "../utils/vitest";
-import { tagsRoute } from "./tags";
+} from "../../utils/vitest";
+import { tagsRoute } from "./index";
 
 // モックの設定
 vi.mock("@saneatsu/db", () => ({

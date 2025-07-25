@@ -1,3 +1,4 @@
+import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
 import {
 	articles,
 	articleTags,
@@ -7,21 +8,58 @@ import {
 	tagTranslations,
 } from "@saneatsu/db";
 import { and, eq, sql } from "drizzle-orm";
-import { Hono } from "hono";
+import {
+	TagsQuerySchema,
+	TagsResponseSchema,
+	TagArticlesParamSchema,
+	TagArticlesQuerySchema,
+	TagArticlesResponseSchema,
+	ErrorSchema,
+} from "./schema";
 
 /**
  * タグ関連のAPIルート
  */
-export const tagsRoute = new Hono();
+export const tagsRoute = new OpenAPIHono();
+
+/**
+ * タグ一覧取得のルート定義
+ */
+const listTagsRoute = createRoute({
+	method: "get",
+	path: "/",
+	request: {
+		query: TagsQuerySchema,
+	},
+	responses: {
+		200: {
+			content: {
+				"application/json": {
+					schema: TagsResponseSchema,
+				},
+			},
+			description: "タグ一覧の取得成功",
+		},
+		500: {
+			content: {
+				"application/json": {
+					schema: ErrorSchema,
+				},
+			},
+			description: "サーバーエラー",
+		},
+	},
+	tags: ["Tags"],
+	summary: "タグ一覧取得",
+	description: "全てのタグとそれぞれの記事数を取得します。",
+});
 
 /**
  * GET /api/tags - タグ一覧取得
- * クエリパラメータ:
- * - lang: 言語（ja/en、デフォルト: ja）
  */
-tagsRoute.get("/", async (c) => {
+tagsRoute.openapi(listTagsRoute, async (c) => {
 	try {
-		const lang = c.req.query("lang") || "ja";
+		const { lang = "ja" } = c.req.valid("query");
 
 		// タグ一覧と記事数を取得
 		const tagList = await db
@@ -55,20 +93,55 @@ tagsRoute.get("/", async (c) => {
 });
 
 /**
- * GET /api/tags/:slug/articles - タグ別記事一覧取得
- * パラメータ:
- * - slug: タグのスラッグ
- * クエリパラメータ:
- * - page: ページ番号（デフォルト: 1）
- * - limit: 1ページあたりの記事数（デフォルト: 10）
- * - lang: 言語（ja/en、デフォルト: ja）
+ * タグ別記事一覧取得のルート定義
  */
-tagsRoute.get("/:slug/articles", async (c) => {
+const getTagArticlesRoute = createRoute({
+	method: "get",
+	path: "/:slug/articles",
+	request: {
+		params: TagArticlesParamSchema,
+		query: TagArticlesQuerySchema,
+	},
+	responses: {
+		200: {
+			content: {
+				"application/json": {
+					schema: TagArticlesResponseSchema,
+				},
+			},
+			description: "タグ別記事一覧の取得成功",
+		},
+		404: {
+			content: {
+				"application/json": {
+					schema: ErrorSchema,
+				},
+			},
+			description: "タグが見つからない",
+		},
+		500: {
+			content: {
+				"application/json": {
+					schema: ErrorSchema,
+				},
+			},
+			description: "サーバーエラー",
+		},
+	},
+	tags: ["Tags"],
+	summary: "タグ別記事一覧取得",
+	description: "指定されたタグに紐づく記事一覧を取得します。ページネーションと言語フィルタリングに対応しています。",
+});
+
+/**
+ * GET /api/tags/:slug/articles - タグ別記事一覧取得
+ */
+tagsRoute.openapi(getTagArticlesRoute, async (c) => {
 	try {
-		const slug = c.req.param("slug");
-		const page = Number(c.req.query("page") || "1");
-		const limit = Number(c.req.query("limit") || "10");
-		const lang = c.req.query("lang") || "ja";
+		const { slug } = c.req.valid("param");
+		const { page: pageStr = "1", limit: limitStr = "10", lang = "ja" } = c.req.valid("query");
+		const page = Number(pageStr);
+		const limit = Number(limitStr);
 
 		// ページネーションの計算
 		const offset = (page - 1) * limit;

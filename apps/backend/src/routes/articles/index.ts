@@ -1,24 +1,60 @@
+import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
 import { articles, articleTranslations, db } from "@saneatsu/db";
 import { and, eq } from "drizzle-orm";
-import { Hono } from "hono";
+import {
+	ArticlesQuerySchema,
+	ArticlesResponseSchema,
+	ArticleParamSchema,
+	ArticleDetailQuerySchema,
+	ArticleResponseSchema,
+	ErrorSchema,
+} from "./schema";
 
 /**
  * 記事関連のAPIルート
  */
-export const articlesRoute = new Hono();
+export const articlesRoute = new OpenAPIHono();
+
+/**
+ * 記事一覧取得のルート定義
+ */
+const listArticlesRoute = createRoute({
+	method: "get",
+	path: "/",
+	request: {
+		query: ArticlesQuerySchema,
+	},
+	responses: {
+		200: {
+			content: {
+				"application/json": {
+					schema: ArticlesResponseSchema,
+				},
+			},
+			description: "記事一覧の取得成功",
+		},
+		500: {
+			content: {
+				"application/json": {
+					schema: ErrorSchema,
+				},
+			},
+			description: "サーバーエラー",
+		},
+	},
+	tags: ["Articles"],
+	summary: "記事一覧取得",
+	description: "公開済みの記事一覧を取得します。ページネーションと言語フィルタリングに対応しています。",
+});
 
 /**
  * GET /api/articles - 記事一覧取得
- * クエリパラメータ:
- * - page: ページ番号（デフォルト: 1）
- * - limit: 1ページあたりの記事数（デフォルト: 10）
- * - lang: 言語（ja/en、デフォルト: ja）
  */
-articlesRoute.get("/", async (c) => {
+articlesRoute.openapi(listArticlesRoute, async (c) => {
 	try {
-		const page = Number(c.req.query("page") || "1");
-		const limit = Number(c.req.query("limit") || "10");
-		const lang = (c.req.query("lang") || "ja") as "ja" | "en";
+		const { page: pageStr = "1", limit: limitStr = "10", lang = "ja" } = c.req.valid("query");
+		const page = Number(pageStr);
+		const limit = Number(limitStr);
 
 		// ページネーションの計算
 		const offset = (page - 1) * limit;
@@ -78,16 +114,53 @@ articlesRoute.get("/", async (c) => {
 });
 
 /**
- * GET /api/articles/:slug - 記事詳細取得
- * パラメータ:
- * - slug: 記事のスラッグ
- * クエリパラメータ:
- * - lang: 言語（ja/en、デフォルト: ja）
+ * 記事詳細取得のルート定義
  */
-articlesRoute.get("/:slug", async (c) => {
+const getArticleRoute = createRoute({
+	method: "get",
+	path: "/:slug",
+	request: {
+		params: ArticleParamSchema,
+		query: ArticleDetailQuerySchema,
+	},
+	responses: {
+		200: {
+			content: {
+				"application/json": {
+					schema: ArticleResponseSchema,
+				},
+			},
+			description: "記事詳細の取得成功",
+		},
+		404: {
+			content: {
+				"application/json": {
+					schema: ErrorSchema,
+				},
+			},
+			description: "記事が見つからない",
+		},
+		500: {
+			content: {
+				"application/json": {
+					schema: ErrorSchema,
+				},
+			},
+			description: "サーバーエラー",
+		},
+	},
+	tags: ["Articles"],
+	summary: "記事詳細取得",
+	description: "指定されたスラッグの記事詳細を取得します。",
+});
+
+/**
+ * GET /api/articles/:slug - 記事詳細取得
+ */
+articlesRoute.openapi(getArticleRoute, async (c) => {
 	try {
-		const slug = c.req.param("slug");
-		const lang = (c.req.query("lang") || "ja") as "ja" | "en";
+		const { slug } = c.req.valid("param");
+		const { lang = "ja" } = c.req.valid("query");
 
 		// 記事詳細を取得
 		const article = await db

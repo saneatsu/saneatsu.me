@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import { serve } from "@hono/node-server";
-import { Hono } from "hono";
+import { OpenAPIHono } from "@hono/zod-openapi";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
@@ -12,9 +12,12 @@ import { articlesRoute } from "./routes/articles";
 import { tagsRoute } from "./routes/tags";
 
 /**
- * Hono APIサーバーの初期化
+ * OpenAPIHono APIサーバーの初期化
+ * 
+ * Nitoプロジェクトの構造を参考に、型安全なAPIクライアントを提供するため
+ * OpenAPIHonoを使用してAPIの型定義を自動生成する
  */
-const app = new Hono();
+const app = new OpenAPIHono();
 
 // ミドルウェアの設定
 app.use("*", logger());
@@ -72,6 +75,13 @@ app.onError((err, c) => {
 		500
 	);
 });
+
+// 型定義のエクスポート（Nitoプロジェクトと同様の構造）
+// フロントエンドのHonoクライアントで使用される
+export type AppType = typeof app;
+
+// テスト用にappもエクスポート
+export { app };
 
 const port = 3001;
 console.log(`🚀 Server is running on http://localhost:${port}`);
