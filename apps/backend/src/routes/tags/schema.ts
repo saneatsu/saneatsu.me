@@ -1,5 +1,9 @@
 import { z } from "@hono/zod-openapi";
-import { ArticleSchema, PaginationSchema, ErrorSchema } from "../articles/schema";
+import {
+	ArticleSchema,
+	ErrorSchema,
+	PaginationSchema,
+} from "../articles/schema";
 
 /**
  * タグオブジェクトのスキーマ
