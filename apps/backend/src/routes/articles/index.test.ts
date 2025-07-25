@@ -75,7 +75,6 @@ describe("GET /articles", () => {
 
 		// Act
 		const client = testClient(articlesRoute);
-		// @ts-expect-error testClientはOpenAPIのメソッドを完全にサポートしていない
 		const res = await client.$get({
 			query: {},
 		});
@@ -230,7 +229,6 @@ describe("GET /articles", () => {
 
 		// Act
 		const client = testClient(articlesRoute);
-		// @ts-expect-error testClientはOpenAPIのメソッドを完全にサポートしていない
 		const res = await client.$get({
 			query: {},
 		});

@@ -5,8 +5,8 @@ import { z } from "@hono/zod-openapi";
  * DBスキーマとは別にOpenAPI用の定義を行う
  */
 export const ArticleSchema = z.object({
-	id: z.string().openapi({
-		example: "article-id-1234",
+	id: z.number().int().openapi({
+		example: 1,
 		description: "記事のユニークID",
 	}),
 	slug: z.string().openapi({
@@ -21,15 +21,15 @@ export const ArticleSchema = z.object({
 		example: "published",
 		description: "記事のステータス",
 	}),
-	publishedAt: z.string().openapi({
+	publishedAt: z.string().nullable().openapi({
 		example: "2024-01-01T00:00:00.000Z",
 		description: "公開日時",
 	}),
-	title: z.string().openapi({
+	title: z.string().nullable().openapi({
 		example: "私の最初のブログ記事",
 		description: "記事のタイトル",
 	}),
-	content: z.string().openapi({
+	content: z.string().nullable().openapi({
 		example: "これは記事の本文です...",
 		description: "記事の本文",
 	}),

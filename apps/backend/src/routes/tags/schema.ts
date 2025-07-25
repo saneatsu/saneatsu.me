@@ -9,8 +9,8 @@ import {
  * タグオブジェクトのスキーマ
  */
 export const TagSchema = z.object({
-	id: z.string().openapi({
-		example: "tag-id-1234",
+	id: z.number().int().openapi({
+		example: 1,
 		description: "タグのユニークID",
 	}),
 	slug: z.string().openapi({
