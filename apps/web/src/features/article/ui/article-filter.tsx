@@ -36,7 +36,10 @@ export function ArticleFilter({
 		<div className="flex flex-col sm:flex-row gap-4">
 			{/* タグフィルター */}
 			<div className="flex flex-col gap-2">
-				<label htmlFor="tag-filter" className="text-sm font-medium text-foreground">
+				<label
+					htmlFor="tag-filter"
+					className="text-sm font-medium text-foreground"
+				>
 					{t("filterByTag")}
 				</label>
 				<select
@@ -59,7 +62,10 @@ export function ArticleFilter({
 
 			{/* ステータスフィルター */}
 			<div className="flex flex-col gap-2">
-				<label htmlFor="status-filter" className="text-sm font-medium text-foreground">
+				<label
+					htmlFor="status-filter"
+					className="text-sm font-medium text-foreground"
+				>
 					{t("filterByStatus")}
 				</label>
 				<select
