@@ -1,5 +1,5 @@
-import { apiClient } from "../../../shared";
 import type { Article, PaginatedResponse } from "../../../shared";
+import { apiClient } from "../../../shared";
 
 export const articlesService = {
 	async getArticles(params?: {

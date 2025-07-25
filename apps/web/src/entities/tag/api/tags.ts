@@ -1,5 +1,5 @@
-import { apiClient } from "../../../shared";
 import type { Article, PaginatedResponse, Tag } from "../../../shared";
+import { apiClient } from "../../../shared";
 
 export const tagsService = {
 	async getTags(lang?: string) {

@@ -2,7 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import { articlesService, ArticleCard } from "../../../entities/article";
+import { ArticleCard, articlesService } from "../../../entities/article";
 import type { Article } from "../../../shared";
 
 interface ArticlesListProps {
