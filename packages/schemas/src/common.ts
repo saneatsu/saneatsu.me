@@ -28,9 +28,9 @@ export const emailSchema = z
 	.email(i18nMessage("validation.custom.common.emailInvalid"));
 
 /** 日時文字列（ISO 8601形式） */
-export const dateTimeSchema = z.string().datetime(
-	i18nMessage("validation.custom.common.datetimeInvalid")
-);
+export const dateTimeSchema = z
+	.string()
+	.datetime(i18nMessage("validation.custom.common.datetimeInvalid"));
 
 /** ID（正の整数） */
 export const idSchema = z
