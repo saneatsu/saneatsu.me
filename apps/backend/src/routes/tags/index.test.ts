@@ -304,7 +304,9 @@ describe("GET /tags/:slug/articles", () => {
 		mockDb.select.mockReturnValue(tagMock);
 
 		// Act
-		const res = await (testClient(tagsRoute) as any)["non-existent-tag"].articles.$get({
+		const res = await (testClient(tagsRoute) as any)[
+			"non-existent-tag"
+		].articles.$get({
 			query: {},
 		});
 

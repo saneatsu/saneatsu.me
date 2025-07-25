@@ -313,7 +313,9 @@ describe("GET /articles/:slug", () => {
 		mockDb.select.mockReturnValue(articleMock);
 
 		// Act
-		const res = await (testClient(articlesRoute) as any)["non-existent-article"].$get({
+		const res = await (testClient(articlesRoute) as any)[
+			"non-existent-article"
+		].$get({
 			query: {},
 		});
 
