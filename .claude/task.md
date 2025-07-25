@@ -59,14 +59,41 @@
   - `lefthook install`によるフック設定の修正
   - 型チェックとBiome checkが正常動作
 
+### フロントエンド実装（FSD）
+- [x] **Views Layerの完全実装**
+  - `views/home/ui/home-view.tsx` - ホームページビュー
+  - `views/article-detail/ui/article-detail-view.tsx` - 記事詳細ビュー
+  - Views LayerのPublic API設定
+- [x] **Features Layerの実装**
+  - `features/article/ui/article-search.tsx` - 記事検索コンポーネント
+  - `features/article/ui/article-filter.tsx` - 記事フィルターコンポーネント
+  - Features LayerのPublic API設定
+- [x] **ページファイルのViews Layer対応**
+  - ホームページでHomeViewを使用
+  - 記事詳細ページでArticleDetailViewを使用
+
+### フロントエンドテスト実装
+- [x] **Vitestテスト環境構築**
+  - `apps/web/vitest.config.ts` - Vitest設定ファイル
+  - `apps/web/vitest.setup.ts` - テストセットアップファイル
+  - Testing Library、jsdom等の依存関係追加
+- [x] **Views Layerテスト**
+  - `views/home/ui/home-view.test.tsx` - HomeViewの単体・結合テスト
+  - `views/article-detail/ui/article-detail-view.test.tsx` - ArticleDetailViewの単体・結合テスト
+- [x] **Features Layerテスト**
+  - `features/article/ui/article-search.test.tsx` - ArticleSearchの単体・結合テスト
+
 ### Git管理
-- [x] **最小粒度での5個のコミット作成**
-  1. バックエンド型エラー修正
-  2. 古いFSD構造ファイル削除
-  3. ページファイルのFSD対応修正
-  4. 新しいFSD構造追加
-  5. タスクファイル追加
-  6. Biomeフォーマット修正
+- [x] **最小粒度での9個のコミット作成**
+  1. Views Layer実装
+  2. Article features UIコンポーネント
+  3. Features Layer Public API設定
+  4. ページファイルのViews Layer対応
+  5. Vitestテスト設定
+  6. テスト依存関係追加
+  7. タスクファイル更新
+  8. Biomeフォーマット適用
+  9. 最終フォーマット修正
 - [x] **mainブランチへのマージ完了**
   - `merge-main-website-setup`ブランチをmainにマージ
   - 54ファイルの変更をマージ
@@ -76,28 +103,26 @@
 ## ❌ 完了していないこと
 
 ### フロントエンド実装
-- [ ] **Views Layerの実装**
-  - `views/home/` - ホームページビュー
-  - `views/article-detail/` - 記事詳細ビュー
-  - `views/articles-list/` - 記事一覧ビュー
-- [ ] **Features Layerの実装**
-  - `features/auth/` - 認証機能
-  - `features/article/` - 記事関連機能
+- [ ] **Features Layerの拡張**
+  - `features/auth/` - 認証機能（ログイン・ログアウト）
 - [ ] **Entities Layerの拡張**
-  - `entities/user/` - ユーザーエンティティ
+  - `entities/user/` - ユーザーエンティティの完全実装
+- [ ] **Views Layerの拡張**
+  - `views/articles-list/` - 記事一覧ビュー（将来的に必要になった場合）
 
 ### テスト実装
-- [ ] **フロントエンドテスト**
-  - React Testingライブラリを使った単体テスト
-  - Storybookコンポーネントテスト
+- [ ] **Storybookテスト**
+  - UI コンポーネントのStorybookストーリー作成
+  - `play()` 関数を使った網羅的なテスト
 - [ ] **E2Eテスト**
   - Playwrightテストの実装
   - 重要なユーザーフローのテスト
 
-### shadcn/ui の導入
-nitoプロジェクトの apps/web/src/shared/ui を参考にすること。
-
-- [ ] すべてのUIをshadcn/uiベースに置き換える
+### UI/UXの改善
+- [ ] **shadcn/ui の導入**
+  - nitoプロジェクトの `apps/web/src/shared/ui` を参考
+  - すべてのUIをshadcn/uiベースに置き換える
+  - Button、Input、Card等の基本コンポーネント導入
 
 ### インフラ・設定
 - [ ] **CI/CD設定**

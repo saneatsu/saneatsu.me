@@ -11,6 +11,8 @@ export default defineConfig({
 		environment: "jsdom",
 		setupFiles: ["./vitest.setup.ts"],
 		globals: true,
+		include: ["**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+		exclude: ["**/*.stories.{js,jsx,ts,tsx}"],
 	},
 	resolve: {
 		alias: {

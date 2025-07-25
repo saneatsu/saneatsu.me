@@ -54,3 +54,6 @@ tsconfig.tsbuildinfo
 
 # Git hooks
 .husky/
+
+*storybook.log
+storybook-static
