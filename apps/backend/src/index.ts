@@ -13,7 +13,7 @@ import { tagsRoute } from "./routes/tags";
 
 /**
  * OpenAPIHono APIサーバーの初期化
- * 
+ *
  * Nitoプロジェクトの構造を参考に、型安全なAPIクライアントを提供するため
  * OpenAPIHonoを使用してAPIの型定義を自動生成する
  */

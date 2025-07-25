@@ -1,12 +1,12 @@
-import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
+import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import { articles, articleTranslations, db } from "@saneatsu/db";
 import { and, eq } from "drizzle-orm";
 import {
+	ArticleDetailQuerySchema,
+	ArticleParamSchema,
+	ArticleResponseSchema,
 	ArticlesQuerySchema,
 	ArticlesResponseSchema,
-	ArticleParamSchema,
-	ArticleDetailQuerySchema,
-	ArticleResponseSchema,
 	ErrorSchema,
 } from "./schema";
 
@@ -44,7 +44,8 @@ const listArticlesRoute = createRoute({
 	},
 	tags: ["Articles"],
 	summary: "記事一覧取得",
-	description: "公開済みの記事一覧を取得します。ページネーションと言語フィルタリングに対応しています。",
+	description:
+		"公開済みの記事一覧を取得します。ページネーションと言語フィルタリングに対応しています。",
 });
 
 /**
@@ -52,7 +53,11 @@ const listArticlesRoute = createRoute({
  */
 articlesRoute.openapi(listArticlesRoute, async (c) => {
 	try {
-		const { page: pageStr = "1", limit: limitStr = "10", lang = "ja" } = c.req.valid("query");
+		const {
+			page: pageStr = "1",
+			limit: limitStr = "10",
+			lang = "ja",
+		} = c.req.valid("query");
 		const page = Number(pageStr);
 		const limit = Number(limitStr);
 

@@ -1,4 +1,4 @@
-import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
+import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import {
 	articles,
 	articleTags,
@@ -9,12 +9,12 @@ import {
 } from "@saneatsu/db";
 import { and, eq, sql } from "drizzle-orm";
 import {
-	TagsQuerySchema,
-	TagsResponseSchema,
+	ErrorSchema,
 	TagArticlesParamSchema,
 	TagArticlesQuerySchema,
 	TagArticlesResponseSchema,
-	ErrorSchema,
+	TagsQuerySchema,
+	TagsResponseSchema,
 } from "./schema";
 
 /**
@@ -130,7 +130,8 @@ const getTagArticlesRoute = createRoute({
 	},
 	tags: ["Tags"],
 	summary: "タグ別記事一覧取得",
-	description: "指定されたタグに紐づく記事一覧を取得します。ページネーションと言語フィルタリングに対応しています。",
+	description:
+		"指定されたタグに紐づく記事一覧を取得します。ページネーションと言語フィルタリングに対応しています。",
 });
 
 /**
@@ -139,7 +140,11 @@ const getTagArticlesRoute = createRoute({
 tagsRoute.openapi(getTagArticlesRoute, async (c) => {
 	try {
 		const { slug } = c.req.valid("param");
-		const { page: pageStr = "1", limit: limitStr = "10", lang = "ja" } = c.req.valid("query");
+		const {
+			page: pageStr = "1",
+			limit: limitStr = "10",
+			lang = "ja",
+		} = c.req.valid("query");
 		const page = Number(pageStr);
 		const limit = Number(limitStr);
 
