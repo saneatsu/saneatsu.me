@@ -3,9 +3,19 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
 	test: {
 		globals: true,
-		environment: "node",
+		// Reactコンポーネントテスト用にjsdom環境を使用
+		environment: "jsdom",
+		setupFiles: ["./vitest.setup.ts"],
 		include: ["**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
-		exclude: ["node_modules", "dist", ".next", "build", ".turbo"],
+		exclude: [
+			"node_modules",
+			"dist",
+			".next",
+			"build",
+			".turbo",
+			".vercel",
+			"**/e2e/**",
+		],
 		coverage: {
 			reporter: ["text", "json", "html"],
 			exclude: [
