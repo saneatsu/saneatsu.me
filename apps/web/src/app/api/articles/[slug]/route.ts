@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3001";
+const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3333";
 
 export async function GET(
 	request: NextRequest,
