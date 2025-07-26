@@ -5,6 +5,16 @@
 	"description": "Database schema and utilities",
 	"main": "./src/index.ts",
 	"types": "./src/index.ts",
+	"exports": {
+		".": {
+			"types": "./src/index.ts",
+			"default": "./src/index.ts"
+		},
+		"./worker": {
+			"types": "./src/worker.ts",
+			"default": "./src/worker.ts"
+		}
+	},
 	"scripts": {
 		"build": "tsc",
 		"dev": "tsc --watch --preserveWatchOutput",

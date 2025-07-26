@@ -13,7 +13,12 @@
 	"scripts": {
 		"build": "tsc",
 		"dev": "tsx watch src/index.ts",
+		"dev:worker": "wrangler dev",
 		"start": "node dist/index.js",
+		"deploy": "wrangler deploy",
+		"deploy:dev": "wrangler deploy --env development",
+		"deploy:preview": "wrangler deploy --env preview",
+		"deploy:prod": "wrangler deploy --env production",
 		"lint": "biome check .",
 		"lint:fix": "biome check --write .",
 		"test": "vitest",

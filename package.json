@@ -7,7 +7,18 @@
 	"packageManager": "pnpm@9.0.0",
 	"scripts": {
 		"build": "turbo build",
+		"build:cloudflare": "turbo build:cloudflare",
 		"dev": "turbo dev",
+		"dev:worker": "turbo dev:worker",
+		"deploy": "turbo deploy",
+		"deploy:dev": "turbo deploy:dev",
+		"deploy:preview": "turbo deploy:preview",
+		"deploy:prod": "turbo deploy:prod",
+		"preview": "turbo preview",
+		"setup:env": "./scripts/setup-cloudflare-env.sh development",
+		"setup:env:dev": "./scripts/setup-cloudflare-env.sh development",
+		"setup:env:preview": "./scripts/setup-cloudflare-env.sh preview",
+		"setup:env:prod": "./scripts/setup-cloudflare-env.sh production",
 		"lint": "turbo lint",
 		"test": "turbo test",
 		"clean": "turbo clean",
@@ -31,5 +42,8 @@
 	"engines": {
 		"node": ">=18.0.0",
 		"pnpm": ">=8.0.0"
+	},
+	"dependencies": {
+		"wrangler": "^4.26.0"
 	}
 }
