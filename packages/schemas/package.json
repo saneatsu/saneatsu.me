@@ -7,7 +7,7 @@
 	"types": "./src/index.ts",
 	"scripts": {
 		"build": "tsc",
-		"dev": "tsc --watch",
+		"dev": "tsc --watch --preserveWatchOutput",
 		"lint": "biome check .",
 		"lint:fix": "biome check --write .",
 		"test": "vitest",
