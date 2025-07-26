@@ -1,0 +1,32 @@
+# Cloudflare Workers configuration for Next.js frontend with OpenNext
+name = "saneatsu-web"
+main = ".open-next/worker.js"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat"]
+
+# OpenNext configuration will be handled by @opennextjs/cloudflare
+# This is a placeholder configuration
+
+# Environment variables for Next.js
+[vars]
+# NEXT_PUBLIC_API_URL will be set based on environment
+
+# Development environment
+[env.development]
+name = "saneatsu-web-dev"
+vars = { NEXT_PUBLIC_API_URL = "https://saneatsu-api-dev.w-saneatsu-e8c.workers.dev" }
+
+# Preview/staging environment
+[env.preview]
+name = "saneatsu-web-preview"
+vars = { NEXT_PUBLIC_API_URL = "https://saneatsu-api-preview.w-saneatsu-e8c.workers.dev" }
+
+# Production environment
+[env.production]
+name = "saneatsu-web-prod"
+vars = { NEXT_PUBLIC_API_URL = "https://saneatsu-api-prod.w-saneatsu-e8c.workers.dev" }
+
+# Custom domain configuration for production (temporarily disabled)
+# [[env.production.routes]]
+# pattern = "saneatsu.me/*"
+# zone_name = "saneatsu.me"
