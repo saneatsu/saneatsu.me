@@ -63,6 +63,7 @@ const sidebars: SidebarsConfig = {
       items: [
         'development/coding-standards',
         'development/commit-conventions',
+        'development/database',
       ],
     },
     {
