@@ -4,6 +4,8 @@ import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { ArticleCard, articlesService } from "../../../entities/article";
 import type { Article } from "../../../shared";
+import { Button } from "../../../shared/ui/button/button";
+import { Skeleton } from "../../../shared/ui/skeleton/skeleton";
 
 interface ArticlesListProps {
 	lang?: string;
@@ -40,24 +42,22 @@ export function ArticlesList({ lang }: ArticlesListProps = {}) {
 	if (loading) {
 		return (
 			<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-				{Array.from({ length: 6 }, (_, i) => ({
-					id: `skeleton-${Date.now()}-${i}`,
-				})).map((item) => (
+				{Array.from({ length: 6 }, (_, i) => (
 					<div
-						key={item.id}
-						className="animate-pulse border rounded-lg p-6 space-y-3"
+						key={`skeleton-${i}`}
+						className="border rounded-lg p-6 space-y-3"
 					>
 						<div className="flex justify-between items-center">
-							<div className="h-5 bg-muted rounded w-16" />
-							<div className="h-4 bg-muted rounded w-20" />
+							<Skeleton className="h-5 w-16" />
+							<Skeleton className="h-4 w-20" />
 						</div>
-						<div className="h-6 bg-muted rounded w-3/4" />
+						<Skeleton className="h-6 w-3/4" />
 						<div className="space-y-2">
-							<div className="h-4 bg-muted rounded" />
-							<div className="h-4 bg-muted rounded" />
-							<div className="h-4 bg-muted rounded w-2/3" />
+							<Skeleton className="h-4 w-full" />
+							<Skeleton className="h-4 w-full" />
+							<Skeleton className="h-4 w-2/3" />
 						</div>
-						<div className="h-4 bg-muted rounded w-24" />
+						<Skeleton className="h-4 w-24" />
 					</div>
 				))}
 			</div>
@@ -71,13 +71,12 @@ export function ArticlesList({ lang }: ArticlesListProps = {}) {
 					{t("error.title")}
 				</div>
 				<p className="text-muted-foreground">{error}</p>
-				<button
-					type="button"
+				<Button
+					className="mt-4"
 					onClick={() => window.location.reload()}
-					className="mt-4 inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2"
 				>
 					{t("error.retry")}
-				</button>
+				</Button>
 			</div>
 		);
 	}

@@ -16,6 +16,11 @@
 		"english": "English",
 		"switch": "Switch language"
 	},
+	"LocaleSwitcher": {
+		"label": "Switch language",
+		"ja": "日本語",
+		"en": "English"
+	},
 	"loading": "Loading...",
 	"error": {
 		"title": "An error occurred",

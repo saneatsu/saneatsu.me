@@ -1,7 +1,10 @@
 "use client";
 
+import { Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { Button } from "../../../shared/ui/button/button";
+import { Input } from "../../../shared/ui/input/input";
 
 export interface ArticleSearchProps {
 	/** 検索実行時のコールバック */
@@ -45,43 +48,30 @@ export function ArticleSearch({
 	return (
 		<form onSubmit={handleSubmit} className="w-full max-w-md">
 			<div className="relative">
-				<input
+				<Input
 					type="text"
 					value={query}
 					onChange={handleInputChange}
 					placeholder={placeholder || t("search")}
 					disabled={isLoading}
-					className="w-full px-4 py-2 pl-10 pr-12 border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-50"
+					className="pl-10 pr-20"
 				/>
 
 				{/* 検索アイコン */}
 				<div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
-					<svg
-						className="w-4 h-4"
-						fill="none"
-						stroke="currentColor"
-						viewBox="0 0 24 24"
-						role="img"
-						aria-label="検索"
-					>
-						<title>検索</title>
-						<path
-							strokeLinecap="round"
-							strokeLinejoin="round"
-							strokeWidth={2}
-							d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-						/>
-					</svg>
+					<Search className="w-4 h-4" />
 				</div>
 
 				{/* 検索ボタン */}
-				<button
+				<Button
 					type="submit"
+					variant="ghost"
+					size="sm"
 					disabled={isLoading}
-					className="absolute right-2 top-1/2 transform -translate-y-1/2 px-2 py-1 text-sm font-medium text-primary hover:text-primary/80 disabled:opacity-50"
+					className="absolute right-2 top-1/2 transform -translate-y-1/2 h-7"
 				>
 					{isLoading ? "..." : t("search")}
-				</button>
+				</Button>
 			</div>
 		</form>
 	);

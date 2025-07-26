@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import type { Article } from "../../../shared";
+import { Button } from "../../../shared/ui/button/button";
+import {
+	Card,
+	CardContent,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from "../../../shared/ui/card/card";
 
 interface ArticleCardProps {
 	article: Article;
@@ -21,72 +29,51 @@ export function ArticleCard({ article }: ArticleCardProps) {
 			)
 		: null;
 
+	// コンテンツから本文の抜粋を生成
+	const excerpt = article.content
+		.replace(/^#.*$/gm, "") // ヘッダーを削除
+		.replace(/```[\s\S]*?```/g, "") // コードブロックを削除
+		.replace(/[#*`]/g, "") // マークダウン記法を削除
+		.trim()
+		.slice(0, 150);
+
 	return (
-		<article className="group relative border rounded-lg p-6 hover:shadow-md transition-shadow">
-			<div className="flex flex-col space-y-3">
-				<div className="flex items-center justify-between">
-					<div className="flex items-center space-x-2">
-						<span
-							className="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium"
-							style={{
-								backgroundColor: "hsl(var(--secondary))",
-								color: "hsl(var(--secondary-foreground))",
-							}}
-						>
-							{article.status === "published"
-								? locale === "ja"
-									? "公開"
-									: "Published"
-								: locale === "ja"
-									? "下書き"
-									: "Draft"}
-						</span>
-					</div>
+		<Card className="group hover:shadow-md transition-shadow">
+			<CardHeader>
+				<div className="flex items-center justify-between mb-2">
 					{publishedDate && (
-						<time
-							className="text-sm"
-							style={{ color: "hsl(var(--muted-foreground))" }}
-						>
+						<time className="text-sm text-muted-foreground">
 							{publishedDate}
 						</time>
 					)}
 				</div>
-
-				<div>
-					<h3 className="font-semibold text-lg transition-colors group-hover:text-blue-600">
-						<Link href={`/${locale}/articles/${article.slug}`}>
-							<span className="absolute inset-0" />
-							{article.title}
-						</Link>
-					</h3>
-				</div>
-
-				<div
-					className="text-sm line-clamp-3"
-					style={{ color: "hsl(var(--muted-foreground))" }}
-				>
-					{article.content
-						.replace(/^#.*$/gm, "") // Remove headers
-						.replace(/```[\s\S]*?```/g, "") // Remove code blocks
-						.replace(/[#*`]/g, "") // Remove markdown syntax
-						.trim()
-						.slice(0, 150)}
-					...
-				</div>
-
-				<div
-					className="flex items-center justify-between text-sm"
-					style={{ color: "hsl(var(--muted-foreground))" }}
-				>
-					<Link
-						href={`/${locale}/articles/${article.slug}`}
-						className="font-medium hover:underline"
-						style={{ color: "hsl(var(--primary))" }}
+				<CardTitle className="line-clamp-2">
+					<Link 
+						href={`/articles/${article.slug}`}
+						className="hover:text-primary transition-colors"
 					>
-						{t("readMore")} →
+						{article.title}
 					</Link>
-				</div>
-			</div>
-		</article>
+				</CardTitle>
+			</CardHeader>
+			
+			<CardContent>
+				<p className="text-sm text-muted-foreground line-clamp-3">
+					{excerpt}...
+				</p>
+			</CardContent>
+			
+			<CardFooter>
+				<Link href={`/articles/${article.slug}`}>
+					<Button
+						variant="ghost"
+						size="sm"
+						className="p-0 h-auto font-medium text-primary hover:text-primary/80"
+					>
+						{`${t("readMore")} →`}
+					</Button>
+				</Link>
+			</CardFooter>
+		</Card>
 	);
 }

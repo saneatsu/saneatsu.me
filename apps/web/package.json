@@ -5,8 +5,8 @@
 	"description": "Next.js frontend application",
 	"scripts": {
 		"build": "next build",
-		"dev": "next dev",
-		"start": "next start",
+		"dev": "next dev -p 3333",
+		"start": "next start -p 3333",
 		"lint": "biome check .",
 		"lint:fix": "biome check --write .",
 		"test": "vitest",
@@ -15,6 +15,9 @@
 		"build-storybook": "storybook build"
 	},
 	"dependencies": {
+		"@radix-ui/react-dropdown-menu": "^2.1.15",
+		"@radix-ui/react-slot": "^1.2.3",
+		"@radix-ui/react-tooltip": "^1.2.7",
 		"@saneatsu/i18n": "workspace:*",
 		"@saneatsu/schemas": "workspace:*",
 		"class-variance-authority": "^0.7.1",
@@ -23,6 +26,7 @@
 		"lucide-react": "^0.525.0",
 		"next": "^15.4.2",
 		"next-intl": "^3.22.4",
+		"next-themes": "^0.4.6",
 		"react": "^19.1.0",
 		"react-dom": "^19.1.0",
 		"react-markdown": "^10.1.0",
@@ -48,6 +52,7 @@
 		"jsdom": "^26.1.0",
 		"postcss": "^8.5.6",
 		"storybook": "^9.0.18",
+		"tailwindcss-animate": "^1.0.7",
 		"typescript": "^5.8.3",
 		"vitest": "^1.6.1"
 	}
