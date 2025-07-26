@@ -1,6 +1,7 @@
 // Features Layer Public API
 
-export * from "./article";
+// TODO: Uncomment when article features are implemented
+// export * from "./article";
 export * from "./lang";
 // TODO: Uncomment when auth features are implemented
 // export * from "./auth";

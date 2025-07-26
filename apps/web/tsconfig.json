@@ -19,5 +19,13 @@
 		}
 	},
 	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-	"exclude": ["node_modules", "**/*.bak", "**/*.bak/**", "**/**.bak/**", "src/**/*.bak/**", "src/stories.bak", "src/views/article-detail.bak"]
+	"exclude": [
+		"node_modules",
+		"**/*.bak",
+		"**/*.bak/**",
+		"**/**.bak/**",
+		"src/**/*.bak/**",
+		"src/stories.bak",
+		"src/views/article-detail.bak"
+	]
 }

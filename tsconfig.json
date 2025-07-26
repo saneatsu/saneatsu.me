@@ -19,5 +19,15 @@
 		}
 	},
 	"include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
-	"exclude": ["node_modules", ".next", "dist", "build", ".turbo", "**/*.bak", "**/*.bak/**", "**/stories.bak/**", "**/article-detail.bak/**"]
+	"exclude": [
+		"node_modules",
+		".next",
+		"dist",
+		"build",
+		".turbo",
+		"**/*.bak",
+		"**/*.bak/**",
+		"**/stories.bak/**",
+		"**/article-detail.bak/**"
+	]
 }

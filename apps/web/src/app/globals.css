@@ -33,11 +33,25 @@
 	--muted-foreground: hsl(0 0% 45.1%);
 	--accent: hsl(0 0% 96.1%);
 	--accent-foreground: hsl(0 0% 9%);
+	--info: hsl(204, 94%, 94%);
+	--info-foreground: hsl(200, 98%, 34%);
+	--success: hsl(149, 80%, 90%);
+	--success-foreground: hsl(143, 64%, 24%);
+	--warning: hsl(48, 96%, 89%);
+	--warning-foreground: hsl(35, 92%, 33%); /* hsl(38, 92%, 50%); */
 	--destructive: hsl(0 84.2% 60.2%);
 	--destructive-foreground: hsl(0 0% 98%);
+	--invalid: hsl(0, 72%, 44%);
+	--link: hsl(221, 83%, 53%);
+
 	--border: hsl(0 0% 89.8%);
 	--input: hsl(0 0% 89.8%);
 	--ring: hsl(0 0% 3.9%);
+	--chart-1: hsl(45 80% 60%);
+	--chart-2: hsl(330 75% 60%);
+	--chart-3: hsl(212 70% 65%);
+	--chart-4: hsl(145 60% 45%);
+	--chart-5: hsl(265 65% 62%);
 	--radius: 0.6rem;
 }
 
@@ -56,11 +70,25 @@
 	--muted-foreground: hsl(0 0% 63.9%);
 	--accent: hsl(0 0% 14.9%);
 	--accent-foreground: hsl(0 0% 98%);
+	--info: hsl(198, 88%, 48%);
+	--info-foreground: hsl(204, 94%, 94%);
+	--success: hsl(144, 61%, 20%);
+	--success-foreground: hsl(142, 69%, 58%);
+	--warning: hsl(38, 92%, 50%);
+	--warning-foreground: hsl(48, 96%, 89%);
 	--destructive: hsl(0 62.8% 30.6%);
 	--destructive-foreground: hsl(0 0% 98%);
+	--invalid: hsl(0, 96%, 68%);
+	--link: hsl(213, 93%, 67%);
+
 	--border: hsl(0 0% 14.9%);
 	--input: hsl(0 0% 14.9%);
 	--ring: hsl(0 0% 83.1%);
+	--chart-1: hsl(46 85% 64%);
+	--chart-2: hsl(330 75% 65%);
+	--chart-3: hsl(210 75% 65%);
+	--chart-4: hsl(150 65% 52%);
+	--chart-5: hsl(265 70% 63%);
 }
 
 @theme inline {
@@ -78,11 +106,24 @@
 	--color-muted-foreground: var(--muted-foreground);
 	--color-accent: var(--accent);
 	--color-accent-foreground: var(--accent-foreground);
+	--color-info: var(--info);
+	--color-info-foreground: var(--info-foreground);
+	--color-success: var(--success);
+	--color-success-foreground: var(--success-foreground);
+	--color-warning: var(--warning);
+	--color-warning-foreground: var(--warning-foreground);
 	--color-destructive: var(--destructive);
 	--color-destructive-foreground: var(--destructive-foreground);
+	--color-invalid: var(--invalid); /* form error color */
+	--color-link: var(--link); /* link text color */
 	--color-border: var(--border);
 	--color-input: var(--input);
 	--color-ring: var(--ring);
+	--color-chart-1: var(--chart-1);
+	--color-chart-2: var(--chart-2);
+	--color-chart-3: var(--chart-3);
+	--color-chart-4: var(--chart-4);
+	--color-chart-5: var(--chart-5);
 	--radius-sm: calc(var(--radius) - 4px);
 	--radius-md: calc(var(--radius) - 2px);
 	--radius-lg: var(--radius);
@@ -96,4 +137,19 @@
 	body {
 		@apply bg-background text-foreground;
 	}
+}
+
+@plugin '@tailwindcss/typography';
+
+/* アニメーション遅延用のカスタムクラス */
+.animation-delay-0 {
+	animation-delay: 0ms;
+}
+
+.animation-delay-100 {
+	animation-delay: 100ms;
+}
+
+.animation-delay-200 {
+	animation-delay: 200ms;
 }
