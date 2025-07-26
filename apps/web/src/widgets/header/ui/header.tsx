@@ -6,7 +6,11 @@ import { useTranslations } from "next-intl";
 import { Button } from "../../../shared/ui/button/button";
 import { LocaleSwitcher } from "../../../shared/ui/locale-switcher/locale-switcher";
 import { ThemeSelector } from "../../../shared/ui/theme-selector/theme-selector";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../../../shared/ui/tooltip/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "../../../shared/ui/tooltip/tooltip";
 
 export function Header() {
 	const t = useTranslations("navigation");
@@ -53,9 +57,7 @@ export function Header() {
 								<Menu className="h-4 w-4" />
 							</Button>
 						</TooltipTrigger>
-						<TooltipContent>
-							メニューを開く
-						</TooltipContent>
+						<TooltipContent>メニューを開く</TooltipContent>
 					</Tooltip>
 				</div>
 			</div>

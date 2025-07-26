@@ -34,11 +34,7 @@ export function LanguageSwitcher() {
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
-				<Button
-					variant="ghost"
-					size="icon"
-					aria-label="言語を切り替え"
-				>
+				<Button variant="ghost" size="icon" aria-label="言語を切り替え">
 					<Globe className="h-4 w-4" />
 				</Button>
 			</DropdownMenuTrigger>
@@ -51,9 +47,7 @@ export function LanguageSwitcher() {
 					>
 						<span>{language.flag}</span>
 						<span>{language.label}</span>
-						{locale === language.code && (
-							<Check className="ml-auto h-4 w-4" />
-						)}
+						{locale === language.code && <Check className="ml-auto h-4 w-4" />}
 					</DropdownMenuItem>
 				))}
 			</DropdownMenuContent>

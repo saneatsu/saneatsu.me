@@ -48,7 +48,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
 					)}
 				</div>
 				<CardTitle className="line-clamp-2">
-					<Link 
+					<Link
 						href={`/articles/${article.slug}`}
 						className="hover:text-primary transition-colors"
 					>
@@ -56,13 +56,13 @@ export function ArticleCard({ article }: ArticleCardProps) {
 					</Link>
 				</CardTitle>
 			</CardHeader>
-			
+
 			<CardContent>
 				<p className="text-sm text-muted-foreground line-clamp-3">
 					{excerpt}...
 				</p>
 			</CardContent>
-			
+
 			<CardFooter>
 				<Link href={`/articles/${article.slug}`}>
 					<Button
