@@ -1,6 +1,6 @@
 import { Slot } from "@radix-ui/react-slot";
-import { cva } from "class-variance-authority";
 import type { VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 import type * as React from "react";
 import { cn } from "../../lib/utils";
 
@@ -22,12 +22,12 @@ const badgeVariants = cva(
 		defaultVariants: {
 			variant: "default",
 		},
-	},
+	}
 );
 
 /**
  * Badge - ラベルやタグ表示用のバッジコンポーネント
- * 
+ *
  * @description
  * shadcn/uiベースのBadgeコンポーネント。
  * 複数のvariantをサポートし、アクセシビリティ対応済み。

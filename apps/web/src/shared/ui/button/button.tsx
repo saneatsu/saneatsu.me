@@ -1,5 +1,5 @@
 import { Slot } from "@radix-ui/react-slot";
-import { type VariantProps, cva } from "class-variance-authority";
+import { cva, type VariantProps } from "class-variance-authority";
 import { Loader2 } from "lucide-react";
 import type * as React from "react";
 import { cn } from "../../lib/utils";
@@ -31,7 +31,7 @@ const buttonVariants = cva(
 			variant: "default",
 			size: "default",
 		},
-	},
+	}
 );
 
 // For shadcn-chat
@@ -68,7 +68,7 @@ function Button({
 			type={type}
 			className={cn(
 				buttonVariants({ variant, size, className }),
-				"hover:cursor-pointer",
+				"hover:cursor-pointer"
 			)}
 			// ローディング中は強制的にdisabledをtrueにする
 			disabled={disabled || loading}

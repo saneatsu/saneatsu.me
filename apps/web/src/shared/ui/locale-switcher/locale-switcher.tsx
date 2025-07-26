@@ -6,6 +6,7 @@ import { useTransition } from "react";
 import { localeItems } from "../../config/locale";
 import type { Locale } from "../../config/locale-constants";
 import { setUserLocale } from "../../lib/locale";
+import { cn } from "../../lib/utils";
 import { Button } from "../button/button";
 import {
 	DropdownMenu,
@@ -14,7 +15,6 @@ import {
 	DropdownMenuRadioItem,
 	DropdownMenuTrigger,
 } from "../dropdown-menu/dropdown-menu";
-import { cn } from "../../lib/utils";
 
 export function LocaleSwitcher() {
 	const locale = useLocale();
