@@ -8,6 +8,35 @@ saneatsu.meプロジェクトのデプロイメントとインフラストラク
 
 ## インフラアーキテクチャ
 
+### Cloudflare Workers（推奨）
+
+```mermaid
+graph TB
+    User[ユーザー]
+    
+    subgraph "Cloudflare Workers"
+        Frontend[Next.js Frontend<br/>OpenNext Adapter]
+        API[Hono API<br/>Workers Runtime]
+    end
+    
+    subgraph "Turso"
+        DB[(SQLite Database<br/>Edge Replicas)]
+    end
+    
+    subgraph "Cloudflare"
+        Images[Images CDN]
+        DNS[DNS & Domain]
+    end
+    
+    User --> Frontend
+    Frontend --> API
+    API --> DB
+    Frontend --> Images
+    DNS --> Frontend
+```
+
+### Vercel（従来）
+
 ```mermaid
 graph TB
     User[ユーザー]
@@ -33,7 +62,17 @@ graph TB
 
 ## 使用サービス
 
-### Vercel
+### Cloudflare Workers（推奨）
+
+- **用途**: フロントエンドとAPIのホスティング
+- **機能**:
+  - エッジでの高速実行
+  - 自動スケーリング
+  - ゼロコールドスタート
+  - グローバルなエッジネットワーク
+  - 自動デプロイ（GitHub Actions）
+
+### Vercel（従来）
 
 - **用途**: フロントエンドとAPIのホスティング
 - **機能**:
