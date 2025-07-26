@@ -1,20 +1,11 @@
 {
-  "extends": "@docusaurus/tsconfig",
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@site/*": ["./"]
-    }
-  },
-  "include": [
-    "src/**/*",
-    "docs/**/*",
-    "*.ts",
-    "*.tsx"
-  ],
-  "exclude": [
-    "build/**/*",
-    ".docusaurus/**/*",
-    "node_modules"
-  ]
+	"extends": "@docusaurus/tsconfig",
+	"compilerOptions": {
+		"baseUrl": ".",
+		"paths": {
+			"@site/*": ["./"]
+		}
+	},
+	"include": ["src/**/*", "docs/**/*", "*.ts", "*.tsx"],
+	"exclude": ["build/**/*", ".docusaurus/**/*", "node_modules"]
 }
