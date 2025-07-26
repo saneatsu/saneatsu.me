@@ -83,7 +83,7 @@ export type AppType = typeof app;
 // テスト用にappもエクスポート
 export { app };
 
-const port = 3001;
+const port = process.env.PORT ? parseInt(process.env.PORT) : 3001;
 console.log(`🚀 Server is running on http://localhost:${port}`);
 
 serve({
