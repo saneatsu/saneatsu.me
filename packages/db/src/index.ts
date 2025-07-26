@@ -1,7 +1,7 @@
 import { createClient } from "@libsql/client";
 import dotenv from "dotenv";
 import { drizzle } from "drizzle-orm/libsql";
-import * as schema from "./schema";
+import * as schema from "./schema/index.js";
 
 // 環境変数をロード
 dotenv.config();
@@ -19,4 +19,11 @@ const client = createClient({
 export const db = drizzle(client, { schema });
 
 // スキーマのエクスポート
-export * from "./schema";
+export {
+	articles,
+	articleTranslations,
+	tags,
+	tagTranslations,
+	articleTags,
+	users
+} from "./schema/index.js";
