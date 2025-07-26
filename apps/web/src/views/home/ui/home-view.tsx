@@ -1,5 +1,4 @@
-// TODO: Uncomment when ArticlesList widget is implemented
-// import { ArticlesList } from "../../../widgets/articles-list";
+import { ArticlesList } from "../../../widgets";
 
 /**
  * ホームページのメインビューコンポーネント
@@ -21,10 +20,8 @@ export function HomeView() {
 
 			{/* Articles Section */}
 			<section>
-				{/* TODO: Replace with ArticlesList component when implemented */}
-				<div className="text-center p-8 bg-muted rounded-lg">
-					<p className="text-muted-foreground">記事一覧は実装中です...</p>
-				</div>
+				<h2 className="text-2xl font-bold mb-6">最新の記事</h2>
+				<ArticlesList limit={6} />
 			</section>
 		</main>
 	);
