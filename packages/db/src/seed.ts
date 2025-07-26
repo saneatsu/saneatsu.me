@@ -57,7 +57,15 @@ async function seed() {
 		}
 
 		// タグを取得または作成
-		const tagSlugs = ["tech", "life", "development", "web", "database", "ai", "design"];
+		const tagSlugs = [
+			"tech",
+			"life",
+			"development",
+			"web",
+			"database",
+			"ai",
+			"design",
+		];
 		const tagData = [];
 
 		for (const slug of tagSlugs) {
@@ -212,9 +220,18 @@ async function seed() {
 		}
 
 		const [
-			article1, article2, article3, article4, article5,
-			article6, article7, article8, article9, article10,
-			article11, article12
+			article1,
+			article2,
+			article3,
+			article4,
+			article5,
+			article6,
+			article7,
+			article8,
+			article9,
+			article10,
+			article11,
+			article12,
 		] = articleData;
 		console.log("✅ 記事を準備しました");
 
