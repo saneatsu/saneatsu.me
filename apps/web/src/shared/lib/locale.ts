@@ -1,7 +1,11 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { LOCALE_COOKIE_NAME, defaultLocale, type Locale } from "../config/locale-constants";
+import {
+	defaultLocale,
+	LOCALE_COOKIE_NAME,
+	type Locale,
+} from "../config/locale-constants";
 
 /**
  * ロケール（言語設定）はCookieから読み取られます。
@@ -11,7 +15,9 @@ import { LOCALE_COOKIE_NAME, defaultLocale, type Locale } from "../config/locale
 
 export async function getUserLocale(): Promise<Locale> {
 	const cookieStore = await cookies();
-	return (cookieStore.get(LOCALE_COOKIE_NAME)?.value as Locale) || defaultLocale;
+	return (
+		(cookieStore.get(LOCALE_COOKIE_NAME)?.value as Locale) || defaultLocale
+	);
 }
 
 export async function setUserLocale(locale: Locale) {

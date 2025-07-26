@@ -13,7 +13,8 @@ export default getRequestConfig(async () => {
 	const locale = await getUserLocale();
 
 	// Load all message files for the locale
-	const messages = (await import(`@saneatsu/i18n/src/locales/${locale}.json`)).default;
+	const messages = (await import(`@saneatsu/i18n/src/locales/${locale}.json`))
+		.default;
 
 	return {
 		locale,
