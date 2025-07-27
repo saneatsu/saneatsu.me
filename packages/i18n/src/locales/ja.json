@@ -21,6 +21,20 @@
 		"ja": "日本語",
 		"en": "English"
 	},
+	"home": {
+		"hero": {
+			"title": "Saneatsu Blog",
+			"description": "技術とライフスタイルに関する記事を発信しています。プログラミング、開発ツール、日常の気づきなど、さまざまなトピックを扱います。"
+		},
+		"articles": {
+			"title": "最新の記事"
+		}
+	},
+	"footer": {
+		"copyright": "© {year} Saneatsu. All rights reserved.",
+		"privacy": "プライバシーポリシー",
+		"terms": "利用規約"
+	},
 	"loading": "読み込み中...",
 	"error": {
 		"title": "エラーが発生しました",
