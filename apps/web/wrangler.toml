@@ -4,6 +4,11 @@ main = ".open-next/worker.js"
 compatibility_date = "2024-12-01"
 compatibility_flags = ["nodejs_compat"]
 
+# Assets configuration for static files
+[assets]
+directory = ".open-next/assets"
+binding = "ASSETS"
+
 # OpenNext configuration will be handled by @opennextjs/cloudflare
 # This is a placeholder configuration
 
