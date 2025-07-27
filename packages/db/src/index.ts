@@ -7,13 +7,19 @@ import * as schema from "./schema";
 dotenv.config();
 
 /**
- * Tursoデータベースの初期化（Node.js環境用）
+ * データベースの初期化（Node.js環境用）
+ * 開発環境ではローカルSQLiteを使用
  * 本番環境ではTursoクラウドデータベースを使用
- * 開発環境では環境変数で制御可能
  */
 const client = createClient({
-	url: process.env.TURSO_DATABASE_URL || "file:dummy.db",
-	authToken: process.env.TURSO_AUTH_TOKEN || undefined,
+	url:
+		process.env.NODE_ENV === "production"
+			? process.env.TURSO_DATABASE_URL || "file:dummy.db"
+			: "file:../../packages/db/local.db",
+	authToken:
+		process.env.NODE_ENV === "production"
+			? process.env.TURSO_AUTH_TOKEN
+			: undefined,
 });
 
 export const db = drizzle(client, { schema });
