@@ -59,7 +59,7 @@ apps/web/src/app/test/
 apps/web/src/shared/config/locale.ts
 
 # Incorrectly created shadcn/ui files
-src/
+./src/
 
 # Database files
 *.db
