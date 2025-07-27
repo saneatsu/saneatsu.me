@@ -1,3 +1,4 @@
+// @ts-nocheck - React 19 compatibility issue with react-markdown
 import { useTranslations } from "next-intl";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";

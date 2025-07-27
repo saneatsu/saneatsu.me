@@ -1,6 +1,6 @@
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
-import * as schema from "./schema/index.js";
+import * as schema from "./schema";
 
 /**
  * Cloudflare Workers用のTursoデータベース接続
@@ -39,7 +39,7 @@ export {
 	tags,
 	tagTranslations,
 	users,
-} from "./schema/index.js";
+} from "./schema";
 
 // 型定義のエクスポート
 export type Database = ReturnType<typeof createDatabaseClient>;

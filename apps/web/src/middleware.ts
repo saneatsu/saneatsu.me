@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { defaultLocale } from "./shared/config/locale-constants";
+import { getToken } from "next-auth/jwt";
 
 const locales = ["ja", "en"] as const;
 
@@ -69,36 +70,55 @@ function getLocaleFromPath(pathname: string): string | undefined {
  * Next.jsのミドルウェア関数
  *
  * @description
- * URLベースの多言語ルーティングを実装する。
+ * URLベースの多言語ルーティングと認証チェックを実装する。
  *
  * 処理の流れ:
- * 1. URLにロケールが含まれているかチェック
- * 2. 含まれていない場合、Accept-Languageヘッダーから言語を検出
- * 3. 適切なロケールを含むURLにリダイレクト
+ * 1. 管理画面へのアクセスの場合、認証チェックを実行
+ * 2. URLにロケールが含まれているかチェック
+ * 3. 含まれていない場合、Accept-Languageヘッダーから言語を検出
+ * 4. 適切なロケールを含むURLにリダイレクト
  *
  * @param request - Next.jsのリクエストオブジェクト
  * @returns レスポンスオブジェクト
  */
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
 	const pathname = request.nextUrl.pathname;
 
-	// パスからロケールを取得
-	const pathnameLocale = getLocaleFromPath(pathname);
+	// 管理画面へのアクセスをチェック
+	if (pathname.startsWith("/admin")) {
+		const token = await getToken({
+			req: request,
+			secret: process.env.NEXTAUTH_SECRET,
+		});
 
-	// ロケールがURLに含まれている場合は何もしない
-	if (pathnameLocale) {
-		return NextResponse.next();
+		// 未認証の場合はログインページにリダイレクト
+		if (!token) {
+			const url = new URL("/login", request.url);
+			url.searchParams.set("callbackUrl", pathname);
+			return NextResponse.redirect(url);
+		}
 	}
 
-	// Accept-Languageヘッダーから言語を検出
-	const acceptLanguage = request.headers.get("accept-language") || "";
-	const detectedLocale = detectLocaleFromAcceptLanguage(acceptLanguage);
+	// ログインページと管理画面以外のページで言語ルーティングを適用
+	if (!pathname.startsWith("/admin") && !pathname.startsWith("/login") && !pathname.startsWith("/api")) {
+		// パスからロケールを取得
+		const pathnameLocale = getLocaleFromPath(pathname);
 
-	// ロケールを含むURLにリダイレクト
-	const newUrl = new URL(request.url);
-	newUrl.pathname = `/${detectedLocale}${pathname}`;
+		// ロケールがURLに含まれていない場合
+		if (!pathnameLocale) {
+			// Accept-Languageヘッダーから言語を検出
+			const acceptLanguage = request.headers.get("accept-language") || "";
+			const detectedLocale = detectLocaleFromAcceptLanguage(acceptLanguage);
 
-	return NextResponse.redirect(newUrl);
+			// ロケールを含むURLにリダイレクト
+			const newUrl = new URL(request.url);
+			newUrl.pathname = `/${detectedLocale}${pathname}`;
+
+			return NextResponse.redirect(newUrl);
+		}
+	}
+
+	return NextResponse.next();
 }
 
 /**

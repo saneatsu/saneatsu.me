@@ -6,9 +6,7 @@ const withNextIntl = createNextIntlPlugin("./src/shared/i18n/request.ts");
 const nextConfig = {
 	transpilePackages: ["@saneatsu/i18n", "@saneatsu/schemas"],
 	// OpenNext Cloudflare adapter configuration
-	experimental: {
-		serverComponentsExternalPackages: ["@libsql/client"],
-	},
+	serverExternalPackages: ["@libsql/client"],
 	// Ensure edge runtime compatibility
 	images: {
 		unoptimized: true,

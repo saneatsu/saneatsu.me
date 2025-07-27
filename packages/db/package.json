@@ -13,6 +13,10 @@
 		"./worker": {
 			"types": "./src/worker.ts",
 			"default": "./src/worker.ts"
+		},
+		"./src/schema": {
+			"types": "./src/schema/index.ts",
+			"default": "./src/schema/index.ts"
 		}
 	},
 	"scripts": {
