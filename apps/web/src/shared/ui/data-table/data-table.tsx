@@ -64,6 +64,10 @@ export interface DataTableProps<T> {
 	pagination?: DataTablePagination;
 	/** ページ変更時のコールバック */
 	onPageChange?: (page: number) => void;
+	/** ページサイズ変更時のコールバック */
+	onPageSizeChange?: (size: number) => void;
+	/** 利用可能なページサイズ */
+	pageSizeOptions?: number[];
 	/** ソート情報（省略可能） */
 	sort?: DataTableSort;
 	/** ソート変更時のコールバック */
@@ -85,6 +89,8 @@ export function DataTable<T>({
 	columns,
 	pagination,
 	onPageChange,
+	onPageSizeChange,
+	pageSizeOptions = [10, 20, 50, 100],
 	sort,
 	onSortChange,
 	loading = false,
@@ -126,15 +132,36 @@ export function DataTable<T>({
 
 		return (
 			<div className="flex items-center justify-between px-2 py-4">
-				<div className="text-sm text-muted-foreground">
-					{pagination.total > 0 ? (
-						<>
-							{(page - 1) * pagination.limit + 1}-
-							{Math.min(page * pagination.limit, pagination.total)} の{" "}
-							{pagination.total} 件
-						</>
-					) : (
-						"0 件"
+				<div className="flex items-center space-x-6 text-sm text-muted-foreground">
+					<div>
+						{pagination.total > 0 ? (
+							<>
+								{(page - 1) * pagination.limit + 1}-
+								{Math.min(page * pagination.limit, pagination.total)} の{" "}
+								{pagination.total} 件
+							</>
+						) : (
+							"0 件"
+						)}
+					</div>
+					{onPageSizeChange && (
+						<div className="flex items-center space-x-2">
+							<label htmlFor="page-size" className="text-sm">
+								表示件数:
+							</label>
+							<select
+								id="page-size"
+								value={pagination.limit}
+								onChange={(e) => onPageSizeChange(Number(e.target.value))}
+								className="h-8 w-[70px] rounded-md border border-input bg-background px-2 text-sm"
+							>
+								{pageSizeOptions.map((size) => (
+									<option key={size} value={size}>
+										{size}
+									</option>
+								))}
+							</select>
+						</div>
 					)}
 				</div>
 				<div className="flex items-center space-x-2">
