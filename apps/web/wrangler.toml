@@ -29,9 +29,9 @@ vars = { NEXT_PUBLIC_API_URL = "https://saneatsu-api-preview.w-saneatsu-e8c.work
 # Production environment
 [env.production]
 name = "saneatsu-web-prod"
-vars = { NEXT_PUBLIC_API_URL = "https://saneatsu-api-prod.w-saneatsu-e8c.workers.dev" }
+vars = { NEXT_PUBLIC_API_URL = "https://api.saneatsu.me" }
 
-# Custom domain configuration for production (temporarily disabled)
-# [[env.production.routes]]
-# pattern = "saneatsu.me/*"
-# zone_name = "saneatsu.me"
+# Custom domain configuration for production
+[[env.production.routes]]
+pattern = "saneatsu.me/*"
+zone_name = "saneatsu.me"
