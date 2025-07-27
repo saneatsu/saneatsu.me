@@ -15,6 +15,7 @@ import {
 	type DataTableSort,
 } from "../../../../shared/ui/data-table/data-table";
 import { ArticleActions } from "./article-actions";
+import { ArticlesFilter } from "./articles-filter";
 
 /**
  * 記事一覧テーブルコンポーネントのプロパティ
@@ -39,7 +40,7 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 		key: "createdAt",
 		direction: "desc",
 	});
-	const [filters, _setFilters] = useState<ArticleFilters>({
+	const [filters, setFilters] = useState<ArticleFilters>({
 		status: "all",
 		language: "all",
 		search: "",
@@ -60,6 +61,7 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 				limit: pagination.limit.toString(),
 				lang: filters.language === "all" ? undefined : filters.language,
 				status: filters.status === "all" ? undefined : filters.status,
+				search: filters.search.trim() || undefined,
 			});
 
 			setArticles(response.data);
@@ -70,7 +72,7 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 		} finally {
 			setLoading(false);
 		}
-	}, [pagination.page, pagination.limit, filters.language, filters.status]);
+	}, [pagination.page, pagination.limit, filters.language, filters.status, filters.search]);
 
 	/**
 	 * ページ変更時の処理
@@ -86,6 +88,15 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 		setSort(newSort);
 		// 実際の実装では、ソートに応じてAPIパラメータを変更する必要がある
 		// 今回は簡略化してクライアントサイドソートは行わない
+	};
+
+	/**
+	 * フィルター変更時の処理
+	 */
+	const handleFiltersChange = (newFilters: ArticleFilters) => {
+		setFilters(newFilters);
+		// フィルター変更時は1ページ目に戻る
+		setPagination((prev) => ({ ...prev, page: 1 }));
 	};
 
 	/**
@@ -180,7 +191,12 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 
 	return (
 		<div className="space-y-4">
-			{/* フィルター機能は後で実装予定 */}
+			{/* フィルター */}
+			<ArticlesFilter
+				filters={filters}
+				onFiltersChange={handleFiltersChange}
+				loading={loading}
+			/>
 
 			{/* データテーブル */}
 			<DataTable

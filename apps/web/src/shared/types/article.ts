@@ -98,11 +98,11 @@ export interface ArticleDetailQuery {
  */
 export interface ArticleFilters {
 	/** ステータス */
-	status?: ArticleStatus | "all";
+	status: ArticleStatus | "all";
 	/** 言語 */
-	language?: LanguageCode | "all";
+	language: LanguageCode | "all";
 	/** 検索キーワード */
-	search?: string;
+	search: string;
 }
 
 /**

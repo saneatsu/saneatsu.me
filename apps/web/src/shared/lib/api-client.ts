@@ -120,12 +120,13 @@ export async function fetchArticle(
  * 一時的に既存の /api/articles エンドポイントを使用
  */
 export async function fetchAllArticles(
-	query: ArticlesQuery & { status?: string } = {}
+	query: ArticlesQuery & { status?: string; search?: string } = {}
 ): Promise<ArticlesResponse> {
 	const queryString = buildQueryParams({
 		page: query.page,
 		limit: query.limit,
 		lang: query.lang,
+		search: query.search,
 		// status パラメータは一時的に除外（既存APIが対応していないため）
 		// status: query.status,
 	});
