@@ -18,10 +18,9 @@ import {
 	users,
 } from "./schema";
 
-// シード用のデータベース接続（直接作成）
+// シード用のデータベース接続（ローカルSQLite）
 const client = createClient({
-	url: process.env.TURSO_DATABASE_URL || "",
-	authToken: process.env.TURSO_AUTH_TOKEN || "",
+	url: "file:./local.db",
 });
 
 const db = drizzle(client, { schema });
@@ -110,7 +109,7 @@ function getTitleTemplates() {
 		"テスト駆動開発 {i}",
 		"DevOps プラクティス {i}",
 		"マイクロサービス設計 {i}",
-		
+
 		// ライフスタイル・ワークスタイル
 		"リモートワーク効率化 {i}",
 		"プログラマーの生活術 {i}",
@@ -122,7 +121,7 @@ function getTitleTemplates() {
 		"デジタルデトックス {i}",
 		"ワークライフバランス {i}",
 		"副業プログラミング {i}",
-		
+
 		// 開発・デザイン
 		"UI/UXデザイン原則 {i}",
 		"アクセシビリティ対応 {i}",
@@ -135,7 +134,7 @@ function getTitleTemplates() {
 		"タイポグラフィ選択 {i}",
 		"アニメーション実装 {i}",
 	];
-	
+
 	return templates;
 }
 
@@ -160,7 +159,7 @@ function getEnglishTitleTemplates() {
 		"Test-Driven Development {i}",
 		"DevOps Practices {i}",
 		"Microservices Architecture {i}",
-		
+
 		// Lifestyle & Work
 		"Remote Work Productivity {i}",
 		"Programmer's Lifestyle {i}",
@@ -172,7 +171,7 @@ function getEnglishTitleTemplates() {
 		"Digital Detox Guide {i}",
 		"Work-Life Balance {i}",
 		"Side Project Programming {i}",
-		
+
 		// Development & Design
 		"UI/UX Design Principles {i}",
 		"Accessibility Implementation {i}",
@@ -185,7 +184,7 @@ function getEnglishTitleTemplates() {
 		"Typography Selection {i}",
 		"Animation Implementation {i}",
 	];
-	
+
 	return templates;
 }
 
@@ -193,23 +192,23 @@ function getEnglishTitleTemplates() {
  * ランダムなコンテンツを生成
  */
 function generateRandomContent(title: string, isJapanese: boolean): string {
-	const sections = isJapanese 
+	const sections = isJapanese
 		? [
-			"## はじめに\n\nこの記事では、{title}について詳しく解説します。",
-			"## 基本的な概念\n\n基礎となる概念から理解を深めていきましょう。",
-			"## 実践的な例\n\n```typescript\n// サンプルコード\nconst example = 'Hello World';\nconsole.log(example);\n```",
-			"## ベストプラクティス\n\n- 適切な設計パターンを選択する\n- パフォーマンスを考慮した実装\n- 保守性の高いコードを書く",
-			"## まとめ\n\n{title}について学んだ内容をまとめると、効率的な開発が可能になります。"
-		]
+				"## はじめに\n\nこの記事では、{title}について詳しく解説します。",
+				"## 基本的な概念\n\n基礎となる概念から理解を深めていきましょう。",
+				"## 実践的な例\n\n```typescript\n// サンプルコード\nconst example = 'Hello World';\nconsole.log(example);\n```",
+				"## ベストプラクティス\n\n- 適切な設計パターンを選択する\n- パフォーマンスを考慮した実装\n- 保守性の高いコードを書く",
+				"## まとめ\n\n{title}について学んだ内容をまとめると、効率的な開発が可能になります。",
+			]
 		: [
-			"## Introduction\n\nThis article provides a comprehensive guide to {title}.",
-			"## Basic Concepts\n\nLet's start with the fundamental concepts you need to understand.",
-			"## Practical Examples\n\n```typescript\n// Sample code\nconst example = 'Hello World';\nconsole.log(example);\n```",
-			"## Best Practices\n\n- Choose appropriate design patterns\n- Consider performance in implementation\n- Write maintainable code",
-			"## Conclusion\n\nBy learning about {title}, you can achieve more efficient development."
-		];
+				"## Introduction\n\nThis article provides a comprehensive guide to {title}.",
+				"## Basic Concepts\n\nLet's start with the fundamental concepts you need to understand.",
+				"## Practical Examples\n\n```typescript\n// Sample code\nconst example = 'Hello World';\nconsole.log(example);\n```",
+				"## Best Practices\n\n- Choose appropriate design patterns\n- Consider performance in implementation\n- Write maintainable code",
+				"## Conclusion\n\nBy learning about {title}, you can achieve more efficient development.",
+			];
 
-	return `# ${title}\n\n${sections.map(section => section.replace("{title}", title.replace(/ \d+$/, ""))).join("\n\n")}`;
+	return `# ${title}\n\n${sections.map((section) => section.replace("{title}", title.replace(/ \d+$/, ""))).join("\n\n")}`;
 }
 
 /**
@@ -224,8 +223,8 @@ async function seed() {
 	console.log("🌱 200件シードデータの作成を開始します...");
 
 	try {
-		// すべてのテーブルをクリア（一時的にスキップ）
-		// await clearAllTables();
+		// すべてのテーブルをクリア
+		await clearAllTables();
 
 		// ユーザーを作成
 		const [user] = await db
@@ -253,7 +252,7 @@ async function seed() {
 
 		const tagData = await db
 			.insert(tags)
-			.values(tagSlugs.map(slug => ({ slug })))
+			.values(tagSlugs.map((slug) => ({ slug })))
 			.returning();
 
 		console.log("✅ タグを作成しました");
@@ -281,12 +280,12 @@ async function seed() {
 
 		// 200件の記事を生成
 		console.log("📝 200件の記事を生成中...");
-		
+
 		const articleDefinitions = [];
 		for (let i = 1; i <= 200; i++) {
 			const status = getRandomStatus();
 			articleDefinitions.push({
-				slug: `article-${i.toString().padStart(3, '0')}`,
+				slug: `article-${i.toString().padStart(3, "0")}`,
 				status,
 				publishedAt: status === "published" ? getRandomDate() : null,
 				cfImageId: getRandomImageId(),
@@ -303,26 +302,32 @@ async function seed() {
 
 		// 記事の翻訳を生成
 		console.log("🌐 記事の翻訳を生成中...");
-		
+
 		const titleTemplatesJa = getTitleTemplates();
 		const titleTemplatesEn = getEnglishTitleTemplates();
-		
+
 		const articleTranslationData = [];
-		
+
 		for (let i = 0; i < articleData.length; i++) {
 			const article = articleData[i];
-			
+
 			// 日本語版
-			const titleJa = titleTemplatesJa[i % titleTemplatesJa.length].replace("{i}", (i + 1).toString());
+			const titleJa = titleTemplatesJa[i % titleTemplatesJa.length].replace(
+				"{i}",
+				(i + 1).toString()
+			);
 			articleTranslationData.push({
 				articleId: article.id,
 				title: titleJa,
 				content: generateRandomContent(titleJa, true),
 				language: "ja" as const,
 			});
-			
+
 			// 英語版
-			const titleEn = titleTemplatesEn[i % titleTemplatesEn.length].replace("{i}", (i + 1).toString());
+			const titleEn = titleTemplatesEn[i % titleTemplatesEn.length].replace(
+				"{i}",
+				(i + 1).toString()
+			);
 			articleTranslationData.push({
 				articleId: article.id,
 				title: titleEn,
@@ -337,12 +342,15 @@ async function seed() {
 
 		// 記事とタグの関連付け
 		console.log("🔗 記事とタグを関連付け中...");
-		
+
 		const articleTagData = [];
-		const tagIds = tagData.map(tag => tag.id);
-		
+		const tagIds = tagData.map((tag) => tag.id);
+
 		for (const article of articleData) {
-			const randomTagIds = getRandomTagIds(tagIds, Math.floor(Math.random() * 3) + 1); // 1-3個のタグ
+			const randomTagIds = getRandomTagIds(
+				tagIds,
+				Math.floor(Math.random() * 3) + 1
+			); // 1-3個のタグ
 			for (const tagId of randomTagIds) {
 				articleTagData.push({
 					articleId: article.id,
@@ -352,7 +360,9 @@ async function seed() {
 		}
 
 		await db.insert(articleTags).values(articleTagData);
-		console.log(`✅ ${articleTagData.length}件の記事タグ関連付けを作成しました`);
+		console.log(
+			`✅ ${articleTagData.length}件の記事タグ関連付けを作成しました`
+		);
 
 		console.log("🎉 200件シードデータの作成が完了しました！");
 		console.log(`
@@ -364,7 +374,6 @@ async function seed() {
 - 記事翻訳: ${articleTranslationData.length}件
 - 記事タグ関連付け: ${articleTagData.length}件
 		`);
-
 	} catch (error) {
 		console.error("❌ エラーが発生しました:", error);
 		process.exit(1);
