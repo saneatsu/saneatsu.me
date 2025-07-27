@@ -21,7 +21,8 @@ export default defineConfig({
 			"dist/**",
 			"build/**",
 			"**/*.stories.{js,jsx,ts,tsx}",
-			"**/*.middleware.test.{js,ts,mjs,mts}"
+			"**/*.middleware.test.{js,ts,mjs,mts}",
+			"**/*.bak/**",
 		],
 	},
 	resolve: {
