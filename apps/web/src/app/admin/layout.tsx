@@ -1,13 +1,7 @@
-import { redirect } from "next/navigation";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { auth } from "../../shared/lib/auth";
-import {
-	Avatar,
-	AvatarFallback,
-	AvatarImage,
-} from "../../shared/ui/avatar/avatar";
-import { Button } from "../../shared/ui/button/button";
-import { Separator } from "../../shared/ui/separator/separator";
+import { UserInfo } from "./user-info";
 
 export default async function AdminLayout({
 	children,
@@ -48,38 +42,7 @@ export default async function AdminLayout({
 							タグ管理
 						</Link>
 					</nav>
-					<div className="absolute bottom-0 w-64 p-6">
-						<Separator className="mb-6" />
-						<div className="flex items-center space-x-3">
-							<Avatar className="w-10 h-10">
-								{session.user?.image && (
-									<AvatarImage
-										src={session.user.image}
-										alt={session.user.name || ""}
-									/>
-								)}
-								<AvatarFallback>
-									{session.user?.name?.[0] || "U"}
-								</AvatarFallback>
-							</Avatar>
-							<div>
-								<p className="text-sm font-medium text-foreground">
-									{session.user?.name}
-								</p>
-								<p className="text-xs text-muted-foreground">
-									{session.user?.email}
-								</p>
-							</div>
-						</div>
-						<Button
-							variant="ghost"
-							size="sm"
-							className="mt-4 w-full text-destructive hover:text-destructive hover:bg-destructive/10"
-							asChild
-						>
-							<Link href="/api/auth/signout">ログアウト</Link>
-						</Button>
-					</div>
+					<UserInfo user={session?.user} />
 				</aside>
 
 				{/* メインコンテンツ */}
