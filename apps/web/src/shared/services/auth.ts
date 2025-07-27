@@ -1,5 +1,5 @@
+import { type DrizzleClient, users } from "@saneatsu/db";
 import { eq } from "drizzle-orm";
-import { users, type DrizzleClient } from "@saneatsu/db";
 
 /**
  * Googleアカウント情報からユーザーを作成または更新する
@@ -20,7 +20,7 @@ export async function upsertUserFromGoogle(
 		name: string;
 		picture?: string;
 		sub: string; // Google固有のユーザーID
-	},
+	}
 ) {
 	const existingUsers = await db
 		.select()

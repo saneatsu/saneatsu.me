@@ -28,6 +28,6 @@ export const ALLOWED_ADMIN_EMAILS: readonly string[] = (() => {
  */
 export function isAdminEmail(email: string): boolean {
 	return ALLOWED_ADMIN_EMAILS.includes(
-		email as (typeof ALLOWED_ADMIN_EMAILS)[number],
+		email as (typeof ALLOWED_ADMIN_EMAILS)[number]
 	);
 }

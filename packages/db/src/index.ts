@@ -27,13 +27,11 @@ export {
 	tagTranslations,
 	users,
 } from "./schema";
-
+// 型定義のエクスポート
+export type { DrizzleClient } from "./types";
 // Cloudflare Workers用のエクスポート
 export {
 	createDatabaseClient,
 	type Database,
 	type DatabaseEnv,
 } from "./worker";
-
-// 型定義のエクスポート
-export type { DrizzleClient } from "./types";

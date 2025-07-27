@@ -25,15 +25,7 @@ export const authOptions = {
 		maxAge: 30 * 24 * 60 * 60, // 30日間
 	},
 	callbacks: {
-		async signIn({
-			user,
-			account,
-			profile,
-		}: {
-			user: User;
-			account: Account | null;
-			profile?: Profile;
-		}) {
+		async signIn({ user, account, profile }: any) {
 			try {
 				// Google認証の場合のみ処理
 				if (account?.provider === "google" && profile?.email) {
@@ -67,19 +59,13 @@ export const authOptions = {
 				return false; // 認証失敗
 			}
 		},
-		async jwt({
-			token,
-			user,
-		}: {
-			token: JWT;
-			user?: User;
-		}) {
+		async jwt({ token, user }: any) {
 			// 初回ログイン時にユーザー情報をトークンに追加
 			if (user) {
-				token.id = user.id;
-				token.email = user.email;
-				token.name = user.name;
-				token.picture = user.image;
+				token.id = user.id || "";
+				token.email = user.email || "";
+				token.name = user.name || "";
+				token.picture = user.image || "";
 			}
 			return token;
 		},

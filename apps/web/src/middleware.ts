@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { defaultLocale } from "./shared/config/locale-constants";
 import { getToken } from "next-auth/jwt";
+import { defaultLocale } from "./shared/config/locale-constants";
 
 const locales = ["ja", "en"] as const;
 
@@ -100,7 +100,11 @@ export async function middleware(request: NextRequest) {
 	}
 
 	// ログインページと管理画面以外のページで言語ルーティングを適用
-	if (!pathname.startsWith("/admin") && !pathname.startsWith("/login") && !pathname.startsWith("/api")) {
+	if (
+		!pathname.startsWith("/admin") &&
+		!pathname.startsWith("/login") &&
+		!pathname.startsWith("/api")
+	) {
 		// パスからロケールを取得
 		const pathnameLocale = getLocaleFromPath(pathname);
 

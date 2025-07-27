@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 import { auth } from "../../shared/lib/auth";
 
 export default async function AdminLayout({
