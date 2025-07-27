@@ -72,7 +72,13 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 		} finally {
 			setLoading(false);
 		}
-	}, [pagination.page, pagination.limit, filters.language, filters.status, filters.search]);
+	}, [
+		pagination.page,
+		pagination.limit,
+		filters.language,
+		filters.status,
+		filters.search,
+	]);
 
 	/**
 	 * ページ変更時の処理
