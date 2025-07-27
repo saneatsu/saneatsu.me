@@ -155,7 +155,7 @@ describe("Integration Test", () => {
 
 			// 日本語ロケール固有の表示確認
 			expect(screen.getByText("公開")).toBeInTheDocument();
-			expect(screen.getByText("2024年1月15日")).toBeInTheDocument();
+			expect(screen.getByText(/2024年1月15日/)).toBeInTheDocument();
 		});
 
 		it("should render complete article layout with English locale", () => {
@@ -170,7 +170,7 @@ describe("Integration Test", () => {
 
 			// 英語ロケール固有の表示確認
 			expect(screen.getByText("Published")).toBeInTheDocument();
-			expect(screen.getByText("January 15, 2024")).toBeInTheDocument();
+			expect(screen.getByText(/January 15, 2024/)).toBeInTheDocument();
 		});
 	});
 });

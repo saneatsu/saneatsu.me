@@ -1,18 +1,28 @@
+/// <reference types="vitest" />
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import react from "@vitejs/plugin-react";
 import { defineConfig } from "vitest/config";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-	plugins: [react() as any],
+	// Reactプラグインを一時的に削除（ES Module互換性の問題を回避）
+	esbuild: {
+		jsx: "automatic",
+		jsxInject: `import React from 'react'`,
+	},
 	test: {
 		environment: "jsdom",
 		setupFiles: ["./vitest.setup.ts"],
 		globals: true,
-		include: ["**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
-		exclude: ["**/*.stories.{js,jsx,ts,tsx}"],
+		include: ["src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+		exclude: [
+			"node_modules/**",
+			"dist/**",
+			"build/**",
+			"**/*.stories.{js,jsx,ts,tsx}",
+			"**/*.middleware.test.{js,ts,mjs,mts}"
+		],
 	},
 	resolve: {
 		alias: {

@@ -3,7 +3,7 @@
 
 # pre-commit フック設定
 pre-commit:
-  parallel: true
+  parallel: false  # テストが順番に実行されるようにする
   jobs:
     # Biomeでコードフォーマットとlintを実行
     - name: biome
@@ -14,6 +14,16 @@ pre-commit:
     - name: type-check
       run: pnpm type-check
       # 型チェックは全体を対象にするため、staged_filesは使わない
+    
+    # apps/backendのVitestを実行
+    - name: backend-test
+      run: cd apps/backend && pnpm test run
+      # test runでwatchモードを無効化
+    
+    # apps/webのVitestを実行
+    - name: web-test
+      run: cd apps/web && pnpm test run
+      # test runでwatchモードを無効化
 
 # commit-msg フック設定
 commit-msg:
