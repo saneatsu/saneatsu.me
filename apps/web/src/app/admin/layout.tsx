@@ -28,9 +28,7 @@ export default async function AdminLayout({
 					<div className="h-4 w-px bg-border mx-2" />
 					<BreadcrumbWrapper />
 				</header>
-				<div className="flex flex-1 flex-col gap-4 p-4">
-					{children}
-				</div>
+				<div className="flex flex-1 flex-col gap-4 p-4">{children}</div>
 			</SidebarInset>
 		</SidebarProvider>
 	);

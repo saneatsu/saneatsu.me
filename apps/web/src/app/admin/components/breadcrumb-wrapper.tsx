@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import React from "react";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -41,12 +41,12 @@ function generateBreadcrumbs(pathname: string) {
 	let currentPath = "";
 	for (let i = 0; i < paths.length; i++) {
 		currentPath += `/${paths[i]}`;
-		
+
 		// 管理画面のルート以外の場合
 		if (currentPath !== "/admin") {
 			const title = breadcrumbMap[currentPath] || paths[i];
 			const isCurrentPage = currentPath === pathname;
-			
+
 			breadcrumbs.push({
 				title,
 				href: currentPath,
