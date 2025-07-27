@@ -26,10 +26,10 @@ name = "saneatsu-api-preview"
 [env.production]
 name = "saneatsu-api-prod"
 
-# Custom domain configuration for production (temporarily disabled)
-# [[env.production.routes]]
-# pattern = "api.saneatsu.me/*"
-# zone_name = "saneatsu.me"
+# Custom domain configuration for production
+[[env.production.routes]]
+pattern = "api.saneatsu.me/*"
+zone_name = "saneatsu.me"
 
 # Build configuration
 [build]
