@@ -58,6 +58,9 @@ temp/
 apps/web/src/app/test/
 apps/web/src/shared/config/locale.ts
 
+# Misplaced files
+/src/
+
 # Incorrectly created shadcn/ui files
 ./src/
 
