@@ -1,10 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextResponse } from "next/server";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { middleware } from "./middleware";
 import {
 	createMockNextRequest,
-	expectRedirect,
 	expectNext,
+	expectRedirect,
 } from "./test-utils/middleware-test-utils";
 
 // NextAuth.jsのgetTokenをモック
@@ -42,26 +42,39 @@ describe("middleware", () => {
 			const request = createMockNextRequest("http://localhost:3333/admin");
 			const response = await middleware(request);
 
-			expectRedirect(response, "http://localhost:3333/login?callbackUrl=%2Fadmin");
+			expectRedirect(
+				response,
+				"http://localhost:3333/login?callbackUrl=%2Fadmin"
+			);
 		});
 
 		it("/admin/articlesへの未認証アクセスもリダイレクトされる", async () => {
 			mockGetToken.mockResolvedValue(null);
 
-			const request = createMockNextRequest("http://localhost:3333/admin/articles");
+			const request = createMockNextRequest(
+				"http://localhost:3333/admin/articles"
+			);
 			const response = await middleware(request);
 
-			expectRedirect(response, "http://localhost:3333/login?callbackUrl=%2Fadmin%2Farticles");
+			expectRedirect(
+				response,
+				"http://localhost:3333/login?callbackUrl=%2Fadmin%2Farticles"
+			);
 		});
 
 		it("認証チェック時にcallbackUrlが正しく設定される", async () => {
 			mockGetToken.mockResolvedValue(null);
 
-			const request = createMockNextRequest("http://localhost:3333/admin/tags?filter=tech");
+			const request = createMockNextRequest(
+				"http://localhost:3333/admin/tags?filter=tech"
+			);
 			const response = await middleware(request);
 
 			// callbackUrlにはパス名のみが含まれる（クエリパラメータは含まない）
-			expectRedirect(response, "http://localhost:3333/login?callbackUrl=%2Fadmin%2Ftags");
+			expectRedirect(
+				response,
+				"http://localhost:3333/login?callbackUrl=%2Fadmin%2Ftags"
+			);
 		});
 	});
 
@@ -99,7 +112,8 @@ describe("middleware", () => {
 		it("複数言語の優先度（q値）が正しく処理される", async () => {
 			const request = createMockNextRequest("http://localhost:3333/articles", {
 				headers: {
-					"accept-language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7,ja-JP;q=0.6,ja;q=0.5",
+					"accept-language":
+						"fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7,ja-JP;q=0.6,ja;q=0.5",
 				},
 			});
 			const response = await middleware(request);
@@ -120,7 +134,9 @@ describe("middleware", () => {
 		});
 
 		it("既にロケールが含まれている場合、リダイレクトされない", async () => {
-			const request = createMockNextRequest("http://localhost:3333/ja/articles");
+			const request = createMockNextRequest(
+				"http://localhost:3333/ja/articles"
+			);
 			const response = await middleware(request);
 
 			expectNext(response);
@@ -140,7 +156,9 @@ describe("middleware", () => {
 
 	describe("除外パスの処理", () => {
 		it("/apiパスは処理をスキップする", async () => {
-			const request = createMockNextRequest("http://localhost:3333/api/articles");
+			const request = createMockNextRequest(
+				"http://localhost:3333/api/articles"
+			);
 			const response = await middleware(request);
 
 			expectNext(response);
@@ -164,7 +182,9 @@ describe("middleware", () => {
 			// 認証済みの場合
 			mockGetToken.mockResolvedValue({ email: "test@example.com" });
 
-			const request = createMockNextRequest("http://localhost:3333/admin/login");
+			const request = createMockNextRequest(
+				"http://localhost:3333/admin/login"
+			);
 			const response = await middleware(request);
 
 			// /adminで始まるので認証チェックが行われる
@@ -177,7 +197,8 @@ describe("middleware", () => {
 		it("複雑なAccept-Languageヘッダーが正しく解析される", async () => {
 			const request = createMockNextRequest("http://localhost:3333/", {
 				headers: {
-					"accept-language": "ja-JP,ja;q=0.9,en-US;q=0.8,en;q=0.7,zh-CN;q=0.6,zh;q=0.5",
+					"accept-language":
+						"ja-JP,ja;q=0.9,en-US;q=0.8,en;q=0.7,zh-CN;q=0.6,zh;q=0.5",
 				},
 			});
 			const response = await middleware(request);

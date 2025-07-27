@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
-import { vi, expect } from "vitest";
+import { NextRequest, type NextResponse } from "next/server";
+import { expect, vi } from "vitest";
 
 /**
  * NextRequestのモックを作成する
@@ -17,7 +17,7 @@ export function createMockNextRequest(
 	}
 ): NextRequest {
 	const headers = new Headers(options?.headers);
-	
+
 	// cookiesの処理
 	if (options?.cookies) {
 		const cookieString = Object.entries(options.cookies)
