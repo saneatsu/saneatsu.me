@@ -1,12 +1,20 @@
 import { auth } from "../../shared/lib/auth";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../shared/ui/card/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "../../shared/ui/card/card";
 
 export default async function AdminDashboard() {
 	const session = await auth();
 
 	return (
 		<div>
-			<h2 className="text-3xl font-bold text-foreground mb-6">ダッシュボード</h2>
+			<h2 className="text-3xl font-bold text-foreground mb-6">
+				ダッシュボード
+			</h2>
 			<Card className="mb-8">
 				<CardHeader>
 					<CardTitle>ようこそ、{session?.user?.name || "管理者"}さん</CardTitle>

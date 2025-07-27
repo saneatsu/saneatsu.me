@@ -9,11 +9,13 @@ import { Button } from "../../shared/ui/button/button";
 import { Separator } from "../../shared/ui/separator/separator";
 
 interface UserInfoProps {
-	user: {
-		name?: string | null;
-		email?: string | null;
-		image?: string | null;
-	} | undefined;
+	user:
+		| {
+				name?: string | null;
+				email?: string | null;
+				image?: string | null;
+		  }
+		| undefined;
 }
 
 export function UserInfo({ user }: UserInfoProps) {
