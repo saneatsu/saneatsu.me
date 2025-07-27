@@ -28,6 +28,7 @@
 		"**/*.bak",
 		"**/*.bak/**",
 		"**/stories.bak/**",
-		"**/article-detail.bak/**"
+		"**/article-detail.bak/**",
+		"src/"
 	]
 }
