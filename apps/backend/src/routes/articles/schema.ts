@@ -89,6 +89,14 @@ export const ArticlesQuerySchema = z.object({
 		example: "ja",
 		description: "言語",
 	}),
+	status: z.enum(["published", "draft", "archived", "all"]).optional().openapi({
+		example: "published",
+		description: "記事のステータス",
+	}),
+	search: z.string().optional().openapi({
+		example: "検索キーワード",
+		description: "タイトル検索",
+	}),
 });
 
 /**
