@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useQueryStates, parseAsInteger, parseAsString } from "nuqs";
 import {
 	fetchAllArticles,
 	getErrorMessage,
@@ -29,10 +30,18 @@ interface ArticlesTableProps {
  * 記事一覧テーブルコンポーネント
  */
 export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
+	// URLクエリパラメータの管理
+	const [urlQuery, setUrlQuery] = useQueryStates({
+		page: parseAsInteger.withDefault(1),
+		limit: parseAsInteger.withDefault(50),
+		status: parseAsString.withDefault("all"),
+		search: parseAsString.withDefault(""),
+	});
+
 	const [articles, setArticles] = useState<Article[]>([]);
 	const [pagination, setPagination] = useState<DataTablePagination>({
-		page: 1,
-		limit: 10,
+		page: urlQuery.page,
+		limit: urlQuery.limit,
 		total: 0,
 		totalPages: 0,
 	});
@@ -41,9 +50,9 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 		direction: "desc",
 	});
 	const [filters, setFilters] = useState<ArticleFilters>({
-		status: "all",
+		status: urlQuery.status as ArticleFilters["status"],
 		language: "all",
-		search: "",
+		search: urlQuery.search,
 	});
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -85,6 +94,15 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 	 */
 	const handlePageChange = (page: number) => {
 		setPagination((prev) => ({ ...prev, page }));
+		setUrlQuery({ page });
+	};
+
+	/**
+	 * ページサイズ変更時の処理
+	 */
+	const handlePageSizeChange = (limit: number) => {
+		setPagination((prev) => ({ ...prev, limit, page: 1 }));
+		setUrlQuery({ limit, page: 1 });
 	};
 
 	/**
@@ -103,6 +121,11 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 		setFilters(newFilters);
 		// フィルター変更時は1ページ目に戻る
 		setPagination((prev) => ({ ...prev, page: 1 }));
+		setUrlQuery({
+			status: newFilters.status,
+			search: newFilters.search,
+			page: 1,
+		});
 	};
 
 	/**
@@ -210,6 +233,8 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 				columns={columns}
 				pagination={pagination}
 				onPageChange={handlePageChange}
+				onPageSizeChange={handlePageSizeChange}
+				pageSizeOptions={[50, 100, 150]}
 				sort={sort}
 				onSortChange={handleSortChange}
 				loading={loading}
