@@ -126,9 +126,8 @@ export async function fetchAllArticles(
 		page: query.page,
 		limit: query.limit,
 		lang: query.lang,
+		status: query.status,
 		search: query.search,
-		// status パラメータは一時的に除外（既存APIが対応していないため）
-		// status: query.status,
 	});
 
 	// 一時的に既存のAPIエンドポイントを使用
