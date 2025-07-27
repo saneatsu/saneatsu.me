@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { auth } from "../../shared/lib/auth";
 import {
 	Avatar,
@@ -28,24 +29,24 @@ export default async function AdminLayout({
 						<h1 className="text-2xl font-bold text-foreground">管理画面</h1>
 					</div>
 					<nav className="mt-6">
-						<a
+						<Link
 							href="/admin"
 							className="block px-6 py-3 text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
 						>
 							ダッシュボード
-						</a>
-						<a
+						</Link>
+						<Link
 							href="/admin/articles"
 							className="block px-6 py-3 text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
 						>
 							記事管理
-						</a>
-						<a
+						</Link>
+						<Link
 							href="/admin/tags"
 							className="block px-6 py-3 text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
 						>
 							タグ管理
-						</a>
+						</Link>
 					</nav>
 					<div className="absolute bottom-0 w-64 p-6">
 						<Separator className="mb-6" />
@@ -76,7 +77,7 @@ export default async function AdminLayout({
 							className="mt-4 w-full text-destructive hover:text-destructive hover:bg-destructive/10"
 							asChild
 						>
-							<a href="/api/auth/signout">ログアウト</a>
+							<Link href="/api/auth/signout">ログアウト</Link>
 						</Button>
 					</div>
 				</aside>
