@@ -61,9 +61,6 @@ apps/web/src/shared/config/locale.ts
 # Misplaced files
 /src/
 
-# Incorrectly created shadcn/ui files
-./src/
-
 # Database files
 *.db
 *.sqlite
