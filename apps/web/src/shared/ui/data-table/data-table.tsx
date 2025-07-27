@@ -4,6 +4,13 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import type * as React from "react";
 import { Button } from "../button/button";
 import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "../select/select";
+import {
 	Table,
 	TableBody,
 	TableCell,
@@ -146,21 +153,22 @@ export function DataTable<T>({
 					</div>
 					{onPageSizeChange && (
 						<div className="flex items-center space-x-2">
-							<label htmlFor="page-size" className="text-sm">
-								表示件数:
-							</label>
-							<select
-								id="page-size"
-								value={pagination.limit}
-								onChange={(e) => onPageSizeChange(Number(e.target.value))}
-								className="h-8 w-[70px] rounded-md border border-input bg-background px-2 text-sm"
+							<span className="text-sm">表示件数:</span>
+							<Select
+								value={pagination.limit.toString()}
+								onValueChange={(value) => onPageSizeChange(Number(value))}
 							>
-								{pageSizeOptions.map((size) => (
-									<option key={size} value={size}>
-										{size}
-									</option>
-								))}
-							</select>
+								<SelectTrigger className="h-8 w-[70px]">
+									<SelectValue />
+								</SelectTrigger>
+								<SelectContent>
+									{pageSizeOptions.map((size) => (
+										<SelectItem key={size} value={size.toString()}>
+											{size}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
 						</div>
 					)}
 				</div>
