@@ -1,6 +1,6 @@
 import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import { articles, articleTranslations, db } from "@saneatsu/db";
-import { and, eq } from "drizzle-orm";
+import { and, eq, like, sql } from "drizzle-orm";
 import {
 	ArticleDetailQuerySchema,
 	ArticleParamSchema,
@@ -57,6 +57,8 @@ articlesRoute.openapi(listArticlesRoute, (async (c: any) => {
 			page: pageStr = "1",
 			limit: limitStr = "10",
 			lang = "ja",
+			status = "published",
+			search,
 		} = c.req.valid("query");
 		const page = Number(pageStr);
 		const limit = Number(limitStr);
@@ -64,7 +66,23 @@ articlesRoute.openapi(listArticlesRoute, (async (c: any) => {
 		// ページネーションの計算
 		const offset = (page - 1) * limit;
 
-		// 記事一覧を取得（公開済みのみ）
+		// クエリ条件を構築
+		const conditions = [];
+
+		// ステータス条件
+		if (status !== "all") {
+			conditions.push(eq(articles.status, status));
+		}
+
+		// 言語条件
+		conditions.push(eq(articleTranslations.language, lang));
+
+		// 検索条件（SQLiteではlikeを使用）
+		if (search) {
+			conditions.push(like(articleTranslations.title, `%${search}%`));
+		}
+
+		// 記事一覧を取得
 		const articleList = await db
 			.select({
 				id: articles.id,
@@ -80,20 +98,28 @@ articlesRoute.openapi(listArticlesRoute, (async (c: any) => {
 				articleTranslations,
 				eq(articles.id, articleTranslations.articleId)
 			)
-			.where(
-				and(
-					eq(articles.status, "published"),
-					eq(articleTranslations.language, lang)
-				)
-			)
+			.where(and(...conditions))
 			.limit(limit)
 			.offset(offset);
 
 		// 総記事数を取得
+		const countConditions = [];
+		if (status !== "all") {
+			countConditions.push(eq(articles.status, status));
+		}
+		if (search) {
+			countConditions.push(eq(articleTranslations.language, lang));
+			countConditions.push(like(articleTranslations.title, `%${search}%`));
+		}
+
 		const totalCount = await db
 			.select({ count: articles.id })
 			.from(articles)
-			.where(eq(articles.status, "published"));
+			.leftJoin(
+				articleTranslations,
+				eq(articles.id, articleTranslations.articleId)
+			)
+			.where(countConditions.length > 0 ? and(...countConditions) : undefined);
 
 		return c.json({
 			data: articleList,
