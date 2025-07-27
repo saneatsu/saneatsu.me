@@ -1,5 +1,12 @@
-import { HomeView } from "../views";
+import { redirect } from "next/navigation";
+import { defaultLocale } from "../shared/config/locale-constants";
 
-export default function HomePage() {
-	return <HomeView />;
+/**
+ * ルートページ
+ * 
+ * @description
+ * デフォルトロケールのホームページへリダイレクトする。
+ */
+export default function RootPage() {
+	redirect(`/${defaultLocale}`);
 }
