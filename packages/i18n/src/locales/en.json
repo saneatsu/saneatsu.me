@@ -21,6 +21,20 @@
 		"ja": "日本語",
 		"en": "English"
 	},
+	"home": {
+		"hero": {
+			"title": "Saneatsu Blog",
+			"description": "Articles about programming, development tools, and daily insights on technology and lifestyle."
+		},
+		"articles": {
+			"title": "Latest Articles"
+		}
+	},
+	"footer": {
+		"copyright": "© {year} Saneatsu. All rights reserved.",
+		"privacy": "Privacy Policy",
+		"terms": "Terms of Service"
+	},
 	"loading": "Loading...",
 	"error": {
 		"title": "An error occurred",
