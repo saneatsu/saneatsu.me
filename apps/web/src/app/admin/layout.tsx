@@ -1,7 +1,12 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "../../shared/lib/auth";
-import { UserInfo } from "./user-info";
+import {
+	SidebarInset,
+	SidebarProvider,
+	SidebarTrigger,
+} from "../../shared/ui/sidebar/sidebar";
+import { AppSidebar } from "./components/app-sidebar";
+import { BreadcrumbWrapper } from "./components/breadcrumb-wrapper";
 
 export default async function AdminLayout({
 	children,
@@ -15,41 +20,18 @@ export default async function AdminLayout({
 	}
 
 	return (
-		<div className="min-h-screen bg-muted/40">
-			<div className="flex h-screen">
-				{/* サイドバー */}
-				<aside className="w-64 bg-card border-r shadow-sm">
-					<div className="p-6">
-						<h1 className="text-2xl font-bold text-foreground">管理画面</h1>
-					</div>
-					<nav className="mt-6">
-						<Link
-							href="/admin"
-							className="block px-6 py-3 text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
-						>
-							ダッシュボード
-						</Link>
-						<Link
-							href="/admin/articles"
-							className="block px-6 py-3 text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
-						>
-							記事管理
-						</Link>
-						<Link
-							href="/admin/tags"
-							className="block px-6 py-3 text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
-						>
-							タグ管理
-						</Link>
-					</nav>
-					<UserInfo user={session?.user} />
-				</aside>
-
-				{/* メインコンテンツ */}
-				<main className="flex-1 overflow-y-auto">
-					<div className="p-8">{children}</div>
-				</main>
-			</div>
-		</div>
+		<SidebarProvider>
+			<AppSidebar user={session?.user} />
+			<SidebarInset>
+				<header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+					<SidebarTrigger className="-ml-1" />
+					<div className="h-4 w-px bg-border mx-2" />
+					<BreadcrumbWrapper />
+				</header>
+				<div className="flex flex-1 flex-col gap-4 p-4">
+					{children}
+				</div>
+			</SidebarInset>
+		</SidebarProvider>
 	);
 }
