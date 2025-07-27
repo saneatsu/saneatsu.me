@@ -17,6 +17,7 @@
 		"lint:fix": "biome check --write .",
 		"test": "vitest",
 		"test:coverage": "vitest run --coverage",
+		"test:middleware": "vitest run --config vitest.config.middleware.ts",
 		"storybook": "storybook dev -p 6006",
 		"build-storybook": "storybook build"
 	},
