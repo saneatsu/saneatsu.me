@@ -1,6 +1,10 @@
 import { redirect } from "next/navigation";
 import { auth } from "../../shared/lib/auth";
-import { Avatar, AvatarImage, AvatarFallback } from "../../shared/ui/avatar/avatar";
+import {
+	Avatar,
+	AvatarFallback,
+	AvatarImage,
+} from "../../shared/ui/avatar/avatar";
 import { Button } from "../../shared/ui/button/button";
 import { Separator } from "../../shared/ui/separator/separator";
 
@@ -61,7 +65,9 @@ export default async function AdminLayout({
 								<p className="text-sm font-medium text-foreground">
 									{session.user?.name}
 								</p>
-								<p className="text-xs text-muted-foreground">{session.user?.email}</p>
+								<p className="text-xs text-muted-foreground">
+									{session.user?.email}
+								</p>
 							</div>
 						</div>
 						<Button
@@ -70,9 +76,7 @@ export default async function AdminLayout({
 							className="mt-4 w-full text-destructive hover:text-destructive hover:bg-destructive/10"
 							asChild
 						>
-							<a href="/api/auth/signout">
-								ログアウト
-							</a>
+							<a href="/api/auth/signout">ログアウト</a>
 						</Button>
 					</div>
 				</aside>
