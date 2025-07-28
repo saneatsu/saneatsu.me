@@ -1,5 +1,5 @@
-import { useTranslations } from "next-intl";
 import { Github, Mail, Twitter } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button } from "../../../shared/ui/button/button";
 import {
 	Card,
@@ -67,13 +67,17 @@ export function AboutView() {
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div>
-							<h4 className="font-semibold mb-2">{t("experience.current.title")}</h4>
+							<h4 className="font-semibold mb-2">
+								{t("experience.current.title")}
+							</h4>
 							<p className="text-sm text-muted-foreground">
 								{t("experience.current.description")}
 							</p>
 						</div>
 						<div>
-							<h4 className="font-semibold mb-2">{t("experience.focus.title")}</h4>
+							<h4 className="font-semibold mb-2">
+								{t("experience.focus.title")}
+							</h4>
 							<p className="text-sm text-muted-foreground">
 								{t("experience.focus.description")}
 							</p>
@@ -89,13 +93,17 @@ export function AboutView() {
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div>
-							<h4 className="font-semibold mb-2">{t("interests.tech.title")}</h4>
+							<h4 className="font-semibold mb-2">
+								{t("interests.tech.title")}
+							</h4>
 							<p className="text-sm text-muted-foreground">
 								{t("interests.tech.description")}
 							</p>
 						</div>
 						<div>
-							<h4 className="font-semibold mb-2">{t("interests.life.title")}</h4>
+							<h4 className="font-semibold mb-2">
+								{t("interests.life.title")}
+							</h4>
 							<p className="text-sm text-muted-foreground">
 								{t("interests.life.description")}
 							</p>

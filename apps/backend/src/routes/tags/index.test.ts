@@ -468,7 +468,12 @@ describe("GET /tags/:id", () => {
 
 	it("タグの詳細情報を正常に取得する", async () => {
 		// Arrange
-		const mockTag = { id: 1, slug: "javascript", createdAt: "2024-01-01", updatedAt: "2024-01-01" };
+		const mockTag = {
+			id: 1,
+			slug: "javascript",
+			createdAt: "2024-01-01",
+			updatedAt: "2024-01-01",
+		};
 		const mockTranslations = [
 			{ id: 1, name: "JavaScript", language: "ja", tagId: 1 },
 			{ id: 2, name: "JavaScript", language: "en", tagId: 1 },
@@ -556,7 +561,12 @@ describe("POST /tags", () => {
 			],
 		};
 
-		const mockCreatedTag = { id: 1, slug: "react", createdAt: "2024-01-01", updatedAt: "2024-01-01" };
+		const mockCreatedTag = {
+			id: 1,
+			slug: "react",
+			createdAt: "2024-01-01",
+			updatedAt: "2024-01-01",
+		};
 		const mockCreatedTranslations = [
 			{ id: 1, name: "React", language: "ja", tagId: 1 },
 			{ id: 2, name: "React", language: "en", tagId: 1 },
@@ -578,7 +588,8 @@ describe("POST /tags", () => {
 			const txMock = {
 				insert: vi.fn().mockReturnValue({
 					values: vi.fn().mockReturnValue({
-						returning: vi.fn()
+						returning: vi
+							.fn()
 							.mockResolvedValueOnce([mockCreatedTag]) // タグの作成
 							.mockResolvedValueOnce(mockCreatedTranslations), // 翻訳の作成
 					}),
@@ -663,8 +674,17 @@ describe("PUT /tags/:id", () => {
 			],
 		};
 
-		const existingTag = { id: 1, slug: "react", createdAt: "2024-01-01", updatedAt: "2024-01-01" };
-		const updatedTag = { ...existingTag, slug: "react-js", updatedAt: "2024-01-02" };
+		const existingTag = {
+			id: 1,
+			slug: "react",
+			createdAt: "2024-01-01",
+			updatedAt: "2024-01-01",
+		};
+		const updatedTag = {
+			...existingTag,
+			slug: "react-js",
+			updatedAt: "2024-01-02",
+		};
 		const updatedTranslations = [
 			{ id: 3, name: "React.js", language: "ja", tagId: 1 },
 			{ id: 4, name: "React.js", language: "en", tagId: 1 },
@@ -704,7 +724,8 @@ describe("PUT /tags/:id", () => {
 				insert: vi.fn().mockReturnValue({
 					values: vi.fn().mockResolvedValue(undefined),
 				}),
-				select: vi.fn()
+				select: vi
+					.fn()
 					.mockReturnValueOnce({
 						from: vi.fn().mockReturnValue({
 							where: vi.fn().mockReturnValue({
