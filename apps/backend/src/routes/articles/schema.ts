@@ -1,6 +1,24 @@
 import { z } from "@hono/zod-openapi";
 
 /**
+ * 記事詳細用のタグスキーマ
+ */
+export const ArticleTagSchema = z.object({
+	id: z.number().int().openapi({
+		example: 1,
+		description: "タグのユニークID",
+	}),
+	slug: z.string().openapi({
+		example: "javascript",
+		description: "タグのスラッグ",
+	}),
+	name: z.string().openapi({
+		example: "JavaScript",
+		description: "タグ名（現在の言語での名前）",
+	}),
+});
+
+/**
  * 記事オブジェクトのスキーマ（APIレスポンス用）
  * DBスキーマとは別にOpenAPI用の定義を行う
  */
@@ -36,6 +54,9 @@ export const ArticleSchema = z.object({
 	content: z.string().nullable().openapi({
 		example: "これは記事の本文です...",
 		description: "記事の本文",
+	}),
+	tags: z.array(ArticleTagSchema).openapi({
+		description: "記事に紐付いているタグ一覧",
 	}),
 });
 

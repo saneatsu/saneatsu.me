@@ -1,5 +1,12 @@
 import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
-import { articles, articleTranslations, db } from "@saneatsu/db";
+import {
+	articles,
+	articleTags,
+	articleTranslations,
+	db,
+	tags,
+	tagTranslations,
+} from "@saneatsu/db";
 import { and, eq, like, sql } from "drizzle-orm";
 import {
 	ArticleCreateResponseSchema,
@@ -208,7 +215,7 @@ articlesRoute.openapi(getArticleRoute, (async (c: any) => {
 		const { slug } = c.req.valid("param");
 		const { lang = "ja" } = c.req.valid("query");
 
-		// 記事詳細を取得
+		// 1. 記事詳細を取得
 		const article = await db
 			.select({
 				id: articles.id,
@@ -216,6 +223,7 @@ articlesRoute.openapi(getArticleRoute, (async (c: any) => {
 				cfImageId: articles.cfImageId,
 				status: articles.status,
 				publishedAt: articles.publishedAt,
+				updatedAt: articles.updatedAt,
 				title: articleTranslations.title,
 				content: articleTranslations.content,
 			})
@@ -241,8 +249,43 @@ articlesRoute.openapi(getArticleRoute, (async (c: any) => {
 			);
 		}
 
+		const articleData = article[0];
+
+		// 2. ステータスチェック - 公開済み以外は404
+		if (articleData.status !== "published") {
+			return c.json(
+				{
+					error: {
+						code: "NOT_FOUND",
+						message: "Article not found",
+					},
+				},
+				404
+			);
+		}
+
+		// 3. 記事に紐付いているタグ情報を取得
+		const relatedTags = await db
+			.select({
+				id: tags.id,
+				slug: tags.slug,
+				name: tagTranslations.name,
+			})
+			.from(articleTags)
+			.innerJoin(tags, eq(articleTags.tagId, tags.id))
+			.innerJoin(tagTranslations, eq(tags.id, tagTranslations.tagId))
+			.where(
+				and(
+					eq(articleTags.articleId, articleData.id),
+					eq(tagTranslations.language, lang)
+				)
+			);
+
 		return c.json({
-			data: article[0],
+			data: {
+				...articleData,
+				tags: relatedTags,
+			},
 		});
 	} catch (error) {
 		console.error("Error fetching article:", error);
@@ -436,8 +479,6 @@ articlesRoute.openapi(createArticleRoute, (async (c: any) => {
 			language: "ja",
 			title,
 			content,
-			createdAt: now,
-			updatedAt: now,
 		});
 
 		// TODO: 4. タグとの関連付けを実装（現在はスキップ）
