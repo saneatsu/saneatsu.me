@@ -1,3 +1,6 @@
+import type { ArticleTag } from "./tag";
+import type { PaginationInfo } from "./common";
+
 /**
  * 記事のステータス
  */
@@ -29,20 +32,8 @@ export interface Article {
 	title: string | null;
 	/** 記事の本文 */
 	content: string | null;
-}
-
-/**
- * ページネーション情報
- */
-export interface PaginationInfo {
-	/** 現在のページ番号 */
-	page: number;
-	/** 1ページあたりのアイテム数 */
-	limit: number;
-	/** 総アイテム数 */
-	total: number;
-	/** 総ページ数 */
-	totalPages: number;
+	/** 記事に紐付いているタグ一覧 */
+	tags: ArticleTag[];
 }
 
 /**
@@ -63,17 +54,6 @@ export interface ArticleResponse {
 	data: Article;
 }
 
-/**
- * エラーレスポンス
- */
-export interface ApiError {
-	error: {
-		/** エラーコード */
-		code: string;
-		/** エラーメッセージ */
-		message: string;
-	};
-}
 
 /**
  * 記事一覧取得のクエリパラメータ

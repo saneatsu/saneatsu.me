@@ -17,6 +17,19 @@ export interface Tag {
 }
 
 /**
+ * 記事詳細で使用するタグ情報
+ * バックエンドのArticleTagSchemaに対応
+ */
+export interface ArticleTag {
+	/** タグID */
+	id: number;
+	/** タグスラッグ */
+	slug: string;
+	/** タグ名（現在の言語での名前） */
+	name: string;
+}
+
+/**
  * タグ一覧のAPIレスポンス
  */
 export interface TagsResponse {
