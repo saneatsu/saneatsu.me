@@ -1,0 +1,1 @@
+export { AboutView } from "./ui/about-view";
