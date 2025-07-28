@@ -8,13 +8,13 @@ import {
 	tagTranslations,
 } from "@saneatsu/db";
 import {
-	dashboardStatsQuerySchema,
-	viewsTrendQuerySchema,
 	type DashboardOverviewResponse,
 	type DashboardStatsResponse,
+	dashboardStatsQuerySchema,
 	type ViewsTrendResponse,
+	viewsTrendQuerySchema,
 } from "@saneatsu/schemas/dist/dashboard";
-import { and, count, desc, eq, gte, sql, sum } from "drizzle-orm";
+import { and, count, desc, eq, gte, sql } from "drizzle-orm";
 
 // OpenAPI用のクエリスキーマ（packages/schemasをOpenAPI対応でラップ）
 const dashboardStatsOpenApiQuerySchema = z.object({
@@ -56,7 +56,7 @@ const articleStatsOpenApiSchema = z.object({
 	}),
 	thisMonthViews: z.number().int().openapi({
 		example: 350,
-		description: "今月の閲覧数", 
+		description: "今月の閲覧数",
 	}),
 });
 
@@ -65,18 +65,22 @@ const tagStatsOpenApiSchema = z.object({
 		example: 12,
 		description: "総タグ数",
 	}),
-	topTags: z.array(z.object({
-		id: z.number().int(),
-		slug: z.string(),
-		name: z.string(),
-		articleCount: z.number().int(),
-	})).openapi({
-		example: [
-			{ id: 1, slug: "javascript", name: "JavaScript", articleCount: 8 },
-			{ id: 2, slug: "react", name: "React", articleCount: 6 },
-		],
-		description: "記事数が多いタグトップ5",
-	}),
+	topTags: z
+		.array(
+			z.object({
+				id: z.number().int(),
+				slug: z.string(),
+				name: z.string(),
+				articleCount: z.number().int(),
+			})
+		)
+		.openapi({
+			example: [
+				{ id: 1, slug: "javascript", name: "JavaScript", articleCount: 8 },
+				{ id: 2, slug: "react", name: "React", articleCount: 6 },
+			],
+			description: "記事数が多いタグトップ5",
+		}),
 });
 
 const popularArticleOpenApiSchema = z.object({
@@ -121,14 +125,23 @@ const dashboardOverviewOpenApiResponseSchema = z.object({
 		articles: z.array(popularArticleOpenApiSchema).max(5),
 	}),
 	recentActivities: z.object({
-		activities: z.array(z.object({
-			id: z.number().int(),
-			type: z.enum(["article_created", "article_published", "article_updated", "tag_created"]),
-			description: z.string(),
-			entityId: z.number().int(),
-			entityTitle: z.string(),
-			createdAt: z.string().datetime(),
-		})).max(20),
+		activities: z
+			.array(
+				z.object({
+					id: z.number().int(),
+					type: z.enum([
+						"article_created",
+						"article_published",
+						"article_updated",
+						"tag_created",
+					]),
+					description: z.string(),
+					entityId: z.number().int(),
+					entityTitle: z.string(),
+					createdAt: z.string().datetime(),
+				})
+			)
+			.max(20),
 	}),
 	lastUpdated: z.string().datetime(),
 });
@@ -257,13 +270,24 @@ app.openapi(getDashboardStatsRoute, async (c) => {
 			thisMonthArticlesResult,
 		] = await Promise.all([
 			// 総記事数
-			db.select({ count: count() }).from(articles),
+			db
+				.select({ count: count() })
+				.from(articles),
 			// 公開済み記事数
-			db.select({ count: count() }).from(articles).where(eq(articles.status, "published")),
+			db
+				.select({ count: count() })
+				.from(articles)
+				.where(eq(articles.status, "published")),
 			// 下書き記事数
-			db.select({ count: count() }).from(articles).where(eq(articles.status, "draft")),
+			db
+				.select({ count: count() })
+				.from(articles)
+				.where(eq(articles.status, "draft")),
 			// アーカイブ記事数
-			db.select({ count: count() }).from(articles).where(eq(articles.status, "archived")),
+			db
+				.select({ count: count() })
+				.from(articles)
+				.where(eq(articles.status, "archived")),
 			// 今月の新規作成記事数
 			db
 				.select({ count: count() })
@@ -285,7 +309,9 @@ app.openapi(getDashboardStatsRoute, async (c) => {
 		// 2. タグ統計の取得
 		const [totalTagsResult, topTagsResult] = await Promise.all([
 			// 総タグ数
-			db.select({ count: count() }).from(tags),
+			db
+				.select({ count: count() })
+				.from(tags),
 			// 記事数が多いタグトップ5
 			db
 				.select({
@@ -313,7 +339,10 @@ app.openapi(getDashboardStatsRoute, async (c) => {
 				publishedAt: articles.publishedAt,
 			})
 			.from(articles)
-			.innerJoin(articleTranslations, eq(articles.id, articleTranslations.articleId))
+			.innerJoin(
+				articleTranslations,
+				eq(articles.id, articleTranslations.articleId)
+			)
 			.where(
 				and(
 					eq(articleTranslations.language, language),
@@ -381,7 +410,7 @@ app.openapi(getDashboardStatsRoute, async (c) => {
 	}
 });
 
-// @ts-ignore  
+// @ts-ignore
 app.openapi(getDashboardOverviewRoute, async (c) => {
 	try {
 		const query = c.req.valid("query");
@@ -398,9 +427,18 @@ app.openapi(getDashboardOverviewRoute, async (c) => {
 			archivedArticlesResult,
 		] = await Promise.all([
 			db.select({ count: count() }).from(articles),
-			db.select({ count: count() }).from(articles).where(eq(articles.status, "published")),
-			db.select({ count: count() }).from(articles).where(eq(articles.status, "draft")),
-			db.select({ count: count() }).from(articles).where(eq(articles.status, "archived")),
+			db
+				.select({ count: count() })
+				.from(articles)
+				.where(eq(articles.status, "published")),
+			db
+				.select({ count: count() })
+				.from(articles)
+				.where(eq(articles.status, "draft")),
+			db
+				.select({ count: count() })
+				.from(articles)
+				.where(eq(articles.status, "archived")),
 		]);
 
 		// 総閲覧数
@@ -438,7 +476,10 @@ app.openapi(getDashboardOverviewRoute, async (c) => {
 				publishedAt: articles.publishedAt,
 			})
 			.from(articles)
-			.innerJoin(articleTranslations, eq(articles.id, articleTranslations.articleId))
+			.innerJoin(
+				articleTranslations,
+				eq(articles.id, articleTranslations.articleId)
+			)
 			.where(
 				and(
 					eq(articleTranslations.language, language),
@@ -459,7 +500,10 @@ app.openapi(getDashboardOverviewRoute, async (c) => {
 				createdAt: articles.createdAt,
 			})
 			.from(articles)
-			.innerJoin(articleTranslations, eq(articles.id, articleTranslations.articleId))
+			.innerJoin(
+				articleTranslations,
+				eq(articles.id, articleTranslations.articleId)
+			)
 			.where(eq(articleTranslations.language, language))
 			.orderBy(desc(articles.createdAt))
 			.limit(20);
@@ -496,7 +540,7 @@ app.openapi(getDashboardOverviewRoute, async (c) => {
 			recentActivities: {
 				activities: recentActivitiesResult.map((activity) => ({
 					id: activity.id,
-					type: activity.type as any,
+					type: activity.type as "article_created" | "article_published" | "article_updated" | "tag_created",
 					description: activity.description as string,
 					entityId: activity.entityId,
 					entityTitle: activity.entityTitle,
@@ -561,7 +605,7 @@ app.openapi(getViewsTrendRoute, async (c) => {
 		const now = new Date();
 		const endDate = new Date(now);
 		endDate.setHours(23, 59, 59, 999);
-		
+
 		const startDate = new Date(now);
 		startDate.setDate(now.getDate() - days + 1);
 		startDate.setHours(0, 0, 0, 0);
@@ -589,54 +633,76 @@ app.openapi(getViewsTrendRoute, async (c) => {
 
 		// 日別閲覧数マップを初期化
 		const dateMap = new Map<string, number>();
-		
+
+		// 決定的なシードを使用してランダム性を制御
+		let randomSeed = 12345;
+		const seededRandom = () => {
+			randomSeed = (randomSeed * 9301 + 49297) % 233280;
+			return randomSeed / 233280;
+		};
+
 		// 各記事の閲覧数を公開日から現在まで分散
 		for (const article of articlesWithViews) {
 			if (!article.publishedAt || !article.viewCount) continue;
-			
+
 			const publishedDate = new Date(article.publishedAt);
 			const viewCount = Number(article.viewCount);
-			
+
 			// 公開日から現在までの日数を計算
-			const daysSincePublished = Math.floor((now.getTime() - publishedDate.getTime()) / (1000 * 60 * 60 * 24));
+			const daysSincePublished = Math.floor(
+				(now.getTime() - publishedDate.getTime()) / (1000 * 60 * 60 * 24)
+			);
 			if (daysSincePublished <= 0) continue;
-			
+
 			// 閲覧数を現実的に分散（公開直後がピーク、その後徐々に減少、時々上昇）
 			const distributionDate = new Date(publishedDate);
 			const baseViewsPerDay = viewCount / Math.max(daysSincePublished, 1);
-			
+
 			for (let day = 0; day < daysSincePublished; day++) {
-				const dateStr = distributionDate.toISOString().split('T')[0];
-				
+				const dateStr = distributionDate.toISOString().split("T")[0];
+
 				// 指定期間内の日付のみ処理
 				if (distributionDate >= startDate && distributionDate <= endDate) {
-					// 現実的な閲覧パターンを模擬
+					// 非常に保守的で安定した閲覧パターンを模擬
 					let dailyMultiplier = 1;
-					
-					// 公開直後（最初の7日）は多め
+
+					// 公開直後（最初の7日）は緩やかに減少
 					if (day < 7) {
-						dailyMultiplier = 2.5 - (day * 0.2);
+						dailyMultiplier = 1.5 - day * 0.05; // 1.5から1.15に緩やかに減少
 					}
-					// その後は徐々に減少するが、時々上昇
+					// その後は非常に小さな変動のみ
 					else {
-						const weeklyPattern = Math.sin(day / 7 * Math.PI) * 0.3 + 0.7; // 週単位の波
-						const randomVariation = 0.5 + Math.random(); // ランダムな変動
+						const weeklyPattern = Math.sin((day / 7) * Math.PI) * 0.1 + 0.9; // より緩やかな波
+						const randomVariation = 0.9 + seededRandom() * 0.2; // 0.9-1.1の狭い範囲
 						dailyMultiplier = weeklyPattern * randomVariation;
 					}
-					
+
 					// 週末効果（土日は少し減る）
 					const dayOfWeek = distributionDate.getDay();
 					if (dayOfWeek === 0 || dayOfWeek === 6) {
-						dailyMultiplier *= 0.7;
+						dailyMultiplier *= 0.9;
 					}
-					
-					const dailyViews = Math.max(1, Math.floor(baseViewsPerDay * dailyMultiplier));
-					
-					if (dailyViews > 0) {
-						dateMap.set(dateStr, (dateMap.get(dateStr) || 0) + dailyViews);
+
+					// 非常に厳格な異常値防止キャップ
+					dailyMultiplier = Math.min(dailyMultiplier, 1.8);
+					dailyMultiplier = Math.max(dailyMultiplier, 0.2);
+
+					const dailyViews = Math.max(
+						1,
+						Math.floor(baseViewsPerDay * dailyMultiplier)
+					);
+
+					// 1日あたりの閲覧数に絶対的な上限を設ける（異常なスパイクを完全に防ぐ）
+					const maxDailyViews = Math.min(dailyViews, 500);
+
+					if (maxDailyViews > 0) {
+						const currentDayViews = dateMap.get(dateStr) || 0;
+						// 1日の合計閲覧数が1000を超えないように制限
+						const newDayViews = Math.min(currentDayViews + maxDailyViews, 1000);
+						dateMap.set(dateStr, newDayViews);
 					}
 				}
-				
+
 				distributionDate.setDate(distributionDate.getDate() + 1);
 			}
 		}
@@ -645,9 +711,9 @@ app.openapi(getViewsTrendRoute, async (c) => {
 		const data: Array<{ date: string; views: number }> = [];
 		let totalViews = 0;
 		const currentDate = new Date(startDate);
-		
+
 		while (currentDate <= endDate) {
-			const dateStr = currentDate.toISOString().split('T')[0];
+			const dateStr = currentDate.toISOString().split("T")[0];
 			const views = dateMap.get(dateStr) || 0;
 			data.push({ date: dateStr, views });
 			totalViews += views;
@@ -656,8 +722,8 @@ app.openapi(getViewsTrendRoute, async (c) => {
 
 		const response: ViewsTrendResponse = {
 			data,
-			startDate: startDate.toISOString().split('T')[0],
-			endDate: endDate.toISOString().split('T')[0],
+			startDate: startDate.toISOString().split("T")[0],
+			endDate: endDate.toISOString().split("T")[0],
 			totalViews,
 			lastUpdated: now.toISOString(),
 		};
