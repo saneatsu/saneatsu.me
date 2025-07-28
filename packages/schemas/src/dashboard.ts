@@ -28,14 +28,16 @@ export const tagStatsSchema = z.object({
 	/** 総タグ数 */
 	totalTags: z.number().int().min(0),
 	/** 記事数が多いタグトップ5 */
-	topTags: z.array(
-		z.object({
-			id: idSchema,
-			slug: slugSchema,
-			name: z.string(),
-			articleCount: z.number().int().min(0),
-		})
-	).max(5),
+	topTags: z
+		.array(
+			z.object({
+				id: idSchema,
+				slug: slugSchema,
+				name: z.string(),
+				articleCount: z.number().int().min(0),
+			})
+		)
+		.max(5),
 });
 
 /** 人気記事スキーマ */
@@ -103,7 +105,12 @@ export const recentActivityItemSchema = z.object({
 	/** 活動ID */
 	id: idSchema,
 	/** 活動タイプ */
-	type: z.enum(["article_created", "article_published", "article_updated", "tag_created"]),
+	type: z.enum([
+		"article_created",
+		"article_published",
+		"article_updated",
+		"tag_created",
+	]),
 	/** 活動の説明 */
 	description: z.string(),
 	/** 関連記事またはタグのID */
@@ -144,7 +151,11 @@ export type PopularArticles = z.infer<typeof popularArticlesSchema>;
 export type DailyStats = z.infer<typeof dailyStatsSchema>;
 export type TimeSeriesStats = z.infer<typeof timeSeriesStatsSchema>;
 export type DashboardStatsQuery = z.infer<typeof dashboardStatsQuerySchema>;
-export type DashboardStatsResponse = z.infer<typeof dashboardStatsResponseSchema>;
+export type DashboardStatsResponse = z.infer<
+	typeof dashboardStatsResponseSchema
+>;
 export type RecentActivityItem = z.infer<typeof recentActivityItemSchema>;
 export type RecentActivities = z.infer<typeof recentActivitiesSchema>;
-export type DashboardOverviewResponse = z.infer<typeof dashboardOverviewResponseSchema>;
+export type DashboardOverviewResponse = z.infer<
+	typeof dashboardOverviewResponseSchema
+>;
