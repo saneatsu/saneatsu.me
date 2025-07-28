@@ -1,3 +1,5 @@
+"use client";
+
 import { Github, Mail, Twitter } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "../../../shared/ui/button/button";
