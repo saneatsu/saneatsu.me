@@ -119,31 +119,29 @@ export function AboutView() {
 					</CardHeader>
 					<CardContent>
 						<div className="flex flex-col space-y-3">
-							<Button variant="outline" className="justify-start" asChild>
-								<a
-									href="https://github.com/saneatsu"
-									target="_blank"
-									rel="noopener noreferrer"
-								>
-									<Github className="mr-2 h-4 w-4" />
-									GitHub
-								</a>
+							<Button
+								variant="outline"
+								className="justify-start"
+								onClick={() => window.open("https://github.com/saneatsu", "_blank")}
+							>
+								<Github className="mr-2 h-4 w-4" />
+								GitHub
 							</Button>
-							<Button variant="outline" className="justify-start" asChild>
-								<a
-									href="https://twitter.com/saneatsu"
-									target="_blank"
-									rel="noopener noreferrer"
-								>
-									<Twitter className="mr-2 h-4 w-4" />
-									Twitter
-								</a>
+							<Button
+								variant="outline"
+								className="justify-start"
+								onClick={() => window.open("https://twitter.com/saneatsu", "_blank")}
+							>
+								<Twitter className="mr-2 h-4 w-4" />
+								Twitter
 							</Button>
-							<Button variant="outline" className="justify-start" asChild>
-								<a href="mailto:hello@saneatsu.me">
-									<Mail className="mr-2 h-4 w-4" />
-									{t("contact.email")}
-								</a>
+							<Button
+								variant="outline"
+								className="justify-start"
+								onClick={() => window.open("mailto:hello@saneatsu.me")}
+							>
+								<Mail className="mr-2 h-4 w-4" />
+								{t("contact.email")}
 							</Button>
 						</div>
 					</CardContent>
