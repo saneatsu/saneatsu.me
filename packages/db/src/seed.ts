@@ -59,12 +59,14 @@ function getRandomStatus(): "published" | "draft" | "archived" {
 }
 
 /**
- * ランダムな公開日時を取得（2023年〜2024年）
+ * ランダムな公開日時を取得（現在から360日前まで）
  */
 function getRandomDate(): string | null {
-	const start = new Date("2023-01-01").getTime();
-	const end = new Date("2024-12-31").getTime();
-	const randomTime = start + Math.random() * (end - start);
+	const now = new Date();
+	const start = new Date(now);
+	start.setDate(now.getDate() - 360); // 360日前
+	
+	const randomTime = start.getTime() + Math.random() * (now.getTime() - start.getTime());
 	return new Date(randomTime).toISOString();
 }
 
@@ -221,10 +223,11 @@ function getRandomTagIds(tagIds: number[], count: number = 2): number[] {
 
 /**
  * ランダムな閲覧数を取得
- * 記事のステータスと人気度に応じて現実的な数値を生成
+ * 記事のステータス、人気度、公開日からの経過日数に応じて現実的な数値を生成
  */
 function getRandomViewCount(
 	status: "published" | "draft" | "archived",
+	publishedAt: string | null,
 	isPopular: boolean = false
 ): number {
 	// 下書き記事は閲覧数が少ない
@@ -232,26 +235,44 @@ function getRandomViewCount(
 		return Math.floor(Math.random() * 11); // 0-10回
 	}
 
+	// 公開日からの経過日数を計算
+	let daysFromPublished = 0;
+	if (publishedAt) {
+		const published = new Date(publishedAt);
+		const now = new Date();
+		daysFromPublished = Math.floor((now.getTime() - published.getTime()) / (1000 * 60 * 60 * 24));
+	}
+
+	// 経過日数による基本閲覧数の調整
+	// 公開から時間が経つほど多くの人に読まれる傾向
+	const daysFactor = Math.min(daysFromPublished / 30, 10); // 最大10倍まで
+
 	// 人気記事（全体の5%）
 	if (isPopular) {
-		return Math.floor(Math.random() * 1500) + 500; // 500-2000回
+		const baseViews = Math.floor(Math.random() * 1500) + 500; // 500-2000回
+		return Math.floor(baseViews * (1 + daysFactor * 0.5)); // 経過日数で最大1.5倍
 	}
 
 	// 通常の記事
 	if (status === "published") {
 		const rand = Math.random();
+		let baseViews = 0;
+		
 		if (rand < 0.25) {
 			// 25%: あまり読まれていない記事
-			return Math.floor(Math.random() * 51); // 0-50回
+			baseViews = Math.floor(Math.random() * 51); // 0-50回
 		} else {
 			// 75%: 普通の記事
-			return Math.floor(Math.random() * 490) + 10; // 10-500回
+			baseViews = Math.floor(Math.random() * 490) + 10; // 10-500回
 		}
+		
+		return Math.floor(baseViews * (1 + daysFactor * 0.3)); // 経過日数で最大1.3倍
 	}
 
 	// アーカイブ済み記事は過去に人気だった可能性
 	if (status === "archived") {
-		return Math.floor(Math.random() * 800) + 100; // 100-900回
+		const baseViews = Math.floor(Math.random() * 800) + 100; // 100-900回
+		return Math.floor(baseViews * (1 + daysFactor * 0.2)); // 経過日数で最大1.2倍
 	}
 
 	return 0; // fallback
@@ -259,6 +280,7 @@ function getRandomViewCount(
 
 async function seed() {
 	console.log("🌱 200件シードデータの作成を開始します...");
+	console.log("📅 記事の公開日: 現在から360日前まで");
 
 	try {
 		// すべてのテーブルをクリア
@@ -362,7 +384,7 @@ async function seed() {
 				"{i}",
 				(i + 1).toString()
 			);
-			const viewCountJa = getRandomViewCount(article.status, isPopular);
+			const viewCountJa = getRandomViewCount(article.status, article.publishedAt, isPopular);
 
 			articleTranslationData.push({
 				articleId: article.id,
@@ -377,7 +399,7 @@ async function seed() {
 				"{i}",
 				(i + 1).toString()
 			);
-			const viewCountEn = getRandomViewCount(article.status, isPopular);
+			const viewCountEn = getRandomViewCount(article.status, article.publishedAt, isPopular);
 
 			articleTranslationData.push({
 				articleId: article.id,
@@ -433,7 +455,7 @@ async function seed() {
 - ユーザー: 1件
 - タグ: ${tagData.length}件
 - タグ翻訳: ${tagTranslationData.length}件
-- 記事: ${articleData.length}件
+- 記事: ${articleData.length}件（公開日: 過去360日間に分散）
 - 記事翻訳: ${articleTranslationData.length}件（viewCount付き）
 - 記事タグ関連付け: ${articleTagData.length}件
 
@@ -441,6 +463,7 @@ async function seed() {
 - 合計閲覧数: ${totalViewCount.toLocaleString()}回
 - 平均閲覧数: ${avgViewCount}回/記事
 - 人気記事数: ${popularCount}件（全体の5%）
+- 閲覧数は公開日からの経過日数を考慮して生成
 		`);
 	} catch (error) {
 		console.error("❌ エラーが発生しました:", error);
