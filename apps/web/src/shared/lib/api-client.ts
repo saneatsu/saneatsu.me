@@ -12,12 +12,6 @@ import type {
 	SlugCheckResponse,
 } from "../types/article";
 import type { TagsQuery, TagsResponse } from "../types/tag";
-import type {
-	DashboardOverviewRequestQuery,
-	DashboardOverviewResponseData,
-	DashboardStatsRequestQuery,
-	DashboardStatsResponseData,
-} from "../types/dashboard";
 
 /**
  * APIのベースURL
@@ -224,33 +218,3 @@ export function getErrorMessage(error: unknown): string {
 	return "不明なエラーが発生しました";
 }
 
-/**
- * ダッシュボード統計データを取得
- */
-export async function fetchDashboardStats(
-	query: DashboardStatsRequestQuery = {}
-): Promise<DashboardStatsResponseData> {
-	const response = await client.api.dashboard.stats.$get({
-		query: {
-			language: query.language || "ja",
-			timeRange: query.timeRange || "30",
-		},
-	});
-
-	return handleApiResponse<DashboardStatsResponseData>(response);
-}
-
-/**
- * ダッシュボード概要データを取得
- */
-export async function fetchDashboardOverview(
-	query: DashboardOverviewRequestQuery = {}
-): Promise<DashboardOverviewResponseData> {
-	const response = await client.api.dashboard.overview.$get({
-		query: {
-			language: query.language || "ja",
-		},
-	});
-
-	return handleApiResponse<DashboardOverviewResponseData>(response);
-}
