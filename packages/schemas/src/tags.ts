@@ -39,8 +39,12 @@ export const createTagSchema = z.object({
 	slug: slugSchema,
 	translations: z
 		.array(createTagTranslationSchema)
-		.min(1, i18nMessage("validation.custom.tag.atLeastOneTranslation"))
-		.max(2, i18nMessage("validation.custom.tag.maxTranslations")),
+		.min(2, i18nMessage("validation.custom.tag.bothLanguagesRequired"))
+		.max(2, i18nMessage("validation.custom.tag.maxTranslations"))
+		.refine((translations) => {
+			const languages = translations.map((t) => t.language);
+			return languages.includes("ja") && languages.includes("en");
+		}, i18nMessage("validation.custom.tag.bothJaEnRequired").message),
 });
 
 /** タグ更新時の入力スキーマ */
@@ -53,6 +57,12 @@ export const updateTagSchema = z.object({
 				language: languageSchema,
 			})
 		)
+		.min(2, i18nMessage("validation.custom.tag.bothLanguagesRequired"))
+		.max(2, i18nMessage("validation.custom.tag.maxTranslations"))
+		.refine((translations) => {
+			const languages = translations.map((t) => t.language);
+			return languages.includes("ja") && languages.includes("en");
+		}, i18nMessage("validation.custom.tag.bothJaEnRequired").message)
 		.optional(),
 });
 
