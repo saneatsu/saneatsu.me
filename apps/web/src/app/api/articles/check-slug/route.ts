@@ -12,11 +12,11 @@ export async function GET(request: NextRequest) {
 
 		// バックエンドAPIにプロキシ
 		const response = await fetch(
-			`${BACKEND_API_URL}/articles${queryString ? `?${queryString}` : ""}`
+			`${BACKEND_API_URL}/articles/check-slug${queryString ? `?${queryString}` : ""}`
 		);
 
 		if (!response.ok) {
-			throw new Error(`Backend API returned ${response.status}`);
+			throw new Error(`Backend API error: ${response.status}`);
 		}
 
 		const data = await response.json();
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
 			{
 				error: {
 					code: "PROXY_ERROR",
-					message: "Failed to fetch articles from backend",
+					message: "Failed to check slug from backend",
 				},
 			},
 			{ status: 500 }

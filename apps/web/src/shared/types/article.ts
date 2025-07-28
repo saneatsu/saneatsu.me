@@ -23,6 +23,8 @@ export interface Article {
 	status: ArticleStatus;
 	/** 公開日時 */
 	publishedAt: string | null;
+	/** 更新日時 */
+	updatedAt?: string | null;
 	/** 記事のタイトル */
 	title: string | null;
 	/** 記事の本文 */
@@ -151,3 +153,49 @@ export const LANGUAGE_CONFIG: Record<LanguageCode, { label: string }> = {
 	ja: { label: "日本語" },
 	en: { label: "English" },
 };
+
+/**
+ * スラッグ重複チェックのクエリパラメータ
+ */
+export interface SlugCheckQuery {
+	/** チェックするスラッグ */
+	slug: string;
+}
+
+/**
+ * スラッグ重複チェックのレスポンス
+ */
+export interface SlugCheckResponse {
+	/** スラッグが利用可能かどうか */
+	available: boolean;
+	/** メッセージ（利用不可の場合など） */
+	message?: string;
+}
+
+/**
+ * 記事作成のリクエストデータ
+ */
+export interface ArticleCreateRequest {
+	/** 記事のタイトル */
+	title: string;
+	/** 記事のスラッグ */
+	slug: string;
+	/** 記事の本文（Markdown形式） */
+	content: string;
+	/** 記事のステータス */
+	status: ArticleStatus;
+	/** 公開日時（オプショナル） */
+	publishedAt?: string;
+	/** タグIDの配列 */
+	tagIds: number[];
+}
+
+/**
+ * 記事作成のレスポンス
+ */
+export interface ArticleCreateResponse {
+	/** 作成された記事データ */
+	data: Article;
+	/** 作成成功メッセージ */
+	message: string;
+}

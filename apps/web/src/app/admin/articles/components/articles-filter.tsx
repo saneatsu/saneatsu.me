@@ -21,7 +21,7 @@ interface ArticlesFilterProps {
 
 /**
  * 記事一覧のフィルター・検索コンポーネント
- * ステータス、言語、検索キーワードでの絞り込み機能を提供
+ * ステータス、検索キーワードでの絞り込み機能を提供
  */
 export function ArticlesFilter({
 	filters,
@@ -44,7 +44,7 @@ export function ArticlesFilter({
 	const resetFilters = () => {
 		onFiltersChange({
 			status: "all",
-			language: "all",
+			language: "ja", // 日本語固定
 			search: "",
 		});
 	};
@@ -55,7 +55,6 @@ export function ArticlesFilter({
 	const getActiveFilterCount = (): number => {
 		let count = 0;
 		if (filters.status !== "all") count++;
-		if (filters.language !== "all") count++;
 		if (filters.search.trim() !== "") count++;
 		return count;
 	};
@@ -85,7 +84,7 @@ export function ArticlesFilter({
 				)}
 			</div>
 
-			<div className="grid gap-4 md:grid-cols-3">
+			<div className="grid gap-4 md:grid-cols-2">
 				{/* ステータスフィルター */}
 				<div className="space-y-2">
 					<label
@@ -112,27 +111,6 @@ export function ArticlesFilter({
 					</select>
 				</div>
 
-				{/* 言語フィルター */}
-				<div className="space-y-2">
-					<label
-						htmlFor="language-filter"
-						className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-					>
-						言語
-					</label>
-					<select
-						id="language-filter"
-						value={filters.language}
-						onChange={(e) => updateFilter("language", e.target.value)}
-						disabled={loading}
-						className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-					>
-						<option value="all">全て</option>
-						<option value="ja">日本語</option>
-						<option value="en">English</option>
-					</select>
-				</div>
-
 				{/* 検索フィルター */}
 				<div className="space-y-2">
 					<label
@@ -146,7 +124,7 @@ export function ArticlesFilter({
 						<Input
 							id="search-filter"
 							type="text"
-							placeholder="タイトルで検索..."
+							placeholder="タイトル・内容で検索..."
 							value={filters.search}
 							onChange={(e) => updateFilter("search", e.target.value)}
 							disabled={loading}

@@ -1,7 +1,7 @@
 "use client";
 
+import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
 import { useCallback, useEffect, useState } from "react";
-import { useQueryStates, parseAsInteger, parseAsString } from "nuqs";
 import {
 	fetchAllArticles,
 	getErrorMessage,
@@ -51,7 +51,7 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 	});
 	const [filters, setFilters] = useState<ArticleFilters>({
 		status: urlQuery.status as ArticleFilters["status"],
-		language: "all",
+		language: "ja", // 常に日本語固定
 		search: urlQuery.search,
 	});
 	const [loading, setLoading] = useState(false);
@@ -68,7 +68,7 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 			const response = await fetchAllArticles({
 				page: pagination.page.toString(),
 				limit: pagination.limit.toString(),
-				lang: filters.language === "all" ? undefined : filters.language,
+				lang: "ja",
 				status: filters.status === "all" ? undefined : filters.status,
 				search: filters.search.trim() || undefined,
 			});
@@ -81,13 +81,7 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 		} finally {
 			setLoading(false);
 		}
-	}, [
-		pagination.page,
-		pagination.limit,
-		filters.language,
-		filters.status,
-		filters.search,
-	]);
+	}, [pagination.page, pagination.limit, filters.status, filters.search]);
 
 	/**
 	 * ページ変更時の処理
@@ -166,6 +160,27 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 	 */
 	const columns: DataTableColumn<Article>[] = [
 		{
+			key: "image",
+			label: "画像",
+			className: "w-[80px]",
+			render: (article) => (
+				<div className="relative h-12 w-12 overflow-hidden rounded-md bg-muted">
+					{article.cfImageId ? (
+						<div
+							className="h-full w-full bg-cover bg-center"
+							style={{
+								backgroundImage: `url(https://imagedelivery.net/placeholder/${article.cfImageId}/public)`,
+							}}
+						/>
+					) : (
+						<div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
+							NoImage
+						</div>
+					)}
+				</div>
+			),
+		},
+		{
 			key: "title",
 			label: "タイトル",
 			sortable: true,
@@ -180,6 +195,15 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 			),
 		},
 		{
+			key: "tags",
+			label: "タグ",
+			className: "w-[200px]",
+			render: (_article) => (
+				// タグ情報は現在のAPIレスポンスに含まれていないため、一時的に空にする
+				<div className="text-sm text-muted-foreground">-</div>
+			),
+		},
+		{
 			key: "status",
 			label: "ステータス",
 			sortable: true,
@@ -190,22 +214,14 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 			},
 		},
 		{
-			key: "language",
-			label: "言語",
-			className: "w-[100px]",
-			render: (_article) => {
-				// 記事の言語は article_translations から取得する必要があるが、
-				// 現在のAPIレスポンスには含まれていないため、仮で表示
-				return <Badge variant="outline">日本語</Badge>;
-			},
-		},
-		{
-			key: "publishedAt",
-			label: "公開日時",
+			key: "updatedAt",
+			label: "最終更新日",
 			sortable: true,
 			className: "w-[180px]",
 			render: (article) => (
-				<div className="text-sm">{formatDate(article.publishedAt)}</div>
+				<div className="text-sm">
+					{formatDate(article.updatedAt || article.publishedAt)}
+				</div>
 			),
 		},
 		{
