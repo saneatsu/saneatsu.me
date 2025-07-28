@@ -74,8 +74,17 @@ function Button({
 			disabled={disabled || loading}
 			{...props}
 		>
-			{loading && <Loader2 className="animate-spin" />}
-			{children}
+			{asChild ? (
+				// asChildの時は、Slotに単一の子要素を渡す必要があるため
+				// loadingアイコンは表示しない
+				children
+			) : (
+				// 通常のボタンの場合は、loadingアイコンを表示
+				<>
+					{loading && <Loader2 className="animate-spin" />}
+					{children}
+				</>
+			)}
 		</Comp>
 	);
 }
