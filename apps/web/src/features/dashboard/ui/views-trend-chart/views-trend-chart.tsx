@@ -1,9 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Calendar, TrendingUp } from "lucide-react";
-import { useViewsTrend } from "../../api/use-views-trend/use-views-trend";
+import { useState } from "react";
+import {
+	Bar,
+	BarChart,
+	ResponsiveContainer,
+	Tooltip,
+	XAxis,
+	YAxis,
+} from "recharts";
 import {
 	Card,
 	CardContent,
@@ -11,7 +17,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "../../../../shared/ui/card/card";
-import { 
+import {
 	Select,
 	SelectContent,
 	SelectItem,
@@ -19,6 +25,7 @@ import {
 	SelectValue,
 } from "../../../../shared/ui/select/select";
 import { Skeleton } from "../../../../shared/ui/skeleton/skeleton";
+import { useViewsTrend } from "../../api/use-views-trend/use-views-trend";
 
 /**
  * 閲覧数推移グラフコンポーネントのプロパティ
@@ -34,12 +41,14 @@ interface ViewsTrendChartProps {
  * 閲覧数推移を表示するグラフコンポーネント
  * 30日、90日、180日、360日の期間で切り替え可能
  */
-export function ViewsTrendChart({ 
-	language = "ja", 
-	initialDays = 30 
+export function ViewsTrendChart({
+	language = "ja",
+	initialDays = 30,
 }: ViewsTrendChartProps) {
-	const [selectedDays, setSelectedDays] = useState<30 | 90 | 180 | 360>(initialDays);
-	
+	const [selectedDays, setSelectedDays] = useState<30 | 90 | 180 | 360>(
+		initialDays
+	);
+
 	const { data, isLoading, error } = useViewsTrend({
 		language,
 		days: selectedDays,
@@ -112,8 +121,16 @@ export function ViewsTrendChart({
 	/**
 	 * カスタムツールチップ
 	 */
-	const CustomTooltip = ({ active, payload, label }: any) => {
-		if (active && payload && payload.length) {
+	const CustomTooltip = ({ 
+		active, 
+		payload, 
+		label 
+	}: {
+		active?: boolean;
+		payload?: Array<{ value: number }>;
+		label?: string;
+	}) => {
+		if (active && payload && payload.length && label) {
 			return (
 				<div className="bg-background border rounded-lg shadow-lg p-3">
 					<p className="text-sm font-medium">{formatDate(label)}</p>
@@ -134,12 +151,13 @@ export function ViewsTrendChart({
 						<TrendingUp className="h-5 w-5 text-primary" />
 						<div>
 							<CardTitle>閲覧数推移</CardTitle>
-							<CardDescription>
-								期間別の閲覧数トレンド
-							</CardDescription>
+							<CardDescription>期間別の閲覧数トレンド</CardDescription>
 						</div>
 					</div>
-					<Select value={selectedDays.toString()} onValueChange={handleDaysChange}>
+					<Select
+						value={selectedDays.toString()}
+						onValueChange={handleDaysChange}
+					>
 						<SelectTrigger className="w-[120px]">
 							<SelectValue />
 						</SelectTrigger>
@@ -174,7 +192,7 @@ export function ViewsTrendChart({
 						{/* グラフ */}
 						<div className="h-[300px]">
 							<ResponsiveContainer width="100%" height="100%">
-								<LineChart
+								<BarChart
 									data={data.data}
 									margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
 								>
@@ -194,15 +212,12 @@ export function ViewsTrendChart({
 										axisLine={false}
 									/>
 									<Tooltip content={<CustomTooltip />} />
-									<Line
-										type="monotone"
+									<Bar
 										dataKey="views"
-										stroke="hsl(var(--primary))"
-										strokeWidth={2}
-										dot={{ fill: "hsl(var(--primary))", r: 3 }}
-										activeDot={{ r: 5 }}
+										fill="hsl(var(--primary))"
+										radius={[2, 2, 0, 0]}
 									/>
-								</LineChart>
+								</BarChart>
 							</ResponsiveContainer>
 						</div>
 					</div>
