@@ -9,8 +9,10 @@ import {
 } from "@saneatsu/db";
 import {
 	dashboardStatsQuerySchema,
+	viewsTrendQuerySchema,
 	type DashboardOverviewResponse,
 	type DashboardStatsResponse,
+	type ViewsTrendResponse,
 } from "@saneatsu/schemas/dist/dashboard";
 import { and, count, desc, eq, gte, sql, sum } from "drizzle-orm";
 
@@ -129,6 +131,51 @@ const dashboardOverviewOpenApiResponseSchema = z.object({
 		})).max(20),
 	}),
 	lastUpdated: z.string().datetime(),
+});
+
+// 閲覧数推移用のOpenAPIスキーマ
+const viewsTrendOpenApiQuerySchema = z.object({
+	language: z.enum(["ja", "en"]).optional().openapi({
+		example: "ja",
+		description: "統計データを取得する言語",
+	}),
+	days: z.string().optional().openapi({
+		example: "30",
+		description: "表示期間（30、90、180、360日）",
+	}),
+});
+
+const viewsTrendDataPointOpenApiSchema = z.object({
+	date: z.string().openapi({
+		example: "2024-01-15",
+		description: "日付（YYYY-MM-DD形式）",
+	}),
+	views: z.number().int().openapi({
+		example: 156,
+		description: "その日の総閲覧数",
+	}),
+});
+
+const viewsTrendOpenApiResponseSchema = z.object({
+	data: z.array(viewsTrendDataPointOpenApiSchema).openapi({
+		description: "指定期間の日別閲覧数データ",
+	}),
+	startDate: z.string().openapi({
+		example: "2024-01-01",
+		description: "データの開始日",
+	}),
+	endDate: z.string().openapi({
+		example: "2024-01-31",
+		description: "データの終了日",
+	}),
+	totalViews: z.number().int().openapi({
+		example: 4567,
+		description: "期間中の総閲覧数",
+	}),
+	lastUpdated: z.string().datetime().openapi({
+		example: "2024-01-31T12:00:00Z",
+		description: "統計の最終更新日時",
+	}),
 });
 
 const app = new OpenAPIHono();
@@ -463,6 +510,119 @@ app.openapi(getDashboardOverviewRoute, async (c) => {
 	} catch (error) {
 		console.error("ダッシュボード概要取得エラー:", error);
 		return c.json({ error: "概要データの取得に失敗しました" }, 500);
+	}
+});
+
+/**
+ * 閲覧数推移取得のルート定義
+ */
+const getViewsTrendRoute = createRoute({
+	method: "get",
+	path: "/views-trend",
+	request: {
+		query: viewsTrendOpenApiQuerySchema,
+	},
+	responses: {
+		200: {
+			content: {
+				"application/json": {
+					schema: viewsTrendOpenApiResponseSchema,
+				},
+			},
+			description: "閲覧数推移データ",
+		},
+		500: {
+			content: {
+				"application/json": {
+					schema: z.object({
+						error: z.string(),
+					}),
+				},
+			},
+			description: "サーバーエラー",
+		},
+	},
+	tags: ["Dashboard"],
+	summary: "閲覧数推移取得",
+	description: "指定期間の日別閲覧数推移を取得します",
+});
+
+/**
+ * GET /api/dashboard/views-trend - 閲覧数推移取得
+ */
+// @ts-ignore
+app.openapi(getViewsTrendRoute, async (c) => {
+	try {
+		const query = c.req.valid("query");
+		const validated = viewsTrendQuerySchema.parse(query);
+		const { language, days } = validated;
+
+		// 現在日時と開始日の計算
+		const now = new Date();
+		const endDate = new Date(now);
+		endDate.setHours(23, 59, 59, 999);
+		
+		const startDate = new Date(now);
+		startDate.setDate(now.getDate() - days + 1);
+		startDate.setHours(0, 0, 0, 0);
+
+		// 日別の閲覧数を集計するクエリ
+		const dailyViewsResult = await db
+			.select({
+				date: sql`DATE(articles.published_at)`.as("date"),
+				views: sql`COALESCE(SUM(${articleTranslations.viewCount}), 0)`.as("views"),
+			})
+			.from(articles)
+			.innerJoin(
+				articleTranslations,
+				and(
+					eq(articles.id, articleTranslations.articleId),
+					eq(articleTranslations.language, language)
+				)
+			)
+			.where(
+				and(
+					eq(articles.status, "published"),
+					gte(articles.publishedAt, startDate.toISOString()),
+					sql`${articles.publishedAt} <= ${endDate.toISOString()}`
+				)
+			)
+			.groupBy(sql`DATE(articles.published_at)`)
+			.orderBy(sql`DATE(articles.published_at)`);
+
+		// 日付の配列を生成（データがない日も含む）
+		const dateMap = new Map<string, number>();
+		dailyViewsResult.forEach((result) => {
+			if (result.date) {
+				dateMap.set(result.date as string, Number(result.views));
+			}
+		});
+
+		// 完全な日付範囲のデータを生成
+		const data: Array<{ date: string; views: number }> = [];
+		let totalViews = 0;
+		const currentDate = new Date(startDate);
+		
+		while (currentDate <= endDate) {
+			const dateStr = currentDate.toISOString().split('T')[0];
+			const views = dateMap.get(dateStr) || 0;
+			data.push({ date: dateStr, views });
+			totalViews += views;
+			currentDate.setDate(currentDate.getDate() + 1);
+		}
+
+		const response: ViewsTrendResponse = {
+			data,
+			startDate: startDate.toISOString().split('T')[0],
+			endDate: endDate.toISOString().split('T')[0],
+			totalViews,
+			lastUpdated: now.toISOString(),
+		};
+
+		return c.json(response);
+	} catch (error) {
+		console.error("閲覧数推移取得エラー:", error);
+		return c.json({ error: "閲覧数推移データの取得に失敗しました" }, 500);
 	}
 });
 

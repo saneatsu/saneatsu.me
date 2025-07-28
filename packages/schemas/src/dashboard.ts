@@ -71,6 +71,43 @@ export const timeSeriesStatsSchema = z.object({
 	last30Days: z.array(dailyStatsSchema).max(30),
 });
 
+/** 閲覧数推移クエリパラメータ */
+export const viewsTrendQuerySchema = z.object({
+	/** 統計を取得する言語 */
+	language: languageSchema.default("ja"),
+	/** 表示期間（日数） */
+	days: z
+		.string()
+		.transform((val) => Number.parseInt(val, 10))
+		.refine(
+			(val) => !Number.isNaN(val) && [30, 90, 180, 360].includes(val),
+			"表示期間は30、90、180、360日のいずれかを指定してください"
+		)
+		.default("30"),
+});
+
+/** 閲覧数推移データポイント */
+export const viewsTrendDataPointSchema = z.object({
+	/** 日付（YYYY-MM-DD形式） */
+	date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+	/** その日の総閲覧数 */
+	views: z.number().int().min(0),
+});
+
+/** 閲覧数推移レスポンススキーマ */
+export const viewsTrendResponseSchema = z.object({
+	/** 指定期間の日別閲覧数データ */
+	data: z.array(viewsTrendDataPointSchema),
+	/** データの開始日 */
+	startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+	/** データの終了日 */
+	endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+	/** 期間中の総閲覧数 */
+	totalViews: z.number().int().min(0),
+	/** 統計の最終更新日時 */
+	lastUpdated: dateTimeSchema,
+});
+
 /** ダッシュボード統計クエリパラメータ */
 export const dashboardStatsQuerySchema = z.object({
 	/** 統計を取得する言語 */
@@ -159,3 +196,6 @@ export type RecentActivities = z.infer<typeof recentActivitiesSchema>;
 export type DashboardOverviewResponse = z.infer<
 	typeof dashboardOverviewResponseSchema
 >;
+export type ViewsTrendQuery = z.infer<typeof viewsTrendQuerySchema>;
+export type ViewsTrendDataPoint = z.infer<typeof viewsTrendDataPointSchema>;
+export type ViewsTrendResponse = z.infer<typeof viewsTrendResponseSchema>;
