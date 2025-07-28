@@ -1,10 +1,15 @@
 import type {
 	ApiError,
+	ArticleCreateRequest,
+	ArticleCreateResponse,
 	ArticleDetailQuery,
 	ArticleResponse,
 	ArticlesQuery,
 	ArticlesResponse,
+	SlugCheckQuery,
+	SlugCheckResponse,
 } from "../types/article";
+import type { TagsQuery, TagsResponse } from "../types/tag";
 
 /**
  * APIのベースURL
@@ -157,6 +162,44 @@ export async function deleteArticle(id: number): Promise<{ success: boolean }> {
 	return apiRequest<{ success: boolean }>(`/admin/articles/${id}`, {
 		method: "DELETE",
 	});
+}
+
+/**
+ * スラッグの重複をチェック
+ * 注意：この関数は管理画面専用です。実際の実装では認証が必要です。
+ */
+export async function checkSlugAvailability(
+	query: SlugCheckQuery
+): Promise<SlugCheckResponse> {
+	const queryString = buildQueryParams({
+		slug: query.slug,
+	});
+
+	return apiRequest<SlugCheckResponse>(`/articles/check-slug${queryString}`);
+}
+
+/**
+ * 記事を作成
+ * 注意：この関数は管理画面専用です。実際の実装では認証が必要です。
+ */
+export async function createArticle(
+	data: ArticleCreateRequest
+): Promise<ArticleCreateResponse> {
+	return apiRequest<ArticleCreateResponse>("/articles", {
+		method: "POST",
+		body: JSON.stringify(data),
+	});
+}
+
+/**
+ * タグ一覧を取得
+ */
+export async function fetchTags(query: TagsQuery = {}): Promise<TagsResponse> {
+	const queryString = buildQueryParams({
+		lang: query.lang || "ja",
+	});
+
+	return apiRequest<TagsResponse>(`/tags${queryString}`);
 }
 
 /**

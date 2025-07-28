@@ -1,6 +1,8 @@
 import type { NextRequest } from "next/server";
 
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3333";
+// バックエンドAPIのURL
+const BACKEND_API_URL =
+	process.env.BACKEND_API_URL || "http://localhost:8888/api";
 
 export async function GET(request: NextRequest) {
 	try {
@@ -8,8 +10,8 @@ export async function GET(request: NextRequest) {
 		const searchParams = request.nextUrl.searchParams;
 		const queryString = searchParams.toString();
 
-		// Forward the request to the backend server
-		const backendUrl = `${BACKEND_URL}/api/tags${queryString ? `?${queryString}` : ""}`;
+		// バックエンドAPIにプロキシ
+		const backendUrl = `${BACKEND_API_URL}/tags${queryString ? `?${queryString}` : ""}`;
 
 		const response = await fetch(backendUrl, {
 			method: "GET",
@@ -27,6 +29,14 @@ export async function GET(request: NextRequest) {
 		return Response.json(data);
 	} catch (error) {
 		console.error("API proxy error:", error);
-		return Response.json({ error: "Failed to fetch tags" }, { status: 500 });
+		return Response.json(
+			{
+				error: {
+					code: "PROXY_ERROR",
+					message: "Failed to fetch tags from backend",
+				},
+			},
+			{ status: 500 }
+		);
 	}
 }
