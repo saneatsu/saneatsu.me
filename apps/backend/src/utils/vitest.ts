@@ -41,6 +41,7 @@ export const createMockArticleTranslation = (
 		language?: "ja" | "en";
 		title?: string;
 		content?: string;
+		viewCount?: number;
 		createdAt?: string;
 		updatedAt?: string;
 	}> = {}
@@ -50,6 +51,7 @@ export const createMockArticleTranslation = (
 	language: "ja",
 	title: "テスト記事",
 	content: "これはテスト記事の内容です。",
+	viewCount: 0,
 	createdAt: "2024-01-01T00:00:00.000Z",
 	updatedAt: "2024-01-01T00:00:00.000Z",
 	...overrides,
@@ -112,5 +114,6 @@ export const createMockArticleWithTranslation = (
 		...article,
 		title: translation.title,
 		content: translation.content,
+		viewCount: translation.viewCount,
 	};
 };

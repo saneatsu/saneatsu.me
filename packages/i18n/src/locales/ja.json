@@ -103,6 +103,7 @@
 	},
 	"article": {
 		"publishedAt": "公開日",
+		"viewCount": "{count} 回閲覧",
 		"readMore": "続きを読む",
 		"backToList": "記事一覧に戻る",
 		"notFound": {

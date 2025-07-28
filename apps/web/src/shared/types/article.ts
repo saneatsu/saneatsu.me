@@ -1,5 +1,5 @@
-import type { ArticleTag } from "./tag";
 import type { PaginationInfo } from "./common";
+import type { ArticleTag } from "./tag";
 
 /**
  * 記事のステータス
@@ -32,6 +32,8 @@ export interface Article {
 	title: string | null;
 	/** 記事の本文 */
 	content: string | null;
+	/** 記事の閲覧数（言語ごと） */
+	viewCount: number;
 	/** 記事に紐付いているタグ一覧 */
 	tags: ArticleTag[];
 }
@@ -53,7 +55,6 @@ export interface ArticleResponse {
 	/** 記事データ */
 	data: Article;
 }
-
 
 /**
  * 記事一覧取得のクエリパラメータ

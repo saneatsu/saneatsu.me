@@ -75,7 +75,7 @@ describe("GET /articles", () => {
 
 		// Act
 		const client = testClient(articlesRoute) as any;
-		const res = await client.$get({
+		const res = await client.index.$get({
 			query: {},
 		});
 
@@ -129,7 +129,8 @@ describe("GET /articles", () => {
 			.mockReturnValueOnce(countMock);
 
 		// Act
-		const res = await (testClient(articlesRoute) as any).$get({
+		const client = testClient(articlesRoute) as any;
+		const res = await client.index.$get({
 			query: {
 				page: "2",
 				limit: "5",
@@ -188,7 +189,8 @@ describe("GET /articles", () => {
 			.mockReturnValueOnce(countMock);
 
 		// Act
-		const res = await (testClient(articlesRoute) as any).$get({
+		const client = testClient(articlesRoute) as any;
+		const res = await client.index.$get({
 			query: {
 				lang: "en",
 			},
@@ -229,7 +231,7 @@ describe("GET /articles", () => {
 
 		// Act
 		const client = testClient(articlesRoute) as any;
-		const res = await client.$get({
+		const res = await client.index.$get({
 			query: {},
 		});
 
@@ -283,7 +285,8 @@ describe("GET /articles/:slug", () => {
 		mockDb.select.mockReturnValue(articleMock);
 
 		// Act
-		const res = await (testClient(articlesRoute) as any)["test-article"].$get({
+		const client = testClient(articlesRoute) as any;
+		const res = await client["test-article"].$get({
 			query: {},
 		});
 
@@ -313,9 +316,8 @@ describe("GET /articles/:slug", () => {
 		mockDb.select.mockReturnValue(articleMock);
 
 		// Act
-		const res = await (testClient(articlesRoute) as any)[
-			"non-existent-article"
-		].$get({
+		const client = testClient(articlesRoute) as any;
+		const res = await client["non-existent-article"].$get({
 			query: {},
 		});
 
@@ -360,7 +362,8 @@ describe("GET /articles/:slug", () => {
 		mockDb.select.mockReturnValue(articleMock);
 
 		// Act
-		const res = await (testClient(articlesRoute) as any)["test-article"].$get({
+		const client = testClient(articlesRoute) as any;
+		const res = await client["test-article"].$get({
 			query: {
 				lang: "en",
 			},
@@ -419,7 +422,8 @@ describe("GET /articles/:slug", () => {
 			.mockReturnValueOnce(tagsMock); // タグ取得
 
 		// Act
-		const res = await (testClient(articlesRoute) as any)["test-article"].$get({
+		const client = testClient(articlesRoute) as any;
+		const res = await client["test-article"].$get({
 			query: { lang: "ja" },
 		});
 
@@ -465,7 +469,8 @@ describe("GET /articles/:slug", () => {
 		mockDb.select.mockReturnValue(articleMock);
 
 		// Act
-		const res = await (testClient(articlesRoute) as any)["draft-article"].$get({
+		const client = testClient(articlesRoute) as any;
+		const res = await client["draft-article"].$get({
 			query: {},
 		});
 
@@ -510,7 +515,8 @@ describe("GET /articles/:slug", () => {
 		mockDb.select.mockReturnValue(articleMock);
 
 		// Act
-		const res = await (testClient(articlesRoute) as any)["archived-article"].$get({
+		const client = testClient(articlesRoute) as any;
+		const res = await client["archived-article"].$get({
 			query: {},
 		});
 
@@ -524,5 +530,137 @@ describe("GET /articles/:slug", () => {
 				message: "Article not found",
 			},
 		});
+	});
+
+	it("記事詳細取得時にview_countが含まれる", async () => {
+		// Arrange
+		const { mockDb } = setupDbMocks();
+
+		const mockArticle = createMockArticleWithTranslation({
+			article: {
+				id: "article1",
+				slug: "test-article",
+				status: "published",
+			},
+			translation: {
+				title: "テスト記事",
+				content: "これはテスト記事の内容です。",
+				viewCount: 42,
+			},
+		});
+
+		const articleMock = {
+			from: vi.fn().mockReturnValue({
+				leftJoin: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([mockArticle]),
+					}),
+				}),
+			}),
+		};
+
+		// Update関数のモック（view_countインクリメント用）
+		const updateMock = {
+			set: vi.fn().mockReturnValue({
+				where: vi.fn().mockResolvedValue({}),
+			}),
+		};
+		mockDb.update = vi.fn().mockReturnValue(updateMock);
+
+		// タグ検索のモック
+		const tagMock = {
+			from: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
+					innerJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockResolvedValue([]),
+					}),
+				}),
+			}),
+		};
+
+		mockDb.select
+			.mockReturnValueOnce(articleMock) // 記事取得
+			.mockReturnValueOnce(tagMock); // タグ取得
+
+		// Act
+		const client = testClient(articlesRoute) as any;
+		const res = await client["test-article"].$get({
+			query: {},
+		});
+
+		// Assert
+		expect(res.status).toBe(200);
+		const data = await res.json();
+		expect(data.data.viewCount).toBe(43); // 42 + 1（インクリメント後）
+		expect(mockDb.update).toHaveBeenCalled(); // updateが呼ばれたことを確認
+	});
+
+	it("記事一覧取得時にview_countが含まれる", async () => {
+		// Arrange
+		const { mockDb } = setupDbMocks();
+
+		const mockArticles = [
+			createMockArticleWithTranslation({
+				article: {
+					id: "article1",
+					slug: "test-article-1",
+					status: "published",
+				},
+				translation: {
+					title: "テスト記事1",
+					content: "これはテスト記事1の内容です。",
+					viewCount: 25,
+				},
+			}),
+			createMockArticleWithTranslation({
+				article: {
+					id: "article2",
+					slug: "test-article-2",
+					status: "published",
+				},
+				translation: {
+					title: "テスト記事2",
+					content: "これはテスト記事2の内容です。",
+					viewCount: 100,
+				},
+			}),
+		];
+
+		const articleListMock = {
+			from: vi.fn().mockReturnValue({
+				leftJoin: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockReturnValue({
+							offset: vi.fn().mockResolvedValue(mockArticles),
+						}),
+					}),
+				}),
+			}),
+		};
+
+		const countMock = {
+			from: vi.fn().mockReturnValue({
+				leftJoin: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue([{ count: 2 }]),
+				}),
+			}),
+		};
+
+		mockDb.select
+			.mockReturnValueOnce(articleListMock) // 記事一覧取得
+			.mockReturnValueOnce(countMock); // カウント取得
+
+		// Act
+		const client = testClient(articlesRoute) as any;
+		const res = await client.index.$get({
+			query: {},
+		});
+
+		// Assert
+		expect(res.status).toBe(200);
+		const data = await res.json();
+		expect(data.data).toHaveLength(2);
+		expect(data.data[0].viewCount).toBe(25);
+		expect(data.data[1].viewCount).toBe(100);
 	});
 });

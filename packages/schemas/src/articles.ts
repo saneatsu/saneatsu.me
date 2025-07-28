@@ -26,6 +26,7 @@ export const articleTranslationSchema = z.object({
 		.max(50000, i18nMessage("validation.custom.article.contentTooLong")),
 	language: languageSchema,
 	articleId: idSchema,
+	viewCount: z.number().int().min(0).default(0),
 });
 
 /** 記事翻訳作成時の入力スキーマ */
@@ -86,6 +87,18 @@ export const updateArticleSchema = z.object({
 		.optional(),
 });
 
+/** ソート可能なカラム */
+export const sortableColumnsSchema = z.enum([
+	"createdAt",
+	"updatedAt",
+	"publishedAt",
+	"title",
+	"viewCount",
+]);
+
+/** ソート順 */
+export const sortOrderSchema = z.enum(["asc", "desc"]);
+
 /** 記事一覧取得時のクエリパラメータ */
 export const articleListQuerySchema = z.object({
 	page: z
@@ -111,6 +124,9 @@ export const articleListQuerySchema = z.object({
 		.refine((val) => !Number.isNaN(val) && val > 0)
 		.optional(),
 	language: languageSchema.default("ja"),
+	sortBy: sortableColumnsSchema.optional(),
+	sortOrder: sortOrderSchema.default("desc"),
+	search: z.string().optional(),
 });
 
 /** タグ付き記事レスポンス（翻訳含む） */
@@ -147,6 +163,8 @@ export type UpdateArticleTranslationInput = z.infer<
 export type Article = z.infer<typeof articleSchema>;
 export type CreateArticleInput = z.infer<typeof createArticleSchema>;
 export type UpdateArticleInput = z.infer<typeof updateArticleSchema>;
+export type SortableColumns = z.infer<typeof sortableColumnsSchema>;
+export type SortOrder = z.infer<typeof sortOrderSchema>;
 export type ArticleListQuery = z.infer<typeof articleListQuerySchema>;
 export type ArticleWithTranslationsAndTags = z.infer<
 	typeof articleWithTranslationsAndTagsSchema

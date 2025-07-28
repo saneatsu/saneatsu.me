@@ -103,6 +103,7 @@
 	},
 	"article": {
 		"publishedAt": "Published",
+		"viewCount": "Viewed {count} times",
 		"readMore": "Read more",
 		"backToList": "Back to articles",
 		"notFound": {

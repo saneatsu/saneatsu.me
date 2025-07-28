@@ -55,6 +55,10 @@ export const ArticleSchema = z.object({
 		example: "これは記事の本文です...",
 		description: "記事の本文",
 	}),
+	viewCount: z.number().int().openapi({
+		example: 127,
+		description: "記事の閲覧数（言語ごと）",
+	}),
 	tags: z.array(ArticleTagSchema).openapi({
 		description: "記事に紐付いているタグ一覧",
 	}),

@@ -58,6 +58,7 @@ useEffect(() => {
 ## まとめ
 
 React Hooksを使って、より良いReactアプリケーションを構築しましょう！`,
+	viewCount: 127,
 	tags: [
 		{ id: 1, slug: "react", name: "React" },
 		{ id: 2, slug: "javascript", name: "JavaScript" },
@@ -137,7 +138,7 @@ export const 記事ヘッダーテスト: Story = {
 		locale: "ja",
 	},
 	parameters: {},
-	play: async ({ canvasElement }: any) => {
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		const canvas = within(canvasElement);
 
 		// タイトルの確認
@@ -171,7 +172,7 @@ export const 英語ロケールテスト: Story = {
 		locale: "en",
 	},
 	parameters: {},
-	play: async ({ canvasElement }: any) => {
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		const canvas = within(canvasElement);
 
 		// 英語での公開日表示確認
@@ -200,7 +201,7 @@ export const 下書き記事テスト: Story = {
 		locale: "ja",
 	},
 	parameters: {},
-	play: async ({ canvasElement }: any) => {
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		const canvas = within(canvasElement);
 
 		// 下書きステータスバッジの確認
@@ -224,7 +225,7 @@ export const Markdownレンダリングテスト: Story = {
 		locale: "ja",
 	},
 	parameters: {},
-	play: async ({ canvasElement }: any) => {
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		const canvas = within(canvasElement);
 
 		// 見出しの確認
@@ -263,7 +264,7 @@ export const セマンティック構造確認: Story = {
 		locale: "ja",
 	},
 	parameters: {},
-	play: async ({ canvasElement }: any) => {
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		const canvas = within(canvasElement);
 
 		// main要素の確認

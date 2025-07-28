@@ -1,14 +1,15 @@
 // @ts-nocheck - React 19 compatibility issue with react-markdown
+
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
-import Link from "next/link";
-import { Badge } from "../../../shared/ui/badge";
-import { TableOfContents } from "../../../shared/ui/table-of-contents";
+import type { Article } from "../../../shared";
 import { extractHeadings } from "../../../shared/lib/extract-headings";
 import { cn } from "../../../shared/lib/utils";
-import type { Article } from "../../../shared";
+import { Badge } from "../../../shared/ui/badge";
+import { TableOfContents } from "../../../shared/ui/table-of-contents";
 
 export interface ArticleDetailViewProps {
 	/** 表示する記事データ */
@@ -56,6 +57,31 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 									{t("publishedAt")}: {publishedDate}
 								</time>
 							)}
+							<span className="flex items-center space-x-1">
+								<svg
+									className="h-3 w-3"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+									xmlns="http://www.w3.org/2000/svg"
+									aria-label="閲覧数"
+								>
+									<title>閲覧数</title>
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth={2}
+										d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+									/>
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth={2}
+										d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+									/>
+								</svg>
+								<span>{t("viewCount", { count: article.viewCount })}</span>
+							</span>
 							<span className="inline-flex items-center rounded-md bg-secondary px-2 py-1 text-xs font-medium text-secondary-foreground">
 								{article.status === "published"
 									? locale === "ja"
@@ -100,32 +126,74 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 								rehypePlugins={[rehypeHighlight]}
 								components={{
 									h1: ({ children }) => (
-										<h1 id={extractHeadings(article.content || "").find(h => h.text === children?.toString())?.id} className="text-3xl font-bold mt-8 mb-4 scroll-mt-8">
+										<h1
+											id={
+												extractHeadings(article.content || "").find(
+													(h) => h.text === children?.toString()
+												)?.id
+											}
+											className="text-3xl font-bold mt-8 mb-4 scroll-mt-8"
+										>
 											{children}
 										</h1>
 									),
 									h2: ({ children }) => (
-										<h2 id={extractHeadings(article.content || "").find(h => h.text === children?.toString())?.id} className="text-2xl font-semibold mt-6 mb-3 scroll-mt-8">
+										<h2
+											id={
+												extractHeadings(article.content || "").find(
+													(h) => h.text === children?.toString()
+												)?.id
+											}
+											className="text-2xl font-semibold mt-6 mb-3 scroll-mt-8"
+										>
 											{children}
 										</h2>
 									),
 									h3: ({ children }) => (
-										<h3 id={extractHeadings(article.content || "").find(h => h.text === children?.toString())?.id} className="text-xl font-medium mt-4 mb-2 scroll-mt-8">
+										<h3
+											id={
+												extractHeadings(article.content || "").find(
+													(h) => h.text === children?.toString()
+												)?.id
+											}
+											className="text-xl font-medium mt-4 mb-2 scroll-mt-8"
+										>
 											{children}
 										</h3>
 									),
 									h4: ({ children }) => (
-										<h4 id={extractHeadings(article.content || "").find(h => h.text === children?.toString())?.id} className="text-lg font-medium mt-3 mb-2 scroll-mt-8">
+										<h4
+											id={
+												extractHeadings(article.content || "").find(
+													(h) => h.text === children?.toString()
+												)?.id
+											}
+											className="text-lg font-medium mt-3 mb-2 scroll-mt-8"
+										>
 											{children}
 										</h4>
 									),
 									h5: ({ children }) => (
-										<h5 id={extractHeadings(article.content || "").find(h => h.text === children?.toString())?.id} className="text-base font-medium mt-2 mb-1 scroll-mt-8">
+										<h5
+											id={
+												extractHeadings(article.content || "").find(
+													(h) => h.text === children?.toString()
+												)?.id
+											}
+											className="text-base font-medium mt-2 mb-1 scroll-mt-8"
+										>
 											{children}
 										</h5>
 									),
 									h6: ({ children }) => (
-										<h6 id={extractHeadings(article.content || "").find(h => h.text === children?.toString())?.id} className="text-sm font-medium mt-2 mb-1 scroll-mt-8">
+										<h6
+											id={
+												extractHeadings(article.content || "").find(
+													(h) => h.text === children?.toString()
+												)?.id
+											}
+											className="text-sm font-medium mt-2 mb-1 scroll-mt-8"
+										>
 											{children}
 										</h6>
 									),
@@ -135,10 +203,14 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 										</p>
 									),
 									ul: ({ children }) => (
-										<ul className="mb-4 ml-6 list-disc space-y-1">{children}</ul>
+										<ul className="mb-4 ml-6 list-disc space-y-1">
+											{children}
+										</ul>
 									),
 									ol: ({ children }) => (
-										<ol className="mb-4 ml-6 list-decimal space-y-1">{children}</ol>
+										<ol className="mb-4 ml-6 list-decimal space-y-1">
+											{children}
+										</ol>
 									),
 									li: ({ children }) => (
 										<li className="text-muted-foreground">{children}</li>
@@ -172,12 +244,14 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 					</div>
 
 					{/* Table of Contents Sidebar */}
-					<aside className={cn(
-						"order-1 lg:order-2 lg:sticky lg:top-20 lg:h-fit lg:w-[300px]",
-						headings.length === 0 && "hidden lg:block"
-					)}>
+					<aside
+						className={cn(
+							"order-1 lg:order-2 lg:sticky lg:top-20 lg:h-fit lg:w-[300px]",
+							headings.length === 0 && "hidden lg:block"
+						)}
+					>
 						<div className="rounded-lg border bg-card p-6 shadow-sm lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto">
-							<TableOfContents 
+							<TableOfContents
 								headings={headings}
 								title={locale === "ja" ? "目次" : "Table of Contents"}
 							/>

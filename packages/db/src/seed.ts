@@ -219,6 +219,44 @@ function getRandomTagIds(tagIds: number[], count: number = 2): number[] {
 	return shuffled.slice(0, count);
 }
 
+/**
+ * ランダムな閲覧数を取得
+ * 記事のステータスと人気度に応じて現実的な数値を生成
+ */
+function getRandomViewCount(
+	status: "published" | "draft" | "archived",
+	isPopular: boolean = false
+): number {
+	// 下書き記事は閲覧数が少ない
+	if (status === "draft") {
+		return Math.floor(Math.random() * 11); // 0-10回
+	}
+
+	// 人気記事（全体の5%）
+	if (isPopular) {
+		return Math.floor(Math.random() * 1500) + 500; // 500-2000回
+	}
+
+	// 通常の記事
+	if (status === "published") {
+		const rand = Math.random();
+		if (rand < 0.25) {
+			// 25%: あまり読まれていない記事
+			return Math.floor(Math.random() * 51); // 0-50回
+		} else {
+			// 75%: 普通の記事
+			return Math.floor(Math.random() * 490) + 10; // 10-500回
+		}
+	}
+
+	// アーカイブ済み記事は過去に人気だった可能性
+	if (status === "archived") {
+		return Math.floor(Math.random() * 800) + 100; // 100-900回
+	}
+
+	return 0; // fallback
+}
+
 async function seed() {
 	console.log("🌱 200件シードデータの作成を開始します...");
 
@@ -227,7 +265,7 @@ async function seed() {
 		await clearAllTables();
 
 		// ユーザーを作成
-		const [user] = await db
+		await db
 			.insert(users)
 			.values({
 				email: "test@example.com",
@@ -306,21 +344,32 @@ async function seed() {
 		const titleTemplatesJa = getTitleTemplates();
 		const titleTemplatesEn = getEnglishTitleTemplates();
 
+		// 人気記事をランダムに選択（全体の5%）
+		const popularArticleCount = Math.floor(articleData.length * 0.05);
+		const popularArticleIndices = new Set<number>();
+		while (popularArticleIndices.size < popularArticleCount) {
+			popularArticleIndices.add(Math.floor(Math.random() * articleData.length));
+		}
+
 		const articleTranslationData = [];
 
 		for (let i = 0; i < articleData.length; i++) {
 			const article = articleData[i];
+			const isPopular = popularArticleIndices.has(i);
 
 			// 日本語版
 			const titleJa = titleTemplatesJa[i % titleTemplatesJa.length].replace(
 				"{i}",
 				(i + 1).toString()
 			);
+			const viewCountJa = getRandomViewCount(article.status, isPopular);
+
 			articleTranslationData.push({
 				articleId: article.id,
 				title: titleJa,
 				content: generateRandomContent(titleJa, true),
 				language: "ja" as const,
+				viewCount: viewCountJa,
 			});
 
 			// 英語版
@@ -328,11 +377,14 @@ async function seed() {
 				"{i}",
 				(i + 1).toString()
 			);
+			const viewCountEn = getRandomViewCount(article.status, isPopular);
+
 			articleTranslationData.push({
 				articleId: article.id,
 				title: titleEn,
 				content: generateRandomContent(titleEn, false),
 				language: "en" as const,
+				viewCount: viewCountEn,
 			});
 		}
 
@@ -365,14 +417,30 @@ async function seed() {
 		);
 
 		console.log("🎉 200件シードデータの作成が完了しました！");
+
+		// 閲覧数の統計を計算
+		const totalViewCount = articleTranslationData.reduce(
+			(sum, translation) => sum + (translation.viewCount || 0),
+			0
+		);
+		const popularCount = popularArticleIndices.size;
+		const avgViewCount = Math.round(
+			totalViewCount / articleTranslationData.length
+		);
+
 		console.log(`
 📊 作成されたデータ:
 - ユーザー: 1件
 - タグ: ${tagData.length}件
 - タグ翻訳: ${tagTranslationData.length}件
 - 記事: ${articleData.length}件
-- 記事翻訳: ${articleTranslationData.length}件
+- 記事翻訳: ${articleTranslationData.length}件（viewCount付き）
 - 記事タグ関連付け: ${articleTagData.length}件
+
+📈 閲覧数統計:
+- 合計閲覧数: ${totalViewCount.toLocaleString()}回
+- 平均閲覧数: ${avgViewCount}回/記事
+- 人気記事数: ${popularCount}件（全体の5%）
 		`);
 	} catch (error) {
 		console.error("❌ エラーが発生しました:", error);

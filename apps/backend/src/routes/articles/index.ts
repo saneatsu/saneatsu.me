@@ -1,4 +1,4 @@
-import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import {
 	articles,
 	articleTags,
@@ -7,19 +7,218 @@ import {
 	tags,
 	tagTranslations,
 } from "@saneatsu/db";
-import { and, eq, like, sql } from "drizzle-orm";
-import {
-	ArticleCreateResponseSchema,
-	ArticleCreateSchema,
-	ArticleDetailQuerySchema,
-	ArticleParamSchema,
-	ArticleResponseSchema,
-	ArticlesQuerySchema,
-	ArticlesResponseSchema,
-	ErrorSchema,
-	SlugCheckQuerySchema,
-	SlugCheckResponseSchema,
-} from "./schema";
+import { articleListQuerySchema, type SortOrder } from "@saneatsu/schemas";
+import { and, asc, desc, eq, sql } from "drizzle-orm";
+import type { Context } from "hono";
+
+// OpenAPI用にpackages/schemasをラップ
+const articlesOpenApiQuerySchema = z.object({
+	page: z.string().optional().openapi({
+		example: "1",
+		description: "ページ番号",
+	}),
+	limit: z.string().optional().openapi({
+		example: "10",
+		description: "1ページあたりの記事数",
+	}),
+	language: z.enum(["ja", "en"]).optional().openapi({
+		example: "ja",
+		description: "言語",
+	}),
+	status: z.enum(["published", "draft", "archived"]).optional().openapi({
+		example: "published",
+		description: "記事のステータス",
+	}),
+	search: z.string().optional().openapi({
+		example: "検索キーワード",
+		description: "タイトル検索",
+	}),
+	sortBy: z
+		.enum(["createdAt", "updatedAt", "publishedAt", "title", "viewCount"])
+		.optional()
+		.openapi({
+			example: "createdAt",
+			description: "ソートカラム",
+		}),
+	sortOrder: z.enum(["asc", "desc"]).optional().openapi({
+		example: "desc",
+		description: "ソート順",
+	}),
+});
+
+// 必要なOpenAPIスキーマ定義
+const ArticleTagSchema = z.object({
+	id: z.number().int().openapi({
+		example: 1,
+		description: "タグのユニークID",
+	}),
+	slug: z.string().openapi({
+		example: "javascript",
+		description: "タグのスラッグ",
+	}),
+	name: z.string().openapi({
+		example: "JavaScript",
+		description: "タグ名（現在の言語での名前）",
+	}),
+});
+
+const ArticleSchema = z.object({
+	id: z.number().int().openapi({
+		example: 1,
+		description: "記事のユニークID",
+	}),
+	slug: z.string().openapi({
+		example: "my-first-blog-post",
+		description: "記事のスラッグ",
+	}),
+	cfImageId: z.string().nullable().openapi({
+		example: "image-id-5678",
+		description: "Cloudflare画像ID",
+	}),
+	status: z.string().openapi({
+		example: "published",
+		description: "記事のステータス",
+	}),
+	publishedAt: z.string().nullable().openapi({
+		example: "2024-01-01T00:00:00.000Z",
+		description: "公開日時",
+	}),
+	updatedAt: z.string().openapi({
+		example: "2024-01-02T00:00:00.000Z",
+		description: "更新日時",
+	}),
+	title: z.string().nullable().openapi({
+		example: "私の最初のブログ記事",
+		description: "記事のタイトル",
+	}),
+	content: z.string().nullable().openapi({
+		example: "これは記事の本文です...",
+		description: "記事の本文",
+	}),
+	viewCount: z.number().int().openapi({
+		example: 127,
+		description: "記事の閲覧数（言語ごと）",
+	}),
+	tags: z.array(ArticleTagSchema).openapi({
+		description: "記事に紐付いているタグ一覧",
+	}),
+});
+
+const PaginationSchema = z.object({
+	page: z.number().int().positive().openapi({
+		example: 1,
+		description: "現在のページ番号",
+	}),
+	limit: z.number().int().positive().openapi({
+		example: 10,
+		description: "1ページあたりのアイテム数",
+	}),
+	total: z.number().int().min(0).openapi({
+		example: 100,
+		description: "総アイテム数",
+	}),
+	totalPages: z.number().int().min(0).openapi({
+		example: 10,
+		description: "総ページ数",
+	}),
+});
+
+const ErrorSchema = z.object({
+	error: z.object({
+		code: z.string().openapi({
+			example: "NOT_FOUND",
+			description: "エラーコード",
+		}),
+		message: z.string().openapi({
+			example: "Article not found",
+			description: "エラーメッセージ",
+		}),
+	}),
+});
+
+const ArticlesResponseSchema = z.object({
+	data: z.array(ArticleSchema),
+	pagination: PaginationSchema,
+});
+
+const ArticleResponseSchema = z.object({
+	data: ArticleSchema,
+});
+
+const ArticleParamSchema = z.object({
+	slug: z.string().openapi({
+		example: "my-first-blog-post",
+		description: "記事のスラッグ",
+	}),
+});
+
+const ArticleDetailQuerySchema = z.object({
+	lang: z.enum(["ja", "en"]).optional().openapi({
+		example: "ja",
+		description: "言語",
+	}),
+});
+
+const SlugCheckQuerySchema = z.object({
+	slug: z.string().min(1).openapi({
+		example: "my-article-slug",
+		description: "チェックするスラッグ",
+	}),
+});
+
+const SlugCheckResponseSchema = z.object({
+	available: z.boolean().openapi({
+		example: true,
+		description: "スラッグが利用可能かどうか",
+	}),
+	message: z.string().optional().openapi({
+		example: "このスラッグは既に使用されています",
+		description: "メッセージ（利用不可の場合など）",
+	}),
+});
+
+const ArticleCreateSchema = z.object({
+	title: z.string().min(1).max(200).openapi({
+		example: "新しい記事のタイトル",
+		description: "記事のタイトル（1-200文字）",
+	}),
+	slug: z
+		.string()
+		.min(1)
+		.max(100)
+		.regex(/^[a-z0-9-]+$/)
+		.openapi({
+			example: "new-article-slug",
+			description: "記事のスラッグ（小文字の英数字とハイフンのみ、1-100文字）",
+		}),
+	content: z.string().min(1).openapi({
+		example: "# 記事タイトル\n\nこれは記事の本文です...",
+		description: "記事の本文（Markdown形式）",
+	}),
+	status: z.enum(["draft", "published"]).openapi({
+		example: "draft",
+		description: "記事のステータス",
+	}),
+	publishedAt: z.string().datetime().optional().openapi({
+		example: "2024-01-01T10:00:00Z",
+		description: "公開日時（ISO 8601形式、公開ステータス時のみ）",
+	}),
+	tagIds: z
+		.array(z.number().int().positive())
+		.min(1)
+		.openapi({
+			example: [1, 2, 3],
+			description: "タグIDの配列（最低1つ必要）",
+		}),
+});
+
+const ArticleCreateResponseSchema = z.object({
+	data: ArticleSchema,
+	message: z.string().openapi({
+		example: "記事が正常に作成されました",
+		description: "作成成功メッセージ",
+	}),
+});
 
 /**
  * 記事関連のAPIルート
@@ -33,7 +232,7 @@ const listArticlesRoute = createRoute({
 	method: "get",
 	path: "/",
 	request: {
-		query: ArticlesQuerySchema,
+		query: articlesOpenApiQuerySchema,
 	},
 	responses: {
 		200: {
@@ -62,17 +261,26 @@ const listArticlesRoute = createRoute({
 /**
  * GET /api/articles - 記事一覧取得
  */
-articlesRoute.openapi(listArticlesRoute, (async (c: any) => {
+articlesRoute.openapi(listArticlesRoute, (async (c: Context) => {
 	try {
+		// OpenAPIスキーマでクエリパラメータを取得
+		const rawQuery = c.req.valid("query");
+
+		// packages/schemasのスキーマで検証・変換
+		const validatedQuery = articleListQuerySchema.parse(rawQuery);
+
 		const {
-			page: pageStr = "1",
-			limit: limitStr = "10",
-			lang = "ja",
-			status = "published",
+			page,
+			limit,
+			language: lang,
+			status,
 			search,
-		} = c.req.valid("query");
-		const page = Number(pageStr);
-		const limit = Number(limitStr);
+			sortBy,
+			sortOrder,
+		} = validatedQuery;
+
+		// sortOrderの型を明示的にキャスト
+		const order = sortOrder as SortOrder;
 
 		// ページネーションの計算
 		const offset = (page - 1) * limit;
@@ -81,14 +289,17 @@ articlesRoute.openapi(listArticlesRoute, (async (c: any) => {
 		const conditions = [];
 
 		// ステータス条件
-		if (status !== "all") {
+		if (status) {
 			conditions.push(eq(articles.status, status));
+		} else {
+			// デフォルトは公開済み記事のみ
+			conditions.push(eq(articles.status, "published"));
 		}
 
 		// 言語条件
 		conditions.push(eq(articleTranslations.language, lang));
 
-		// 検索条件（SQLiteではlikeを使用、タイトルと内容の両方を検索）
+		// 検索条件
 		if (search) {
 			conditions.push(
 				sql`(
@@ -96,6 +307,37 @@ articlesRoute.openapi(listArticlesRoute, (async (c: any) => {
 					${articleTranslations.content} LIKE ${`%${search}%`}
 				)`
 			);
+		}
+
+		// ソート条件を設定
+		let orderByClause: ReturnType<typeof asc | typeof desc>;
+		switch (sortBy) {
+			case "title":
+				orderByClause =
+					order === "asc"
+						? asc(articleTranslations.title)
+						: desc(articleTranslations.title);
+				break;
+			case "viewCount":
+				orderByClause =
+					order === "asc"
+						? asc(articleTranslations.viewCount)
+						: desc(articleTranslations.viewCount);
+				break;
+			case "publishedAt":
+				orderByClause =
+					order === "asc"
+						? asc(articles.publishedAt)
+						: desc(articles.publishedAt);
+				break;
+			case "updatedAt":
+				orderByClause =
+					order === "asc" ? asc(articles.updatedAt) : desc(articles.updatedAt);
+				break;
+			default:
+				orderByClause =
+					order === "asc" ? asc(articles.createdAt) : desc(articles.createdAt);
+				break;
 		}
 
 		// 記事一覧を取得
@@ -109,6 +351,7 @@ articlesRoute.openapi(listArticlesRoute, (async (c: any) => {
 				updatedAt: articles.updatedAt,
 				title: articleTranslations.title,
 				content: articleTranslations.content,
+				viewCount: sql<number>`COALESCE(${articleTranslations.viewCount}, 0)`,
 			})
 			.from(articles)
 			.leftJoin(
@@ -116,24 +359,11 @@ articlesRoute.openapi(listArticlesRoute, (async (c: any) => {
 				eq(articles.id, articleTranslations.articleId)
 			)
 			.where(and(...conditions))
+			.orderBy(orderByClause)
 			.limit(limit)
 			.offset(offset);
 
-		// 総記事数を取得
-		const countConditions = [];
-		if (status !== "all") {
-			countConditions.push(eq(articles.status, status));
-		}
-		if (search) {
-			countConditions.push(eq(articleTranslations.language, lang));
-			countConditions.push(
-				sql`(
-					${articleTranslations.title} LIKE ${`%${search}%`} OR 
-					${articleTranslations.content} LIKE ${`%${search}%`}
-				)`
-			);
-		}
-
+		// 総記事数を取得（同じ条件を適用）
 		const totalCount = await db
 			.select({ count: articles.id })
 			.from(articles)
@@ -141,10 +371,16 @@ articlesRoute.openapi(listArticlesRoute, (async (c: any) => {
 				articleTranslations,
 				eq(articles.id, articleTranslations.articleId)
 			)
-			.where(countConditions.length > 0 ? and(...countConditions) : undefined);
+			.where(and(...conditions));
+
+		// 各記事にタグを追加（一時的に空配列を設定）
+		const articlesWithTags = articleList.map((article) => ({
+			...article,
+			tags: [] as Array<{ id: number; slug: string; name: string }>, // TODO: 実際のタグを取得するクエリを後で実装
+		}));
 
 		return c.json({
-			data: articleList,
+			data: articlesWithTags,
 			pagination: {
 				page,
 				limit,
@@ -210,7 +446,7 @@ const getArticleRoute = createRoute({
 /**
  * GET /api/articles/:slug - 記事詳細取得
  */
-articlesRoute.openapi(getArticleRoute, (async (c: any) => {
+articlesRoute.openapi(getArticleRoute, async (c: Context) => {
 	try {
 		const { slug } = c.req.valid("param");
 		const { lang = "ja" } = c.req.valid("query");
@@ -226,6 +462,8 @@ articlesRoute.openapi(getArticleRoute, (async (c: any) => {
 				updatedAt: articles.updatedAt,
 				title: articleTranslations.title,
 				content: articleTranslations.content,
+				viewCount: sql<number>`COALESCE(${articleTranslations.viewCount}, 0)`,
+				translationId: articleTranslations.id,
 			})
 			.from(articles)
 			.leftJoin(
@@ -264,7 +502,20 @@ articlesRoute.openapi(getArticleRoute, (async (c: any) => {
 			);
 		}
 
-		// 3. 記事に紐付いているタグ情報を取得
+		// 3. 閲覧数をインクリメント（公開済み記事のみ）
+		if (articleData.translationId) {
+			await db
+				.update(articleTranslations)
+				.set({
+					viewCount: sql`${articleTranslations.viewCount} + 1`,
+				})
+				.where(eq(articleTranslations.id, articleData.translationId));
+
+			// レスポンス用に更新後の値を設定
+			articleData.viewCount = (articleData.viewCount || 0) + 1;
+		}
+
+		// 4. 記事に紐付いているタグ情報を取得
 		const relatedTags = await db
 			.select({
 				id: tags.id,
@@ -283,7 +534,15 @@ articlesRoute.openapi(getArticleRoute, (async (c: any) => {
 
 		return c.json({
 			data: {
-				...articleData,
+				id: articleData.id,
+				slug: articleData.slug,
+				cfImageId: articleData.cfImageId,
+				status: articleData.status,
+				publishedAt: articleData.publishedAt,
+				updatedAt: articleData.updatedAt,
+				title: articleData.title,
+				content: articleData.content,
+				viewCount: articleData.viewCount,
 				tags: relatedTags,
 			},
 		});
@@ -299,7 +558,7 @@ articlesRoute.openapi(getArticleRoute, (async (c: any) => {
 			500
 		);
 	}
-}) as any);
+});
 
 /**
  * スラッグ重複チェックのルート定義
@@ -344,7 +603,7 @@ const checkSlugRoute = createRoute({
 /**
  * GET /api/articles/check-slug - スラッグ重複チェック
  */
-articlesRoute.openapi(checkSlugRoute, (async (c: any) => {
+articlesRoute.openapi(checkSlugRoute, async (c: Context) => {
 	try {
 		const { slug } = c.req.valid("query");
 
@@ -373,7 +632,7 @@ articlesRoute.openapi(checkSlugRoute, (async (c: any) => {
 			500
 		);
 	}
-}) as any);
+});
 
 /**
  * 記事作成のルート定義
@@ -433,10 +692,9 @@ const createArticleRoute = createRoute({
 /**
  * POST /api/articles - 記事作成
  */
-articlesRoute.openapi(createArticleRoute, (async (c: any) => {
+articlesRoute.openapi(createArticleRoute, async (c: Context) => {
 	try {
-		const { title, slug, content, status, publishedAt, tagIds } =
-			c.req.valid("json");
+		const { title, slug, content, status, publishedAt } = c.req.valid("json");
 
 		// 1. スラッグの重複チェック
 		const existingArticle = await db
@@ -495,6 +753,7 @@ articlesRoute.openapi(createArticleRoute, (async (c: any) => {
 				updatedAt: articles.updatedAt,
 				title: articleTranslations.title,
 				content: articleTranslations.content,
+				viewCount: sql<number>`COALESCE(${articleTranslations.viewCount}, 0)`,
 			})
 			.from(articles)
 			.leftJoin(
@@ -507,9 +766,15 @@ articlesRoute.openapi(createArticleRoute, (async (c: any) => {
 			.where(eq(articles.id, newArticle.id))
 			.limit(1);
 
+		// タグを追加してレスポンス形式を整える
+		const articleWithTags = {
+			...createdArticle[0],
+			tags: [] as Array<{ id: number; slug: string; name: string }>, // TODO: 実際のタグを取得するクエリを後で実装
+		};
+
 		return c.json(
 			{
-				data: createdArticle[0],
+				data: articleWithTags,
 				message: "記事が正常に作成されました",
 			},
 			201
@@ -526,4 +791,4 @@ articlesRoute.openapi(createArticleRoute, (async (c: any) => {
 			500
 		);
 	}
-}) as any);
+});
