@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useCheckTagSlug, type CreateTagInput } from "../../../../entities/tag";
+import { type CreateTagInput, useCheckTagSlug } from "../../../../entities/tag";
 import { useDebounce } from "../../../../shared/hooks/use-debounce";
 import { Button } from "../../../../shared/ui/button/button";
 import {
@@ -59,7 +59,7 @@ interface TagFormProps {
 
 /**
  * タグフォームコンポーネント
- * 
+ *
  * タグの作成・編集で共通で使用するフォーム
  */
 export function TagForm({
@@ -86,7 +86,8 @@ export function TagForm({
 		slug: debouncedSlug,
 		queryConfig: {
 			// 編集時は自分のスラッグはチェックしない
-			enabled: debouncedSlug.length > 0 && debouncedSlug !== initialValues?.slug,
+			enabled:
+				debouncedSlug.length > 0 && debouncedSlug !== initialValues?.slug,
 		},
 	});
 
@@ -203,7 +204,9 @@ export function TagForm({
 				<div className="flex gap-4">
 					<Button
 						type="submit"
-						disabled={isSubmitting || (slugCheckResult && !slugCheckResult.available)}
+						disabled={
+							isSubmitting || (slugCheckResult && !slugCheckResult.available)
+						}
 					>
 						{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
 						{initialValues ? "更新" : "作成"}

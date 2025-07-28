@@ -1,5 +1,5 @@
-export { 
-	useUpdateTag, 
+export {
 	createTagInputToUpdateTagInput,
-	type UpdateTagInput 
+	type UpdateTagInput,
+	useUpdateTag,
 } from "./use-update";

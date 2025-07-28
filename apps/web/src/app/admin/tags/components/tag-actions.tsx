@@ -117,7 +117,10 @@ export function TagActions({ tag, onAction }: TagActionsProps) {
 			</DropdownMenu>
 
 			{/* 削除確認ダイアログ */}
-			<AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+			<AlertDialog
+				open={isDeleteDialogOpen}
+				onOpenChange={setIsDeleteDialogOpen}
+			>
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>タグを削除しますか？</AlertDialogTitle>

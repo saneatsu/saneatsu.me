@@ -53,10 +53,7 @@ type UseGetTagByIdOptions = {
  * });
  * ```
  */
-export function useGetTagById({
-	id,
-	queryConfig = {},
-}: UseGetTagByIdOptions) {
+export function useGetTagById({ id, queryConfig = {} }: UseGetTagByIdOptions) {
 	return useQuery({
 		queryKey: queryKeys.tag.byId(id),
 		queryFn: async () => {
@@ -86,8 +83,8 @@ export function useGetTagById({
  * タグ詳細から編集フォーム用の初期値を生成するヘルパー関数
  */
 export function getTagFormInitialValues(tagDetail: TagDetail) {
-	const jaTranslation = tagDetail.translations.find(t => t.language === "ja");
-	const enTranslation = tagDetail.translations.find(t => t.language === "en");
+	const jaTranslation = tagDetail.translations.find((t) => t.language === "ja");
+	const enTranslation = tagDetail.translations.find((t) => t.language === "en");
 
 	return {
 		slug: tagDetail.slug,

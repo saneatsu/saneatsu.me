@@ -16,7 +16,9 @@ interface DeleteTagResponse {
  */
 type UseDeleteTagOptions = {
 	/** React Queryの設定 */
-	mutationConfig?: MutationConfig<(tagId: number) => Promise<DeleteTagResponse>>;
+	mutationConfig?: MutationConfig<
+		(tagId: number) => Promise<DeleteTagResponse>
+	>;
 };
 
 /**
@@ -74,10 +76,10 @@ export function useDeleteTag({
 		onSuccess: (data, tagId) => {
 			// 削除されたタグの個別キャッシュを削除
 			queryClient.removeQueries({ queryKey: queryKeys.tag.byId(tagId) });
-			
+
 			// タグ一覧のキャッシュを無効化
 			queryClient.invalidateQueries({ queryKey: queryKeys.tag.all() });
-			
+
 			// 成功時のコールバックを実行
 			mutationConfig.onSuccess?.(data, tagId, undefined);
 		},

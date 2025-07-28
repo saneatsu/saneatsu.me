@@ -41,7 +41,9 @@ interface CreateTagResponse {
  */
 type UseCreateTagOptions = {
 	/** React Queryの設定 */
-	mutationConfig?: MutationConfig<(data: CreateTagInput) => Promise<CreateTagResponse>>;
+	mutationConfig?: MutationConfig<
+		(data: CreateTagInput) => Promise<CreateTagResponse>
+	>;
 };
 
 /**
@@ -92,7 +94,7 @@ export function useCreateTag({
 		onSuccess: (data) => {
 			// タグ一覧のキャッシュを無効化
 			queryClient.invalidateQueries({ queryKey: queryKeys.tag.all() });
-			
+
 			// 成功時のコールバックを実行
 			mutationConfig.onSuccess?.(data);
 		},

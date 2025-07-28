@@ -4,10 +4,10 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import {
-	useGetTagById,
-	getTagFormInitialValues,
-	useUpdateTag,
 	createTagInputToUpdateTagInput,
+	getTagFormInitialValues,
+	useGetTagById,
+	useUpdateTag,
 } from "../../../../../entities/tag";
 import { Button } from "../../../../../shared/ui/button/button";
 import {
@@ -64,7 +64,9 @@ export default function EditTagPage() {
 	/**
 	 * フォーム送信処理
 	 */
-	const handleSubmit = (formData: Parameters<typeof createTagInputToUpdateTagInput>[0]) => {
+	const handleSubmit = (
+		formData: Parameters<typeof createTagInputToUpdateTagInput>[0]
+	) => {
 		if (!tagDetailResponse?.data) return;
 
 		// CreateTagInput形式からUpdateTagInput形式に変換

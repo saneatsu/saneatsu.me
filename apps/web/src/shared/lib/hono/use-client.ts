@@ -1,10 +1,10 @@
 "use client";
 
-import type { AppType } from "../../../../../backend/src/index";
 import { hc } from "hono/client";
+import { getSession } from "next-auth/react";
 import { useLocale } from "next-intl";
 import { useMemo } from "react";
-import { getSession } from "next-auth/react";
+import type { AppType } from "../../../../../backend/src/index";
 
 /**
  * Honoクライアントのラッパーフック
@@ -57,10 +57,11 @@ export function useHonoClient() {
 
 		// Next.js APIルート経由でバックエンドにアクセス
 		// 開発環境ではlocalhost:3333、本番環境では相対パスを使用
-		const apiUrl = process.env.NODE_ENV === 'development' 
-			? 'http://localhost:3333/api' 
-			: '/api';
-			
+		const apiUrl =
+			process.env.NODE_ENV === "development"
+				? "http://localhost:3333/api"
+				: "/api";
+
 		return hc<AppType>(apiUrl, {
 			fetch: customFetch,
 		});

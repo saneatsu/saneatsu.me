@@ -37,7 +37,9 @@ type UseUpdateTagOptions = {
 	/** 更新するタグのID */
 	tagId: number;
 	/** React Queryの設定 */
-	mutationConfig?: MutationConfig<(data: UpdateTagInput) => Promise<UpdateTagResponse>>;
+	mutationConfig?: MutationConfig<
+		(data: UpdateTagInput) => Promise<UpdateTagResponse>
+	>;
 };
 
 /**
@@ -92,14 +94,11 @@ export function useUpdateTag({
 		},
 		onSuccess: (data) => {
 			// 個別タグのキャッシュを更新
-			queryClient.setQueryData(
-				queryKeys.tag.byId(tagId),
-				{ data: data.data }
-			);
-			
+			queryClient.setQueryData(queryKeys.tag.byId(tagId), { data: data.data });
+
 			// タグ一覧のキャッシュを無効化
 			queryClient.invalidateQueries({ queryKey: queryKeys.tag.all() });
-			
+
 			// 成功時のコールバックを実行
 			mutationConfig.onSuccess?.(data);
 		},
@@ -112,17 +111,20 @@ export function useUpdateTag({
  * 編集時に既存の翻訳IDを含める必要がある
  */
 export function createTagInputToUpdateTagInput(
-	createInput: { slug: string; translations: { name: string; language: "ja" | "en" }[] },
+	createInput: {
+		slug: string;
+		translations: { name: string; language: "ja" | "en" }[];
+	},
 	existingTag: TagDetail
 ): UpdateTagInput {
 	return {
 		slug: createInput.slug !== existingTag.slug ? createInput.slug : undefined,
-		translations: createInput.translations.map(translation => {
+		translations: createInput.translations.map((translation) => {
 			// 既存の翻訳IDを探す
 			const existingTranslation = existingTag.translations.find(
-				t => t.language === translation.language
+				(t) => t.language === translation.language
 			);
-			
+
 			return {
 				id: existingTranslation?.id,
 				name: translation.name,

@@ -55,10 +55,10 @@ export function useCheckTagSlug({
 
 			const { data } = await response.json();
 			const tags = data as Array<{ slug: string }>;
-			
+
 			// スラッグが既に使用されているかチェック
-			const isUsed = tags.some(tag => tag.slug === slug);
-			
+			const isUsed = tags.some((tag) => tag.slug === slug);
+
 			return {
 				available: !isUsed,
 				slug,

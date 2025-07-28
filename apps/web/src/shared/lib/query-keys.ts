@@ -1,6 +1,6 @@
 /**
  * React Query用のクエリキー定義
- * 
+ *
  * クエリキーの設計原則：
  * 1. 階層的な構造で整理
  * 2. 一意性を保証
@@ -21,7 +21,7 @@ export const queryKeys = {
 		// スラッグ重複チェック
 		checkSlug: (slug: string) => ["tags", "check-slug", slug] as const,
 	},
-	
+
 	/**
 	 * 記事関連のクエリキー
 	 */
@@ -35,7 +35,8 @@ export const queryKeys = {
 			limit?: number;
 		}) => ["articles", filters] as const,
 		// 個別の記事（スラッグ指定）
-		bySlug: (slug: string, lang?: string) => ["articles", slug, { lang }] as const,
+		bySlug: (slug: string, lang?: string) =>
+			["articles", slug, { lang }] as const,
 		// スラッグ重複チェック
 		checkSlug: (slug: string) => ["articles", "check-slug", slug] as const,
 	},

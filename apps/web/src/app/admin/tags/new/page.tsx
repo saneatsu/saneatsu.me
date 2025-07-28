@@ -19,7 +19,7 @@ import { TagForm } from "../components/tag-form";
  */
 export default function NewTagPage() {
 	const router = useRouter();
-	
+
 	// タグ作成フック
 	const { mutate: createTag, isPending } = useCreateTag({
 		mutationConfig: {

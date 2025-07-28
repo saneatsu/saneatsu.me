@@ -11,9 +11,10 @@ import { ThemeProvider } from "../shared/ui/theme-provider";
 export function Providers({ children }: { children: React.ReactNode }) {
 	// QueryClientをuseStateで管理（SSR対応）
 	const [queryClient] = useState(
-		() => new QueryClient({
-			defaultOptions: queryConfig,
-		})
+		() =>
+			new QueryClient({
+				defaultOptions: queryConfig,
+			})
 	);
 
 	return (

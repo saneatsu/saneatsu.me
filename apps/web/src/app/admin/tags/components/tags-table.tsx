@@ -89,9 +89,7 @@ export function TagsTable({ onRefresh }: TagsTableProps) {
 			label: "スラッグ",
 			sortable: true,
 			className: "w-[200px]",
-			render: (tag) => (
-				<div className="font-mono text-sm">{tag.slug}</div>
-			),
+			render: (tag) => <div className="font-mono text-sm">{tag.slug}</div>,
 		},
 		{
 			key: "name",
@@ -121,9 +119,7 @@ export function TagsTable({ onRefresh }: TagsTableProps) {
 			key: "actions",
 			label: "アクション",
 			className: "w-[120px]",
-			render: (tag) => (
-				<TagActions tag={tag} onAction={handleTagAction} />
-			),
+			render: (tag) => <TagActions tag={tag} onAction={handleTagAction} />,
 		},
 	];
 
