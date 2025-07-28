@@ -3,6 +3,11 @@ import { useTranslations } from "next-intl";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
+import Link from "next/link";
+import { Badge } from "../../../shared/ui/badge";
+import { TableOfContents } from "../../../shared/ui/table-of-contents";
+import { extractHeadings } from "../../../shared/lib/extract-headings";
+import { cn } from "../../../shared/lib/utils";
 import type { Article } from "../../../shared";
 
 export interface ArticleDetailViewProps {
@@ -36,9 +41,12 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 			)
 		: null;
 
+	// Markdownから見出しを抽出
+	const headings = extractHeadings(article.content || "");
+
 	return (
 		<main className="container mx-auto px-4 py-8">
-			<article className="max-w-4xl mx-auto">
+			<div className="max-w-7xl mx-auto">
 				{/* Article Header */}
 				<header className="mb-12 space-y-6">
 					<div className="space-y-4">
@@ -62,63 +70,119 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 						<h1 className="text-4xl font-bold tracking-tight">
 							{article.title}
 						</h1>
+
+						{/* Tags Section */}
+						{article.tags && article.tags.length > 0 && (
+							<div className="flex flex-wrap gap-2">
+								{article.tags.map((tag) => (
+									<Link
+										key={tag.id}
+										href={`/${locale}/tags/${tag.slug}`}
+										className="transition-opacity hover:opacity-80"
+									>
+										<Badge variant="secondary" className="text-xs">
+											{tag.name}
+										</Badge>
+									</Link>
+								))}
+							</div>
+						)}
 					</div>
 				</header>
 
-				{/* Article Content */}
-				<div className="prose prose-neutral dark:prose-invert max-w-none">
-					<ReactMarkdown
-						remarkPlugins={[remarkGfm]}
-						rehypePlugins={[rehypeHighlight]}
-						components={{
-							h1: ({ children }) => (
-								<h1 className="text-3xl font-bold mt-8 mb-4">{children}</h1>
-							),
-							h2: ({ children }) => (
-								<h2 className="text-2xl font-semibold mt-6 mb-3">{children}</h2>
-							),
-							h3: ({ children }) => (
-								<h3 className="text-xl font-medium mt-4 mb-2">{children}</h3>
-							),
-							p: ({ children }) => (
-								<p className="mb-4 text-muted-foreground leading-relaxed">
-									{children}
-								</p>
-							),
-							ul: ({ children }) => (
-								<ul className="mb-4 ml-6 list-disc space-y-1">{children}</ul>
-							),
-							ol: ({ children }) => (
-								<ol className="mb-4 ml-6 list-decimal space-y-1">{children}</ol>
-							),
-							li: ({ children }) => (
-								<li className="text-muted-foreground">{children}</li>
-							),
-							code: ({ children, className }) => {
-								const isInline = !className;
-								if (isInline) {
-									return (
-										<code className="bg-muted px-1 py-0.5 rounded text-sm font-mono">
+				{/* Main Content Area - 2 Column Layout */}
+				<div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8 lg:gap-12">
+					{/* Article Content */}
+					<div className="min-w-0 order-2 lg:order-1">
+						<article className="prose prose-neutral dark:prose-invert max-w-none">
+							<ReactMarkdown
+								remarkPlugins={[remarkGfm]}
+								rehypePlugins={[rehypeHighlight]}
+								components={{
+									h1: ({ children }) => (
+										<h1 id={extractHeadings(article.content || "").find(h => h.text === children?.toString())?.id} className="text-3xl font-bold mt-8 mb-4 scroll-mt-8">
 											{children}
-										</code>
-									);
-								}
-								return <code className={className}>{children}</code>;
-							},
-							pre: ({ children }) => (
-								<pre className="bg-muted p-4 rounded-lg overflow-x-auto mb-4">
-									{children}
-								</pre>
-							),
-							blockquote: ({ children }) => (
-								<blockquote className="border-l-4 border-border pl-4 italic my-4">
-									{children}
-								</blockquote>
-							),
-						}}
-					>
-						{article.content}
-					</ReactMarkdown>
+										</h1>
+									),
+									h2: ({ children }) => (
+										<h2 id={extractHeadings(article.content || "").find(h => h.text === children?.toString())?.id} className="text-2xl font-semibold mt-6 mb-3 scroll-mt-8">
+											{children}
+										</h2>
+									),
+									h3: ({ children }) => (
+										<h3 id={extractHeadings(article.content || "").find(h => h.text === children?.toString())?.id} className="text-xl font-medium mt-4 mb-2 scroll-mt-8">
+											{children}
+										</h3>
+									),
+									h4: ({ children }) => (
+										<h4 id={extractHeadings(article.content || "").find(h => h.text === children?.toString())?.id} className="text-lg font-medium mt-3 mb-2 scroll-mt-8">
+											{children}
+										</h4>
+									),
+									h5: ({ children }) => (
+										<h5 id={extractHeadings(article.content || "").find(h => h.text === children?.toString())?.id} className="text-base font-medium mt-2 mb-1 scroll-mt-8">
+											{children}
+										</h5>
+									),
+									h6: ({ children }) => (
+										<h6 id={extractHeadings(article.content || "").find(h => h.text === children?.toString())?.id} className="text-sm font-medium mt-2 mb-1 scroll-mt-8">
+											{children}
+										</h6>
+									),
+									p: ({ children }) => (
+										<p className="mb-4 text-muted-foreground leading-relaxed">
+											{children}
+										</p>
+									),
+									ul: ({ children }) => (
+										<ul className="mb-4 ml-6 list-disc space-y-1">{children}</ul>
+									),
+									ol: ({ children }) => (
+										<ol className="mb-4 ml-6 list-decimal space-y-1">{children}</ol>
+									),
+									li: ({ children }) => (
+										<li className="text-muted-foreground">{children}</li>
+									),
+									code: ({ children, className }) => {
+										const isInline = !className;
+										if (isInline) {
+											return (
+												<code className="bg-muted px-1 py-0.5 rounded text-sm font-mono">
+													{children}
+												</code>
+											);
+										}
+										return <code className={className}>{children}</code>;
+									},
+									pre: ({ children }) => (
+										<pre className="bg-muted p-4 rounded-lg overflow-x-auto mb-4">
+											{children}
+										</pre>
+									),
+									blockquote: ({ children }) => (
+										<blockquote className="border-l-4 border-border pl-4 italic my-4">
+											{children}
+										</blockquote>
+									),
+								}}
+							>
+								{article.content}
+							</ReactMarkdown>
+						</article>
+					</div>
+
+					{/* Table of Contents Sidebar */}
+					<aside className={cn(
+						"order-1 lg:order-2 lg:sticky lg:top-20 lg:h-fit lg:w-[300px]",
+						headings.length === 0 && "hidden lg:block"
+					)}>
+						<div className="rounded-lg border bg-card p-6 shadow-sm lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto">
+							<TableOfContents 
+								headings={headings}
+								title={locale === "ja" ? "目次" : "Table of Contents"}
+							/>
+						</div>
+					</aside>
 				</div>
 
 				{/* Article Footer */}
@@ -132,7 +196,7 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 						</a>
 					</div>
 				</footer>
-			</article>
+			</div>
 		</main>
 	);
 }

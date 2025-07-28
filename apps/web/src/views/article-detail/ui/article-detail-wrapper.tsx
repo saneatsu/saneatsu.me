@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { ArticleDetailView } from "./article-detail-view";
+import type { ArticleResponse } from "../../../shared/types/article";
 
 interface ArticleDetailWrapperProps {
 	slug: string;
@@ -21,20 +22,30 @@ export async function ArticleDetailWrapper({
 	locale,
 }: ArticleDetailWrapperProps) {
 	// 記事データの取得
-	const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-	const response = await fetch(
-		`${apiUrl}/api/articles/${slug}?lang=${locale}`,
-		{
-			next: { revalidate: 60 },
-			cache: "no-store", // 開発中は常に最新のデータを取得
-		}
-	);
+	const apiUrl = process.env.NODE_ENV === 'development' 
+		? 'http://localhost:8888' 
+		: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8888';
+	
+	try {
+		const response = await fetch(
+			`${apiUrl}/api/articles/${slug}?lang=${locale}`,
+			{
+				next: { revalidate: 60 },
+				headers: {
+					"Accept-Language": locale,
+				},
+			}
+		);
 
-	if (!response.ok) {
+		if (!response.ok) {
+			notFound();
+		}
+
+		const articleResponse: ArticleResponse = await response.json();
+
+		return <ArticleDetailView article={articleResponse.data} locale={locale} />;
+	} catch (error) {
+		console.error("Failed to fetch article:", error);
 		notFound();
 	}
-
-	const article = await response.json();
-
-	return <ArticleDetailView article={article} locale={locale} />;
 }

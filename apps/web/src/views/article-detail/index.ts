@@ -1,1 +1,2 @@
-export { ArticleDetailWrapper as ArticleDetailView } from "./ui/article-detail-wrapper";
+export { ArticleDetailView } from "./ui/article-detail-view";
+export { ArticleDetailWrapper } from "./ui/article-detail-wrapper";
