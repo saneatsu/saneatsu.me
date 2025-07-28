@@ -1,0 +1,67 @@
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
+import { hc } from "hono/client";
+import type { AppType } from "@saneatsu/backend";
+import { queryKeys } from "../../../../shared/lib/query-keys";
+import type { QueryConfig } from "../../../../shared/lib/react-query";
+import type { DashboardOverviewResponse } from "@saneatsu/schemas/dist/dashboard";
+
+/**
+ * APIのベースURL
+ */
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
+
+/**
+ * Hono Clientの初期化
+ */
+const client = hc<AppType>(API_BASE_URL);
+
+/**
+ * ダッシュボード概要データ取得のオプション
+ */
+type UseDashboardOverviewOptions = {
+	/** 言語 */
+	language?: "ja" | "en";
+	/** React Queryの設定 */
+	queryConfig?: QueryConfig<() => Promise<DashboardOverviewResponse>>;
+};
+
+/**
+ * ダッシュボード概要データを取得するカスタムフック
+ *
+ * @param options - 取得オプション
+ * @returns ダッシュボード概要データを含むクエリ結果
+ *
+ * @example
+ * ```tsx
+ * const { data, isLoading, error } = useDashboardOverview({ language: "ja" });
+ * ```
+ */
+export function useDashboardOverview({
+	language = "ja",
+	queryConfig = {},
+}: UseDashboardOverviewOptions = {}) {
+	return useQuery({
+		queryKey: queryKeys.dashboard.overview(language),
+		queryFn: async () => {
+			const response = await client.api.dashboard.overview.$get({
+				query: { language },
+			});
+
+			if (!response.ok) {
+				const error = await response.json();
+				throw new Error(
+					(error as { error?: string }).error ||
+						"ダッシュボード概要データの取得に失敗しました"
+				);
+			}
+
+			const data = await response.json();
+			return data as DashboardOverviewResponse;
+		},
+		...queryConfig,
+		staleTime: 5 * 60 * 1000, // 5分間は新鮮とみなす
+		gcTime: 10 * 60 * 1000, // 10分間キャッシュを保持
+	});
+}

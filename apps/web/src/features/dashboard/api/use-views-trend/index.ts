@@ -1,0 +1,1 @@
+export { useViewsTrend } from "./use-views-trend";
