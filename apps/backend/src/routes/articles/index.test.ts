@@ -663,4 +663,699 @@ describe("GET /articles/:slug", () => {
 		expect(data.data[0].viewCount).toBe(25);
 		expect(data.data[1].viewCount).toBe(100);
 	});
+
+	describe("ソート機能", () => {
+		it("タイトルで昇順ソートができる", async () => {
+			// Arrange
+			const { mockDb } = setupDbMocks();
+
+			const mockArticles = [
+				createMockArticleWithTranslation({
+					article: {
+						id: "article1",
+						slug: "test-article-a",
+						status: "published",
+					},
+					translation: {
+						title: "Aテスト記事",
+						content: "内容A",
+					},
+				}),
+				createMockArticleWithTranslation({
+					article: {
+						id: "article2",
+						slug: "test-article-b",
+						status: "published",
+					},
+					translation: {
+						title: "Bテスト記事",
+						content: "内容B",
+					},
+				}),
+			];
+
+			const articleListMock = {
+				from: vi.fn().mockReturnValue({
+					leftJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockReturnValue({
+							orderBy: vi.fn().mockReturnValue({
+								limit: vi.fn().mockReturnValue({
+									offset: vi.fn().mockResolvedValue(mockArticles),
+								}),
+							}),
+						}),
+					}),
+				}),
+			};
+
+			const countMock = {
+				from: vi.fn().mockReturnValue({
+					leftJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockResolvedValue([{ count: 2 }]),
+					}),
+				}),
+			};
+
+			mockDb.select
+				.mockReturnValueOnce(articleListMock)
+				.mockReturnValueOnce(countMock);
+
+			// Act
+			const client = testClient(articlesRoute) as any;
+			const res = await client.index.$get({
+				query: {
+					sortBy: "title",
+					sortOrder: "asc",
+				},
+			});
+
+			// Assert
+			expect(res.status).toBe(200);
+			const data = await res.json();
+			expect(data.data).toHaveLength(2);
+			expect(articleListMock.from().leftJoin().where().orderBy).toHaveBeenCalled();
+		});
+
+		it("閲覧数で降順ソートができる", async () => {
+			// Arrange
+			const { mockDb } = setupDbMocks();
+
+			const mockArticles = [
+				createMockArticleWithTranslation({
+					article: {
+						id: "article1",
+						slug: "popular-article",
+						status: "published",
+					},
+					translation: {
+						title: "人気記事",
+						content: "人気の内容",
+						viewCount: 1000,
+					},
+				}),
+				createMockArticleWithTranslation({
+					article: {
+						id: "article2",
+						slug: "less-popular-article",
+						status: "published",
+					},
+					translation: {
+						title: "普通記事",
+						content: "普通の内容",
+						viewCount: 100,
+					},
+				}),
+			];
+
+			const articleListMock = {
+				from: vi.fn().mockReturnValue({
+					leftJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockReturnValue({
+							orderBy: vi.fn().mockReturnValue({
+								limit: vi.fn().mockReturnValue({
+									offset: vi.fn().mockResolvedValue(mockArticles),
+								}),
+							}),
+						}),
+					}),
+				}),
+			};
+
+			const countMock = {
+				from: vi.fn().mockReturnValue({
+					leftJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockResolvedValue([{ count: 2 }]),
+					}),
+				}),
+			};
+
+			mockDb.select
+				.mockReturnValueOnce(articleListMock)
+				.mockReturnValueOnce(countMock);
+
+			// Act
+			const client = testClient(articlesRoute) as any;
+			const res = await client.index.$get({
+				query: {
+					sortBy: "viewCount",
+					sortOrder: "desc",
+				},
+			});
+
+			// Assert
+			expect(res.status).toBe(200);
+			const data = await res.json();
+			expect(data.data).toHaveLength(2);
+			expect(data.data[0].viewCount).toBe(1000);
+			expect(data.data[1].viewCount).toBe(100);
+			expect(articleListMock.from().leftJoin().where().orderBy).toHaveBeenCalled();
+		});
+
+		it("公開日時で降順ソートができる", async () => {
+			// Arrange
+			const { mockDb } = setupDbMocks();
+
+			const mockArticles = [
+				createMockArticleWithTranslation({
+					article: {
+						id: "article1",
+						slug: "newer-article",
+						status: "published",
+						publishedAt: new Date("2024-02-01"),
+					},
+					translation: {
+						title: "新しい記事",
+						content: "新しい内容",
+					},
+				}),
+				createMockArticleWithTranslation({
+					article: {
+						id: "article2",
+						slug: "older-article",
+						status: "published",
+						publishedAt: new Date("2024-01-01"),
+					},
+					translation: {
+						title: "古い記事",
+						content: "古い内容",
+					},
+				}),
+			];
+
+			const articleListMock = {
+				from: vi.fn().mockReturnValue({
+					leftJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockReturnValue({
+							orderBy: vi.fn().mockReturnValue({
+								limit: vi.fn().mockReturnValue({
+									offset: vi.fn().mockResolvedValue(mockArticles),
+								}),
+							}),
+						}),
+					}),
+				}),
+			};
+
+			const countMock = {
+				from: vi.fn().mockReturnValue({
+					leftJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockResolvedValue([{ count: 2 }]),
+					}),
+				}),
+			};
+
+			mockDb.select
+				.mockReturnValueOnce(articleListMock)
+				.mockReturnValueOnce(countMock);
+
+			// Act
+			const client = testClient(articlesRoute) as any;
+			const res = await client.index.$get({
+				query: {
+					sortBy: "publishedAt",
+					sortOrder: "desc",
+				},
+			});
+
+			// Assert
+			expect(res.status).toBe(200);
+			const data = await res.json();
+			expect(data.data).toHaveLength(2);
+			expect(articleListMock.from().leftJoin().where().orderBy).toHaveBeenCalled();
+		});
+
+		it("作成日時で昇順ソートができる", async () => {
+			// Arrange
+			const { mockDb } = setupDbMocks();
+
+			const mockArticles = [
+				createMockArticleWithTranslation({
+					article: {
+						id: "article1",
+						slug: "older-article",
+						status: "published",
+						createdAt: new Date("2024-01-01"),
+					},
+					translation: {
+						title: "古い記事",
+						content: "古い内容",
+					},
+				}),
+				createMockArticleWithTranslation({
+					article: {
+						id: "article2",
+						slug: "newer-article",
+						status: "published",
+						createdAt: new Date("2024-02-01"),
+					},
+					translation: {
+						title: "新しい記事",
+						content: "新しい内容",
+					},
+				}),
+			];
+
+			const articleListMock = {
+				from: vi.fn().mockReturnValue({
+					leftJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockReturnValue({
+							orderBy: vi.fn().mockReturnValue({
+								limit: vi.fn().mockReturnValue({
+									offset: vi.fn().mockResolvedValue(mockArticles),
+								}),
+							}),
+						}),
+					}),
+				}),
+			};
+
+			const countMock = {
+				from: vi.fn().mockReturnValue({
+					leftJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockResolvedValue([{ count: 2 }]),
+					}),
+				}),
+			};
+
+			mockDb.select
+				.mockReturnValueOnce(articleListMock)
+				.mockReturnValueOnce(countMock);
+
+			// Act
+			const client = testClient(articlesRoute) as any;
+			const res = await client.index.$get({
+				query: {
+					sortBy: "createdAt",
+					sortOrder: "asc",
+				},
+			});
+
+			// Assert
+			expect(res.status).toBe(200);
+			const data = await res.json();
+			expect(data.data).toHaveLength(2);
+			expect(articleListMock.from().leftJoin().where().orderBy).toHaveBeenCalled();
+		});
+
+		it("更新日時で降順ソートができる", async () => {
+			// Arrange
+			const { mockDb } = setupDbMocks();
+
+			const mockArticles = [
+				createMockArticleWithTranslation({
+					article: {
+						id: "article1",
+						slug: "recently-updated",
+						status: "published",
+						updatedAt: new Date("2024-02-01"),
+					},
+					translation: {
+						title: "最近更新された記事",
+						content: "更新された内容",
+					},
+				}),
+				createMockArticleWithTranslation({
+					article: {
+						id: "article2",
+						slug: "older-updated",
+						status: "published",
+						updatedAt: new Date("2024-01-01"),
+					},
+					translation: {
+						title: "古い更新の記事",
+						content: "古い内容",
+					},
+				}),
+			];
+
+			const articleListMock = {
+				from: vi.fn().mockReturnValue({
+					leftJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockReturnValue({
+							orderBy: vi.fn().mockReturnValue({
+								limit: vi.fn().mockReturnValue({
+									offset: vi.fn().mockResolvedValue(mockArticles),
+								}),
+							}),
+						}),
+					}),
+				}),
+			};
+
+			const countMock = {
+				from: vi.fn().mockReturnValue({
+					leftJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockResolvedValue([{ count: 2 }]),
+					}),
+				}),
+			};
+
+			mockDb.select
+				.mockReturnValueOnce(articleListMock)
+				.mockReturnValueOnce(countMock);
+
+			// Act
+			const client = testClient(articlesRoute) as any;
+			const res = await client.index.$get({
+				query: {
+					sortBy: "updatedAt",
+					sortOrder: "desc",
+				},
+			});
+
+			// Assert
+			expect(res.status).toBe(200);
+			const data = await res.json();
+			expect(data.data).toHaveLength(2);
+			expect(articleListMock.from().leftJoin().where().orderBy).toHaveBeenCalled();
+		});
+
+		it("不正なソートパラメータの場合はデフォルトソートが適用される", async () => {
+			// Arrange
+			const { mockDb } = setupDbMocks();
+
+			const mockArticles = [
+				createMockArticleWithTranslation({
+					article: {
+						id: "article1",
+						slug: "test-article-1",
+						status: "published",
+					},
+					translation: {
+						title: "テスト記事1",
+						content: "内容1",
+					},
+				}),
+			];
+
+			const articleListMock = {
+				from: vi.fn().mockReturnValue({
+					leftJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockReturnValue({
+							orderBy: vi.fn().mockReturnValue({
+								limit: vi.fn().mockReturnValue({
+									offset: vi.fn().mockResolvedValue(mockArticles),
+								}),
+							}),
+						}),
+					}),
+				}),
+			};
+
+			const countMock = {
+				from: vi.fn().mockReturnValue({
+					leftJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockResolvedValue([{ count: 1 }]),
+					}),
+				}),
+			};
+
+			mockDb.select
+				.mockReturnValueOnce(articleListMock)
+				.mockReturnValueOnce(countMock);
+
+			// Act
+			const client = testClient(articlesRoute) as any;
+			const res = await client.index.$get({
+				query: {
+					sortBy: "invalidColumn" as any,
+					sortOrder: "invalidOrder" as any,
+				},
+			});
+
+			// Assert
+			expect(res.status).toBe(200);
+			const data = await res.json();
+			expect(data.data).toHaveLength(1);
+			// デフォルトのソート（createdAt desc）が適用される
+			expect(articleListMock.from().leftJoin().where().orderBy).toHaveBeenCalled();
+		});
+	});
+});
+
+describe("POST /articles", () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
+
+	it("記事を正常に作成する", async () => {
+		// Arrange
+		const { mockDb } = setupDbMocks();
+
+		const mockNewArticle = {
+			id: 1,
+			slug: "new-article",
+			status: "draft",
+			cfImageId: null,
+			createdAt: new Date("2024-01-01"),
+			updatedAt: new Date("2024-01-01"),
+			publishedAt: null,
+		};
+
+		const mockTranslation = {
+			id: 1,
+			articleId: 1,
+			language: "ja",
+			title: "新しい記事",
+			content: "# 新しい記事\n\nこれは新しい記事の内容です。",
+			viewCount: 0,
+		};
+
+		const mockCreatedArticle = {
+			...mockNewArticle,
+			title: mockTranslation.title,
+			content: mockTranslation.content,
+			viewCount: mockTranslation.viewCount,
+			tags: [
+				{ id: 1, slug: "javascript", name: "JavaScript" },
+				{ id: 2, slug: "web-development", name: "Web開発" },
+			],
+		};
+
+		// Insert記事のモック
+		const insertArticleMock = {
+			values: vi.fn().mockReturnValue({
+				returning: vi.fn().mockResolvedValue([mockNewArticle]),
+			}),
+		};
+
+		// Insert翻訳のモック  
+		const insertTranslationMock = {
+			values: vi.fn().mockReturnValue({
+				returning: vi.fn().mockResolvedValue([mockTranslation]),
+			}),
+		};
+
+		// Insert記事タグのモック
+		const insertArticleTagMock = {
+			values: vi.fn().mockResolvedValue({}),
+		};
+
+		// Select記事のモック（作成後の記事取得用）
+		const selectArticleMock = {
+			from: vi.fn().mockReturnValue({
+				leftJoin: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([mockCreatedArticle]),
+					}),
+				}),
+			}),
+		};
+
+		// Selectタグのモック
+		const selectTagsMock = {
+			from: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
+					innerJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockResolvedValue([
+							{ id: 1, slug: "javascript", name: "JavaScript" },
+							{ id: 2, slug: "web-development", name: "Web開発" },
+						]),
+					}),
+				}),
+			}),
+		};
+
+		mockDb.insert
+			.mockReturnValueOnce(insertArticleMock) // 記事作成
+			.mockReturnValueOnce(insertTranslationMock) // 翻訳作成
+			.mockReturnValueOnce(insertArticleTagMock); // 記事タグ作成
+
+		mockDb.select
+			.mockReturnValueOnce(selectArticleMock) // 記事取得
+			.mockReturnValueOnce(selectTagsMock); // タグ取得
+
+		// Act
+		const client = testClient(articlesRoute) as any;
+		const res = await client.index.$post({
+			json: {
+				title: "新しい記事",
+				slug: "new-article",
+				content: "# 新しい記事\n\nこれは新しい記事の内容です。",
+				status: "draft",
+				tagIds: [1, 2],
+			},
+		});
+
+		// Assert
+		expect(res.status).toBe(201);
+		const data = await res.json();
+
+		expect(data).toEqual({
+			data: mockCreatedArticle,
+			message: "記事が正常に作成されました",
+		});
+
+		expect(mockDb.insert).toHaveBeenCalledTimes(3); // 記事、翻訳、記事タグ
+		expect(mockDb.select).toHaveBeenCalledTimes(2); // 記事取得、タグ取得
+	});
+
+	it("バリデーションエラー: タイトルが空の場合", async () => {
+		// Arrange
+		const { mockDb } = setupDbMocks();
+
+		// Act
+		const client = testClient(articlesRoute) as any;
+		const res = await client.index.$post({
+			json: {
+				title: "",
+				slug: "empty-title-article",
+				content: "内容があります",
+				status: "draft",
+				tagIds: [1],
+			},
+		});
+
+		// Assert
+		expect(res.status).toBe(400);
+		expect(mockDb.insert).not.toHaveBeenCalled();
+	});
+
+	it("バリデーションエラー: スラッグが不正な形式の場合", async () => {
+		// Arrange
+		const { mockDb } = setupDbMocks();
+
+		// Act
+		const client = testClient(articlesRoute) as any;
+		const res = await client.index.$post({
+			json: {
+				title: "正常なタイトル",
+				slug: "Invalid Slug With Spaces!",
+				content: "内容があります",
+				status: "draft",
+				tagIds: [1],
+			},
+		});
+
+		// Assert
+		expect(res.status).toBe(400);
+		expect(mockDb.insert).not.toHaveBeenCalled();
+	});
+
+	it("バリデーションエラー: タグIDが空の配列の場合", async () => {
+		// Arrange
+		const { mockDb } = setupDbMocks();
+
+		// Act
+		const client = testClient(articlesRoute) as any;
+		const res = await client.index.$post({
+			json: {
+				title: "正常なタイトル",
+				slug: "valid-slug",
+				content: "内容があります",
+				status: "draft",
+				tagIds: [],
+			},
+		});
+
+		// Assert
+		expect(res.status).toBe(400);
+		expect(mockDb.insert).not.toHaveBeenCalled();
+	});
+});
+
+describe("GET /articles/check-slug", () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
+
+	it("利用可能なスラッグの場合、availableがtrueを返す", async () => {
+		// Arrange
+		const { mockDb } = setupDbMocks();
+
+		const selectMock = {
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockReturnValue({
+					limit: vi.fn().mockResolvedValue([]), // 記事が見つからない（スラッグが利用可能）
+				}),
+			}),
+		};
+
+		mockDb.select.mockReturnValue(selectMock);
+
+		// Act
+		const client = testClient(articlesRoute) as any;
+		const res = await client["check-slug"].$get({
+			query: {
+				slug: "available-slug",
+			},
+		});
+
+		// Assert
+		expect(res.status).toBe(200);
+		const data = await res.json();
+		expect(data).toEqual({
+			available: true,
+		});
+	});
+
+	it("既に使用されているスラッグの場合、availableがfalseを返す", async () => {
+		// Arrange
+		const { mockDb } = setupDbMocks();
+
+		const selectMock = {
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockReturnValue({
+					limit: vi.fn().mockResolvedValue([
+						{ id: 1, slug: "used-slug" }, // 既に記事が存在
+					]),
+				}),
+			}),
+		};
+
+		mockDb.select.mockReturnValue(selectMock);
+
+		// Act
+		const client = testClient(articlesRoute) as any;
+		const res = await client["check-slug"].$get({
+			query: {
+				slug: "used-slug",
+			},
+		});
+
+		// Assert
+		expect(res.status).toBe(200);
+		const data = await res.json();
+		expect(data).toEqual({
+			available: false,
+			message: "このスラッグは既に使用されています",
+		});
+	});
+
+	it("スラッグパラメータが空の場合、400エラーを返す", async () => {
+		// Arrange
+		const { mockDb } = setupDbMocks();
+
+		// Act
+		const client = testClient(articlesRoute) as any;
+		const res = await client["check-slug"].$get({
+			query: {
+				slug: "",
+			},
+		});
+
+		// Assert
+		expect(res.status).toBe(400);
+		expect(mockDb.select).not.toHaveBeenCalled();
+	});
 });
