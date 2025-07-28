@@ -91,12 +91,12 @@ export function useCreateTag({
 			const result = await response.json();
 			return result as CreateTagResponse;
 		},
-		onSuccess: (data) => {
+		onSuccess: (data, variables, context) => {
 			// タグ一覧のキャッシュを無効化
 			queryClient.invalidateQueries({ queryKey: queryKeys.tag.all() });
 
 			// 成功時のコールバックを実行
-			mutationConfig.onSuccess?.(data);
+			mutationConfig.onSuccess?.(data, variables, context);
 		},
 		...mutationConfig,
 	});

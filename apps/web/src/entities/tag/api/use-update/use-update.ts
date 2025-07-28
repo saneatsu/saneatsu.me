@@ -92,7 +92,7 @@ export function useUpdateTag({
 			const result = await response.json();
 			return result as UpdateTagResponse;
 		},
-		onSuccess: (data) => {
+		onSuccess: (data, variables, context) => {
 			// 個別タグのキャッシュを更新
 			queryClient.setQueryData(queryKeys.tag.byId(tagId), { data: data.data });
 
@@ -100,7 +100,7 @@ export function useUpdateTag({
 			queryClient.invalidateQueries({ queryKey: queryKeys.tag.all() });
 
 			// 成功時のコールバックを実行
-			mutationConfig.onSuccess?.(data);
+			mutationConfig.onSuccess?.(data, variables, context);
 		},
 		...mutationConfig,
 	});
