@@ -3,7 +3,7 @@ import { defaultLocale } from "../shared/config/locale-constants";
 
 /**
  * ルートページ
- * 
+ *
  * @description
  * デフォルトロケールのホームページへリダイレクトする。
  */
