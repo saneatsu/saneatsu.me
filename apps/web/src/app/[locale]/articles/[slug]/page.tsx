@@ -9,7 +9,7 @@ interface ArticlePageProps {
 
 /**
  * 記事詳細ページ
- * 
+ *
  * @description
  * 個別の記事を表示するページ。
  * slugパラメータに基づいて記事を取得し表示する。

@@ -3,7 +3,7 @@ import { ArticlesList } from "../../../widgets";
 
 /**
  * 記事一覧ページ
- * 
+ *
  * @description
  * すべての記事を表示する一覧ページ。
  * ページネーションとフィルタリング機能を含む。
