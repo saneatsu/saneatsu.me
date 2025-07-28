@@ -30,6 +30,57 @@
 			"title": "Latest Articles"
 		}
 	},
+	"about": {
+		"profile": {
+			"title": "About Saneatsu",
+			"description": "As a full-stack developer, I work on product development using modern web technologies. I aim to create software that provides value to users, and I continue to learn and practice every day."
+		},
+		"tech": {
+			"title": "Tech Stack",
+			"description": "Technologies I use and fields I'm interested in",
+			"frontend": {
+				"title": "Frontend",
+				"skills": "React, Next.js, TypeScript, Tailwind CSS, Vite"
+			},
+			"backend": {
+				"title": "Backend",
+				"skills": "Node.js, Hono, Drizzle ORM, PostgreSQL, SQLite"
+			},
+			"tools": {
+				"title": "Development Tools",
+				"skills": "Git, GitHub, Vercel, Cloudflare Workers, Docker"
+			}
+		},
+		"experience": {
+			"title": "Experience",
+			"description": "My development experience and initiatives",
+			"current": {
+				"title": "Current Activities",
+				"description": "Through personal project development, I focus on learning new technologies and practicing best practices."
+			},
+			"focus": {
+				"title": "Areas of Focus",
+				"description": "I'm particularly interested in modern web application development, performance optimization, and improving developer experience."
+			}
+		},
+		"interests": {
+			"title": "Interests & Hobbies",
+			"description": "Areas of interest outside of technology",
+			"tech": {
+				"title": "Tech Trends",
+				"description": "I'm interested in trends of new frameworks and tools, and contributing to open-source projects."
+			},
+			"life": {
+				"title": "Lifestyle",
+				"description": "I value creative thinking and refreshment through reading, watching movies, and taking walks."
+			}
+		},
+		"contact": {
+			"title": "Contact",
+			"description": "Feel free to reach out",
+			"email": "Contact via Email"
+		}
+	},
 	"footer": {
 		"copyright": "© {year} Saneatsu. All rights reserved.",
 		"privacy": "Privacy Policy",

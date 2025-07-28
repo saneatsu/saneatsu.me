@@ -30,6 +30,57 @@
 			"title": "最新の記事"
 		}
 	},
+	"about": {
+		"profile": {
+			"title": "Saneatsuについて",
+			"description": "フルスタック開発者として、モダンなWeb技術を使ったプロダクト開発に取り組んでいます。ユーザーに価値を提供するソフトウェアの創造を目指し、日々学習と実践を続けています。"
+		},
+		"tech": {
+			"title": "技術スタック",
+			"description": "普段使っている技術や興味のある分野について",
+			"frontend": {
+				"title": "フロントエンド",
+				"skills": "React, Next.js, TypeScript, Tailwind CSS, Vite"
+			},
+			"backend": {
+				"title": "バックエンド",
+				"skills": "Node.js, Hono, Drizzle ORM, PostgreSQL, SQLite"
+			},
+			"tools": {
+				"title": "開発ツール",
+				"skills": "Git, GitHub, Vercel, Cloudflare Workers, Docker"
+			}
+		},
+		"experience": {
+			"title": "経歴・経験",
+			"description": "これまでの開発経験と取り組み",
+			"current": {
+				"title": "現在の活動",
+				"description": "個人プロジェクトの開発を通じて、新しい技術の習得とベストプラクティスの実践に取り組んでいます。"
+			},
+			"focus": {
+				"title": "注力分野",
+				"description": "モダンなWebアプリケーション開発、パフォーマンス最適化、開発者体験の向上に特に関心を持っています。"
+			}
+		},
+		"interests": {
+			"title": "趣味・関心事",
+			"description": "技術以外の興味のある分野",
+			"tech": {
+				"title": "技術トレンド",
+				"description": "新しいフレームワークやツールの動向、オープンソースプロジェクトへの貢献に興味があります。"
+			},
+			"life": {
+				"title": "ライフスタイル",
+				"description": "読書、映画鑑賞、散歩などを通じて、クリエイティブな発想とリフレッシュを大切にしています。"
+			}
+		},
+		"contact": {
+			"title": "連絡先",
+			"description": "お気軽にご連絡ください",
+			"email": "メールで連絡"
+		}
+	},
 	"footer": {
 		"copyright": "© {year} Saneatsu. All rights reserved.",
 		"privacy": "プライバシーポリシー",
