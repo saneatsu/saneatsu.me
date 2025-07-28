@@ -80,5 +80,132 @@ export const TagArticlesResponseSchema = z.object({
 	pagination: PaginationSchema,
 });
 
+/**
+ * タグ詳細（翻訳含む）のスキーマ
+ */
+export const TagDetailSchema = z
+	.object({
+		id: z.number().int(),
+		slug: z.string(),
+		createdAt: z.string(),
+		updatedAt: z.string(),
+		translations: z.array(
+			z.object({
+				id: z.number().int(),
+				name: z.string(),
+				language: z.enum(["ja", "en"]),
+				tagId: z.number().int(),
+			})
+		),
+	})
+	.openapi({
+		example: {
+			id: 1,
+			slug: "javascript",
+			createdAt: "2024-01-01T00:00:00.000Z",
+			updatedAt: "2024-01-01T00:00:00.000Z",
+			translations: [
+				{
+					id: 1,
+					name: "JavaScript",
+					language: "ja",
+					tagId: 1,
+				},
+				{
+					id: 2,
+					name: "JavaScript",
+					language: "en",
+					tagId: 1,
+				},
+			],
+		},
+	});
+
+/**
+ * タグ作成リクエストのスキーマ
+ */
+export const CreateTagRequestSchema = z
+	.object({
+		slug: z.string().regex(/^[a-z0-9-]+$/),
+		translations: z
+			.array(
+				z.object({
+					name: z.string().min(1).max(50),
+					language: z.enum(["ja", "en"]),
+				})
+			)
+			.min(2)
+			.max(2),
+	})
+	.openapi({
+		example: {
+			slug: "javascript",
+			translations: [
+				{
+					name: "JavaScript",
+					language: "ja",
+				},
+				{
+					name: "JavaScript",
+					language: "en",
+				},
+			],
+		},
+	});
+
+/**
+ * タグ更新リクエストのスキーマ
+ */
+export const UpdateTagRequestSchema = z
+	.object({
+		slug: z
+			.string()
+			.regex(/^[a-z0-9-]+$/)
+			.optional(),
+		translations: z
+			.array(
+				z.object({
+					id: z.number().int().optional(),
+					name: z.string().min(1).max(50).optional(),
+					language: z.enum(["ja", "en"]),
+				})
+			)
+			.min(2)
+			.max(2)
+			.optional(),
+	})
+	.openapi({
+		example: {
+			slug: "javascript",
+			translations: [
+				{
+					name: "JavaScript",
+					language: "ja",
+				},
+				{
+					name: "JavaScript",
+					language: "en",
+				},
+			],
+		},
+	});
+
+/**
+ * タグ個別取得のパラメータスキーマ
+ */
+export const TagIdParamSchema = z.object({
+	id: z.string().regex(/^\d+$/).openapi({
+		example: "1",
+		description: "タグのID",
+	}),
+});
+
+/**
+ * タグ詳細レスポンスのスキーマ
+ */
+export const TagDetailResponseSchema = z.object({
+	data: TagDetailSchema,
+});
+
 // エラースキーマはarticlesからエクスポート
 export { ErrorSchema };
