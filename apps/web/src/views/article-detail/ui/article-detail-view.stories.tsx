@@ -58,6 +58,11 @@ useEffect(() => {
 ## まとめ
 
 React Hooksを使って、より良いReactアプリケーションを構築しましょう！`,
+	tags: [
+		{ id: 1, slug: "react", name: "React" },
+		{ id: 2, slug: "javascript", name: "JavaScript" },
+		{ id: 3, slug: "frontend", name: "フロントエンド" },
+	],
 };
 
 const draftArticle: Article = {

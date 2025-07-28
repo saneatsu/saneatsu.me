@@ -36,6 +36,9 @@ describe("Unit Test", () => {
 			publishedAt: "2024-01-15T10:00:00Z",
 			title: "テスト記事",
 			content: "これはテスト記事の内容です。",
+			tags: [
+				{ id: 1, slug: "test", name: "テスト" },
+			],
 		};
 
 		it("should render article title correctly", () => {
@@ -142,6 +145,9 @@ describe("Integration Test", () => {
 			publishedAt: "2024-01-15T10:00:00Z",
 			title: "テスト記事",
 			content: "これはテスト記事の内容です。",
+			tags: [
+				{ id: 1, slug: "test", name: "テスト" },
+			],
 		};
 
 		it("should render complete article layout with Japanese locale", () => {
@@ -152,7 +158,10 @@ describe("Integration Test", () => {
 			expect(screen.getByRole("article")).toBeInTheDocument();
 			expect(screen.getByRole("heading", { level: 1 })).toBeInTheDocument();
 			expect(screen.getByTestId("markdown-content")).toBeInTheDocument();
-			expect(screen.getByRole("link")).toBeInTheDocument();
+			
+			// タグリンクが表示されることを確認
+			const tagLinks = screen.getAllByRole("link");
+			expect(tagLinks.length).toBeGreaterThan(0);
 
 			// 日本語ロケール固有の表示確認
 			expect(screen.getByText("公開")).toBeInTheDocument();
@@ -167,7 +176,10 @@ describe("Integration Test", () => {
 			expect(screen.getByRole("article")).toBeInTheDocument();
 			expect(screen.getByRole("heading", { level: 1 })).toBeInTheDocument();
 			expect(screen.getByTestId("markdown-content")).toBeInTheDocument();
-			expect(screen.getByRole("link")).toBeInTheDocument();
+			
+			// タグリンクが表示されることを確認
+			const tagLinks = screen.getAllByRole("link");
+			expect(tagLinks.length).toBeGreaterThan(0);
 
 			// 英語ロケール固有の表示確認
 			expect(screen.getByText("Published")).toBeInTheDocument();
