@@ -35,6 +35,14 @@
 		"privacy": "Privacy Policy",
 		"terms": "Terms of Service"
 	},
+	"admin": {
+		"articles": {
+			"new": {
+				"title": "Create New Article - Admin",
+				"description": "Create a new article"
+			}
+		}
+	},
 	"loading": "Loading...",
 	"error": {
 		"title": "An error occurred",
@@ -147,7 +155,9 @@
 				"slugRequired": "Please enter a slug",
 				"slugInvalid": "Slug can only contain alphanumeric characters and hyphens",
 				"atLeastOneTranslation": "Please enter a tag name in at least one language",
-				"maxTranslations": "Supports up to 2 languages"
+				"maxTranslations": "Supports up to 2 languages",
+				"bothLanguagesRequired": "Please enter tag names in both Japanese and English",
+				"bothJaEnRequired": "Both Japanese and English tag names are required"
 			},
 			"pagination": {
 				"pagePositive": "Page number must be a positive integer",
