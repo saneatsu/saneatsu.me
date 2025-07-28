@@ -371,4 +371,158 @@ describe("GET /articles/:slug", () => {
 		const data = await res.json();
 		expect(data.data.title).toBe("Test Article");
 	});
+
+	it("記事にタグ情報が含まれて返される", async () => {
+		// Arrange
+		const { mockDb } = setupDbMocks();
+
+		const mockArticle = {
+			id: 1,
+			slug: "test-article",
+			status: "published",
+			thumbnail: null,
+			publishedAt: new Date("2024-01-15"),
+			title: "Test Article",
+			content: "Test content",
+			createdAt: new Date("2024-01-15"),
+			updatedAt: new Date("2024-01-15"),
+		};
+
+		// 記事取得のモック
+		const articleMock = {
+			from: vi.fn().mockReturnValue({
+				leftJoin: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([mockArticle]),
+					}),
+				}),
+			}),
+		};
+
+		// タグ情報取得のモック
+		const tagsMock = {
+			from: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
+					innerJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockResolvedValue([
+							{ id: 1, slug: "tech", name: "技術" },
+							{ id: 2, slug: "life", name: "生活" },
+						]),
+					}),
+				}),
+			}),
+		};
+
+		// select呼び出しを順番に返すようにモック
+		mockDb.select
+			.mockReturnValueOnce(articleMock) // 記事取得
+			.mockReturnValueOnce(tagsMock); // タグ取得
+
+		// Act
+		const res = await (testClient(articlesRoute) as any)["test-article"].$get({
+			query: { lang: "ja" },
+		});
+
+		// Assert
+		expect(res.status).toBe(200);
+		const data = await res.json();
+
+		expect(data.data).toMatchObject({
+			...mockArticle,
+			tags: [
+				{ id: 1, slug: "tech", name: "技術" },
+				{ id: 2, slug: "life", name: "生活" },
+			],
+		});
+	});
+
+	it("下書きステータスの記事の場合、404エラーを返す", async () => {
+		// Arrange
+		const { mockDb } = setupDbMocks();
+
+		const mockDraftArticle = {
+			id: 1,
+			slug: "draft-article",
+			status: "draft",
+			thumbnail: null,
+			publishedAt: null,
+			title: "Draft Article",
+			content: "Draft content",
+			createdAt: new Date("2024-01-15"),
+			updatedAt: new Date("2024-01-15"),
+		};
+
+		const articleMock = {
+			from: vi.fn().mockReturnValue({
+				leftJoin: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([mockDraftArticle]),
+					}),
+				}),
+			}),
+		};
+
+		mockDb.select.mockReturnValue(articleMock);
+
+		// Act
+		const res = await (testClient(articlesRoute) as any)["draft-article"].$get({
+			query: {},
+		});
+
+		// Assert
+		expect(res.status).toBe(404);
+		const data = await res.json();
+
+		expect(data).toEqual({
+			error: {
+				code: "NOT_FOUND",
+				message: "Article not found",
+			},
+		});
+	});
+
+	it("アーカイブ済みステータスの記事の場合、404エラーを返す", async () => {
+		// Arrange
+		const { mockDb } = setupDbMocks();
+
+		const mockArchivedArticle = {
+			id: 1,
+			slug: "archived-article",
+			status: "archived",
+			thumbnail: null,
+			publishedAt: new Date("2024-01-15"),
+			title: "Archived Article",
+			content: "Archived content",
+			createdAt: new Date("2024-01-15"),
+			updatedAt: new Date("2024-01-15"),
+		};
+
+		const articleMock = {
+			from: vi.fn().mockReturnValue({
+				leftJoin: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([mockArchivedArticle]),
+					}),
+				}),
+			}),
+		};
+
+		mockDb.select.mockReturnValue(articleMock);
+
+		// Act
+		const res = await (testClient(articlesRoute) as any)["archived-article"].$get({
+			query: {},
+		});
+
+		// Assert
+		expect(res.status).toBe(404);
+		const data = await res.json();
+
+		expect(data).toEqual({
+			error: {
+				code: "NOT_FOUND",
+				message: "Article not found",
+			},
+		});
+	});
 });
