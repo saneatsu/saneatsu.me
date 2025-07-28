@@ -4,7 +4,7 @@ import { useLocale } from "next-intl";
 import { useEffect, useState } from "react";
 import { articlesService } from "../../../entities/article/api/articles";
 import { ArticleCard } from "../../../entities/article/ui/article-card";
-import type { Article } from "../../../shared/api/types";
+import type { Article } from "../../../shared/types/article";
 
 interface ArticlesListProps {
 	/** 表示する記事の数（省略時は全て表示） */

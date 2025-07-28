@@ -30,7 +30,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
 		: null;
 
 	// コンテンツから本文の抜粋を生成
-	const excerpt = article.content
+	const excerpt = (article.content || "")
 		.replace(/^#.*$/gm, "") // ヘッダーを削除
 		.replace(/```[\s\S]*?```/g, "") // コードブロックを削除
 		.replace(/[#*`]/g, "") // マークダウン記法を削除

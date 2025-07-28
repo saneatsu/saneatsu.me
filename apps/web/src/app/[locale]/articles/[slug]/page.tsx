@@ -1,4 +1,4 @@
-import { ArticleDetailView } from "../../../../views/article-detail";
+import { ArticleDetailWrapper } from "../../../../views/article-detail/ui/article-detail-wrapper";
 
 interface ArticlePageProps {
 	params: Promise<{
@@ -17,5 +17,5 @@ interface ArticlePageProps {
 export default async function ArticlePage({ params }: ArticlePageProps) {
 	const { locale, slug } = await params;
 
-	return <ArticleDetailView locale={locale} slug={slug} />;
+	return <ArticleDetailWrapper locale={locale} slug={slug} />;
 }
