@@ -8,6 +8,4 @@ export { useCreateTag, type CreateTagInput } from "./api/use-create";
 export { useCheckTagSlug } from "./api/use-check-slug";
 export { useGetTagById, getTagFormInitialValues, type TagDetail } from "./api/use-get-by-id";
 export { useUpdateTag, createTagInputToUpdateTagInput, type UpdateTagInput } from "./api/use-update";
-
-// 将来的に追加予定のエクスポート
-// export { useDeleteTag } from "./api/use-delete";
+export { useDeleteTag } from "./api/use-delete";
