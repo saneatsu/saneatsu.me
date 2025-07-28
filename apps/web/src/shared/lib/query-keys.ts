@@ -40,8 +40,23 @@ export const queryKeys = {
 		// スラッグ重複チェック
 		checkSlug: (slug: string) => ["articles", "check-slug", slug] as const,
 	},
+
+	/**
+	 * ダッシュボード関連のクエリキー
+	 */
+	dashboard: {
+		// ダッシュボード概要
+		overview: (lang?: string) => ["dashboard", "overview", { lang }] as const,
+		// 閲覧数推移
+		viewsTrend: (lang?: string, days?: number) =>
+			["dashboard", "views-trend", { lang, days }] as const,
+		// 詳細統計
+		stats: (lang?: string, timeRange?: string) =>
+			["dashboard", "stats", { lang, timeRange }] as const,
+	},
 } as const;
 
 // エクスポートエイリアス
 export const TAG_QUERY_KEYS = queryKeys.tag;
 export const ARTICLE_QUERY_KEYS = queryKeys.article;
+export const DASHBOARD_QUERY_KEYS = queryKeys.dashboard;
