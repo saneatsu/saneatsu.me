@@ -22,7 +22,20 @@ const app = new OpenAPIHono();
 
 // ミドルウェアの設定
 app.use("*", logger());
-app.use("*", cors());
+app.use(
+	"*",
+	cors({
+		origin: [
+			"http://localhost:3000",
+			"http://localhost:3210",
+			"http://localhost:3333",
+			"https://saneatsu.me",
+		],
+		credentials: true,
+		allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+		allowHeaders: ["Content-Type", "Authorization"],
+	})
+);
 app.use("*", prettyJSON());
 
 // ヘルスチェックエンドポイント
