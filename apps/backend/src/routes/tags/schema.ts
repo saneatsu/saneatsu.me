@@ -1,9 +1,41 @@
 import { z } from "@hono/zod-openapi";
-import {
-	ArticleSchema,
-	ErrorSchema,
-	PaginationSchema,
-} from "../articles/schema";
+
+/**
+ * エラーレスポンスのスキーマ
+ */
+export const ErrorSchema = z.object({
+	error: z.object({
+		code: z.string(),
+		message: z.string(),
+	}),
+});
+
+/**
+ * ページネーション情報のスキーマ
+ */
+export const PaginationSchema = z.object({
+	total: z.number().int(),
+	page: z.number().int(),
+	pageSize: z.number().int(),
+	totalPages: z.number().int(),
+});
+
+/**
+ * 記事スキーマ（タグで使用）
+ */
+export const ArticleSchema = z.object({
+	id: z.string(),
+	slug: z.string(),
+	title: z.string().nullable(),
+	description: z.string().nullable(),
+	content: z.string().nullable(),
+	viewCount: z.number().int().nullable(),
+	cfImageId: z.string().nullable(),
+	status: z.enum(["draft", "published", "archived"]),
+	publishedAt: z.string().nullable(),
+	language: z.enum(["ja", "en"]).nullable(),
+	tags: z.array(z.any()).optional(),
+});
 
 /**
  * タグオブジェクトのスキーマ
@@ -207,5 +239,3 @@ export const TagDetailResponseSchema = z.object({
 	data: TagDetailSchema,
 });
 
-// エラースキーマはarticlesからエクスポート
-export { ErrorSchema };

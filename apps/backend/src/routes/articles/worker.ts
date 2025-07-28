@@ -1,4 +1,4 @@
-import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import {
 	articles,
 	articleTranslations,
@@ -6,13 +6,45 @@ import {
 } from "@saneatsu/db/worker";
 import { and, eq } from "drizzle-orm";
 import {
-	ArticleDetailQuerySchema,
-	ArticleParamSchema,
-	ArticleResponseSchema,
-	ArticlesQuerySchema,
-	ArticlesResponseSchema,
-	ErrorSchema,
-} from "./schema";
+	articleListQuerySchema as ArticlesQuerySchema,
+	articleDetailQuerySchema as ArticleDetailQuerySchema,
+} from "@saneatsu/schemas";
+
+// 一時的なスキーマ定義
+const ArticleParamSchema = z.object({
+	slug: z.string(),
+});
+
+const ArticleResponseSchema = z.object({
+	id: z.string(),
+	slug: z.string(),
+	title: z.string().nullable(),
+	description: z.string().nullable(),
+	content: z.string().nullable(),
+	viewCount: z.number().int().nullable(),
+	cfImageId: z.string().nullable(),
+	status: z.enum(["draft", "published", "archived"]),
+	publishedAt: z.string().nullable(),
+	language: z.enum(["ja", "en"]).nullable(),
+	tags: z.array(z.any()).optional(),
+});
+
+const ArticlesResponseSchema = z.object({
+	data: z.array(ArticleResponseSchema),
+	pagination: z.object({
+		total: z.number().int(),
+		page: z.number().int(),
+		pageSize: z.number().int(),
+		totalPages: z.number().int(),
+	}),
+});
+
+const ErrorSchema = z.object({
+	error: z.object({
+		code: z.string(),
+		message: z.string(),
+	}),
+});
 
 /**
  * Cloudflare Workers用の記事関連APIルート
