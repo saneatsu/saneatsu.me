@@ -21,6 +21,7 @@ process.env.NODE_ENV = "test";
 // ----------------------------------------------
 
 // Drizzle DBクライアントのモック
+// setupDbMocks()で個別にカスタムできるよう基本的なモック設定
 vi.mock("@saneatsu/db", () => ({
 	db: {
 		select: vi.fn(),
@@ -33,4 +34,5 @@ vi.mock("@saneatsu/db", () => ({
 	articleTranslations: {},
 	tags: {},
 	tagTranslations: {},
+	articleTags: {},
 }));
