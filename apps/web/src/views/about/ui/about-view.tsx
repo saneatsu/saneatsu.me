@@ -42,13 +42,17 @@ export function AboutView() {
 						</CardHeader>
 						<CardContent className="space-y-4">
 							<div>
-								<h4 className="font-semibold mb-2">{t("tech.frontend.title")}</h4>
+								<h4 className="font-semibold mb-2">
+									{t("tech.frontend.title")}
+								</h4>
 								<p className="text-sm text-muted-foreground">
 									{t("tech.frontend.skills")}
 								</p>
 							</div>
 							<div>
-								<h4 className="font-semibold mb-2">{t("tech.backend.title")}</h4>
+								<h4 className="font-semibold mb-2">
+									{t("tech.backend.title")}
+								</h4>
 								<p className="text-sm text-muted-foreground">
 									{t("tech.backend.skills")}
 								</p>
@@ -125,7 +129,9 @@ export function AboutView() {
 								<Button
 									variant="outline"
 									className="justify-start"
-									onClick={() => window.open("https://github.com/saneatsu", "_blank")}
+									onClick={() =>
+										window.open("https://github.com/saneatsu", "_blank")
+									}
 								>
 									<Github className="mr-2 h-4 w-4" />
 									GitHub
@@ -133,7 +139,9 @@ export function AboutView() {
 								<Button
 									variant="outline"
 									className="justify-start"
-									onClick={() => window.open("https://twitter.com/saneatsu", "_blank")}
+									onClick={() =>
+										window.open("https://twitter.com/saneatsu", "_blank")
+									}
 								>
 									<Twitter className="mr-2 h-4 w-4" />
 									Twitter
