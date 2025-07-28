@@ -1,5 +1,5 @@
+import type { ApiError } from "../types/common";
 import type {
-	ApiError,
 	ArticleCreateRequest,
 	ArticleCreateResponse,
 	ArticleDetailQuery,
