@@ -1,3 +1,5 @@
+import { hc } from "hono/client";
+import type { AppType } from "@saneatsu/backend";
 import type { ApiError } from "../types/common";
 import type {
 	ArticleCreateRequest,
@@ -10,12 +12,24 @@ import type {
 	SlugCheckResponse,
 } from "../types/article";
 import type { TagsQuery, TagsResponse } from "../types/tag";
+import type {
+	DashboardOverviewRequestQuery,
+	DashboardOverviewResponseData,
+	DashboardStatsRequestQuery,
+	DashboardStatsResponseData,
+} from "../types/dashboard";
 
 /**
  * APIのベースURL
  * 開発環境では相対パスを使用
  */
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "/api";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
+
+/**
+ * Hono Clientの初期化
+ * バックエンドAPIの型情報を使用して型安全なクライアントを作成
+ */
+const client = hc<AppType>(API_BASE_URL) as any;
 
 /**
  * APIクライアントのエラークラス
@@ -32,62 +46,21 @@ export class ApiClientError extends Error {
 }
 
 /**
- * クエリパラメータをURLSearchParamsに変換
+ * APIレスポンスのエラーハンドリング
  */
-function buildQueryParams(params: Record<string, string | undefined>): string {
-	const searchParams = new URLSearchParams();
+async function handleApiResponse<T>(response: Response): Promise<T> {
+	const data = await response.json();
 
-	Object.entries(params).forEach(([key, value]) => {
-		if (value !== undefined) {
-			searchParams.append(key, value);
-		}
-	});
-
-	const queryString = searchParams.toString();
-	return queryString ? `?${queryString}` : "";
-}
-
-/**
- * APIリクエストを実行する汎用関数
- */
-async function apiRequest<T>(
-	endpoint: string,
-	options: RequestInit = {}
-): Promise<T> {
-	const url = `${API_BASE_URL}${endpoint}`;
-
-	try {
-		const response = await fetch(url, {
-			headers: {
-				"Content-Type": "application/json",
-				...options.headers,
-			},
-			...options,
-		});
-
-		const data = await response.json();
-
-		if (!response.ok) {
-			const error = data as ApiError;
-			throw new ApiClientError(
-				error.error.message || "API request failed",
-				response.status,
-				error.error.code
-			);
-		}
-
-		return data;
-	} catch (error) {
-		if (error instanceof ApiClientError) {
-			throw error;
-		}
-
-		// ネットワークエラーなどの場合
+	if (!response.ok) {
+		const error = data as ApiError;
 		throw new ApiClientError(
-			error instanceof Error ? error.message : "Unknown error occurred",
-			0
+			error.error.message || "API request failed",
+			response.status,
+			error.error.code
 		);
 	}
+
+	return data;
 }
 
 /**
@@ -96,13 +69,19 @@ async function apiRequest<T>(
 export async function fetchArticles(
 	query: ArticlesQuery = {}
 ): Promise<ArticlesResponse> {
-	const queryString = buildQueryParams({
-		page: query.page,
-		limit: query.limit,
-		lang: query.lang,
+	const response = await client.api.articles.$get({
+		query: {
+			page: query.page,
+			limit: query.limit,
+			language: query.lang as "ja" | "en" | undefined,
+			status: query.status as "published" | "draft" | "archived" | undefined,
+			search: query.search,
+			sortBy: query.sortBy as "createdAt" | "updatedAt" | "publishedAt" | "title" | "viewCount" | undefined,
+			sortOrder: query.sortOrder as "asc" | "desc" | undefined,
+		},
 	});
 
-	return apiRequest<ArticlesResponse>(`/articles${queryString}`);
+	return handleApiResponse<ArticlesResponse>(response);
 }
 
 /**
@@ -112,56 +91,65 @@ export async function fetchArticle(
 	slug: string,
 	query: ArticleDetailQuery = {}
 ): Promise<ArticleResponse> {
-	const queryString = buildQueryParams({
-		lang: query.lang,
+	const response = await client.api.articles[":slug"].$get({
+		param: { slug },
+		query: {
+			lang: query.lang as "ja" | "en" | undefined,
+		},
 	});
 
-	return apiRequest<ArticleResponse>(`/articles/${slug}${queryString}`);
+	return handleApiResponse<ArticleResponse>(response);
 }
 
 /**
  * 管理用：全記事を取得（ステータス問わず）
  * 注意：この関数は管理画面専用です。実際の実装では認証が必要です。
- * 一時的に既存の /api/articles エンドポイントを使用
+ * sortBy と sortOrder パラメータを追加
  */
 export async function fetchAllArticles(
-	query: ArticlesQuery & { status?: string; search?: string } = {}
+	query: ArticlesQuery & { 
+		status?: string; 
+		search?: string; 
+		sortBy?: string; 
+		sortOrder?: string;
+	} = {}
 ): Promise<ArticlesResponse> {
-	const queryString = buildQueryParams({
-		page: query.page,
-		limit: query.limit,
-		lang: query.lang,
-		status: query.status,
-		search: query.search,
+	const response = await client.api.articles.$get({
+		query: {
+			page: query.page,
+			limit: query.limit,
+			language: query.lang as "ja" | "en" | undefined,
+			status: query.status as "published" | "draft" | "archived" | undefined,
+			search: query.search,
+			sortBy: query.sortBy as "createdAt" | "updatedAt" | "publishedAt" | "title" | "viewCount" | undefined,
+			sortOrder: query.sortOrder as "asc" | "desc" | undefined,
+		},
 	});
 
-	// 一時的に既存のAPIエンドポイントを使用
-	// 将来的には /admin/articles エンドポイントを実装予定
-	return apiRequest<ArticlesResponse>(`/articles${queryString}`);
+	return handleApiResponse<ArticlesResponse>(response);
 }
 
 /**
  * 記事のステータスを更新
  * 注意：この関数は管理画面専用です。実際の実装では認証が必要です。
+ * 現在は未実装のため、仮実装として残す
  */
 export async function updateArticleStatus(
 	id: number,
 	status: string
 ): Promise<{ success: boolean }> {
-	return apiRequest<{ success: boolean }>(`/admin/articles/${id}/status`, {
-		method: "PATCH",
-		body: JSON.stringify({ status }),
-	});
+	// TODO: バックエンドにPATCH /admin/articles/:id/status エンドポイントを実装後にHono Client版に書き換え
+	throw new Error("Not implemented yet");
 }
 
 /**
  * 記事を削除
  * 注意：この関数は管理画面専用です。実際の実装では認証が必要です。
+ * 現在は未実装のため、仮実装として残す
  */
 export async function deleteArticle(id: number): Promise<{ success: boolean }> {
-	return apiRequest<{ success: boolean }>(`/admin/articles/${id}`, {
-		method: "DELETE",
-	});
+	// TODO: バックエンドにDELETE /admin/articles/:id エンドポイントを実装後にHono Client版に書き換え
+	throw new Error("Not implemented yet");
 }
 
 /**
@@ -171,11 +159,13 @@ export async function deleteArticle(id: number): Promise<{ success: boolean }> {
 export async function checkSlugAvailability(
 	query: SlugCheckQuery
 ): Promise<SlugCheckResponse> {
-	const queryString = buildQueryParams({
-		slug: query.slug,
+	const response = await client.api.articles["check-slug"].$get({
+		query: {
+			slug: query.slug,
+		},
 	});
 
-	return apiRequest<SlugCheckResponse>(`/articles/check-slug${queryString}`);
+	return handleApiResponse<SlugCheckResponse>(response);
 }
 
 /**
@@ -185,21 +175,31 @@ export async function checkSlugAvailability(
 export async function createArticle(
 	data: ArticleCreateRequest
 ): Promise<ArticleCreateResponse> {
-	return apiRequest<ArticleCreateResponse>("/articles", {
-		method: "POST",
-		body: JSON.stringify(data),
+	const response = await client.api.articles.$post({
+		json: {
+			title: data.title,
+			slug: data.slug,
+			content: data.content,
+			status: data.status as "draft" | "published",
+			publishedAt: data.publishedAt,
+			tagIds: data.tagIds,
+		},
 	});
+
+	return handleApiResponse<ArticleCreateResponse>(response);
 }
 
 /**
  * タグ一覧を取得
  */
 export async function fetchTags(query: TagsQuery = {}): Promise<TagsResponse> {
-	const queryString = buildQueryParams({
-		lang: query.lang || "ja",
+	const response = await client.api.tags.$get({
+		query: {
+			lang: (query.lang || "ja") as "ja" | "en",
+		},
 	});
 
-	return apiRequest<TagsResponse>(`/tags${queryString}`);
+	return handleApiResponse<TagsResponse>(response);
 }
 
 /**
@@ -222,4 +222,35 @@ export function getErrorMessage(error: unknown): string {
 	}
 
 	return "不明なエラーが発生しました";
+}
+
+/**
+ * ダッシュボード統計データを取得
+ */
+export async function fetchDashboardStats(
+	query: DashboardStatsRequestQuery = {}
+): Promise<DashboardStatsResponseData> {
+	const response = await client.api.dashboard.stats.$get({
+		query: {
+			language: query.language || "ja",
+			timeRange: query.timeRange || "30",
+		},
+	});
+
+	return handleApiResponse<DashboardStatsResponseData>(response);
+}
+
+/**
+ * ダッシュボード概要データを取得
+ */
+export async function fetchDashboardOverview(
+	query: DashboardOverviewRequestQuery = {}
+): Promise<DashboardOverviewResponseData> {
+	const response = await client.api.dashboard.overview.$get({
+		query: {
+			language: query.language || "ja",
+		},
+	});
+
+	return handleApiResponse<DashboardOverviewResponseData>(response);
 }

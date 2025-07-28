@@ -66,6 +66,14 @@ export interface ArticlesQuery {
 	limit?: string;
 	/** 言語 */
 	lang?: LanguageCode;
+	/** 記事のステータス */
+	status?: ArticleStatus;
+	/** 検索キーワード */
+	search?: string;
+	/** ソート対象フィールド */
+	sortBy?: "createdAt" | "updatedAt" | "publishedAt" | "title" | "viewCount";
+	/** ソート順序 */
+	sortOrder?: "asc" | "desc";
 }
 
 /**
