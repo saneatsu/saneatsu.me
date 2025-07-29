@@ -9,20 +9,6 @@
  */
 export const queryKeys = {
 	/**
-	 * タグ関連のクエリキー
-	 */
-	tag: {
-		// すべてのタグ（言語指定可能）
-		all: (lang?: "ja" | "en") => ["tags", { lang }] as const,
-		// 個別のタグ（ID指定）
-		byId: (id: number) => ["tags", id] as const,
-		// スラッグによるタグ取得
-		bySlug: (slug: string) => ["tags", "slug", slug] as const,
-		// スラッグ重複チェック
-		checkSlug: (slug: string) => ["tags", "check-slug", slug] as const,
-	},
-
-	/**
 	 * 記事関連のクエリキー
 	 */
 	article: {
@@ -65,6 +51,5 @@ export const queryKeys = {
 } as const;
 
 // エクスポートエイリアス
-export const TAG_QUERY_KEYS = queryKeys.tag;
 export const ARTICLE_QUERY_KEYS = queryKeys.article;
 export const DASHBOARD_QUERY_KEYS = queryKeys.dashboard;

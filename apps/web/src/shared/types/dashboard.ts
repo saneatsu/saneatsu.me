@@ -5,7 +5,6 @@ import type {
 	ArticleStats as SchemaArticleStats,
 	PopularArticle as SchemaPopularArticle,
 	RecentActivityItem as SchemaRecentActivityItem,
-	TagStats as SchemaTagStats,
 } from "@saneatsu/schemas";
 
 /**
@@ -45,6 +44,5 @@ export type DashboardStatsBackendQuery = DashboardStatsQuery;
  * フロントエンド用型定義の再エクスポート
  */
 export type ArticleStats = SchemaArticleStats;
-export type TagStats = SchemaTagStats;
 export type PopularArticle = SchemaPopularArticle;
 export type RecentActivityItem = SchemaRecentActivityItem;

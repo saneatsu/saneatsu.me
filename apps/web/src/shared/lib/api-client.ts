@@ -11,7 +11,6 @@ import type {
 	SlugCheckResponse,
 } from "../types/article";
 import type { ApiError } from "../types/common";
-import type { TagsQuery, TagsResponse } from "../types/tag";
 
 /**
  * APIのベースURL
@@ -188,24 +187,10 @@ export async function createArticle(
 			content: data.content,
 			status: data.status as "draft" | "published",
 			publishedAt: data.publishedAt,
-			tagIds: data.tagIds,
 		},
 	});
 
 	return handleApiResponse<ArticleCreateResponse>(response);
-}
-
-/**
- * タグ一覧を取得
- */
-export async function fetchTags(query: TagsQuery = {}): Promise<TagsResponse> {
-	const response = await client.api.tags.$get({
-		query: {
-			lang: (query.lang || "ja") as "ja" | "en",
-		},
-	});
-
-	return handleApiResponse<TagsResponse>(response);
 }
 
 /**
