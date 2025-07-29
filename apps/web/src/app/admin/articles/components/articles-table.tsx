@@ -1,11 +1,8 @@
 "use client";
 
 import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
-import { useCallback, useEffect, useState } from "react";
-import {
-	fetchAllArticles,
-	getErrorMessage,
-} from "../../../../shared/lib/api-client";
+import { useState } from "react";
+import { useGetAllArticles } from "../../../../entities/article/api/use-get-all";
 import type { Article, ArticleFilters } from "../../../../shared/types/article";
 import { ARTICLE_STATUS_CONFIG } from "../../../../shared/types/article";
 import { Badge } from "../../../../shared/ui/badge/badge";
@@ -38,13 +35,6 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 		search: parseAsString.withDefault(""),
 	});
 
-	const [articles, setArticles] = useState<Article[]>([]);
-	const [pagination, setPagination] = useState<DataTablePagination>({
-		page: urlQuery.page,
-		limit: urlQuery.limit,
-		total: 0,
-		totalPages: 0,
-	});
 	const [sort, setSort] = useState<DataTableSort>({
 		key: "createdAt",
 		direction: "desc",
@@ -54,42 +44,32 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 		language: "ja", // 常に日本語固定
 		search: urlQuery.search,
 	});
-	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState<string | null>(null);
 
 	/**
 	 * 記事一覧を取得
 	 */
-	const loadArticles = useCallback(async () => {
-		setLoading(true);
-		setError(null);
+	const { data, isLoading, error, refetch } = useGetAllArticles({
+		page: urlQuery.page,
+		limit: urlQuery.limit,
+		language: "ja",
+		status: filters.status === "all" ? undefined : (filters.status as any),
+		search: filters.search.trim() || undefined,
+		sortBy: sort.key as any,
+		sortOrder: sort.direction,
+	});
 
-		try {
-			const response = await fetchAllArticles({
-				page: pagination.page.toString(),
-				limit: pagination.limit.toString(),
-				lang: "ja",
-				status: filters.status === "all" ? undefined : filters.status,
-				search: filters.search.trim() || undefined,
-				sortBy: sort.key,
-				sortOrder: sort.direction,
-			});
-
-			setArticles(response.data);
-			setPagination(response.pagination);
-		} catch (err) {
-			setError(getErrorMessage(err));
-			console.error("Failed to load articles:", err);
-		} finally {
-			setLoading(false);
-		}
-	}, [pagination.page, pagination.limit, filters.status, filters.search, sort.key, sort.direction]);
+	const articles = data?.data || [];
+	const pagination: DataTablePagination = {
+		page: data?.pagination.page || urlQuery.page,
+		limit: data?.pagination.limit || urlQuery.limit,
+		total: data?.pagination.total || 0,
+		totalPages: data?.pagination.totalPages || 0,
+	};
 
 	/**
 	 * ページ変更時の処理
 	 */
 	const handlePageChange = (page: number) => {
-		setPagination((prev) => ({ ...prev, page }));
 		setUrlQuery({ page });
 	};
 
@@ -97,7 +77,6 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 	 * ページサイズ変更時の処理
 	 */
 	const handlePageSizeChange = (limit: number) => {
-		setPagination((prev) => ({ ...prev, limit, page: 1 }));
 		setUrlQuery({ limit, page: 1 });
 	};
 
@@ -107,7 +86,7 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 	const handleSortChange = (newSort: DataTableSort) => {
 		setSort(newSort);
 		// ソートが変更されたら1ページ目に戻る
-		setPagination((prev) => ({ ...prev, page: 1 }));
+		setUrlQuery({ page: 1 });
 	};
 
 	/**
@@ -116,7 +95,6 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 	const handleFiltersChange = (newFilters: ArticleFilters) => {
 		setFilters(newFilters);
 		// フィルター変更時は1ページ目に戻る
-		setPagination((prev) => ({ ...prev, page: 1 }));
 		setUrlQuery({
 			status: newFilters.status,
 			search: newFilters.search,
@@ -128,14 +106,10 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 	 * 記事アクション実行後の処理
 	 */
 	const handleArticleAction = () => {
-		loadArticles();
+		refetch();
 		onRefresh?.();
 	};
 
-	// 初期読み込み
-	useEffect(() => {
-		loadArticles();
-	}, [loadArticles]);
 
 	/**
 	 * 日付フォーマット関数
@@ -253,7 +227,7 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 			<ArticlesFilter
 				filters={filters}
 				onFiltersChange={handleFiltersChange}
-				loading={loading}
+				loading={isLoading}
 			/>
 
 			{/* データテーブル */}
@@ -266,8 +240,8 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 				pageSizeOptions={[50, 100, 150]}
 				sort={sort}
 				onSortChange={handleSortChange}
-				loading={loading}
-				error={error}
+				loading={isLoading}
+				error={error ? (error instanceof Error ? error.message : "エラーが発生しました") : null}
 				emptyMessage="記事が見つかりません"
 			/>
 		</div>
