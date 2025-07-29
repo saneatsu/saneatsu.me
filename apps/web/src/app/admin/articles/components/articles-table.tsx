@@ -71,6 +71,8 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 				lang: "ja",
 				status: filters.status === "all" ? undefined : filters.status,
 				search: filters.search.trim() || undefined,
+				sortBy: sort.key,
+				sortOrder: sort.direction,
 			});
 
 			setArticles(response.data);
@@ -81,7 +83,7 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 		} finally {
 			setLoading(false);
 		}
-	}, [pagination.page, pagination.limit, filters.status, filters.search]);
+	}, [pagination.page, pagination.limit, filters.status, filters.search, sort.key, sort.direction]);
 
 	/**
 	 * ページ変更時の処理
@@ -104,8 +106,8 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 	 */
 	const handleSortChange = (newSort: DataTableSort) => {
 		setSort(newSort);
-		// 実際の実装では、ソートに応じてAPIパラメータを変更する必要がある
-		// 今回は簡略化してクライアントサイドソートは行わない
+		// ソートが変更されたら1ページ目に戻る
+		setPagination((prev) => ({ ...prev, page: 1 }));
 	};
 
 	/**
@@ -212,6 +214,17 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 				const config = ARTICLE_STATUS_CONFIG[article.status];
 				return <Badge variant={config.variant}>{config.label}</Badge>;
 			},
+		},
+		{
+			key: "viewCount",
+			label: "閲覧数",
+			sortable: true,
+			className: "w-[100px]",
+			render: (article) => (
+				<div className="text-sm font-medium text-right">
+					{article.viewCount.toLocaleString()}
+				</div>
+			),
 		},
 		{
 			key: "updatedAt",
