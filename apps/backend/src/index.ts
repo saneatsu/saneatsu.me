@@ -10,7 +10,6 @@ import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 import { articlesRoute } from "./routes/articles";
 import { dashboardRoute } from "./routes/dashboard";
-import { tagsRoute } from "./routes/tags";
 
 /**
  * OpenAPIHono APIサーバーの初期化
@@ -54,7 +53,6 @@ app.get("/api/health", (c) => {
 // APIルートをマウント
 app.route("/api/articles", articlesRoute);
 app.route("/api/dashboard", dashboardRoute);
-app.route("/api/tags", tagsRoute);
 
 // ルートエンドポイント
 app.get("/", (c) => {
