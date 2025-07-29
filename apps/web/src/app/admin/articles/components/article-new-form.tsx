@@ -10,10 +10,9 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useDebounce } from "../../../../shared/hooks/use-debounce";
 import {
-	checkSlugAvailability,
-	createArticle,
-	getErrorMessage,
-} from "../../../../shared/lib/api-client";
+	useCheckSlug,
+	useCreate,
+} from "../../../../entities/article/api";
 import { Button } from "../../../../shared/ui/button/button";
 import {
 	Card,
@@ -64,9 +63,6 @@ type ArticleNewForm = z.infer<typeof articleNewSchema>;
  * 自動翻訳を実行して多言語記事として保存される。
  */
 export function ArticleNewForm() {
-	const [loading, setLoading] = useState(false);
-	const [slugError, setSlugError] = useState<string | null>(null);
-	const [slugChecking, setSlugChecking] = useState(false);
 	const [markdownValue, setMarkdownValue] = useState("");
 
 	const {
@@ -89,6 +85,22 @@ export function ArticleNewForm() {
 	// スラッグをデバウンス（500ms遅延）
 	const debouncedSlug = useDebounce(slugValue, 500);
 
+	// 記事作成フック
+	const createArticleMutation = useCreate();
+
+	// スラッグ重複チェックフック
+	const { data: slugCheckData, isLoading: slugChecking } = useCheckSlug({
+		slug: debouncedSlug || "",
+		queryConfig: {
+			enabled: !!debouncedSlug && debouncedSlug.length > 0,
+		},
+	});
+
+	// スラッグエラーの判定
+	const slugError = slugCheckData && !slugCheckData.available 
+		? (slugCheckData.message || "このスラッグは既に使用されています") 
+		: null;
+
 	/**
 	 * フォーム送信処理
 	 */
@@ -99,7 +111,6 @@ export function ArticleNewForm() {
 			return;
 		}
 
-		setLoading(true);
 		try {
 			// 公開日時の処理
 			let publishedAt: string | undefined;
@@ -109,7 +120,7 @@ export function ArticleNewForm() {
 			}
 
 			// APIに送信
-			const response = await createArticle({
+			const response = await createArticleMutation.mutateAsync({
 				title: data.title,
 				slug: data.slug,
 				content: data.content,
@@ -125,54 +136,11 @@ export function ArticleNewForm() {
 			// router.push("/admin/articles");
 		} catch (error) {
 			console.error("記事作成エラー:", error);
-			const errorMessage = getErrorMessage(error);
+			const errorMessage = error instanceof Error ? error.message : "記事の作成に失敗しました";
 			alert(`記事の作成に失敗しました: ${errorMessage}`);
-		} finally {
-			setLoading(false);
 		}
 	};
 
-	/**
-	 * スラッグの重複チェック
-	 */
-	const checkSlugDuplicate = useCallback(async (slug: string) => {
-		if (!slug || slug.length === 0) {
-			setSlugError(null);
-			return;
-		}
-
-		// バリデーション：スラッグ形式のチェック
-		const slugRegex = /^[a-z0-9-]+$/;
-		if (!slugRegex.test(slug)) {
-			setSlugError("スラッグは小文字の英数字とハイフンのみ使用できます");
-			return;
-		}
-
-		setSlugChecking(true);
-		setSlugError(null);
-
-		try {
-			const response = await checkSlugAvailability({ slug });
-
-			if (!response.available) {
-				setSlugError(response.message || "このスラッグは既に使用されています");
-			}
-		} catch (error) {
-			console.error("スラッグチェックエラー:", error);
-			setSlugError("スラッグの確認中にエラーが発生しました");
-		} finally {
-			setSlugChecking(false);
-		}
-	}, []);
-
-	/**
-	 * デバウンスされたスラッグでチェックを実行
-	 */
-	useEffect(() => {
-		if (debouncedSlug) {
-			checkSlugDuplicate(debouncedSlug);
-		}
-	}, [debouncedSlug, checkSlugDuplicate]);
 
 	return (
 		<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -357,9 +325,9 @@ export function ArticleNewForm() {
 				<Button type="button" variant="outline">
 					キャンセル
 				</Button>
-				<Button type="submit" disabled={loading}>
-					{loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-					{loading ? "作成中..." : "記事を作成"}
+				<Button type="submit" disabled={createArticleMutation.isPending}>
+					{createArticleMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+					{createArticleMutation.isPending ? "作成中..." : "記事を作成"}
 				</Button>
 			</div>
 		</form>
