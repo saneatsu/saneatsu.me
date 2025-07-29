@@ -154,10 +154,10 @@ export function ArticleNewForm() {
 	 */
 	const handleSuggestionSelect = (suggestion: SuggestionItem) => {
 		// 現在のカーソル位置から[[を検索
-		const textarea = editorRef.current?.querySelector('textarea');
+		const textarea = editorRef.current?.querySelector('textarea') as HTMLTextAreaElement;
 		if (!textarea) return;
 
-		const cursorPos = (textarea as HTMLTextAreaElement).selectionStart;
+		const cursorPos = textarea.selectionStart;
 		const beforeCursor = markdownValue.substring(0, cursorPos);
 		const afterCursor = markdownValue.substring(cursorPos);
 
@@ -171,10 +171,19 @@ export function ArticleNewForm() {
 			`[[${suggestion.slug}]]` + 
 			afterCursor;
 
+		// 新しいカーソル位置を計算
+		const newCursorPos = startIndex + `[[${suggestion.slug}]]`.length;
+
 		setMarkdownValue(newContent);
 		setValue("content", newContent);
 		setShowSuggestions(false);
 		setSuggestionQuery("");
+
+		// フォーカスをMDEditorのテキストエリアに戻す
+		setTimeout(() => {
+			textarea.focus();
+			textarea.setSelectionRange(newCursorPos, newCursorPos);
+		}, 0);
 	};
 
 	/**
@@ -202,12 +211,15 @@ export function ArticleNewForm() {
 				setSuggestionQuery(afterBracket);
 				setShowSuggestions(true);
 
-				// カーソル位置を取得（簡易実装）
-				const rect = textarea.getBoundingClientRect();
-				setCursorPosition({
-					top: rect.top + 20,
-					left: rect.left + 100,
-				});
+				// カーソル位置を取得
+				const rect = editorRef.current?.getBoundingClientRect();
+				if (rect) {
+					// エディタの位置を基準にポップアップ位置を設定
+					setCursorPosition({
+						top: rect.top + 50,
+						left: rect.left + 20,
+					});
+				}
 			} else {
 				setShowSuggestions(false);
 			}
@@ -410,6 +422,7 @@ export function ArticleNewForm() {
 				language="ja"
 				onSelect={handleSuggestionSelect}
 				position={cursorPosition}
+				anchorRef={editorRef}
 			/>
 		</form>
 	);

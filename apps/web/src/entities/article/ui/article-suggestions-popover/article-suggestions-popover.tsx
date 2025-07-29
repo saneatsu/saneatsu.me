@@ -14,6 +14,7 @@ import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
+	PopoverAnchor,
 } from "../../../../shared/ui/popover/popover";
 import {
 	type SuggestionItem,
@@ -38,6 +39,8 @@ export interface ArticleSuggestionsPopoverProps {
 	trigger?: React.ReactNode;
 	/** カーソル位置（ポップアップの表示位置用） */
 	position?: { top: number; left: number };
+	/** アンカー要素への参照 */
+	anchorRef?: React.RefObject<HTMLElement>;
 }
 
 /**
@@ -69,6 +72,7 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 	onSelect,
 	trigger,
 	position,
+	anchorRef,
 }) => {
 	const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -129,11 +133,18 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 
 	return (
 		<Popover open={open} onOpenChange={onOpenChange}>
+			{anchorRef?.current && (
+				<PopoverAnchor asChild>
+					<span ref={anchorRef as any} />
+				</PopoverAnchor>
+			)}
 			{trigger && <PopoverTrigger asChild>{trigger}</PopoverTrigger>}
 			<PopoverContent
 				className="w-[400px] p-0"
 				align="start"
 				side="bottom"
+				onOpenAutoFocus={(e) => e.preventDefault()}
+				onInteractOutside={(e) => e.preventDefault()}
 				style={
 					position
 						? {
@@ -144,7 +155,7 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 						: undefined
 				}
 			>
-				<Command>
+				<Command shouldFilter={false}>
 					<CommandList>
 						{isLoading && (
 							<div className="px-2 py-6 text-center text-sm text-muted-foreground">
