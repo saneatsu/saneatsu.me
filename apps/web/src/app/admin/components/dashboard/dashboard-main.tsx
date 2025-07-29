@@ -1,8 +1,7 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import { AlertCircle, RefreshCw } from "lucide-react";
-import { fetchDashboardOverview } from "../../../../shared/lib/api-client";
+import { useDashboardOverview } from "../../../../features/dashboard/api/use-dashboard-overview";
 import { Alert, AlertDescription } from "../../../../shared/ui/alert/alert";
 import { Button } from "../../../../shared/ui/button/button";
 import {
@@ -39,12 +38,11 @@ export function DashboardMain({ userName = "管理者" }: DashboardMainProps) {
 		error,
 		refetch,
 		isRefetching,
-	} = useQuery({
-		queryKey: ["dashboard", "overview"],
-		queryFn: () => fetchDashboardOverview({ language: "ja" }),
-		staleTime: 5 * 60 * 1000, // 5分間は新鮮とみなす
-		gcTime: 10 * 60 * 1000, // 10分間キャッシュを保持
-		retry: 2,
+	} = useDashboardOverview({
+		language: "ja",
+		queryConfig: {
+			retry: 2,
+		},
 	});
 
 	/**
