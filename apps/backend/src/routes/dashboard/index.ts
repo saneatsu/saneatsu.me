@@ -540,7 +540,11 @@ app.openapi(getDashboardOverviewRoute, async (c) => {
 			recentActivities: {
 				activities: recentActivitiesResult.map((activity) => ({
 					id: activity.id,
-					type: activity.type as "article_created" | "article_published" | "article_updated" | "tag_created",
+					type: activity.type as
+						| "article_created"
+						| "article_published"
+						| "article_updated"
+						| "tag_created",
 					description: activity.description as string,
 					entityId: activity.entityId,
 					entityTitle: activity.entityTitle,
