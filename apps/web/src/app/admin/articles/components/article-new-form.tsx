@@ -5,14 +5,18 @@ import MDEditor from "@uiw/react-md-editor";
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
 import { CalendarIcon, Loader2 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useDebounce } from "../../../../shared/hooks/use-debounce";
 import {
 	useCheckSlug,
 	useCreate,
+	type SuggestionItem,
 } from "../../../../entities/article/api";
+import {
+	ArticleSuggestionsPopover,
+} from "../../../../entities/article/ui";
 import { Button } from "../../../../shared/ui/button/button";
 import {
 	Card,
@@ -64,6 +68,10 @@ type ArticleNewForm = z.infer<typeof articleNewSchema>;
  */
 export function ArticleNewForm() {
 	const [markdownValue, setMarkdownValue] = useState("");
+	const [showSuggestions, setShowSuggestions] = useState(false);
+	const [suggestionQuery, setSuggestionQuery] = useState("");
+	const [cursorPosition, setCursorPosition] = useState({ top: 0, left: 0 });
+	const editorRef = useRef<HTMLDivElement>(null);
 
 	const {
 		register,
@@ -141,6 +149,72 @@ export function ArticleNewForm() {
 		}
 	};
 
+	/**
+	 * Wiki Linkサジェスト選択時の処理
+	 */
+	const handleSuggestionSelect = (suggestion: SuggestionItem) => {
+		// 現在のカーソル位置から[[を検索
+		const textarea = editorRef.current?.querySelector('textarea');
+		if (!textarea) return;
+
+		const cursorPos = (textarea as HTMLTextAreaElement).selectionStart;
+		const beforeCursor = markdownValue.substring(0, cursorPos);
+		const afterCursor = markdownValue.substring(cursorPos);
+
+		// [[の開始位置を検索
+		const startIndex = beforeCursor.lastIndexOf('[[');
+		if (startIndex === -1) return;
+
+		// 新しいコンテンツを構築
+		const newContent = 
+			markdownValue.substring(0, startIndex) + 
+			`[[${suggestion.slug}]]` + 
+			afterCursor;
+
+		setMarkdownValue(newContent);
+		setValue("content", newContent);
+		setShowSuggestions(false);
+		setSuggestionQuery("");
+	};
+
+	/**
+	 * MDEditorの変更処理（Wiki Link検知を含む）
+	 */
+	const handleEditorChange = (val: string | undefined) => {
+		const value = val || "";
+		setMarkdownValue(value);
+		setValue("content", value);
+
+		// Wiki Link検知
+		const textarea = editorRef.current?.querySelector('textarea');
+		if (!textarea) return;
+
+		const cursorPos = (textarea as HTMLTextAreaElement).selectionStart;
+		const beforeCursor = value.substring(0, cursorPos);
+
+		// [[の検出
+		const lastBracketIndex = beforeCursor.lastIndexOf('[[');
+		if (lastBracketIndex !== -1) {
+			// ]]で閉じられていないか確認
+			const afterBracket = value.substring(lastBracketIndex + 2, cursorPos);
+			if (!afterBracket.includes(']]')) {
+				// サジェストを表示
+				setSuggestionQuery(afterBracket);
+				setShowSuggestions(true);
+
+				// カーソル位置を取得（簡易実装）
+				const rect = textarea.getBoundingClientRect();
+				setCursorPosition({
+					top: rect.top + 20,
+					left: rect.left + 100,
+				});
+			} else {
+				setShowSuggestions(false);
+			}
+		} else {
+			setShowSuggestions(false);
+		}
+	};
 
 	return (
 		<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -288,17 +362,14 @@ export function ArticleNewForm() {
 									本文（Markdown形式）
 								</Label>
 								<div
+									ref={editorRef}
 									className={
 										errors.content ? "border border-destructive rounded-md" : ""
 									}
 								>
 									<MDEditor
 										value={markdownValue}
-										onChange={(val) => {
-											const value = val || "";
-											setMarkdownValue(value);
-											setValue("content", value);
-										}}
+										onChange={handleEditorChange}
 										preview="live"
 										visibleDragbar={true}
 										data-color-mode="light"
@@ -312,7 +383,7 @@ export function ArticleNewForm() {
 								)}
 								<p className="text-sm text-muted-foreground">
 									日本語で入力してください。保存時に自動的に他の言語に翻訳されます。Ctrl+Shift+P（Mac:
-									Cmd+Shift+P）でプレビューモードを切り替えできます。
+									Cmd+Shift+P）でプレビューモードを切り替えできます。[[で他の記事へのリンクを挿入できます。
 								</p>
 							</div>
 						</CardContent>
@@ -330,6 +401,16 @@ export function ArticleNewForm() {
 					{createArticleMutation.isPending ? "作成中..." : "記事を作成"}
 				</Button>
 			</div>
+
+			{/* Wiki Linkサジェストポップアップ */}
+			<ArticleSuggestionsPopover
+				open={showSuggestions}
+				onOpenChange={setShowSuggestions}
+				query={suggestionQuery}
+				language="ja"
+				onSelect={handleSuggestionSelect}
+				position={cursorPosition}
+			/>
 		</form>
 	);
 }

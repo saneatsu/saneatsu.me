@@ -51,7 +51,7 @@ export function extractHeadings(
 			.replace(/^-+|-+$/g, ""); // 先頭末尾のハイフンを削除
 
 		headings.push({ level, text, id });
-		
+
 		// 次のマッチを取得
 		match = headingRegex.exec(content);
 	}
