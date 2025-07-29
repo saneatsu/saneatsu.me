@@ -23,22 +23,6 @@ export const articleStatsSchema = z.object({
 	thisMonthViews: z.number().int().min(0),
 });
 
-/** タグ統計スキーマ */
-export const tagStatsSchema = z.object({
-	/** 総タグ数 */
-	totalTags: z.number().int().min(0),
-	/** 記事数が多いタグトップ5 */
-	topTags: z
-		.array(
-			z.object({
-				id: idSchema,
-				slug: slugSchema,
-				name: z.string(),
-				articleCount: z.number().int().min(0),
-			})
-		)
-		.max(5),
-});
 
 /** 人気記事スキーマ */
 export const popularArticleSchema = z.object({
@@ -127,8 +111,6 @@ export const dashboardStatsQuerySchema = z.object({
 export const dashboardStatsResponseSchema = z.object({
 	/** 記事統計 */
 	articleStats: articleStatsSchema,
-	/** タグ統計 */
-	tagStats: tagStatsSchema,
 	/** 人気記事 */
 	popularArticles: popularArticlesSchema,
 	/** 時系列統計 */
@@ -146,7 +128,6 @@ export const recentActivityItemSchema = z.object({
 		"article_created",
 		"article_published",
 		"article_updated",
-		"tag_created",
 	]),
 	/** 活動の説明 */
 	description: z.string(),
@@ -168,8 +149,6 @@ export const recentActivitiesSchema = z.object({
 export const dashboardOverviewResponseSchema = z.object({
 	/** 記事統計 */
 	articleStats: articleStatsSchema,
-	/** タグ統計 */
-	tagStats: tagStatsSchema,
 	/** 人気記事トップ5 */
 	topArticles: z.object({
 		articles: z.array(popularArticleSchema).max(5),
@@ -182,7 +161,6 @@ export const dashboardOverviewResponseSchema = z.object({
 
 // 型エクスポート
 export type ArticleStats = z.infer<typeof articleStatsSchema>;
-export type TagStats = z.infer<typeof tagStatsSchema>;
 export type PopularArticle = z.infer<typeof popularArticleSchema>;
 export type PopularArticles = z.infer<typeof popularArticlesSchema>;
 export type DailyStats = z.infer<typeof dailyStatsSchema>;
