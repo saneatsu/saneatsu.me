@@ -7,8 +7,12 @@ import {
 	tags,
 	tagTranslations,
 } from "@saneatsu/db";
-import { articleListQuerySchema, type SortOrder } from "@saneatsu/schemas/dist/articles";
+import {
+	articleListQuerySchema,
+	type SortOrder,
+} from "@saneatsu/schemas/dist/articles";
 import { and, asc, desc, eq, sql } from "drizzle-orm";
+import { getSuggestionsRoute, handleArticleSuggestions } from "./suggestions";
 
 // OpenAPI用にpackages/schemasをラップ
 const articlesOpenApiQuerySchema = z.object({
@@ -310,7 +314,10 @@ articlesRoute.openapi(listArticlesRoute, async (c) => {
 		const totalViewCountSubquery = db
 			.select({
 				articleId: articleTranslations.articleId,
-				totalViewCount: sql<number>`COALESCE(SUM(${articleTranslations.viewCount}), 0)`.as("totalViewCount"),
+				totalViewCount:
+					sql<number>`COALESCE(SUM(${articleTranslations.viewCount}), 0)`.as(
+						"totalViewCount"
+					),
 			})
 			.from(articleTranslations)
 			.groupBy(articleTranslations.articleId)
@@ -809,3 +816,9 @@ articlesRoute.openapi(createArticleRoute, async (c) => {
 		);
 	}
 });
+
+/**
+ * GET /api/articles/suggestions - サジェスト取得
+ */
+// @ts-ignore - OpenAPIの型推論エラーを一時的に回避
+articlesRoute.openapi(getSuggestionsRoute, handleArticleSuggestions);

@@ -41,6 +41,12 @@ export const queryKeys = {
 			["articles", slug, { lang }] as const,
 		// スラッグ重複チェック
 		checkSlug: (slug: string) => ["articles", "check-slug", slug] as const,
+		// Wiki Linkサジェスト
+		suggestions: (params: {
+			query: string;
+			language?: string;
+			limit?: number;
+		}) => ["articles", "suggestions", params] as const,
 	},
 
 	/**
