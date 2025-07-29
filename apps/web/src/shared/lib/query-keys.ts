@@ -33,6 +33,8 @@ export const queryKeys = {
 			search?: string;
 			page?: number;
 			limit?: number;
+			sortBy?: string;
+			sortOrder?: string;
 		}) => ["articles", filters] as const,
 		// 個別の記事（スラッグ指定）
 		bySlug: (slug: string, lang?: string) =>
