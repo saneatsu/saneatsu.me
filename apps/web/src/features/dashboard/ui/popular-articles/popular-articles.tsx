@@ -1,6 +1,6 @@
 "use client";
 
-import { Eye, ExternalLink, TrendingUp } from "lucide-react";
+import { ExternalLink, Eye, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import type { PopularArticle } from "../../../../shared/types/dashboard";
 import { Badge } from "../../../../shared/ui/badge/badge";
@@ -29,13 +29,17 @@ interface PopularArticlesProps {
  * 人気記事一覧を表示するコンポーネント
  * 閲覧数順に記事をランキング形式で表示
  */
-export function PopularArticles({ articles, loading = false, limit = 5 }: PopularArticlesProps) {
+export function PopularArticles({
+	articles,
+	loading = false,
+	limit = 5,
+}: PopularArticlesProps) {
 	/**
 	 * 日付をフォーマットして表示用に変換
 	 */
 	const formatDate = (dateString: string | null): string => {
 		if (!dateString) return "未公開";
-		
+
 		const date = new Date(dateString);
 		const now = new Date();
 		const diffTime = Math.abs(now.getTime() - date.getTime());
@@ -98,9 +102,7 @@ export function PopularArticles({ articles, loading = false, limit = 5 }: Popula
 					<TrendingUp className="h-5 w-5 text-primary" />
 					<CardTitle>人気記事ランキング</CardTitle>
 				</div>
-				<CardDescription>
-					閲覧数の多い記事トップ{limit}
-				</CardDescription>
+				<CardDescription>閲覧数の多い記事トップ{limit}</CardDescription>
 			</CardHeader>
 			<CardContent>
 				{loading ? (

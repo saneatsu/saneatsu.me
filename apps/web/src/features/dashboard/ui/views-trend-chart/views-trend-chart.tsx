@@ -121,10 +121,10 @@ export function ViewsTrendChart({
 	/**
 	 * カスタムツールチップ
 	 */
-	const CustomTooltip = ({ 
-		active, 
-		payload, 
-		label 
+	const CustomTooltip = ({
+		active,
+		payload,
+		label,
 	}: {
 		active?: boolean;
 		payload?: Array<{ value: number }>;

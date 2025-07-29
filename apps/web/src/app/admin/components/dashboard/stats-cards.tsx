@@ -1,7 +1,10 @@
 "use client";
 
 import { BarChart3, Eye, FileText, Hash, TrendingUp } from "lucide-react";
-import type { ArticleStats, TagStats } from "../../../../shared/types/dashboard";
+import type {
+	ArticleStats,
+	TagStats,
+} from "../../../../shared/types/dashboard";
 import {
 	Card,
 	CardContent,
@@ -25,7 +28,11 @@ interface StatsCardsProps {
  * 統計データを表示するカードコンポーネント
  * ダッシュボードのトップに表示される主要な統計情報
  */
-export function StatsCards({ articleStats, tagStats, loading = false }: StatsCardsProps) {
+export function StatsCards({
+	articleStats,
+	tagStats,
+	loading = false,
+}: StatsCardsProps) {
 	/**
 	 * 数値をフォーマットして表示用に変換
 	 */
@@ -105,7 +112,13 @@ export function StatsCards({ articleStats, tagStats, loading = false }: StatsCar
  * 詳細統計カードコンポーネント
  * より詳細な統計情報を表示（閲覧数、今月の数値など）
  */
-export function DetailedStatsCards({ articleStats, loading = false }: { articleStats: ArticleStats; loading?: boolean }) {
+export function DetailedStatsCards({
+	articleStats,
+	loading = false,
+}: {
+	articleStats: ArticleStats;
+	loading?: boolean;
+}) {
 	return (
 		<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mt-6">
 			{/* 総閲覧数 */}

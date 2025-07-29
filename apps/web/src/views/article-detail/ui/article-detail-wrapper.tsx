@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import { ArticleDetailView } from "./article-detail-view";
 import type { ArticleResponse } from "../../../shared/types/article";
+import { ArticleDetailView } from "./article-detail-view";
 
 interface ArticleDetailWrapperProps {
 	slug: string;
@@ -22,10 +22,11 @@ export async function ArticleDetailWrapper({
 	locale,
 }: ArticleDetailWrapperProps) {
 	// 記事データの取得
-	const apiUrl = process.env.NODE_ENV === 'development' 
-		? 'http://localhost:8888' 
-		: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8888';
-	
+	const apiUrl =
+		process.env.NODE_ENV === "development"
+			? "http://localhost:8888"
+			: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8888";
+
 	try {
 		const response = await fetch(
 			`${apiUrl}/api/articles/${slug}?lang=${locale}`,

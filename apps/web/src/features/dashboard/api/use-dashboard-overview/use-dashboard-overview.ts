@@ -1,11 +1,11 @@
 "use client";
 
+import type { AppType } from "@saneatsu/backend";
+import type { DashboardOverviewResponse } from "@saneatsu/schemas/dist/dashboard";
 import { useQuery } from "@tanstack/react-query";
 import { hc } from "hono/client";
-import type { AppType } from "@saneatsu/backend";
 import { queryKeys } from "../../../../shared/lib/query-keys";
 import type { QueryConfig } from "../../../../shared/lib/react-query";
-import type { DashboardOverviewResponse } from "@saneatsu/schemas/dist/dashboard";
 
 /**
  * APIのベースURL

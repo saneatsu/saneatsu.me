@@ -1,11 +1,11 @@
 "use client";
 
+import type { AppType } from "@saneatsu/backend";
+import type { ViewsTrendResponse } from "@saneatsu/schemas/dist/dashboard";
 import { useQuery } from "@tanstack/react-query";
 import { hc } from "hono/client";
-import type { AppType } from "@saneatsu/backend";
 import { queryKeys } from "../../../../shared/lib/query-keys";
 import type { QueryConfig } from "../../../../shared/lib/react-query";
-import type { ViewsTrendResponse } from "@saneatsu/schemas/dist/dashboard";
 
 /**
  * APIのベースURL
@@ -37,9 +37,9 @@ type UseViewsTrendOptions = {
  *
  * @example
  * ```tsx
- * const { data, isLoading, error } = useViewsTrend({ 
+ * const { data, isLoading, error } = useViewsTrend({
  *   language: "ja",
- *   days: 30 
+ *   days: 30
  * });
  * ```
  */
@@ -52,7 +52,7 @@ export function useViewsTrend({
 		queryKey: queryKeys.dashboard.viewsTrend(language, days),
 		queryFn: async () => {
 			const response = await client.api.dashboard["views-trend"].$get({
-				query: { 
+				query: {
 					language,
 					days: days.toString(),
 				},

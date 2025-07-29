@@ -1,10 +1,7 @@
 "use client";
 
 import { Edit, Eye, FileEdit, MoreHorizontal, Trash2 } from "lucide-react";
-import {
-	useUpdateStatus,
-	useDelete,
-} from "../../../../entities/article/api";
+import { useDelete, useUpdateStatus } from "../../../../entities/article/api";
 import type { Article } from "../../../../shared/types/article";
 import { Button } from "../../../../shared/ui/button/button";
 import {
@@ -32,12 +29,13 @@ interface ArticleActionsProps {
 export function ArticleActions({ article, onAction }: ArticleActionsProps) {
 	// 記事ステータス更新フック
 	const updateStatusMutation = useUpdateStatus();
-	
+
 	// 記事削除フック
 	const deleteArticleMutation = useDelete();
 
 	// いずれかのmutationが実行中かどうか
-	const loading = updateStatusMutation.isPending || deleteArticleMutation.isPending;
+	const loading =
+		updateStatusMutation.isPending || deleteArticleMutation.isPending;
 
 	/**
 	 * 記事ステータス更新
@@ -58,7 +56,8 @@ export function ArticleActions({ article, onAction }: ArticleActionsProps) {
 			});
 			onAction?.();
 		} catch (error) {
-			const errorMessage = error instanceof Error ? error.message : "ステータス更新に失敗しました";
+			const errorMessage =
+				error instanceof Error ? error.message : "ステータス更新に失敗しました";
 			alert(`ステータス更新に失敗しました: ${errorMessage}`);
 		}
 	};
@@ -79,7 +78,8 @@ export function ArticleActions({ article, onAction }: ArticleActionsProps) {
 			await deleteArticleMutation.mutateAsync(article.id);
 			onAction?.();
 		} catch (error) {
-			const errorMessage = error instanceof Error ? error.message : "削除に失敗しました";
+			const errorMessage =
+				error instanceof Error ? error.message : "削除に失敗しました";
 			alert(`削除に失敗しました: ${errorMessage}`);
 		}
 	};

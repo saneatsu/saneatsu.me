@@ -69,9 +69,7 @@ export function DashboardMain({ userName = "管理者" }: DashboardMainProps) {
 					<h1 className="text-3xl font-bold text-foreground mb-2">
 						ダッシュボード
 					</h1>
-					<p className="text-muted-foreground">
-						ようこそ、{userName}さん
-					</p>
+					<p className="text-muted-foreground">ようこそ、{userName}さん</p>
 				</div>
 
 				<Alert variant="destructive">
@@ -86,7 +84,9 @@ export function DashboardMain({ userName = "管理者" }: DashboardMainProps) {
 							onClick={() => refetch()}
 							disabled={isRefetching}
 						>
-							<RefreshCw className={`h-4 w-4 mr-2 ${isRefetching ? "animate-spin" : ""}`} />
+							<RefreshCw
+								className={`h-4 w-4 mr-2 ${isRefetching ? "animate-spin" : ""}`}
+							/>
 							再試行
 						</Button>
 					</AlertDescription>
@@ -114,7 +114,9 @@ export function DashboardMain({ userName = "管理者" }: DashboardMainProps) {
 						onClick={() => refetch()}
 						disabled={isRefetching}
 					>
-						<RefreshCw className={`h-4 w-4 mr-2 ${isRefetching ? "animate-spin" : ""}`} />
+						<RefreshCw
+							className={`h-4 w-4 mr-2 ${isRefetching ? "animate-spin" : ""}`}
+						/>
 						更新
 					</Button>
 				</div>
@@ -129,33 +131,39 @@ export function DashboardMain({ userName = "管理者" }: DashboardMainProps) {
 
 			{/* メイン統計カード */}
 			<StatsCards
-				articleStats={dashboardData?.articleStats || {
-					totalArticles: 0,
-					publishedArticles: 0,
-					draftArticles: 0,
-					archivedArticles: 0,
-					thisMonthArticles: 0,
-					totalViews: 0,
-					thisMonthViews: 0,
-				}}
-				tagStats={dashboardData?.tagStats || {
-					totalTags: 0,
-					topTags: [],
-				}}
+				articleStats={
+					dashboardData?.articleStats || {
+						totalArticles: 0,
+						publishedArticles: 0,
+						draftArticles: 0,
+						archivedArticles: 0,
+						thisMonthArticles: 0,
+						totalViews: 0,
+						thisMonthViews: 0,
+					}
+				}
+				tagStats={
+					dashboardData?.tagStats || {
+						totalTags: 0,
+						topTags: [],
+					}
+				}
 				loading={isLoading}
 			/>
 
 			{/* 詳細統計カード */}
 			<DetailedStatsCards
-				articleStats={dashboardData?.articleStats || {
-					totalArticles: 0,
-					publishedArticles: 0,
-					draftArticles: 0,
-					archivedArticles: 0,
-					thisMonthArticles: 0,
-					totalViews: 0,
-					thisMonthViews: 0,
-				}}
+				articleStats={
+					dashboardData?.articleStats || {
+						totalArticles: 0,
+						publishedArticles: 0,
+						draftArticles: 0,
+						archivedArticles: 0,
+						thisMonthArticles: 0,
+						totalViews: 0,
+						thisMonthViews: 0,
+					}
+				}
 				loading={isLoading}
 			/>
 
@@ -170,10 +178,12 @@ export function DashboardMain({ userName = "管理者" }: DashboardMainProps) {
 
 				{/* 人気タグ */}
 				<PopularTags
-					tagStats={dashboardData?.tagStats || {
-						totalTags: 0,
-						topTags: [],
-					}}
+					tagStats={
+						dashboardData?.tagStats || {
+							totalTags: 0,
+							topTags: [],
+						}
+					}
 					loading={isLoading}
 				/>
 
@@ -189,31 +199,21 @@ export function DashboardMain({ userName = "管理者" }: DashboardMainProps) {
 			<Card>
 				<CardHeader>
 					<CardTitle>クイックアクション</CardTitle>
-					<CardDescription>
-						よく使用する機能へのショートカット
-					</CardDescription>
+					<CardDescription>よく使用する機能へのショートカット</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
 						<Button asChild className="justify-start">
-							<a href="/admin/articles/new">
-								新しい記事を作成
-							</a>
+							<a href="/admin/articles/new">新しい記事を作成</a>
 						</Button>
 						<Button asChild variant="outline" className="justify-start">
-							<a href="/admin/articles">
-								記事一覧を見る
-							</a>
+							<a href="/admin/articles">記事一覧を見る</a>
 						</Button>
 						<Button asChild variant="outline" className="justify-start">
-							<a href="/admin/tags/new">
-								新しいタグを作成
-							</a>
+							<a href="/admin/tags/new">新しいタグを作成</a>
 						</Button>
 						<Button asChild variant="outline" className="justify-start">
-							<a href="/admin/tags">
-								タグ一覧を見る
-							</a>
+							<a href="/admin/tags">タグ一覧を見る</a>
 						</Button>
 					</div>
 				</CardContent>

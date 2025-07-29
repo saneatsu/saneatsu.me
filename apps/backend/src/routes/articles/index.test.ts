@@ -733,7 +733,9 @@ describe("GET /articles/:slug", () => {
 			expect(res.status).toBe(200);
 			const data = await res.json();
 			expect(data.data).toHaveLength(2);
-			expect(articleListMock.from().leftJoin().where().orderBy).toHaveBeenCalled();
+			expect(
+				articleListMock.from().leftJoin().where().orderBy
+			).toHaveBeenCalled();
 		});
 
 		it("閲覧数で降順ソートができる", async () => {
@@ -808,7 +810,9 @@ describe("GET /articles/:slug", () => {
 			expect(data.data).toHaveLength(2);
 			expect(data.data[0].viewCount).toBe(1000);
 			expect(data.data[1].viewCount).toBe(100);
-			expect(articleListMock.from().leftJoin().where().orderBy).toHaveBeenCalled();
+			expect(
+				articleListMock.from().leftJoin().where().orderBy
+			).toHaveBeenCalled();
 		});
 
 		it("公開日時で降順ソートができる", async () => {
@@ -881,7 +885,9 @@ describe("GET /articles/:slug", () => {
 			expect(res.status).toBe(200);
 			const data = await res.json();
 			expect(data.data).toHaveLength(2);
-			expect(articleListMock.from().leftJoin().where().orderBy).toHaveBeenCalled();
+			expect(
+				articleListMock.from().leftJoin().where().orderBy
+			).toHaveBeenCalled();
 		});
 
 		it("作成日時で昇順ソートができる", async () => {
@@ -954,7 +960,9 @@ describe("GET /articles/:slug", () => {
 			expect(res.status).toBe(200);
 			const data = await res.json();
 			expect(data.data).toHaveLength(2);
-			expect(articleListMock.from().leftJoin().where().orderBy).toHaveBeenCalled();
+			expect(
+				articleListMock.from().leftJoin().where().orderBy
+			).toHaveBeenCalled();
 		});
 
 		it("更新日時で降順ソートができる", async () => {
@@ -1027,7 +1035,9 @@ describe("GET /articles/:slug", () => {
 			expect(res.status).toBe(200);
 			const data = await res.json();
 			expect(data.data).toHaveLength(2);
-			expect(articleListMock.from().leftJoin().where().orderBy).toHaveBeenCalled();
+			expect(
+				articleListMock.from().leftJoin().where().orderBy
+			).toHaveBeenCalled();
 		});
 
 		it("不正なソートパラメータの場合はデフォルトソートが適用される", async () => {
@@ -1088,7 +1098,9 @@ describe("GET /articles/:slug", () => {
 			const data = await res.json();
 			expect(data.data).toHaveLength(1);
 			// デフォルトのソート（createdAt desc）が適用される
-			expect(articleListMock.from().leftJoin().where().orderBy).toHaveBeenCalled();
+			expect(
+				articleListMock.from().leftJoin().where().orderBy
+			).toHaveBeenCalled();
 		});
 	});
 });
@@ -1139,7 +1151,7 @@ describe("POST /articles", () => {
 			}),
 		};
 
-		// Insert翻訳のモック  
+		// Insert翻訳のモック
 		const insertTranslationMock = {
 			values: vi.fn().mockReturnValue({
 				returning: vi.fn().mockResolvedValue([mockTranslation]),

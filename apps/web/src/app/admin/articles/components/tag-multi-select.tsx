@@ -54,7 +54,11 @@ export function TagMultiSelect({
 	/**
 	 * タグ一覧を取得
 	 */
-	const { data: tagsData, isLoading: loading, error: apiError } = useGetAllTags({
+	const {
+		data: tagsData,
+		isLoading: loading,
+		error: apiError,
+	} = useGetAllTags({
 		lang: "ja",
 	});
 
@@ -168,7 +172,10 @@ export function TagMultiSelect({
 			{/* エラーメッセージの表示 */}
 			{(error || apiError) && (
 				<p className="text-sm text-destructive">
-					{error || (apiError instanceof Error ? apiError.message : "タグの取得に失敗しました")}
+					{error ||
+						(apiError instanceof Error
+							? apiError.message
+							: "タグの取得に失敗しました")}
 				</p>
 			)}
 

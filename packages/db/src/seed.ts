@@ -65,8 +65,9 @@ function getRandomDate(): string | null {
 	const now = new Date();
 	const start = new Date(now);
 	start.setDate(now.getDate() - 360); // 360日前
-	
-	const randomTime = start.getTime() + Math.random() * (now.getTime() - start.getTime());
+
+	const randomTime =
+		start.getTime() + Math.random() * (now.getTime() - start.getTime());
 	return new Date(randomTime).toISOString();
 }
 
@@ -240,7 +241,9 @@ function getRandomViewCount(
 	if (publishedAt) {
 		const published = new Date(publishedAt);
 		const now = new Date();
-		daysFromPublished = Math.floor((now.getTime() - published.getTime()) / (1000 * 60 * 60 * 24));
+		daysFromPublished = Math.floor(
+			(now.getTime() - published.getTime()) / (1000 * 60 * 60 * 24)
+		);
 	}
 
 	// 経過日数による基本閲覧数の調整
@@ -257,7 +260,7 @@ function getRandomViewCount(
 	if (status === "published") {
 		const rand = Math.random();
 		let baseViews = 0;
-		
+
 		if (rand < 0.25) {
 			// 25%: あまり読まれていない記事
 			baseViews = Math.floor(Math.random() * 51); // 0-50回
@@ -265,7 +268,7 @@ function getRandomViewCount(
 			// 75%: 普通の記事
 			baseViews = Math.floor(Math.random() * 490) + 10; // 10-500回
 		}
-		
+
 		return Math.floor(baseViews * (1 + daysFactor * 0.3)); // 経過日数で最大1.3倍
 	}
 
@@ -384,7 +387,11 @@ async function seed() {
 				"{i}",
 				(i + 1).toString()
 			);
-			const viewCountJa = getRandomViewCount(article.status, article.publishedAt, isPopular);
+			const viewCountJa = getRandomViewCount(
+				article.status,
+				article.publishedAt,
+				isPopular
+			);
 
 			articleTranslationData.push({
 				articleId: article.id,
@@ -399,7 +406,11 @@ async function seed() {
 				"{i}",
 				(i + 1).toString()
 			);
-			const viewCountEn = getRandomViewCount(article.status, article.publishedAt, isPopular);
+			const viewCountEn = getRandomViewCount(
+				article.status,
+				article.publishedAt,
+				isPopular
+			);
 
 			articleTranslationData.push({
 				articleId: article.id,

@@ -28,7 +28,11 @@ interface RecentActivitiesProps {
  * 最近の活動を表示するコンポーネント
  * 記事作成、更新、公開などの活動ログを時系列で表示
  */
-export function RecentActivities({ activities, loading = false, limit = 10 }: RecentActivitiesProps) {
+export function RecentActivities({
+	activities,
+	loading = false,
+	limit = 10,
+}: RecentActivitiesProps) {
 	/**
 	 * 活動タイプに応じたアイコンとスタイルを取得
 	 */
@@ -137,9 +141,7 @@ export function RecentActivities({ activities, loading = false, limit = 10 }: Re
 					<Activity className="h-5 w-5 text-primary" />
 					<CardTitle>最近の活動</CardTitle>
 				</div>
-				<CardDescription>
-					最新の記事やタグ関連の活動
-				</CardDescription>
+				<CardDescription>最新の記事やタグ関連の活動</CardDescription>
 			</CardHeader>
 			<CardContent>
 				{loading ? (

@@ -1,8 +1,8 @@
 "use client";
 
+import type { AppType } from "@saneatsu/backend";
 import { useQuery } from "@tanstack/react-query";
 import { hc } from "hono/client";
-import type { AppType } from "@saneatsu/backend";
 import { queryKeys } from "../../../../shared/lib/query-keys";
 import type { QueryConfig } from "../../../../shared/lib/react-query";
 
@@ -65,8 +65,7 @@ export function useGetAllTags({
 			if (!response.ok) {
 				const error = await response.json();
 				throw new Error(
-					(error as { error?: string }).error ||
-						"タグの取得に失敗しました"
+					(error as { error?: string }).error || "タグの取得に失敗しました"
 				);
 			}
 

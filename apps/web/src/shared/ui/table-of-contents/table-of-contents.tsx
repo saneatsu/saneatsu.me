@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { cn } from "../../lib/utils";
 import type { HeadingItem, NestedHeading } from "../../lib/extract-headings";
+import { cn } from "../../lib/utils";
 
 /**
  * ヘッダーレベルに応じたインデントクラスを返す
@@ -39,21 +39,21 @@ export interface TableOfContentsProps {
 
 /**
  * 目次コンポーネント
- * 
+ *
  * @description
  * Markdownから抽出したヘッダー情報を元に目次を表示します。
  * 各項目をクリックすると対応するヘッダーにスムーズスクロールします。
- * 
+ *
  * @param props.headings - 表示するヘッダー項目
  * @param props.title - 目次のタイトル（デフォルト: "目次"）
  * @param props.className - カスタムクラス名
  * @param props.activeId - 現在アクティブなヘッダーのID
- * 
+ *
  * @example
  * ```tsx
  * const headings = extractHeadings(markdownContent);
- * 
- * <TableOfContents 
+ *
+ * <TableOfContents
  *   headings={headings}
  *   title="目次"
  *   className="sticky top-4"
@@ -66,7 +66,9 @@ export function TableOfContents({
 	className,
 	activeId,
 }: TableOfContentsProps) {
-	const [currentActiveId, setCurrentActiveId] = useState<string | undefined>(activeId);
+	const [currentActiveId, setCurrentActiveId] = useState<string | undefined>(
+		activeId
+	);
 
 	// アンカーリンクへのスムーズスクロール
 	const handleClick = (id: string) => {

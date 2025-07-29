@@ -31,7 +31,9 @@ interface PopularTagsProps {
 export function PopularTags({ tagStats, loading = false }: PopularTagsProps) {
 	// 最大記事数を取得（プログレスバーの基準値として使用）
 	const maxArticleCount = Math.max(
-		...tagStats.topTags.map((tag: { articleCount: number }) => tag.articleCount),
+		...tagStats.topTags.map(
+			(tag: { articleCount: number }) => tag.articleCount
+		),
 		1
 	);
 
@@ -74,9 +76,7 @@ export function PopularTags({ tagStats, loading = false }: PopularTagsProps) {
 					<Hash className="h-5 w-5 text-primary" />
 					<CardTitle>人気タグ</CardTitle>
 				</div>
-				<CardDescription>
-					記事数の多いタグトップ5
-				</CardDescription>
+				<CardDescription>記事数の多いタグトップ5</CardDescription>
 			</CardHeader>
 			<CardContent>
 				{loading ? (
@@ -88,47 +88,53 @@ export function PopularTags({ tagStats, loading = false }: PopularTagsProps) {
 					</div>
 				) : (
 					<div className="space-y-4">
-						{tagStats.topTags.map((tag: { id: number; slug: string; name: string; articleCount: number }, index: number) => {
-							const progressValue = (tag.articleCount / maxArticleCount) * 100;
-							
-							return (
-								<div
-									key={tag.id}
-									className="flex items-center space-x-4 p-3 rounded-lg hover:bg-muted/50 transition-colors"
-								>
-									{/* タグ名 */}
-									<Badge
-										className={`${getTagColor(index)} font-medium px-3 py-1`}
+						{tagStats.topTags.map(
+							(
+								tag: {
+									id: number;
+									slug: string;
+									name: string;
+									articleCount: number;
+								},
+								index: number
+							) => {
+								const progressValue =
+									(tag.articleCount / maxArticleCount) * 100;
+
+								return (
+									<div
+										key={tag.id}
+										className="flex items-center space-x-4 p-3 rounded-lg hover:bg-muted/50 transition-colors"
 									>
-										# {tag.name}
-									</Badge>
+										{/* タグ名 */}
+										<Badge
+											className={`${getTagColor(index)} font-medium px-3 py-1`}
+										>
+											# {tag.name}
+										</Badge>
 
-									{/* プログレスバーとカウント */}
-									<div className="flex-1">
-										<div className="flex items-center justify-between mb-2">
-											<span className="text-sm text-muted-foreground">
-												{tag.slug}
-											</span>
-											<span className="text-sm font-medium text-foreground">
-												{tag.articleCount}記事
-											</span>
+										{/* プログレスバーとカウント */}
+										<div className="flex-1">
+											<div className="flex items-center justify-between mb-2">
+												<span className="text-sm text-muted-foreground">
+													{tag.slug}
+												</span>
+												<span className="text-sm font-medium text-foreground">
+													{tag.articleCount}記事
+												</span>
+											</div>
+											<Progress value={progressValue} className="h-2" />
 										</div>
-										<Progress 
-											value={progressValue} 
-											className="h-2"
-										/>
-									</div>
 
-									{/* 順位 */}
-									<div className="flex items-center text-muted-foreground">
-										<TrendingUp className="h-4 w-4 mr-1" />
-										<span className="text-sm font-medium">
-											#{index + 1}
-										</span>
+										{/* 順位 */}
+										<div className="flex items-center text-muted-foreground">
+											<TrendingUp className="h-4 w-4 mr-1" />
+											<span className="text-sm font-medium">#{index + 1}</span>
+										</div>
 									</div>
-								</div>
-							);
-						})}
+								);
+							}
+						)}
 					</div>
 				)}
 

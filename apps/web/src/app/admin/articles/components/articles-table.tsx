@@ -110,7 +110,6 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 		onRefresh?.();
 	};
 
-
 	/**
 	 * 日付フォーマット関数
 	 */
@@ -241,7 +240,13 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 				sort={sort}
 				onSortChange={handleSortChange}
 				loading={isLoading}
-				error={error ? (error instanceof Error ? error.message : "エラーが発生しました") : null}
+				error={
+					error
+						? error instanceof Error
+							? error.message
+							: "エラーが発生しました"
+						: null
+				}
 				emptyMessage="記事が見つかりません"
 			/>
 		</div>

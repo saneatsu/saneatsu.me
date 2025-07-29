@@ -1,8 +1,8 @@
 import type {
-	ArticleStats as SchemaArticleStats,
 	DashboardOverviewResponse,
 	DashboardStatsQuery,
 	DashboardStatsResponse,
+	ArticleStats as SchemaArticleStats,
 	PopularArticle as SchemaPopularArticle,
 	RecentActivityItem as SchemaRecentActivityItem,
 	TagStats as SchemaTagStats,

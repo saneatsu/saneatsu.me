@@ -12,6 +12,7 @@ import {
 	type SortOrder,
 } from "@saneatsu/schemas/dist/articles";
 import { and, asc, desc, eq, sql } from "drizzle-orm";
+import { convertWikiLinks } from "../../utils/wiki-link";
 import { getSuggestionsRoute, handleArticleSuggestions } from "./suggestions";
 
 // OpenAPI用にpackages/schemasをラップ
@@ -554,6 +555,11 @@ articlesRoute.openapi(getArticleRoute, async (c) => {
 				)
 			);
 
+		// 5. Wiki Linkをコンテンツ内で変換
+		const convertedContent = articleData.content
+			? await convertWikiLinks(articleData.content, lang)
+			: articleData.content;
+
 		return c.json({
 			data: {
 				id: articleData.id,
@@ -563,7 +569,7 @@ articlesRoute.openapi(getArticleRoute, async (c) => {
 				publishedAt: articleData.publishedAt,
 				updatedAt: articleData.updatedAt,
 				title: articleData.title,
-				content: articleData.content,
+				content: convertedContent,
 				viewCount: articleData.viewCount,
 				tags: relatedTags,
 			},

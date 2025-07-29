@@ -238,4 +238,3 @@ export const TagIdParamSchema = z.object({
 export const TagDetailResponseSchema = z.object({
 	data: TagDetailSchema,
 });
-

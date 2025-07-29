@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import MDEditor from "@uiw/react-md-editor";
+import MDEditor, { commands, type ICommand } from "@uiw/react-md-editor";
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
 import { CalendarIcon, Loader2 } from "lucide-react";
@@ -108,6 +108,89 @@ export function ArticleNewForm() {
 			? slugCheckData.message || "このスラッグは既に使用されています"
 			: null;
 
+	// カスタムhrコマンド（Ctrl+Hを無効化）
+	const customHr: ICommand = {
+		...commands.hr,
+		execute: () => {
+			// 何もしない（デフォルトのhr挿入を防ぐ）
+		},
+	};
+
+	// Ctrl+HでBackspace処理を実行
+	useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent) => {
+			// Ctrl+H または Cmd+H を検知
+			if ((e.ctrlKey || e.metaKey) && (e.key === "h" || e.key === "H")) {
+				const textarea = document.querySelector(
+					".w-md-editor-text-input"
+				) as HTMLTextAreaElement;
+				if (!textarea || document.activeElement !== textarea) return;
+
+				e.preventDefault();
+				e.stopPropagation();
+
+				const start = textarea.selectionStart;
+				const end = textarea.selectionEnd;
+				const value = textarea.value;
+
+				if (start === end && start > 0) {
+					// カーソル位置の前の文字を削除
+					const newValue = value.slice(0, start - 1) + value.slice(start);
+
+					// 値を更新
+					setMarkdownValue(newValue);
+					setValue("content", newValue);
+
+					// textareaの値も更新してカーソル位置を設定
+					setTimeout(() => {
+						textarea.value = newValue;
+						textarea.setSelectionRange(start - 1, start - 1);
+						textarea.focus();
+					}, 0);
+				} else if (start !== end) {
+					// 選択範囲を削除
+					const newValue = value.slice(0, start) + value.slice(end);
+
+					// 値を更新
+					setMarkdownValue(newValue);
+					setValue("content", newValue);
+
+					// textareaの値も更新してカーソル位置を設定
+					setTimeout(() => {
+						textarea.value = newValue;
+						textarea.setSelectionRange(start, start);
+						textarea.focus();
+					}, 0);
+				}
+			}
+		};
+
+		// キャプチャフェーズで処理
+		window.addEventListener("keydown", handleKeyDown, true);
+
+		return () => {
+			window.removeEventListener("keydown", handleKeyDown, true);
+		};
+	}, [setValue, setMarkdownValue]);
+
+	// カスタムコマンドリスト（hrを置き換え）
+	const customCommands = [
+		commands.bold,
+		commands.italic,
+		commands.strikethrough,
+		commands.code,
+		commands.link,
+		commands.quote,
+		commands.codeBlock,
+		commands.comment,
+		commands.image,
+		commands.table,
+		customHr, // カスタムhrコマンドを使用
+		commands.checkedListCommand,
+		commands.orderedListCommand,
+		commands.unorderedListCommand,
+	];
+
 	/**
 	 * フォーム送信処理
 	 */
@@ -186,48 +269,6 @@ export function ArticleNewForm() {
 			textarea.focus();
 			textarea.setSelectionRange(newCursorPos, newCursorPos);
 		}, 0);
-	};
-
-	/**
-	 * MDEditorのキーボードイベント処理
-	 */
-	const handleEditorKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-		// Ctrl + H の場合、デフォルト動作（区切り線挿入）を防いでBackspace相当の処理にする
-		if (e.ctrlKey && (e.key === "h" || e.key === "H")) {
-			e.preventDefault();
-			e.stopPropagation();
-
-			// 現在のtextareaから直接値を取得
-			const textarea = e.currentTarget;
-			const start = textarea.selectionStart;
-			const end = textarea.selectionEnd;
-			const value = textarea.value;
-
-			if (start === end && start > 0) {
-				// カーソル位置で文字を削除（Backspace相当）
-				const newValue = value.slice(0, start - 1) + value.slice(start);
-				const newCursorPos = start - 1;
-
-				setMarkdownValue(newValue);
-				setValue("content", newValue);
-
-				// カーソル位置を調整
-				setTimeout(() => {
-					textarea.setSelectionRange(newCursorPos, newCursorPos);
-				}, 0);
-			} else if (start !== end) {
-				// 選択範囲がある場合は選択範囲を削除
-				const newValue = value.slice(0, start) + value.slice(end);
-
-				setMarkdownValue(newValue);
-				setValue("content", newValue);
-
-				// カーソル位置を調整
-				setTimeout(() => {
-					textarea.setSelectionRange(start, start);
-				}, 0);
-			}
-		}
 	};
 
 	/**
@@ -426,13 +467,11 @@ export function ArticleNewForm() {
 									<MDEditor
 										value={markdownValue}
 										onChange={handleEditorChange}
+										commands={customCommands}
 										preview="live"
 										visibleDragbar={true}
 										data-color-mode="light"
 										height={500}
-										textareaProps={{
-											onKeyDown: handleEditorKeyDown,
-										}}
 									/>
 								</div>
 								{errors.content && (

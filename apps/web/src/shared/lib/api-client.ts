@@ -1,6 +1,5 @@
-import { hc } from "hono/client";
 import type { AppType } from "@saneatsu/backend";
-import type { ApiError } from "../types/common";
+import { hc } from "hono/client";
 import type {
 	ArticleCreateRequest,
 	ArticleCreateResponse,
@@ -11,6 +10,7 @@ import type {
 	SlugCheckQuery,
 	SlugCheckResponse,
 } from "../types/article";
+import type { ApiError } from "../types/common";
 import type { TagsQuery, TagsResponse } from "../types/tag";
 
 /**
@@ -70,7 +70,13 @@ export async function fetchArticles(
 			language: query.lang as "ja" | "en" | undefined,
 			status: query.status as "published" | "draft" | "archived" | undefined,
 			search: query.search,
-			sortBy: query.sortBy as "createdAt" | "updatedAt" | "publishedAt" | "title" | "viewCount" | undefined,
+			sortBy: query.sortBy as
+				| "createdAt"
+				| "updatedAt"
+				| "publishedAt"
+				| "title"
+				| "viewCount"
+				| undefined,
 			sortOrder: query.sortOrder as "asc" | "desc" | undefined,
 		},
 	});
@@ -101,10 +107,10 @@ export async function fetchArticle(
  * sortBy と sortOrder パラメータを追加
  */
 export async function fetchAllArticles(
-	query: ArticlesQuery & { 
-		status?: string; 
-		search?: string; 
-		sortBy?: string; 
+	query: ArticlesQuery & {
+		status?: string;
+		search?: string;
+		sortBy?: string;
 		sortOrder?: string;
 	} = {}
 ): Promise<ArticlesResponse> {
@@ -115,7 +121,13 @@ export async function fetchAllArticles(
 			language: query.lang as "ja" | "en" | undefined,
 			status: query.status as "published" | "draft" | "archived" | undefined,
 			search: query.search,
-			sortBy: query.sortBy as "createdAt" | "updatedAt" | "publishedAt" | "title" | "viewCount" | undefined,
+			sortBy: query.sortBy as
+				| "createdAt"
+				| "updatedAt"
+				| "publishedAt"
+				| "title"
+				| "viewCount"
+				| undefined,
 			sortOrder: query.sortOrder as "asc" | "desc" | undefined,
 		},
 	});
@@ -217,4 +229,3 @@ export function getErrorMessage(error: unknown): string {
 
 	return "不明なエラーが発生しました";
 }
-
