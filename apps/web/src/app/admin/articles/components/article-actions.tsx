@@ -1,12 +1,10 @@
 "use client";
 
 import { Edit, Eye, FileEdit, MoreHorizontal, Trash2 } from "lucide-react";
-import { useState } from "react";
 import {
-	deleteArticle,
-	getErrorMessage,
-	updateArticleStatus,
-} from "../../../../shared/lib/api-client";
+	useUpdateStatus,
+	useDelete,
+} from "../../../../entities/article/api";
 import type { Article } from "../../../../shared/types/article";
 import { Button } from "../../../../shared/ui/button/button";
 import {
@@ -32,7 +30,14 @@ interface ArticleActionsProps {
  * 編集・削除・ステータス変更などのアクションを提供
  */
 export function ArticleActions({ article, onAction }: ArticleActionsProps) {
-	const [loading, setLoading] = useState(false);
+	// 記事ステータス更新フック
+	const updateStatusMutation = useUpdateStatus();
+	
+	// 記事削除フック
+	const deleteArticleMutation = useDelete();
+
+	// いずれかのmutationが実行中かどうか
+	const loading = updateStatusMutation.isPending || deleteArticleMutation.isPending;
 
 	/**
 	 * 記事ステータス更新
@@ -46,14 +51,15 @@ export function ArticleActions({ article, onAction }: ArticleActionsProps) {
 
 		if (!confirmed) return;
 
-		setLoading(true);
 		try {
-			await updateArticleStatus(article.id, newStatus);
+			await updateStatusMutation.mutateAsync({
+				id: article.id,
+				status: newStatus,
+			});
 			onAction?.();
 		} catch (error) {
-			alert(`ステータス更新に失敗しました: ${getErrorMessage(error)}`);
-		} finally {
-			setLoading(false);
+			const errorMessage = error instanceof Error ? error.message : "ステータス更新に失敗しました";
+			alert(`ステータス更新に失敗しました: ${errorMessage}`);
 		}
 	};
 
@@ -69,14 +75,12 @@ export function ArticleActions({ article, onAction }: ArticleActionsProps) {
 
 		if (!confirmed) return;
 
-		setLoading(true);
 		try {
-			await deleteArticle(article.id);
+			await deleteArticleMutation.mutateAsync(article.id);
 			onAction?.();
 		} catch (error) {
-			alert(`削除に失敗しました: ${getErrorMessage(error)}`);
-		} finally {
-			setLoading(false);
+			const errorMessage = error instanceof Error ? error.message : "削除に失敗しました";
+			alert(`削除に失敗しました: ${errorMessage}`);
 		}
 	};
 
