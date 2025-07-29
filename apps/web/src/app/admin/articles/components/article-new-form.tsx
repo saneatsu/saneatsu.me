@@ -28,7 +28,6 @@ import {
 	RadioGroup,
 	RadioGroupItem,
 } from "../../../../shared/ui/radio-group/radio-group";
-import { TagMultiSelect } from "./tag-multi-select";
 
 /**
  * 記事作成フォームのスキーマ
@@ -51,7 +50,6 @@ const articleNewSchema = z.object({
 		message: "ステータスを選択してください",
 	}),
 	publishedAt: z.string().optional(),
-	tagIds: z.array(z.number()).min(1, "最低1つのタグを選択してください"),
 });
 
 type ArticleNewForm = z.infer<typeof articleNewSchema>;
@@ -81,7 +79,6 @@ export function ArticleNewForm() {
 		resolver: zodResolver(articleNewSchema),
 		defaultValues: {
 			status: "draft",
-			tagIds: [],
 		},
 	});
 
@@ -216,7 +213,6 @@ export function ArticleNewForm() {
 				content: data.content,
 				status: data.status,
 				publishedAt,
-				tagIds: data.tagIds,
 			});
 
 			console.log("記事作成成功:", response);
@@ -428,21 +424,6 @@ export function ArticleNewForm() {
 									</div>
 								</div>
 							)}
-						</CardContent>
-					</Card>
-
-					{/* タグ選択 */}
-					<Card>
-						<CardHeader>
-							<CardTitle>タグ</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<TagMultiSelect
-								value={watch("tagIds")}
-								onChange={(values) => setValue("tagIds", values)}
-								error={errors.tagIds?.message}
-								required
-							/>
 						</CardContent>
 					</Card>
 				</div>

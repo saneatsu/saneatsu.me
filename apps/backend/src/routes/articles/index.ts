@@ -1,11 +1,8 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import {
 	articles,
-	articleTags,
 	articleTranslations,
 	db,
-	tags,
-	tagTranslations,
 } from "@saneatsu/db";
 import {
 	articleListQuerySchema,
@@ -51,21 +48,6 @@ const articlesOpenApiQuerySchema = z.object({
 });
 
 // 必要なOpenAPIスキーマ定義
-const ArticleTagSchema = z.object({
-	id: z.number().int().openapi({
-		example: 1,
-		description: "タグのユニークID",
-	}),
-	slug: z.string().openapi({
-		example: "javascript",
-		description: "タグのスラッグ",
-	}),
-	name: z.string().openapi({
-		example: "JavaScript",
-		description: "タグ名（現在の言語での名前）",
-	}),
-});
-
 const ArticleSchema = z.object({
 	id: z.number().int().openapi({
 		example: 1,
@@ -102,9 +84,6 @@ const ArticleSchema = z.object({
 	viewCount: z.number().int().openapi({
 		example: 127,
 		description: "記事の閲覧数（言語ごと）",
-	}),
-	tags: z.array(ArticleTagSchema).openapi({
-		description: "記事に紐付いているタグ一覧",
 	}),
 });
 
@@ -207,13 +186,6 @@ const ArticleCreateSchema = z.object({
 		example: "2024-01-01T10:00:00Z",
 		description: "公開日時（ISO 8601形式、公開ステータス時のみ）",
 	}),
-	tagIds: z
-		.array(z.number().int().positive())
-		.min(1)
-		.openapi({
-			example: [1, 2, 3],
-			description: "タグIDの配列（最低1つ必要）",
-		}),
 });
 
 const ArticleCreateResponseSchema = z.object({
@@ -395,14 +367,8 @@ articlesRoute.openapi(listArticlesRoute, async (c) => {
 			)
 			.where(and(...conditions));
 
-		// 各記事にタグを追加（一時的に空配列を設定）
-		const articlesWithTags = articleList.map((article) => ({
-			...article,
-			tags: [] as Array<{ id: number; slug: string; name: string }>, // TODO: 実際のタグを取得するクエリを後で実装
-		}));
-
 		return c.json({
-			data: articlesWithTags,
+			data: articleList,
 			pagination: {
 				page,
 				limit,
@@ -538,24 +504,7 @@ articlesRoute.openapi(getArticleRoute, async (c) => {
 			articleData.viewCount = (articleData.viewCount || 0) + 1;
 		}
 
-		// 4. 記事に紐付いているタグ情報を取得
-		const relatedTags = await db
-			.select({
-				id: tags.id,
-				slug: tags.slug,
-				name: tagTranslations.name,
-			})
-			.from(articleTags)
-			.innerJoin(tags, eq(articleTags.tagId, tags.id))
-			.innerJoin(tagTranslations, eq(tags.id, tagTranslations.tagId))
-			.where(
-				and(
-					eq(articleTags.articleId, articleData.id),
-					eq(tagTranslations.language, lang)
-				)
-			);
-
-		// 5. Wiki Linkをコンテンツ内で変換
+		// 4. Wiki Linkをコンテンツ内で変換
 		const convertedContent = articleData.content
 			? await convertWikiLinks(articleData.content, lang)
 			: articleData.content;
@@ -571,7 +520,6 @@ articlesRoute.openapi(getArticleRoute, async (c) => {
 				title: articleData.title,
 				content: convertedContent,
 				viewCount: articleData.viewCount,
-				tags: relatedTags,
 			},
 		});
 	} catch (error) {
@@ -796,15 +744,9 @@ articlesRoute.openapi(createArticleRoute, async (c) => {
 			.where(eq(articles.id, newArticle.id))
 			.limit(1);
 
-		// タグを追加してレスポンス形式を整える
-		const articleWithTags = {
-			...createdArticle[0],
-			tags: [] as Array<{ id: number; slug: string; name: string }>, // TODO: 実際のタグを取得するクエリを後で実装
-		};
-
 		return c.json(
 			{
-				data: articleWithTags,
+				data: createdArticle[0],
 				message: "記事が正常に作成されました",
 			},
 			201

@@ -1,6 +1,5 @@
 // @ts-nocheck - React 19 compatibility issue with react-markdown
 
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
@@ -8,7 +7,6 @@ import remarkGfm from "remark-gfm";
 import type { Article } from "../../../shared";
 import { extractHeadings } from "../../../shared/lib/extract-headings";
 import { cn } from "../../../shared/lib/utils";
-import { Badge } from "../../../shared/ui/badge";
 import { TableOfContents } from "../../../shared/ui/table-of-contents";
 
 export interface ArticleDetailViewProps {
@@ -96,23 +94,6 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 						<h1 className="text-4xl font-bold tracking-tight">
 							{article.title}
 						</h1>
-
-						{/* Tags Section */}
-						{article.tags && article.tags.length > 0 && (
-							<div className="flex flex-wrap gap-2">
-								{article.tags.map((tag) => (
-									<Link
-										key={tag.id}
-										href={`/${locale}/tags/${tag.slug}`}
-										className="transition-opacity hover:opacity-80"
-									>
-										<Badge variant="secondary" className="text-xs">
-											{tag.name}
-										</Badge>
-									</Link>
-								))}
-							</div>
-						)}
 					</div>
 				</header>
 
