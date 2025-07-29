@@ -12,7 +12,6 @@ import {
 } from "../../../../shared/ui/card/card";
 import { useDashboardOverview } from "../../api/use-dashboard-overview";
 import { PopularArticles } from "../popular-articles";
-import { PopularTags } from "../popular-tags";
 import { RecentActivities } from "../recent-activities";
 import { DetailedStatsCards, StatsCards } from "../stats-cards";
 import { ViewsTrendChart } from "../views-trend-chart";
@@ -100,7 +99,7 @@ export function DashboardMain({ userName = "管理者" }: DashboardMainProps) {
 						ダッシュボード
 					</h1>
 					<p className="text-muted-foreground">
-						ようこそ、{userName}さん。ここから記事やタグの管理ができます。
+						ようこそ、{userName}さん。ここから記事の管理ができます。
 					</p>
 				</div>
 				<div className="flex items-center space-x-2">
@@ -141,12 +140,6 @@ export function DashboardMain({ userName = "管理者" }: DashboardMainProps) {
 						thisMonthViews: 0,
 					}
 				}
-				tagStats={
-					dashboardData?.tagStats || {
-						totalTags: 0,
-						topTags: [],
-					}
-				}
 				loading={isLoading}
 			/>
 
@@ -166,24 +159,13 @@ export function DashboardMain({ userName = "管理者" }: DashboardMainProps) {
 				loading={isLoading}
 			/>
 
-			{/* グリッドレイアウト：人気記事・人気タグ・最近の活動 */}
-			<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+			{/* グリッドレイアウト：人気記事・最近の活動 */}
+			<div className="grid gap-6 md:grid-cols-2">
 				{/* 人気記事 */}
 				<PopularArticles
 					articles={dashboardData?.topArticles.articles || []}
 					loading={isLoading}
 					limit={5}
-				/>
-
-				{/* 人気タグ */}
-				<PopularTags
-					tagStats={
-						dashboardData?.tagStats || {
-							totalTags: 0,
-							topTags: [],
-						}
-					}
-					loading={isLoading}
 				/>
 
 				{/* 最近の活動 */}
@@ -201,18 +183,12 @@ export function DashboardMain({ userName = "管理者" }: DashboardMainProps) {
 					<CardDescription>よく使用する機能へのショートカット</CardDescription>
 				</CardHeader>
 				<CardContent>
-					<div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+					<div className="grid gap-3 md:grid-cols-2">
 						<Button asChild className="justify-start">
 							<a href="/admin/articles/new">新しい記事を作成</a>
 						</Button>
 						<Button asChild variant="outline" className="justify-start">
 							<a href="/admin/articles">記事一覧を見る</a>
-						</Button>
-						<Button asChild variant="outline" className="justify-start">
-							<a href="/admin/tags/new">新しいタグを作成</a>
-						</Button>
-						<Button asChild variant="outline" className="justify-start">
-							<a href="/admin/tags">タグ一覧を見る</a>
 						</Button>
 					</div>
 				</CardContent>

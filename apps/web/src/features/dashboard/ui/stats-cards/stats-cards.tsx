@@ -1,10 +1,7 @@
 "use client";
 
-import { BarChart3, Eye, FileText, Hash, TrendingUp } from "lucide-react";
-import type {
-	ArticleStats,
-	TagStats,
-} from "../../../../shared/types/dashboard";
+import { BarChart3, Eye, FileText, TrendingUp } from "lucide-react";
+import type { ArticleStats } from "../../../../shared/types/dashboard";
 import {
 	Card,
 	CardContent,
@@ -18,8 +15,6 @@ import {
 interface StatsCardsProps {
 	/** 記事統計データ */
 	articleStats: ArticleStats;
-	/** タグ統計データ */
-	tagStats: TagStats;
 	/** ローディング状態 */
 	loading?: boolean;
 }
@@ -28,11 +23,7 @@ interface StatsCardsProps {
  * 統計データを表示するカードコンポーネント
  * ダッシュボードのトップに表示される主要な統計情報
  */
-export function StatsCards({
-	articleStats,
-	tagStats,
-	loading = false,
-}: StatsCardsProps) {
+export function StatsCards({ articleStats, loading = false }: StatsCardsProps) {
 	/**
 	 * 数値をフォーマットして表示用に変換
 	 */
@@ -68,7 +59,7 @@ export function StatsCards({
 	);
 
 	return (
-		<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+		<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
 			{/* 総記事数 */}
 			{renderStatCard(
 				"総記事数",
@@ -94,15 +85,6 @@ export function StatsCards({
 				"未公開の記事",
 				<BarChart3 className="h-4 w-4" />,
 				"text-yellow-600"
-			)}
-
-			{/* タグ数 */}
-			{renderStatCard(
-				"タグ数",
-				tagStats.totalTags,
-				"登録済みタグ",
-				<Hash className="h-4 w-4" />,
-				"text-purple-600"
 			)}
 		</div>
 	);
