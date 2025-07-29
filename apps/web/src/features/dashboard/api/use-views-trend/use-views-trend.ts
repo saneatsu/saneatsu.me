@@ -15,7 +15,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
 /**
  * Hono Clientの初期化
  */
-const client = hc<AppType>(API_BASE_URL);
+const client = hc<AppType>(API_BASE_URL) as any;
 
 /**
  * 閲覧数推移データ取得のオプション

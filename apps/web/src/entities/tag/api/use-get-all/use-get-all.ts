@@ -1,6 +1,8 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { hc } from "hono/client";
+import type { AppType } from "@saneatsu/backend";
 import { queryKeys } from "../../../../shared/lib/query-keys";
 import type { QueryConfig } from "../../../../shared/lib/react-query";
 
@@ -17,6 +19,16 @@ interface Tag {
 interface TagsResponse {
 	data: Tag[];
 }
+
+/**
+ * APIのベースURL
+ */
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
+
+/**
+ * Hono Clientの初期化
+ */
+const client = hc<AppType>(API_BASE_URL) as any;
 
 /**
  * タグ一覧取得のオプション
@@ -46,15 +58,14 @@ export function useGetAllTags({
 	return useQuery({
 		queryKey: queryKeys.tag.all(lang),
 		queryFn: async () => {
-			// バックエンドAPIがまだ/tagsエンドポイントを持っていないため、
-			// Next.js APIルート経由でアクセス
-			const queryParams = new URLSearchParams({ lang });
-			const response = await fetch(`/api/tags?${queryParams}`);
+			const response = await client.api.tags.$get({
+				query: { lang },
+			});
 
 			if (!response.ok) {
 				const error = await response.json();
 				throw new Error(
-					(error as { error?: { message?: string } }).error?.message ||
+					(error as { error?: string }).error ||
 						"タグの取得に失敗しました"
 				);
 			}
