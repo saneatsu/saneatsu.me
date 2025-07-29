@@ -1,12 +1,5 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
-import {
-	articles,
-	articleTags,
-	articleTranslations,
-	db,
-	tags,
-	tagTranslations,
-} from "@saneatsu/db";
+import { articles, articleTranslations, db } from "@saneatsu/db";
 import {
 	type DashboardOverviewResponse,
 	type DashboardStatsResponse,
@@ -60,29 +53,6 @@ const articleStatsOpenApiSchema = z.object({
 	}),
 });
 
-const tagStatsOpenApiSchema = z.object({
-	totalTags: z.number().int().openapi({
-		example: 12,
-		description: "総タグ数",
-	}),
-	topTags: z
-		.array(
-			z.object({
-				id: z.number().int(),
-				slug: z.string(),
-				name: z.string(),
-				articleCount: z.number().int(),
-			})
-		)
-		.openapi({
-			example: [
-				{ id: 1, slug: "javascript", name: "JavaScript", articleCount: 8 },
-				{ id: 2, slug: "react", name: "React", articleCount: 6 },
-			],
-			description: "記事数が多いタグトップ5",
-		}),
-});
-
 const popularArticleOpenApiSchema = z.object({
 	id: z.number().int(),
 	slug: z.string(),
@@ -108,7 +78,6 @@ const dailyStatsOpenApiSchema = z.object({
 
 const dashboardStatsOpenApiResponseSchema = z.object({
 	articleStats: articleStatsOpenApiSchema,
-	tagStats: tagStatsOpenApiSchema,
 	popularArticles: z.object({
 		articles: z.array(popularArticleOpenApiSchema).max(10),
 	}),
@@ -120,7 +89,6 @@ const dashboardStatsOpenApiResponseSchema = z.object({
 
 const dashboardOverviewOpenApiResponseSchema = z.object({
 	articleStats: articleStatsOpenApiSchema,
-	tagStats: tagStatsOpenApiSchema,
 	topArticles: z.object({
 		articles: z.array(popularArticleOpenApiSchema).max(5),
 	}),
@@ -133,7 +101,6 @@ const dashboardOverviewOpenApiResponseSchema = z.object({
 						"article_created",
 						"article_published",
 						"article_updated",
-						"tag_created",
 					]),
 					description: z.string(),
 					entityId: z.number().int(),
@@ -306,30 +273,7 @@ app.openapi(getDashboardStatsRoute, async (c) => {
 			Promise.resolve([{ thisMonthViews: 0 }]),
 		]);
 
-		// 2. タグ統計の取得
-		const [totalTagsResult, topTagsResult] = await Promise.all([
-			// 総タグ数
-			db
-				.select({ count: count() })
-				.from(tags),
-			// 記事数が多いタグトップ5
-			db
-				.select({
-					id: tags.id,
-					slug: tags.slug,
-					name: tagTranslations.name,
-					articleCount: count(articleTags.articleId),
-				})
-				.from(tags)
-				.leftJoin(tagTranslations, eq(tags.id, tagTranslations.tagId))
-				.leftJoin(articleTags, eq(tags.id, articleTags.tagId))
-				.where(eq(tagTranslations.language, language))
-				.groupBy(tags.id, tags.slug, tagTranslations.name)
-				.orderBy(desc(count(articleTags.articleId)))
-				.limit(5),
-		]);
-
-		// 3. 人気記事トップ10の取得
+		// 2. 人気記事トップ10の取得
 		const popularArticlesResult = await db
 			.select({
 				id: articles.id,
@@ -374,15 +318,6 @@ app.openapi(getDashboardStatsRoute, async (c) => {
 				thisMonthArticles: thisMonthArticlesResult[0]?.count || 0,
 				totalViews: Number(totalViewsResult[0]?.totalViews) || 0,
 				thisMonthViews: thisMonthViewsResult[0]?.thisMonthViews || 0,
-			},
-			tagStats: {
-				totalTags: totalTagsResult[0]?.count || 0,
-				topTags: topTagsResult.map((tag) => ({
-					id: tag.id,
-					slug: tag.slug,
-					name: tag.name || "",
-					articleCount: tag.articleCount,
-				})),
 			},
 			popularArticles: {
 				articles: popularArticlesResult.map((article) => ({
@@ -447,26 +382,7 @@ app.openapi(getDashboardOverviewRoute, async (c) => {
 			.from(articleTranslations)
 			.where(eq(articleTranslations.language, language));
 
-		// 2. タグ統計（概要版）
-		const [totalTagsResult, topTagsResult] = await Promise.all([
-			db.select({ count: count() }).from(tags),
-			db
-				.select({
-					id: tags.id,
-					slug: tags.slug,
-					name: tagTranslations.name,
-					articleCount: count(articleTags.articleId),
-				})
-				.from(tags)
-				.leftJoin(tagTranslations, eq(tags.id, tagTranslations.tagId))
-				.leftJoin(articleTags, eq(tags.id, articleTags.tagId))
-				.where(eq(tagTranslations.language, language))
-				.groupBy(tags.id, tags.slug, tagTranslations.name)
-				.orderBy(desc(count(articleTags.articleId)))
-				.limit(5),
-		]);
-
-		// 3. 人気記事トップ5
+		// 2. 人気記事トップ5
 		const topArticlesResult = await db
 			.select({
 				id: articles.id,
@@ -519,15 +435,6 @@ app.openapi(getDashboardOverviewRoute, async (c) => {
 				totalViews: Number(totalViewsResult[0]?.totalViews) || 0,
 				thisMonthViews: 0, // 概要版では省略
 			},
-			tagStats: {
-				totalTags: totalTagsResult[0]?.count || 0,
-				topTags: topTagsResult.map((tag) => ({
-					id: tag.id,
-					slug: tag.slug,
-					name: tag.name || "",
-					articleCount: tag.articleCount,
-				})),
-			},
 			topArticles: {
 				articles: topArticlesResult.map((article) => ({
 					id: article.id,
@@ -543,8 +450,7 @@ app.openapi(getDashboardOverviewRoute, async (c) => {
 					type: activity.type as
 						| "article_created"
 						| "article_published"
-						| "article_updated"
-						| "tag_created",
+						| "article_updated",
 					description: activity.description as string,
 					entityId: activity.entityId,
 					entityTitle: activity.entityTitle,
