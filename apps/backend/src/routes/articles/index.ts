@@ -296,9 +296,6 @@ articlesRoute.openapi(listArticlesRoute, async (c) => {
 			conditions.push(eq(articles.status, "published"));
 		}
 
-		// 言語条件
-		conditions.push(eq(articleTranslations.language, lang));
-
 		// 検索条件
 		if (search) {
 			conditions.push(
@@ -308,6 +305,16 @@ articlesRoute.openapi(listArticlesRoute, async (c) => {
 				)`
 			);
 		}
+
+		// 合計閲覧数を計算するサブクエリ
+		const totalViewCountSubquery = db
+			.select({
+				articleId: articleTranslations.articleId,
+				totalViewCount: sql<number>`COALESCE(SUM(${articleTranslations.viewCount}), 0)`.as("totalViewCount"),
+			})
+			.from(articleTranslations)
+			.groupBy(articleTranslations.articleId)
+			.as("total_views");
 
 		// ソート条件を設定
 		let orderByClause: ReturnType<typeof asc | typeof desc>;
@@ -321,8 +328,8 @@ articlesRoute.openapi(listArticlesRoute, async (c) => {
 			case "viewCount":
 				orderByClause =
 					order === "asc"
-						? asc(articleTranslations.viewCount)
-						: desc(articleTranslations.viewCount);
+						? asc(totalViewCountSubquery.totalViewCount)
+						: desc(totalViewCountSubquery.totalViewCount);
 				break;
 			case "publishedAt":
 				orderByClause =
@@ -351,12 +358,19 @@ articlesRoute.openapi(listArticlesRoute, async (c) => {
 				updatedAt: articles.updatedAt,
 				title: articleTranslations.title,
 				content: articleTranslations.content,
-				viewCount: sql<number>`COALESCE(${articleTranslations.viewCount}, 0)`,
+				viewCount: sql<number>`COALESCE(${totalViewCountSubquery.totalViewCount}, 0)`,
 			})
 			.from(articles)
 			.leftJoin(
 				articleTranslations,
-				eq(articles.id, articleTranslations.articleId)
+				and(
+					eq(articles.id, articleTranslations.articleId),
+					eq(articleTranslations.language, lang)
+				)
+			)
+			.leftJoin(
+				totalViewCountSubquery,
+				eq(articles.id, totalViewCountSubquery.articleId)
 			)
 			.where(and(...conditions))
 			.orderBy(orderByClause)
