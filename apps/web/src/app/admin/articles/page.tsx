@@ -4,13 +4,6 @@ import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "../../../shared/ui/button/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "../../../shared/ui/card/card";
 import { ArticlesTable } from "./components/articles-table";
 
 /**
@@ -44,18 +37,8 @@ export default function ArticlesPage() {
 				</Link>
 			</div>
 
-			{/* 記事一覧カード */}
-			<Card>
-				<CardHeader>
-					<CardTitle>記事一覧</CardTitle>
-					<CardDescription>
-						すべての記事が表示されます。ステータスや言語でフィルタリングできます。
-					</CardDescription>
-				</CardHeader>
-				<CardContent>
-					<ArticlesTable key={refreshKey} onRefresh={handleRefresh} />
-				</CardContent>
-			</Card>
+			{/* 記事一覧テーブル */}
+			<ArticlesTable key={refreshKey} onRefresh={handleRefresh} />
 		</div>
 	);
 }
