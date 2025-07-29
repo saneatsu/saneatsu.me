@@ -4,13 +4,6 @@ import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "../../../shared/ui/button/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "../../../shared/ui/card/card";
 import { TagsTable } from "./components/tags-table";
 
 /**
@@ -44,18 +37,8 @@ export default function TagsPage() {
 				</Link>
 			</div>
 
-			{/* タグ一覧カード */}
-			<Card>
-				<CardHeader>
-					<CardTitle>タグ一覧</CardTitle>
-					<CardDescription>
-						すべてのタグが表示されます。タグ名は日本語と英語の両方を設定できます。
-					</CardDescription>
-				</CardHeader>
-				<CardContent>
-					<TagsTable key={refreshKey} onRefresh={handleRefresh} />
-				</CardContent>
-			</Card>
+			{/* タグ一覧テーブル */}
+			<TagsTable key={refreshKey} onRefresh={handleRefresh} />
 		</div>
 	);
 }
