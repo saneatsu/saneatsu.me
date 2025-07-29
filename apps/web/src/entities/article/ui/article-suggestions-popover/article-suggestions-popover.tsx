@@ -11,12 +11,6 @@ import {
 	CommandList,
 } from "../../../../shared/ui/command/command";
 import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-	PopoverAnchor,
-} from "../../../../shared/ui/popover/popover";
-import {
 	type SuggestionItem,
 	useArticleSuggestions,
 } from "../../api/use-suggestions";
@@ -35,12 +29,8 @@ export interface ArticleSuggestionsPopoverProps {
 	language?: "ja" | "en";
 	/** サジェストが選択された時のコールバック */
 	onSelect: (suggestion: SuggestionItem) => void;
-	/** トリガー要素（通常はエディタ内の非表示要素） */
-	trigger?: React.ReactNode;
 	/** カーソル位置（ポップアップの表示位置用） */
 	position?: { top: number; left: number };
-	/** アンカー要素への参照 */
-	anchorRef?: React.RefObject<HTMLElement>;
 }
 
 /**
@@ -70,9 +60,7 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 	query,
 	language = "ja",
 	onSelect,
-	trigger,
 	position,
-	anchorRef,
 }) => {
 	const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -93,35 +81,42 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 		if (!open) return;
 
 		const handleKeyDown = (e: KeyboardEvent) => {
-			switch (e.key) {
-				case "ArrowDown":
-					e.preventDefault();
-					setSelectedIndex((prev) =>
-						prev < suggestions.length - 1 ? prev + 1 : 0
-					);
-					break;
-				case "ArrowUp":
-					e.preventDefault();
-					setSelectedIndex((prev) =>
-						prev > 0 ? prev - 1 : suggestions.length - 1
-					);
-					break;
-				case "Enter":
-					e.preventDefault();
-					if (suggestions[selectedIndex]) {
-						onSelect(suggestions[selectedIndex]);
+			// キーボードイベントがテキストエリアから来た場合のみ処理
+			if (e.target && (e.target as HTMLElement).tagName === "TEXTAREA") {
+				switch (e.key) {
+					case "ArrowDown":
+						e.preventDefault();
+						e.stopPropagation();
+						setSelectedIndex((prev) =>
+							prev < suggestions.length - 1 ? prev + 1 : 0
+						);
+						break;
+					case "ArrowUp":
+						e.preventDefault();
+						e.stopPropagation();
+						setSelectedIndex((prev) =>
+							prev > 0 ? prev - 1 : suggestions.length - 1
+						);
+						break;
+					case "Enter":
+						if (suggestions[selectedIndex]) {
+							e.preventDefault();
+							e.stopPropagation();
+							onSelect(suggestions[selectedIndex]);
+						}
+						break;
+					case "Escape":
+						e.preventDefault();
+						e.stopPropagation();
 						onOpenChange(false);
-					}
-					break;
-				case "Escape":
-					e.preventDefault();
-					onOpenChange(false);
-					break;
+						break;
+				}
 			}
 		};
 
-		window.addEventListener("keydown", handleKeyDown);
-		return () => window.removeEventListener("keydown", handleKeyDown);
+		// キャプチャーフェーズで処理する
+		window.addEventListener("keydown", handleKeyDown, true);
+		return () => window.removeEventListener("keydown", handleKeyDown, true);
 	}, [open, selectedIndex, suggestions, onSelect, onOpenChange]);
 
 	// ポップアップが開いたら選択インデックスをリセット
@@ -131,105 +126,93 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 		}
 	}, [open]);
 
-	return (
-		<Popover open={open} onOpenChange={onOpenChange}>
-			{anchorRef?.current && (
-				<PopoverAnchor asChild>
-					<span ref={anchorRef as any} />
-				</PopoverAnchor>
-			)}
-			{trigger && <PopoverTrigger asChild>{trigger}</PopoverTrigger>}
-			<PopoverContent
-				className="w-[400px] p-0"
-				align="start"
-				side="bottom"
-				onOpenAutoFocus={(e) => e.preventDefault()}
-				onInteractOutside={(e) => e.preventDefault()}
-				style={
-					position
-						? {
-								position: "fixed",
-								top: position.top,
-								left: position.left,
-							}
-						: undefined
-				}
-			>
-				<Command shouldFilter={false}>
-					<CommandList>
-						{isLoading && (
-							<div className="px-2 py-6 text-center text-sm text-muted-foreground">
-								読み込み中...
-							</div>
-						)}
-						{!isLoading && suggestions.length === 0 && (
-							<CommandEmpty>該当する記事が見つかりません</CommandEmpty>
-						)}
-						{!isLoading && suggestions.length > 0 && (
-							<>
-								{/* 記事タイトルのグループ */}
-								{suggestions.some((s) => s.type === "article") && (
-									<CommandGroup heading="記事">
-										{suggestions
-											.filter((s) => s.type === "article")
-											.map((suggestion) => {
-												const actualIndex = suggestions.indexOf(suggestion);
-												return (
-													<CommandItem
-														key={`article-${suggestion.slug}`}
-														value={suggestion.slug}
-														onSelect={() => {
-															onSelect(suggestion);
-															onOpenChange(false);
-														}}
-														className={
-															actualIndex === selectedIndex ? "bg-accent" : ""
-														}
-													>
-														<FileText className="mr-2 h-4 w-4" />
-														<span>{suggestion.title}</span>
-													</CommandItem>
-												);
-											})}
-									</CommandGroup>
-								)}
+	// カスタムドロップダウンの実装（Popoverを使わない）
+	if (!open) return null;
 
-								{/* 見出しのグループ */}
-								{suggestions.some((s) => s.type === "heading") && (
-									<CommandGroup heading="見出し">
-										{suggestions
-											.filter((s) => s.type === "heading")
-											.map((suggestion) => {
-												const actualIndex = suggestions.indexOf(suggestion);
-												return (
-													<CommandItem
-														key={`heading-${suggestion.slug}-${suggestion.headingId}`}
-														value={`${suggestion.slug}#${suggestion.headingId}`}
-														onSelect={() => {
-															onSelect(suggestion);
-															onOpenChange(false);
-														}}
-														className={
-															actualIndex === selectedIndex ? "bg-accent" : ""
-														}
-													>
-														<Hash className="mr-2 h-4 w-4" />
-														<div className="flex flex-col">
-															<span>{suggestion.title}</span>
-															<span className="text-xs text-muted-foreground">
-																{suggestion.articleTitle}
-															</span>
-														</div>
-													</CommandItem>
-												);
-											})}
-									</CommandGroup>
-								)}
-							</>
-						)}
-					</CommandList>
-				</Command>
-			</PopoverContent>
-		</Popover>
+	return (
+		<div
+			className="fixed z-50 w-[400px] rounded-md border bg-popover shadow-md"
+			style={
+				position
+					? {
+							top: position.top,
+							left: position.left,
+						}
+					: undefined
+			}
+		>
+			<Command shouldFilter={false} loop={true}>
+				<CommandList>
+					{isLoading && (
+						<div className="px-2 py-6 text-center text-sm text-muted-foreground">
+							読み込み中...
+						</div>
+					)}
+					{!isLoading && suggestions.length === 0 && (
+						<CommandEmpty>該当する記事が見つかりません</CommandEmpty>
+					)}
+					{!isLoading && suggestions.length > 0 && (
+						<>
+							{/* 記事タイトルのグループ */}
+							{suggestions.some((s) => s.type === "article") && (
+								<CommandGroup heading="記事">
+									{suggestions
+										.filter((s) => s.type === "article")
+										.map((suggestion) => {
+											const actualIndex = suggestions.indexOf(suggestion);
+											return (
+												<CommandItem
+													key={`article-${suggestion.slug}`}
+													value={suggestion.slug}
+													onSelect={() => {
+														onSelect(suggestion);
+													}}
+													className={
+														actualIndex === selectedIndex ? "bg-accent" : ""
+													}
+												>
+													<FileText className="mr-2 h-4 w-4" />
+													<span>{suggestion.title}</span>
+												</CommandItem>
+											);
+										})}
+								</CommandGroup>
+							)}
+
+							{/* 見出しのグループ */}
+							{suggestions.some((s) => s.type === "heading") && (
+								<CommandGroup heading="見出し">
+									{suggestions
+										.filter((s) => s.type === "heading")
+										.map((suggestion) => {
+											const actualIndex = suggestions.indexOf(suggestion);
+											return (
+												<CommandItem
+													key={`heading-${suggestion.slug}-${suggestion.headingId}`}
+													value={`${suggestion.slug}#${suggestion.headingId}`}
+													onSelect={() => {
+														onSelect(suggestion);
+													}}
+													className={
+														actualIndex === selectedIndex ? "bg-accent" : ""
+													}
+												>
+													<Hash className="mr-2 h-4 w-4" />
+													<div className="flex flex-col">
+														<span>{suggestion.title}</span>
+														<span className="text-xs text-muted-foreground">
+															{suggestion.articleTitle}
+														</span>
+													</div>
+												</CommandItem>
+											);
+										})}
+								</CommandGroup>
+							)}
+						</>
+					)}
+				</CommandList>
+			</Command>
+		</div>
 	);
 };

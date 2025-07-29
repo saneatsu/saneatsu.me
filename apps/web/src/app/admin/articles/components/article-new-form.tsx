@@ -8,15 +8,13 @@ import { CalendarIcon, Loader2 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useDebounce } from "../../../../shared/hooks/use-debounce";
 import {
+	type SuggestionItem,
 	useCheckSlug,
 	useCreate,
-	type SuggestionItem,
 } from "../../../../entities/article/api";
-import {
-	ArticleSuggestionsPopover,
-} from "../../../../entities/article/ui";
+import { ArticleSuggestionsPopover } from "../../../../entities/article/ui";
+import { useDebounce } from "../../../../shared/hooks/use-debounce";
 import { Button } from "../../../../shared/ui/button/button";
 import {
 	Card,
@@ -105,9 +103,10 @@ export function ArticleNewForm() {
 	});
 
 	// スラッグエラーの判定
-	const slugError = slugCheckData && !slugCheckData.available 
-		? (slugCheckData.message || "このスラッグは既に使用されています") 
-		: null;
+	const slugError =
+		slugCheckData && !slugCheckData.available
+			? slugCheckData.message || "このスラッグは既に使用されています"
+			: null;
 
 	/**
 	 * フォーム送信処理
@@ -144,7 +143,8 @@ export function ArticleNewForm() {
 			// router.push("/admin/articles");
 		} catch (error) {
 			console.error("記事作成エラー:", error);
-			const errorMessage = error instanceof Error ? error.message : "記事の作成に失敗しました";
+			const errorMessage =
+				error instanceof Error ? error.message : "記事の作成に失敗しました";
 			alert(`記事の作成に失敗しました: ${errorMessage}`);
 		}
 	};
@@ -154,7 +154,9 @@ export function ArticleNewForm() {
 	 */
 	const handleSuggestionSelect = (suggestion: SuggestionItem) => {
 		// 現在のカーソル位置から[[を検索
-		const textarea = editorRef.current?.querySelector('textarea') as HTMLTextAreaElement;
+		const textarea = editorRef.current?.querySelector(
+			"textarea"
+		) as HTMLTextAreaElement;
 		if (!textarea) return;
 
 		const cursorPos = textarea.selectionStart;
@@ -162,13 +164,13 @@ export function ArticleNewForm() {
 		const afterCursor = markdownValue.substring(cursorPos);
 
 		// [[の開始位置を検索
-		const startIndex = beforeCursor.lastIndexOf('[[');
+		const startIndex = beforeCursor.lastIndexOf("[[");
 		if (startIndex === -1) return;
 
 		// 新しいコンテンツを構築
-		const newContent = 
-			markdownValue.substring(0, startIndex) + 
-			`[[${suggestion.slug}]]` + 
+		const newContent =
+			markdownValue.substring(0, startIndex) +
+			`[[${suggestion.slug}]]` +
 			afterCursor;
 
 		// 新しいカーソル位置を計算
@@ -187,6 +189,48 @@ export function ArticleNewForm() {
 	};
 
 	/**
+	 * MDEditorのキーボードイベント処理
+	 */
+	const handleEditorKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+		// Ctrl + H の場合、デフォルト動作（区切り線挿入）を防いでBackspace相当の処理にする
+		if (e.ctrlKey && (e.key === "h" || e.key === "H")) {
+			e.preventDefault();
+			e.stopPropagation();
+
+			// 現在のtextareaから直接値を取得
+			const textarea = e.currentTarget;
+			const start = textarea.selectionStart;
+			const end = textarea.selectionEnd;
+			const value = textarea.value;
+
+			if (start === end && start > 0) {
+				// カーソル位置で文字を削除（Backspace相当）
+				const newValue = value.slice(0, start - 1) + value.slice(start);
+				const newCursorPos = start - 1;
+
+				setMarkdownValue(newValue);
+				setValue("content", newValue);
+
+				// カーソル位置を調整
+				setTimeout(() => {
+					textarea.setSelectionRange(newCursorPos, newCursorPos);
+				}, 0);
+			} else if (start !== end) {
+				// 選択範囲がある場合は選択範囲を削除
+				const newValue = value.slice(0, start) + value.slice(end);
+
+				setMarkdownValue(newValue);
+				setValue("content", newValue);
+
+				// カーソル位置を調整
+				setTimeout(() => {
+					textarea.setSelectionRange(start, start);
+				}, 0);
+			}
+		}
+	};
+
+	/**
 	 * MDEditorの変更処理（Wiki Link検知を含む）
 	 */
 	const handleEditorChange = (val: string | undefined) => {
@@ -195,18 +239,18 @@ export function ArticleNewForm() {
 		setValue("content", value);
 
 		// Wiki Link検知
-		const textarea = editorRef.current?.querySelector('textarea');
+		const textarea = editorRef.current?.querySelector("textarea");
 		if (!textarea) return;
 
 		const cursorPos = (textarea as HTMLTextAreaElement).selectionStart;
 		const beforeCursor = value.substring(0, cursorPos);
 
 		// [[の検出
-		const lastBracketIndex = beforeCursor.lastIndexOf('[[');
+		const lastBracketIndex = beforeCursor.lastIndexOf("[[");
 		if (lastBracketIndex !== -1) {
 			// ]]で閉じられていないか確認
 			const afterBracket = value.substring(lastBracketIndex + 2, cursorPos);
-			if (!afterBracket.includes(']]')) {
+			if (!afterBracket.includes("]]")) {
 				// サジェストを表示
 				setSuggestionQuery(afterBracket);
 				setShowSuggestions(true);
@@ -386,6 +430,9 @@ export function ArticleNewForm() {
 										visibleDragbar={true}
 										data-color-mode="light"
 										height={500}
+										textareaProps={{
+											onKeyDown: handleEditorKeyDown,
+										}}
 									/>
 								</div>
 								{errors.content && (
@@ -409,7 +456,9 @@ export function ArticleNewForm() {
 					キャンセル
 				</Button>
 				<Button type="submit" disabled={createArticleMutation.isPending}>
-					{createArticleMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+					{createArticleMutation.isPending && (
+						<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+					)}
 					{createArticleMutation.isPending ? "作成中..." : "記事を作成"}
 				</Button>
 			</div>
@@ -422,7 +471,6 @@ export function ArticleNewForm() {
 				language="ja"
 				onSelect={handleSuggestionSelect}
 				position={cursorPosition}
-				anchorRef={editorRef}
 			/>
 		</form>
 	);
