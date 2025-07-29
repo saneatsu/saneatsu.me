@@ -2,8 +2,7 @@
 	"navigation": {
 		"home": "Home",
 		"blog": "Blog",
-		"about": "About",
-		"tags": "Tags"
+		"about": "About"
 	},
 	"theme": {
 		"light": "Light",
@@ -110,24 +109,9 @@
 			"title": "Article not found",
 			"message": "The article you're looking for doesn't exist or may have been deleted."
 		},
-		"tags": {
-			"title": "Tags",
-			"viewMore": "View all tags"
-		}
-	},
-	"tag": {
-		"title": "All Tags",
-		"articleCount": "{count} articles",
-		"articles": "articles",
-		"notFound": {
-			"title": "Tag not found",
-			"message": "The tag you're looking for doesn't exist or may have been deleted."
-		}
 	},
 	"common": {
 		"search": "Search",
-		"allTags": "All Tags",
-		"filterByTag": "Filter by Tag",
 		"filterByStatus": "Filter by Status",
 		"allStatus": "All",
 		"published": "Published",
@@ -198,18 +182,6 @@
 				"slugInvalid": "Slug can only contain alphanumeric characters and hyphens",
 				"atLeastOneTranslation": "Please create an article in at least one language",
 				"maxTranslations": "Supports up to 2 languages",
-				"atLeastOneTag": "Please select at least one tag",
-				"maxTags": "You can select up to 10 tags"
-			},
-			"tag": {
-				"nameRequired": "Please enter a tag name",
-				"nameTooLong": "Tag name must be 50 characters or less",
-				"slugRequired": "Please enter a slug",
-				"slugInvalid": "Slug can only contain alphanumeric characters and hyphens",
-				"atLeastOneTranslation": "Please enter a tag name in at least one language",
-				"maxTranslations": "Supports up to 2 languages",
-				"bothLanguagesRequired": "Please enter tag names in both Japanese and English",
-				"bothJaEnRequired": "Both Japanese and English tag names are required"
 			},
 			"pagination": {
 				"pagePositive": "Page number must be a positive integer",

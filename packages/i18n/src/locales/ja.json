@@ -2,8 +2,7 @@
 	"navigation": {
 		"home": "ホーム",
 		"blog": "ブログ",
-		"about": "About",
-		"tags": "タグ"
+		"about": "About"
 	},
 	"theme": {
 		"light": "ライト",
@@ -110,24 +109,9 @@
 			"title": "記事が見つかりません",
 			"message": "お探しの記事は存在しないか、削除された可能性があります。"
 		},
-		"tags": {
-			"title": "タグ",
-			"viewMore": "タグ一覧を見る"
-		}
-	},
-	"tag": {
-		"title": "タグ一覧",
-		"articleCount": "{count}件の記事",
-		"articles": "記事",
-		"notFound": {
-			"title": "タグが見つかりません",
-			"message": "お探しのタグは存在しないか、削除された可能性があります。"
-		}
 	},
 	"common": {
 		"search": "検索",
-		"allTags": "すべてのタグ",
-		"filterByTag": "タグで絞り込み",
 		"filterByStatus": "ステータスで絞り込み",
 		"allStatus": "すべて",
 		"published": "公開",
@@ -198,18 +182,6 @@
 				"slugInvalid": "スラッグは半角英数字とハイフンのみ使用できます",
 				"atLeastOneTranslation": "少なくとも1つの言語で記事を作成してください",
 				"maxTranslations": "最大2言語まで対応しています",
-				"atLeastOneTag": "少なくとも1つのタグを選択してください",
-				"maxTags": "タグは最大10個まで選択できます"
-			},
-			"tag": {
-				"nameRequired": "タグ名を入力してください",
-				"nameTooLong": "タグ名は50文字以内で入力してください",
-				"slugRequired": "スラッグを入力してください",
-				"slugInvalid": "スラッグは半角英数字とハイフンのみ使用できます",
-				"atLeastOneTranslation": "少なくとも1つの言語でタグ名を入力してください",
-				"maxTranslations": "最大2言語まで対応しています",
-				"bothLanguagesRequired": "日本語と英語の両方のタグ名を入力してください",
-				"bothJaEnRequired": "日本語と英語の両方のタグ名が必須です"
 			},
 			"pagination": {
 				"pagePositive": "ページ番号は正の整数である必要があります",
