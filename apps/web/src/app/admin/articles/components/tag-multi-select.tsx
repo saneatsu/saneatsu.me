@@ -1,8 +1,8 @@
 "use client";
 
 import { Check, ChevronsUpDown, X } from "lucide-react";
-import { useEffect, useState } from "react";
-import { fetchTags, getErrorMessage } from "../../../../shared/lib/api-client";
+import { useState } from "react";
+import { useGetAllTags } from "../../../../entities/tag/api/use-get-all";
 import type { Tag, TagOption } from "../../../../shared/types/tag";
 import { Badge } from "../../../../shared/ui/badge/badge";
 import { Button } from "../../../../shared/ui/button/button";
@@ -50,38 +50,22 @@ export function TagMultiSelect({
 	required = false,
 }: TagMultiSelectProps) {
 	const [open, setOpen] = useState(false);
-	const [tags, setTags] = useState<Tag[]>([]);
-	const [loading, setLoading] = useState(false);
-	const [apiError, setApiError] = useState<string | null>(null);
 
 	/**
 	 * タグ一覧を取得
 	 */
-	useEffect(() => {
-		const loadTags = async () => {
-			setLoading(true);
-			setApiError(null);
+	const { data: tagsData, isLoading: loading, error: apiError } = useGetAllTags({
+		lang: "ja",
+	});
 
-			try {
-				const response = await fetchTags({ lang: "ja" });
-				setTags(response.data);
-			} catch (err) {
-				setApiError(getErrorMessage(err));
-				console.error("タグの取得に失敗しました:", err);
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		loadTags();
-	}, []);
+	const tags = tagsData?.data || [];
 
 	/**
 	 * タグオプションの配列を作成
 	 */
 	const tagOptions: TagOption[] = tags.map((tag) => ({
 		value: tag.id.toString(),
-		label: tag.name,
+		label: tag.name || "",
 	}));
 
 	/**
@@ -183,7 +167,9 @@ export function TagMultiSelect({
 
 			{/* エラーメッセージの表示 */}
 			{(error || apiError) && (
-				<p className="text-sm text-destructive">{error || apiError}</p>
+				<p className="text-sm text-destructive">
+					{error || (apiError instanceof Error ? apiError.message : "タグの取得に失敗しました")}
+				</p>
 			)}
 
 			{/* ヘルプテキスト */}
