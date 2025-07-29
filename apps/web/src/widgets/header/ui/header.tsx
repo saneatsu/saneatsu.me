@@ -65,12 +65,6 @@ export function Header() {
 								{t("blog")}
 							</Link>
 							<Link
-								href={`/${locale}/tags`}
-								className={getNavLinkClassName(`/${locale}/tags`)}
-							>
-								{t("tags")}
-							</Link>
-							<Link
 								href={`/${locale}/about`}
 								className={getNavLinkClassName(`/${locale}/about`)}
 							>

@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText, Home, Tag } from "lucide-react";
+import { FileText, Home } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -29,11 +29,6 @@ const menuItems = [
 		title: "記事管理",
 		url: "/admin/articles",
 		icon: FileText,
-	},
-	{
-		title: "タグ管理",
-		url: "/admin/tags",
-		icon: Tag,
 	},
 ];
 
