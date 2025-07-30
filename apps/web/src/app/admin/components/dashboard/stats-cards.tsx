@@ -1,9 +1,7 @@
 "use client";
 
 import { BarChart3, Eye, FileText, Hash, TrendingUp } from "lucide-react";
-import type {
-	ArticleStats,
-} from "../../../../shared/types/dashboard";
+import type { ArticleStats } from "../../../../shared/types/dashboard";
 import {
 	Card,
 	CardContent,
@@ -25,10 +23,7 @@ interface StatsCardsProps {
  * 統計データを表示するカードコンポーネント
  * ダッシュボードのトップに表示される主要な統計情報
  */
-export function StatsCards({
-	articleStats,
-	loading = false,
-}: StatsCardsProps) {
+export function StatsCards({ articleStats, loading = false }: StatsCardsProps) {
 	/**
 	 * 数値をフォーマットして表示用に変換
 	 */
@@ -91,7 +86,6 @@ export function StatsCards({
 				<BarChart3 className="h-4 w-4" />,
 				"text-yellow-600"
 			)}
-
 		</div>
 	);
 }
