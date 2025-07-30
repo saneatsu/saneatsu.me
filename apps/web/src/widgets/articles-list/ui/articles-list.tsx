@@ -1,10 +1,8 @@
 "use client";
 
 import { useLocale } from "next-intl";
-import { useEffect, useState } from "react";
-import { articlesService } from "../../../entities/article/api/articles";
+import { useGetAllArticles } from "../../../entities/article/api/use-get-all";
 import { ArticleCard } from "../../../entities/article/ui/article-card";
-import type { Article } from "../../../shared/types/article";
 
 interface ArticlesListProps {
 	/** 表示する記事の数（省略時は全て表示） */
@@ -20,32 +18,19 @@ interface ArticlesListProps {
  */
 export function ArticlesList({ limit }: ArticlesListProps) {
 	const locale = useLocale();
-	const [articles, setArticles] = useState<Article[]>([]);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState<string | null>(null);
+	
+	const {
+		data: articlesResponse,
+		isLoading: loading,
+		error,
+		refetch,
+	} = useGetAllArticles({
+		language: locale as "ja" | "en",
+		limit: limit || 10,
+		status: "published",
+	});
 
-	useEffect(() => {
-		async function fetchArticles() {
-			try {
-				setLoading(true);
-				setError(null);
-
-				const response = await articlesService.getArticles({
-					lang: locale,
-					limit: limit,
-				});
-
-				setArticles(response.data);
-			} catch (err) {
-				console.error("記事の取得に失敗しました:", err);
-				setError("記事の読み込みに失敗しました。");
-			} finally {
-				setLoading(false);
-			}
-		}
-
-		fetchArticles();
-	}, [locale, limit]);
+	const articles = articlesResponse?.data || [];
 
 	if (loading) {
 		return (
@@ -64,28 +49,12 @@ export function ArticlesList({ limit }: ArticlesListProps) {
 	if (error) {
 		return (
 			<div className="text-center p-8 bg-muted rounded-lg">
-				<p className="text-destructive mb-4">{error}</p>
+				<p className="text-destructive mb-4">
+					{error instanceof Error ? error.message : "記事の読み込みに失敗しました。"}
+				</p>
 				<button
 					type="button"
-					onClick={() => {
-						setLoading(true);
-						setError(null);
-						articlesService
-							.getArticles({
-								lang: locale,
-								limit: limit,
-							})
-							.then((response) => {
-								setArticles(response.data);
-							})
-							.catch((err) => {
-								console.error("記事の取得に失敗しました:", err);
-								setError("記事の読み込みに失敗しました。");
-							})
-							.finally(() => {
-								setLoading(false);
-							});
-					}}
+					onClick={() => refetch()}
 					className="text-primary hover:text-primary/80 underline"
 				>
 					再試行
