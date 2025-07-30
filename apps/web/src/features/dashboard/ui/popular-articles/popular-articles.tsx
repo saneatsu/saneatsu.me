@@ -31,6 +31,10 @@ interface PopularArticlesProps {
 	loading?: boolean;
 	/** 表示する記事数（デフォルト: 5） */
 	limit?: number;
+	/** 選択された日数 */
+	selectedDays?: 30 | 90 | 180 | 360;
+	/** Cardを表示しないオプション */
+	hideCard?: boolean;
 }
 
 /**
@@ -41,6 +45,8 @@ export function PopularArticles({
 	articles,
 	loading = false,
 	limit = 5,
+	selectedDays = 30,
+	hideCard = false,
 }: PopularArticlesProps) {
 	/**
 	 * 日付をフォーマットして表示用に変換
@@ -119,6 +125,73 @@ export function PopularArticles({
 		</Table>
 	);
 
+	const content = (
+		<>
+			{loading ? (
+				renderSkeleton()
+			) : articles.length === 0 ? (
+				<div className="text-center py-8 text-muted-foreground">
+					<TrendingUp className="h-12 w-12 mx-auto mb-4 opacity-50" />
+					<p>まだ記事がありません</p>
+				</div>
+			) : (
+				<Table>
+					<TableHeader>
+						<TableRow>
+							<TableHead className="w-[60px]">順位</TableHead>
+							<TableHead>記事タイトル</TableHead>
+							<TableHead className="w-[150px]">公開日</TableHead>
+							<TableHead className="w-[120px] text-right">閲覧数</TableHead>
+						</TableRow>
+					</TableHeader>
+					<TableBody>
+						{articles.slice(0, limit).map((article, index) => (
+							<TableRow key={article.id}>
+								<TableCell>
+									<Badge
+										className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${getRankingBadgeColor(index)}`}
+									>
+										{index + 1}
+									</Badge>
+								</TableCell>
+								<TableCell>
+									<div className="flex items-center space-x-2">
+										<h3 className="font-medium text-sm text-foreground max-w-lg truncate">
+											{article.title}
+										</h3>
+										<Link
+											href={`/articles/${article.slug}`}
+											target="_blank"
+											rel="noopener noreferrer"
+											className="text-muted-foreground hover:text-primary flex-shrink-0"
+										>
+											<ExternalLink className="h-3 w-3" />
+										</Link>
+									</div>
+								</TableCell>
+								<TableCell className="text-muted-foreground">
+									{formatDate(article.publishedAt)}
+								</TableCell>
+								<TableCell className="text-right">
+									<div className="flex items-center justify-end space-x-1 text-muted-foreground">
+										<Eye className="h-4 w-4" />
+										<span className="font-medium">
+											{article.viewCount.toLocaleString()}
+										</span>
+									</div>
+								</TableCell>
+							</TableRow>
+						))}
+					</TableBody>
+				</Table>
+			)}
+		</>
+	);
+
+	if (hideCard) {
+		return content;
+	}
+
 	return (
 		<Card className="w-full">
 			<CardHeader>
@@ -126,79 +199,12 @@ export function PopularArticles({
 					<TrendingUp className="h-5 w-5 text-primary" />
 					<CardTitle>人気記事ランキング</CardTitle>
 				</div>
-				<CardDescription>閲覧数の多い記事トップ{limit}</CardDescription>
+				<CardDescription>
+					過去{selectedDays}日間の閲覧数の多い記事トップ{limit}
+				</CardDescription>
 			</CardHeader>
 			<CardContent>
-				{loading ? (
-					renderSkeleton()
-				) : articles.length === 0 ? (
-					<div className="text-center py-8 text-muted-foreground">
-						<TrendingUp className="h-12 w-12 mx-auto mb-4 opacity-50" />
-						<p>まだ記事がありません</p>
-					</div>
-				) : (
-					<Table>
-						<TableHeader>
-							<TableRow>
-								<TableHead className="w-[60px]">順位</TableHead>
-								<TableHead>記事タイトル</TableHead>
-								<TableHead className="w-[150px]">公開日</TableHead>
-								<TableHead className="w-[120px] text-right">閲覧数</TableHead>
-							</TableRow>
-						</TableHeader>
-						<TableBody>
-							{articles.slice(0, limit).map((article, index) => (
-								<TableRow key={article.id}>
-									<TableCell>
-										<Badge
-											className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${getRankingBadgeColor(index)}`}
-										>
-											{index + 1}
-										</Badge>
-									</TableCell>
-									<TableCell>
-										<div className="flex items-center space-x-2">
-											<h3 className="font-medium text-sm text-foreground max-w-lg truncate">
-												{article.title}
-											</h3>
-											<Link
-												href={`/articles/${article.slug}`}
-												target="_blank"
-												rel="noopener noreferrer"
-												className="text-muted-foreground hover:text-primary flex-shrink-0"
-											>
-												<ExternalLink className="h-3 w-3" />
-											</Link>
-										</div>
-									</TableCell>
-									<TableCell className="text-muted-foreground">
-										{formatDate(article.publishedAt)}
-									</TableCell>
-									<TableCell className="text-right">
-										<div className="flex items-center justify-end space-x-1 text-muted-foreground">
-											<Eye className="h-4 w-4" />
-											<span className="font-medium">
-												{article.viewCount.toLocaleString()}
-											</span>
-										</div>
-									</TableCell>
-								</TableRow>
-							))}
-						</TableBody>
-					</Table>
-				)}
-
-				{/* 全体を見るリンク */}
-				{!loading && articles.length > 0 && (
-					<div className="mt-4 pt-4 border-t">
-						<Link
-							href="/admin/articles"
-							className="text-sm text-primary hover:text-primary/80 font-medium"
-						>
-							すべての記事を見る →
-						</Link>
-					</div>
-				)}
+				{content}
 			</CardContent>
 		</Card>
 	);
