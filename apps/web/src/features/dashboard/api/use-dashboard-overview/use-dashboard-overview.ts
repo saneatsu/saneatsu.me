@@ -1,21 +1,10 @@
 "use client";
 
-import type { AppType } from "@saneatsu/backend";
 import type { DashboardOverviewResponse } from "@saneatsu/schemas/dist/dashboard";
 import { useQuery } from "@tanstack/react-query";
-import { hc } from "hono/client";
+import { honoClient } from "../../../../shared/lib/hono-client";
 import { queryKeys } from "../../../../shared/lib/query-keys";
 import type { QueryConfig } from "../../../../shared/lib/react-query";
-
-/**
- * APIのベースURL
- */
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
-
-/**
- * Hono Clientの初期化
- */
-const client = hc<AppType>(API_BASE_URL) as any;
 
 /**
  * ダッシュボード概要データ取得のオプション
@@ -45,7 +34,7 @@ export function useDashboardOverview({
 	return useQuery({
 		queryKey: queryKeys.dashboard.overview(language),
 		queryFn: async () => {
-			const response = await client.api.dashboard.overview.$get({
+			const response = await honoClient.api.dashboard.overview.$get({
 				query: { language },
 			});
 
