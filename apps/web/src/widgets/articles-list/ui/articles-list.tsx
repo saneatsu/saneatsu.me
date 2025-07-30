@@ -18,7 +18,7 @@ interface ArticlesListProps {
  */
 export function ArticlesList({ limit }: ArticlesListProps) {
 	const locale = useLocale();
-	
+
 	const {
 		data: articlesResponse,
 		isLoading: loading,
@@ -50,7 +50,9 @@ export function ArticlesList({ limit }: ArticlesListProps) {
 		return (
 			<div className="text-center p-8 bg-muted rounded-lg">
 				<p className="text-destructive mb-4">
-					{error instanceof Error ? error.message : "記事の読み込みに失敗しました。"}
+					{error instanceof Error
+						? error.message
+						: "記事の読み込みに失敗しました。"}
 				</p>
 				<button
 					type="button"
@@ -66,9 +68,7 @@ export function ArticlesList({ limit }: ArticlesListProps) {
 	if (articles.length === 0) {
 		return (
 			<div className="text-center p-8 bg-muted rounded-lg">
-				<p className="text-muted-foreground">
-					記事が見つかりませんでした。
-				</p>
+				<p className="text-muted-foreground">記事が見つかりませんでした。</p>
 			</div>
 		);
 	}
