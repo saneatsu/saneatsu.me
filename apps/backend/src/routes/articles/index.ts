@@ -1,9 +1,5 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
-import {
-	articles,
-	articleTranslations,
-	db,
-} from "@saneatsu/db";
+import { articles, articleTranslations, db } from "@saneatsu/db";
 import {
 	articleListQuerySchema,
 	type SortOrder,
@@ -432,6 +428,12 @@ const getArticleRoute = createRoute({
 });
 
 /**
+ * GET /api/articles/suggestions - サジェスト取得
+ */
+// @ts-ignore - OpenAPIの型推論エラーを一時的に回避
+articlesRoute.openapi(getSuggestionsRoute, handleArticleSuggestions);
+
+/**
  * GET /api/articles/:slug - 記事詳細取得
  */
 // @ts-ignore - OpenAPIの型推論エラーを一時的に回避
@@ -764,9 +766,3 @@ articlesRoute.openapi(createArticleRoute, async (c) => {
 		);
 	}
 });
-
-/**
- * GET /api/articles/suggestions - サジェスト取得
- */
-// @ts-ignore - OpenAPIの型推論エラーを一時的に回避
-articlesRoute.openapi(getSuggestionsRoute, handleArticleSuggestions);
