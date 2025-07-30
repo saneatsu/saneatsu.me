@@ -66,7 +66,7 @@ export function StatsCards({ articleStats, loading = false }: StatsCardsProps) {
 				articleStats.totalArticles,
 				"全記事（全ステータス含む）",
 				<FileText className="h-4 w-4" />,
-				"text-blue-600"
+				"text-primary"
 			)}
 
 			{/* 公開済み記事数 */}
@@ -107,10 +107,10 @@ export function DetailedStatsCards({
 			<Card>
 				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 					<CardTitle className="text-sm font-medium">総閲覧数</CardTitle>
-					<Eye className="h-4 w-4 text-indigo-600" />
+					<Eye className="h-4 w-4 text-primary" />
 				</CardHeader>
 				<CardContent>
-					<div className="text-2xl font-bold text-indigo-600">
+					<div className="text-2xl font-bold text-primary">
 						{loading ? "-" : articleStats.totalViews.toLocaleString()}
 					</div>
 					<p className="text-xs text-muted-foreground mt-1">
