@@ -63,6 +63,9 @@ export function ArticleNewForm() {
 	const [cursorPosition, setCursorPosition] = useState({ top: 0, left: 0 });
 	const editorRef = useRef<HTMLDivElement>(null);
 
+	// サジェストクエリを300msでデバウンス
+	const debouncedSuggestionQuery = useDebounce(suggestionQuery, 300);
+
 	const {
 		register,
 		handleSubmit,
@@ -445,7 +448,7 @@ export function ArticleNewForm() {
 			<ArticleSuggestionsPopover
 				open={showSuggestions}
 				onOpenChange={setShowSuggestions}
-				query={suggestionQuery}
+				query={debouncedSuggestionQuery}
 				language="ja"
 				onSelect={handleSuggestionSelect}
 				position={cursorPosition}
