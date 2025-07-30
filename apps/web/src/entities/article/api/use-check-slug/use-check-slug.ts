@@ -1,21 +1,10 @@
 "use client";
 
-import type { AppType } from "@saneatsu/backend";
 import { useQuery } from "@tanstack/react-query";
-import { hc } from "hono/client";
+import { honoClient } from "../../../../shared/lib/hono-client";
 import { queryKeys } from "../../../../shared/lib/query-keys";
 import type { QueryConfig } from "../../../../shared/lib/react-query";
 import type { SlugCheckResponse } from "../../../../shared/types/article";
-
-/**
- * APIのベースURL
- */
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
-
-/**
- * Hono Clientの初期化
- */
-const client = hc<AppType>(API_BASE_URL) as any;
 
 /**
  * スラッグの重複チェックオプション
@@ -49,7 +38,7 @@ export function useCheckSlug({ slug, queryConfig = {} }: UseCheckSlugOptions) {
 	return useQuery({
 		queryKey: queryKeys.article.checkSlug(slug),
 		queryFn: async () => {
-			const response = await client.api.articles["check-slug"].$get({
+			const response = await honoClient.api.articles["check-slug"].$get({
 				query: {
 					slug,
 				},
