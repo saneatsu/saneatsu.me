@@ -129,17 +129,29 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 	// カスタムドロップダウンの実装（Popoverを使わない）
 	if (!open) return null;
 
+	// スマート位置調整（上下2方向）
+	const calculatePosition = () => {
+		if (!position) return undefined;
+
+		const popoverHeight = 300; // 推定高さ
+		const offset = 10; // カーソルからの余白
+		const windowHeight = window.innerHeight;
+
+		// 画面の下半分にカーソルがある場合は上に表示
+		const showAbove = position.top > windowHeight / 2;
+
+		return {
+			top: showAbove
+				? position.top - popoverHeight - offset
+				: position.top + offset,
+			left: position.left,
+		};
+	};
+
 	return (
 		<div
 			className="fixed z-50 w-[400px] rounded-md border bg-popover shadow-md"
-			style={
-				position
-					? {
-							top: position.top,
-							left: position.left,
-						}
-					: undefined
-			}
+			style={calculatePosition()}
 		>
 			<Command shouldFilter={false} loop={true}>
 				<CommandList>

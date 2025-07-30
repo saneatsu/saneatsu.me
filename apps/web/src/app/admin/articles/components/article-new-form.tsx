@@ -290,12 +290,26 @@ export function ArticleNewForm() {
 				setShowSuggestions(true);
 
 				// カーソル位置を取得
-				const rect = editorRef.current?.getBoundingClientRect();
-				if (rect) {
-					// エディタの位置を基準にポップアップ位置を設定
+				const textarea = editorRef.current?.querySelector("textarea");
+				if (textarea) {
+					// テキストエリアのスタイル情報を取得
+					const styles = window.getComputedStyle(textarea);
+					const lineHeight = parseInt(styles.lineHeight) || 20;
+
+					// カーソル位置を推定（簡易版）
+					// TODO: より正確な位置計算が必要な場合は getCaretCoordinates ライブラリを使用
+					const rect = textarea.getBoundingClientRect();
+					const textBeforeCursor = value.substring(0, cursorPos);
+					const lines = textBeforeCursor.split("\n").length;
+
+					// [[の位置を基準に計算
+					const lastLineStart = textBeforeCursor.lastIndexOf("\n") + 1;
+					const currentLineText = textBeforeCursor.substring(lastLineStart);
+					const bracketPosInLine = currentLineText.lastIndexOf("[[");
+
 					setCursorPosition({
-						top: rect.top + 50,
-						left: rect.left + 20,
+						top: rect.top + lines * lineHeight,
+						left: rect.left + bracketPosInLine * 8, // 文字幅の推定値
 					});
 				}
 			} else {
