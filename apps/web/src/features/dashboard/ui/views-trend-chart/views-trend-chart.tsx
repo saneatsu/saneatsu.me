@@ -1,7 +1,6 @@
 "use client";
 
 import { Calendar, TrendingUp } from "lucide-react";
-import { useState } from "react";
 import {
 	Bar,
 	BarChart,
@@ -17,13 +16,6 @@ import {
 	CardHeader,
 	CardTitle,
 } from "../../../../shared/ui/card/card";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "../../../../shared/ui/select/select";
 import { Skeleton } from "../../../../shared/ui/skeleton/skeleton";
 import { useViewsTrend } from "../../api/use-views-trend/use-views-trend";
 
@@ -33,8 +25,10 @@ import { useViewsTrend } from "../../api/use-views-trend/use-views-trend";
 interface ViewsTrendChartProps {
 	/** 言語設定 */
 	language?: "ja" | "en";
-	/** 初期表示期間（デフォルト: 30日） */
-	initialDays?: 30 | 90 | 180 | 360;
+	/** 選択された日数 */
+	selectedDays: 30 | 90 | 180 | 360;
+	/** Cardを表示しないオプション */
+	hideCard?: boolean;
 }
 
 /**
@@ -43,24 +37,13 @@ interface ViewsTrendChartProps {
  */
 export function ViewsTrendChart({
 	language = "ja",
-	initialDays = 30,
+	selectedDays,
+	hideCard = false,
 }: ViewsTrendChartProps) {
-	const [selectedDays, setSelectedDays] = useState<30 | 90 | 180 | 360>(
-		initialDays
-	);
-
 	const { data, isLoading, error } = useViewsTrend({
 		language,
 		days: selectedDays,
 	});
-
-	/**
-	 * 期間選択の変更ハンドラー
-	 */
-	const handleDaysChange = (value: string) => {
-		const days = Number.parseInt(value, 10) as 30 | 90 | 180 | 360;
-		setSelectedDays(days);
-	};
 
 	/**
 	 * 日付フォーマット関数
@@ -143,85 +126,79 @@ export function ViewsTrendChart({
 		return null;
 	};
 
+	const content = (
+		<>
+			{isLoading ? (
+				renderSkeleton()
+			) : error ? (
+				renderError()
+			) : !data || data.data.length === 0 ? (
+				renderNoData()
+			) : (
+				<div className="space-y-4">
+					{/* 統計サマリー */}
+					<div className="flex items-center justify-between text-sm">
+						<span className="text-muted-foreground">
+							期間: {formatDate(data.startDate)} - {formatDate(data.endDate)}
+						</span>
+						<span className="font-medium">
+							総閲覧数: {formatNumber(data.totalViews)}
+						</span>
+					</div>
+
+					{/* グラフ */}
+					<div className="h-[300px]">
+						<ResponsiveContainer width="100%" height="100%">
+							<BarChart
+								data={data.data}
+								margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
+							>
+								<XAxis
+									dataKey="date"
+									tickFormatter={formatDate}
+									stroke="hsl(var(--muted-foreground))"
+									fontSize={12}
+									tickLine={false}
+									axisLine={false}
+								/>
+								<YAxis
+									tickFormatter={formatNumber}
+									stroke="hsl(var(--muted-foreground))"
+									fontSize={12}
+									tickLine={false}
+									axisLine={false}
+								/>
+								<Tooltip content={<CustomTooltip />} />
+								<Bar
+									dataKey="views"
+									fill="hsl(var(--primary))"
+									radius={[2, 2, 0, 0]}
+								/>
+							</BarChart>
+						</ResponsiveContainer>
+					</div>
+				</div>
+			)}
+		</>
+	);
+
+	if (hideCard) {
+		return content;
+	}
+
 	return (
 		<Card>
 			<CardHeader>
-				<div className="flex items-center justify-between">
-					<div className="flex items-center space-x-2">
-						<TrendingUp className="h-5 w-5 text-primary" />
-						<div>
-							<CardTitle>閲覧数推移</CardTitle>
-							<CardDescription>期間別の閲覧数トレンド</CardDescription>
-						</div>
+				<div className="flex items-center space-x-2">
+					<TrendingUp className="h-5 w-5 text-primary" />
+					<div>
+						<CardTitle>閲覧数推移</CardTitle>
+						<CardDescription>期間別の閲覧数トレンド</CardDescription>
 					</div>
-					<Select
-						value={selectedDays.toString()}
-						onValueChange={handleDaysChange}
-					>
-						<SelectTrigger className="w-[120px]">
-							<SelectValue />
-						</SelectTrigger>
-						<SelectContent>
-							<SelectItem value="30">30日</SelectItem>
-							<SelectItem value="90">90日</SelectItem>
-							<SelectItem value="180">180日</SelectItem>
-							<SelectItem value="360">360日</SelectItem>
-						</SelectContent>
-					</Select>
 				</div>
 			</CardHeader>
 			<CardContent>
-				{isLoading ? (
-					renderSkeleton()
-				) : error ? (
-					renderError()
-				) : !data || data.data.length === 0 ? (
-					renderNoData()
-				) : (
-					<div className="space-y-4">
-						{/* 統計サマリー */}
-						<div className="flex items-center justify-between text-sm">
-							<span className="text-muted-foreground">
-								期間: {formatDate(data.startDate)} - {formatDate(data.endDate)}
-							</span>
-							<span className="font-medium">
-								総閲覧数: {formatNumber(data.totalViews)}
-							</span>
-						</div>
-
-						{/* グラフ */}
-						<div className="h-[300px]">
-							<ResponsiveContainer width="100%" height="100%">
-								<BarChart
-									data={data.data}
-									margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
-								>
-									<XAxis
-										dataKey="date"
-										tickFormatter={formatDate}
-										stroke="hsl(var(--muted-foreground))"
-										fontSize={12}
-										tickLine={false}
-										axisLine={false}
-									/>
-									<YAxis
-										tickFormatter={formatNumber}
-										stroke="hsl(var(--muted-foreground))"
-										fontSize={12}
-										tickLine={false}
-										axisLine={false}
-									/>
-									<Tooltip content={<CustomTooltip />} />
-									<Bar
-										dataKey="views"
-										fill="hsl(var(--primary))"
-										radius={[2, 2, 0, 0]}
-									/>
-								</BarChart>
-							</ResponsiveContainer>
-						</div>
-					</div>
-				)}
+				{content}
 			</CardContent>
 		</Card>
 	);
