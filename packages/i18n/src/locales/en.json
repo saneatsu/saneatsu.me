@@ -181,7 +181,7 @@
 				"slugRequired": "Please enter a slug",
 				"slugInvalid": "Slug can only contain alphanumeric characters and hyphens",
 				"atLeastOneTranslation": "Please create an article in at least one language",
-				"maxTranslations": "Supports up to 2 languages",
+				"maxTranslations": "Supports up to 2 languages"
 			},
 			"pagination": {
 				"pagePositive": "Page number must be a positive integer",

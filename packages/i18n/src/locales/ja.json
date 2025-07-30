@@ -181,7 +181,7 @@
 				"slugRequired": "スラッグを入力してください",
 				"slugInvalid": "スラッグは半角英数字とハイフンのみ使用できます",
 				"atLeastOneTranslation": "少なくとも1つの言語で記事を作成してください",
-				"maxTranslations": "最大2言語まで対応しています",
+				"maxTranslations": "最大2言語まで対応しています"
 			},
 			"pagination": {
 				"pagePositive": "ページ番号は正の整数である必要があります",
