@@ -81,36 +81,52 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 		if (!open) return;
 
 		const handleKeyDown = (e: KeyboardEvent) => {
-			// キーボードイベントがテキストエリアから来た場合のみ処理
-			if (e.target && (e.target as HTMLElement).tagName === "TEXTAREA") {
-				switch (e.key) {
-					case "ArrowDown":
+			switch (e.key) {
+				case "Escape":
+					// Escapeキーは常に処理（ポップオーバーを閉じる）
+					e.preventDefault();
+					e.stopPropagation();
+					onOpenChange(false);
+					break;
+				case "ArrowDown":
+					// 矢印キーとEnterはMDEditor内での操作時のみ
+					if (
+						e.target &&
+						((e.target as HTMLElement).tagName === "TEXTAREA" ||
+							(e.target as HTMLElement).closest(".w-md-editor"))
+					) {
 						e.preventDefault();
 						e.stopPropagation();
 						setSelectedIndex((prev) =>
 							prev < suggestions.length - 1 ? prev + 1 : 0
 						);
-						break;
-					case "ArrowUp":
+					}
+					break;
+				case "ArrowUp":
+					if (
+						e.target &&
+						((e.target as HTMLElement).tagName === "TEXTAREA" ||
+							(e.target as HTMLElement).closest(".w-md-editor"))
+					) {
 						e.preventDefault();
 						e.stopPropagation();
 						setSelectedIndex((prev) =>
 							prev > 0 ? prev - 1 : suggestions.length - 1
 						);
-						break;
-					case "Enter":
-						if (suggestions[selectedIndex]) {
-							e.preventDefault();
-							e.stopPropagation();
-							onSelect(suggestions[selectedIndex]);
-						}
-						break;
-					case "Escape":
+					}
+					break;
+				case "Enter":
+					if (
+						e.target &&
+						((e.target as HTMLElement).tagName === "TEXTAREA" ||
+							(e.target as HTMLElement).closest(".w-md-editor")) &&
+						suggestions[selectedIndex]
+					) {
 						e.preventDefault();
 						e.stopPropagation();
-						onOpenChange(false);
-						break;
-				}
+						onSelect(suggestions[selectedIndex]);
+					}
+					break;
 			}
 		};
 
