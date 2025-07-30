@@ -37,7 +37,6 @@ describe("Unit Test", () => {
 			title: "テスト記事",
 			content: "これはテスト記事の内容です。",
 			viewCount: 42,
-			tags: [{ id: 1, slug: "test", name: "テスト" }],
 		};
 
 		it("should render article title correctly", () => {
@@ -145,7 +144,6 @@ describe("Integration Test", () => {
 			title: "テスト記事",
 			content: "これはテスト記事の内容です。",
 			viewCount: 42,
-			tags: [{ id: 1, slug: "test", name: "テスト" }],
 		};
 
 		it("should render complete article layout with Japanese locale", () => {

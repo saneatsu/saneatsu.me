@@ -32,7 +32,4 @@ vi.mock("@saneatsu/db", () => ({
 	},
 	articles: {},
 	articleTranslations: {},
-	tags: {},
-	tagTranslations: {},
-	articleTags: {},
 }));

@@ -433,10 +433,6 @@ describe("GET /articles/:slug", () => {
 
 		expect(data.data).toMatchObject({
 			...mockArticle,
-			tags: [
-				{ id: 1, slug: "tech", name: "技術" },
-				{ id: 2, slug: "life", name: "生活" },
-			],
 		});
 	});
 
@@ -1138,10 +1134,6 @@ describe("POST /articles", () => {
 			title: mockTranslation.title,
 			content: mockTranslation.content,
 			viewCount: mockTranslation.viewCount,
-			tags: [
-				{ id: 1, slug: "javascript", name: "JavaScript" },
-				{ id: 2, slug: "web-development", name: "Web開発" },
-			],
 		};
 
 		// Insert記事のモック
