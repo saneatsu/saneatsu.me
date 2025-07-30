@@ -110,9 +110,38 @@ export function ArticleNewForm() {
 		},
 	};
 
-	// Ctrl+HでBackspace処理を実行
+	// カスタムlinkコマンド（Ctrl+Kを無効化）
+	const customLink: ICommand = {
+		...commands.link,
+		shortcuts: undefined, // ショートカットを無効化
+	};
+
+	// キーボードショートカットの処理
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
+			// Ctrl+K または Cmd+K を無効化（カタカナ変換のため）
+			if ((e.ctrlKey || e.metaKey) && (e.key === "k" || e.key === "K")) {
+				const textarea = document.querySelector(
+					".w-md-editor-text-input"
+				) as HTMLTextAreaElement;
+				if (textarea && document.activeElement === textarea) {
+					e.stopPropagation(); // MDEditorのデフォルト動作を防ぐ
+				}
+				return; // ブラウザのデフォルト動作は維持
+			}
+
+			// Cmd+L を無効化
+			if (e.metaKey && (e.key === "l" || e.key === "L")) {
+				const textarea = document.querySelector(
+					".w-md-editor-text-input"
+				) as HTMLTextAreaElement;
+				if (textarea && document.activeElement === textarea) {
+					e.preventDefault();
+					e.stopPropagation();
+				}
+				return;
+			}
+
 			// Ctrl+H または Cmd+H を検知
 			if ((e.ctrlKey || e.metaKey) && (e.key === "h" || e.key === "H")) {
 				const textarea = document.querySelector(
@@ -165,15 +194,15 @@ export function ArticleNewForm() {
 		return () => {
 			window.removeEventListener("keydown", handleKeyDown, true);
 		};
-	}, [setValue, setMarkdownValue]);
+	}, [setValue]);
 
-	// カスタムコマンドリスト（hrを置き換え）
+	// カスタムコマンドリスト（hrとlinkを置き換え）
 	const customCommands = [
 		commands.bold,
 		commands.italic,
 		commands.strikethrough,
 		commands.code,
-		commands.link,
+		customLink, // カスタムlinkコマンドを使用（Ctrl+K無効化）
 		commands.quote,
 		commands.codeBlock,
 		commands.comment,
