@@ -129,21 +129,14 @@ export const articleListQuerySchema = z.object({
 	search: z.string().optional(),
 });
 
-/** タグ付き記事レスポンス（翻訳含む） */
-export const articleWithTranslationsAndTagsSchema = articleSchema.extend({
+/** 記事レスポンス（翻訳含む） */
+export const articleWithTranslationsSchema = articleSchema.extend({
 	translations: z.array(articleTranslationSchema),
-	tags: z.array(
-		z.object({
-			id: idSchema,
-			slug: slugSchema,
-			name: z.string(),
-		})
-	),
 });
 
 /** 記事一覧レスポンス */
 export const articleListResponseSchema = z.object({
-	articles: z.array(articleWithTranslationsAndTagsSchema),
+	articles: z.array(articleWithTranslationsSchema),
 	pagination: z.object({
 		currentPage: z.number(),
 		totalPages: z.number(),
@@ -166,7 +159,7 @@ export type UpdateArticleInput = z.infer<typeof updateArticleSchema>;
 export type SortableColumns = z.infer<typeof sortableColumnsSchema>;
 export type SortOrder = z.infer<typeof sortOrderSchema>;
 export type ArticleListQuery = z.infer<typeof articleListQuerySchema>;
-export type ArticleWithTranslationsAndTags = z.infer<
-	typeof articleWithTranslationsAndTagsSchema
+export type ArticleWithTranslations = z.infer<
+	typeof articleWithTranslationsSchema
 >;
 export type ArticleListResponse = z.infer<typeof articleListResponseSchema>;
