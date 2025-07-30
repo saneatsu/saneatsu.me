@@ -1,24 +1,13 @@
 "use client";
 
-import type { AppType } from "@saneatsu/backend";
 import { useQuery } from "@tanstack/react-query";
-import { hc } from "hono/client";
+import { honoClient } from "../../../../shared/lib/hono-client";
 import { queryKeys } from "../../../../shared/lib/query-keys";
 import type { QueryConfig } from "../../../../shared/lib/react-query";
 import type {
 	ArticleStatus,
 	ArticlesResponse,
 } from "../../../../shared/types/article";
-
-/**
- * APIのベースURL
- */
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
-
-/**
- * Hono Clientの初期化
- */
-const client = hc<AppType>(API_BASE_URL) as any;
 
 /**
  * 記事一覧取得のオプション
@@ -79,7 +68,7 @@ export function useGetAllArticles({
 			sortOrder,
 		}),
 		queryFn: async () => {
-			const response = await client.api.articles.$get({
+			const response = await honoClient.api.articles.$get({
 				query: {
 					page: page.toString(),
 					limit: limit.toString(),
