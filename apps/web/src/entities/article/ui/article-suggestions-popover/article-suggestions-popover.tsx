@@ -158,6 +158,22 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 		}
 	}, [open]);
 
+	// 選択されたアイテムをスクロールして表示
+	useEffect(() => {
+		if (!open || suggestions.length === 0) return;
+
+		// 選択されたアイテムの要素を探す
+		const selectedElement = document.querySelector(
+			`[data-suggestion-index="${selectedIndex}"]`
+		);
+		if (selectedElement) {
+			selectedElement.scrollIntoView({
+				behavior: "smooth",
+				block: "nearest",
+			});
+		}
+	}, [selectedIndex, open, suggestions.length]);
+
 	// カスタムドロップダウンの実装（Popoverを使わない）
 	if (!open) return null;
 
@@ -214,6 +230,7 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 													className={
 														actualIndex === selectedIndex ? "bg-accent" : ""
 													}
+													data-suggestion-index={actualIndex}
 												>
 													<FileText className="mr-2 h-4 w-4" />
 													<span>{suggestion.title}</span>
@@ -240,6 +257,7 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 													className={
 														actualIndex === selectedIndex ? "bg-accent" : ""
 													}
+													data-suggestion-index={actualIndex}
 												>
 													<Hash className="mr-2 h-4 w-4" />
 													<div className="flex flex-col">
