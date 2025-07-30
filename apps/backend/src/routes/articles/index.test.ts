@@ -821,7 +821,7 @@ describe("GET /articles/:slug", () => {
 						id: "article1",
 						slug: "newer-article",
 						status: "published",
-						publishedAt: new Date("2024-02-01"),
+						publishedAt: new Date("2024-02-01").toISOString(),
 					},
 					translation: {
 						title: "新しい記事",
@@ -833,7 +833,7 @@ describe("GET /articles/:slug", () => {
 						id: "article2",
 						slug: "older-article",
 						status: "published",
-						publishedAt: new Date("2024-01-01"),
+						publishedAt: new Date("2024-01-01").toISOString(),
 					},
 					translation: {
 						title: "古い記事",
@@ -896,7 +896,6 @@ describe("GET /articles/:slug", () => {
 						id: "article1",
 						slug: "older-article",
 						status: "published",
-						createdAt: new Date("2024-01-01"),
 					},
 					translation: {
 						title: "古い記事",
@@ -908,7 +907,6 @@ describe("GET /articles/:slug", () => {
 						id: "article2",
 						slug: "newer-article",
 						status: "published",
-						createdAt: new Date("2024-02-01"),
 					},
 					translation: {
 						title: "新しい記事",
@@ -971,7 +969,6 @@ describe("GET /articles/:slug", () => {
 						id: "article1",
 						slug: "recently-updated",
 						status: "published",
-						updatedAt: new Date("2024-02-01"),
 					},
 					translation: {
 						title: "最近更新された記事",
@@ -983,7 +980,6 @@ describe("GET /articles/:slug", () => {
 						id: "article2",
 						slug: "older-updated",
 						status: "published",
-						updatedAt: new Date("2024-01-01"),
 					},
 					translation: {
 						title: "古い更新の記事",
