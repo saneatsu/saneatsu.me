@@ -1,18 +1,2 @@
-import type { Article, PaginatedResponse } from "../../../shared";
-import { apiClient } from "../../../shared";
-
-export const articlesService = {
-	async getArticles(params?: {
-		page?: number;
-		limit?: number;
-		lang?: string;
-	}) {
-		return apiClient.get<PaginatedResponse<Article>>("/articles", { params });
-	},
-
-	async getArticle(slug: string, lang?: string) {
-		return apiClient.get<Article>(`/articles/${slug}`, {
-			params: lang ? { lang } : undefined,
-		});
-	},
-};
+// このファイルは非推奨です。useGetAllArticles、useGetBySlugなどのReact Query Hooksを使用してください
+// This file is deprecated. Please use React Query Hooks like useGetAllArticles, useGetBySlug instead
