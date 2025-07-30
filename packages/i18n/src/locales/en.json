@@ -108,7 +108,7 @@
 		"notFound": {
 			"title": "Article not found",
 			"message": "The article you're looking for doesn't exist or may have been deleted."
-		},
+		}
 	},
 	"common": {
 		"search": "Search",
