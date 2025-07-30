@@ -1,8 +1,22 @@
 "use client";
 
-import { AlertCircle, RefreshCw } from "lucide-react";
+import { AlertCircle, BarChart3 } from "lucide-react";
+import { useState } from "react";
 import { Alert, AlertDescription } from "../../../../shared/ui/alert/alert";
-import { Button } from "../../../../shared/ui/button/button";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "../../../../shared/ui/card/card";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "../../../../shared/ui/select/select";
 import { useDashboardOverview } from "../../api/use-dashboard-overview";
 import { PopularArticles } from "../popular-articles";
 import { DetailedStatsCards, StatsCards } from "../stats-cards";
@@ -22,14 +36,17 @@ interface DashboardMainProps {
  */
 export function DashboardMain({ userName = "管理者" }: DashboardMainProps) {
 	/**
+	 * 選択された日数の状態管理
+	 */
+	const [selectedDays, setSelectedDays] = useState<30 | 90 | 180 | 360>(30);
+
+	/**
 	 * ダッシュボード概要データを取得
 	 */
 	const {
 		data: dashboardData,
 		isLoading,
 		error,
-		refetch,
-		isRefetching,
 	} = useDashboardOverview({ language: "ja" });
 
 	/**
@@ -61,21 +78,8 @@ export function DashboardMain({ userName = "管理者" }: DashboardMainProps) {
 
 				<Alert variant="destructive">
 					<AlertCircle className="h-4 w-4" />
-					<AlertDescription className="flex items-center justify-between">
-						<span>
-							ダッシュボードデータの取得に失敗しました。ネットワーク接続を確認してください。
-						</span>
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={() => refetch()}
-							disabled={isRefetching}
-						>
-							<RefreshCw
-								className={`h-4 w-4 mr-2 ${isRefetching ? "animate-spin" : ""}`}
-							/>
-							再試行
-						</Button>
+					<AlertDescription>
+						ダッシュボードデータの取得に失敗しました。ネットワーク接続を確認してください。
 					</AlertDescription>
 				</Alert>
 			</div>
@@ -85,28 +89,13 @@ export function DashboardMain({ userName = "管理者" }: DashboardMainProps) {
 	return (
 		<div className="space-y-6">
 			{/* ヘッダー */}
-			<div className="flex items-center justify-between">
-				<div>
-					<h1 className="text-3xl font-bold text-foreground mb-2">
-						ダッシュボード
-					</h1>
-					<p className="text-muted-foreground">
-						ようこそ、{userName}さん。ここから記事の管理ができます。
-					</p>
-				</div>
-				<div className="flex items-center space-x-2">
-					<Button
-						variant="outline"
-						size="sm"
-						onClick={() => refetch()}
-						disabled={isRefetching}
-					>
-						<RefreshCw
-							className={`h-4 w-4 mr-2 ${isRefetching ? "animate-spin" : ""}`}
-						/>
-						更新
-					</Button>
-				</div>
+			<div>
+				<h1 className="text-3xl font-bold text-foreground mb-2">
+					ダッシュボード
+				</h1>
+				<p className="text-muted-foreground">
+					ようこそ、{userName}さん。ここから記事の管理ができます。
+				</p>
 			</div>
 
 			{/* 最終更新時刻 */}
@@ -115,9 +104,6 @@ export function DashboardMain({ userName = "管理者" }: DashboardMainProps) {
 					最終更新: {formatLastUpdated(dashboardData.lastUpdated)}
 				</div>
 			)}
-
-			{/* 閲覧数推移グラフ */}
-			<ViewsTrendChart />
 
 			{/* メイン統計カード */}
 			<StatsCards
@@ -151,12 +137,49 @@ export function DashboardMain({ userName = "管理者" }: DashboardMainProps) {
 				loading={isLoading}
 			/>
 
-			{/* 人気記事ランキング（全幅） */}
-			<PopularArticles
-				articles={dashboardData?.topArticles.articles || []}
-				loading={isLoading}
-				limit={10}
-			/>
+			{/* 期間分析セクション */}
+			<Card>
+				<CardHeader>
+					<div className="flex items-center justify-between">
+						<div className="flex items-center space-x-2">
+							<BarChart3 className="h-5 w-5 text-primary" />
+							<div>
+								<CardTitle>期間分析</CardTitle>
+								<CardDescription>選択した期間の閲覧データと人気記事</CardDescription>
+							</div>
+						</div>
+						<Select
+							value={selectedDays.toString()}
+							onValueChange={(value) =>
+								setSelectedDays(Number.parseInt(value, 10) as 30 | 90 | 180 | 360)
+							}
+						>
+							<SelectTrigger className="w-[120px]">
+								<SelectValue />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="30">30日</SelectItem>
+								<SelectItem value="90">90日</SelectItem>
+								<SelectItem value="180">180日</SelectItem>
+								<SelectItem value="360">360日</SelectItem>
+							</SelectContent>
+						</Select>
+					</div>
+				</CardHeader>
+				<CardContent className="space-y-6">
+					{/* 閲覧数推移グラフ */}
+					<ViewsTrendChart selectedDays={selectedDays} hideCard={true} />
+					
+					{/* 人気記事ランキング */}
+					<PopularArticles
+						articles={dashboardData?.topArticles.articles || []}
+						loading={isLoading}
+						limit={10}
+						selectedDays={selectedDays}
+						hideCard={true}
+					/>
+				</CardContent>
+			</Card>
 		</div>
 	);
 }
