@@ -12,7 +12,6 @@ import {
 	CardTitle,
 } from "../../../../shared/ui/card/card";
 import { PopularArticles } from "./popular-articles";
-import { PopularTags } from "./popular-tags";
 import { RecentActivities } from "./recent-activities";
 import { DetailedStatsCards, StatsCards } from "./stats-cards";
 
@@ -104,7 +103,7 @@ export function DashboardMain({ userName = "管理者" }: DashboardMainProps) {
 						ダッシュボード
 					</h1>
 					<p className="text-muted-foreground">
-						ようこそ、{userName}さん。ここから記事やタグの管理ができます。
+						ようこそ、{userName}さん。ここから記事の管理ができます。
 					</p>
 				</div>
 				<div className="flex items-center space-x-2">
@@ -142,12 +141,6 @@ export function DashboardMain({ userName = "管理者" }: DashboardMainProps) {
 						thisMonthViews: 0,
 					}
 				}
-				tagStats={
-					dashboardData?.tagStats || {
-						totalTags: 0,
-						topTags: [],
-					}
-				}
 				loading={isLoading}
 			/>
 
@@ -176,17 +169,6 @@ export function DashboardMain({ userName = "管理者" }: DashboardMainProps) {
 					limit={5}
 				/>
 
-				{/* 人気タグ */}
-				<PopularTags
-					tagStats={
-						dashboardData?.tagStats || {
-							totalTags: 0,
-							topTags: [],
-						}
-					}
-					loading={isLoading}
-				/>
-
 				{/* 最近の活動 */}
 				<RecentActivities
 					activities={dashboardData?.recentActivities.activities || []}
@@ -208,12 +190,6 @@ export function DashboardMain({ userName = "管理者" }: DashboardMainProps) {
 						</Button>
 						<Button asChild variant="outline" className="justify-start">
 							<a href="/admin/articles">記事一覧を見る</a>
-						</Button>
-						<Button asChild variant="outline" className="justify-start">
-							<a href="/admin/tags/new">新しいタグを作成</a>
-						</Button>
-						<Button asChild variant="outline" className="justify-start">
-							<a href="/admin/tags">タグ一覧を見る</a>
 						</Button>
 					</div>
 				</CardContent>

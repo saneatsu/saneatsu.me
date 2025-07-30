@@ -3,7 +3,6 @@
 import { BarChart3, Eye, FileText, Hash, TrendingUp } from "lucide-react";
 import type {
 	ArticleStats,
-	TagStats,
 } from "../../../../shared/types/dashboard";
 import {
 	Card,
@@ -18,8 +17,6 @@ import {
 interface StatsCardsProps {
 	/** 記事統計データ */
 	articleStats: ArticleStats;
-	/** タグ統計データ */
-	tagStats: TagStats;
 	/** ローディング状態 */
 	loading?: boolean;
 }
@@ -30,7 +27,6 @@ interface StatsCardsProps {
  */
 export function StatsCards({
 	articleStats,
-	tagStats,
 	loading = false,
 }: StatsCardsProps) {
 	/**
@@ -96,14 +92,6 @@ export function StatsCards({
 				"text-yellow-600"
 			)}
 
-			{/* タグ数 */}
-			{renderStatCard(
-				"タグ数",
-				tagStats.totalTags,
-				"登録済みタグ",
-				<Hash className="h-4 w-4" />,
-				"text-purple-600"
-			)}
 		</div>
 	);
 }

@@ -56,12 +56,6 @@ export function RecentActivities({
 					color: "text-yellow-600",
 					bgColor: "bg-yellow-100",
 				};
-			case "tag_created":
-				return {
-					icon: <Hash className="h-4 w-4" />,
-					color: "text-purple-600",
-					bgColor: "bg-purple-100",
-				};
 			default:
 				return {
 					icon: <Activity className="h-4 w-4" />,
@@ -82,8 +76,6 @@ export function RecentActivities({
 				return "記事公開";
 			case "article_updated":
 				return "記事更新";
-			case "tag_created":
-				return "タグ作成";
 			default:
 				return "不明な活動";
 		}
