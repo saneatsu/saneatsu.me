@@ -6,7 +6,6 @@ export const articlesService = {
 		page?: number;
 		limit?: number;
 		lang?: string;
-		tag?: string;
 	}) {
 		return apiClient.get<PaginatedResponse<Article>>("/articles", { params });
 	},

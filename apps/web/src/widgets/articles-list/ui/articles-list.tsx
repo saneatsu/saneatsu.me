@@ -9,8 +9,6 @@ import type { Article } from "../../../shared/types/article";
 interface ArticlesListProps {
 	/** 表示する記事の数（省略時は全て表示） */
 	limit?: number;
-	/** 特定のタグでフィルタ */
-	tag?: string;
 }
 
 /**
@@ -18,9 +16,9 @@ interface ArticlesListProps {
  *
  * @description
  * 公開済みの記事をカード形式で一覧表示するウィジェット。
- * ページネーション、タグフィルタリング、多言語対応をサポート。
+ * ページネーション、多言語対応をサポート。
  */
-export function ArticlesList({ limit, tag }: ArticlesListProps) {
+export function ArticlesList({ limit }: ArticlesListProps) {
 	const locale = useLocale();
 	const [articles, setArticles] = useState<Article[]>([]);
 	const [loading, setLoading] = useState(true);
@@ -35,7 +33,6 @@ export function ArticlesList({ limit, tag }: ArticlesListProps) {
 				const response = await articlesService.getArticles({
 					lang: locale,
 					limit: limit,
-					tag: tag,
 				});
 
 				setArticles(response.data);
@@ -48,7 +45,7 @@ export function ArticlesList({ limit, tag }: ArticlesListProps) {
 		}
 
 		fetchArticles();
-	}, [locale, limit, tag]);
+	}, [locale, limit]);
 
 	if (loading) {
 		return (
@@ -77,7 +74,6 @@ export function ArticlesList({ limit, tag }: ArticlesListProps) {
 							.getArticles({
 								lang: locale,
 								limit: limit,
-								tag: tag,
 							})
 							.then((response) => {
 								setArticles(response.data);
@@ -102,9 +98,7 @@ export function ArticlesList({ limit, tag }: ArticlesListProps) {
 		return (
 			<div className="text-center p-8 bg-muted rounded-lg">
 				<p className="text-muted-foreground">
-					{tag
-						? `「${tag}」タグの記事が見つかりませんでした。`
-						: "記事が見つかりませんでした。"}
+					記事が見つかりませんでした。
 				</p>
 			</div>
 		);

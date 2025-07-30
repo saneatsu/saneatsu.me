@@ -51,7 +51,6 @@ export function useCreate() {
 					content: data.content,
 					status: data.status,
 					publishedAt: data.publishedAt,
-					tagIds: data.tagIds,
 				},
 			});
 
