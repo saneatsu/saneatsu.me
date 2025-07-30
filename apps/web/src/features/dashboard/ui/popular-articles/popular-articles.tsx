@@ -12,6 +12,14 @@ import {
 	CardTitle,
 } from "../../../../shared/ui/card/card";
 import { Skeleton } from "../../../../shared/ui/skeleton/skeleton";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "../../../../shared/ui/table/table";
 
 /**
  * 人気記事一覧コンポーネントのプロパティ
@@ -81,22 +89,38 @@ export function PopularArticles({
 	 * ローディング中のスケルトン表示
 	 */
 	const renderSkeleton = () => (
-		<div className="space-y-4">
-			{Array.from({ length: limit }).map((_, i) => (
-				<div key={i} className="flex items-center space-x-4">
-					<Skeleton className="h-8 w-8 rounded" />
-					<div className="flex-1">
-						<Skeleton className="h-4 w-3/4 mb-2" />
-						<Skeleton className="h-3 w-1/2" />
-					</div>
-					<Skeleton className="h-6 w-16" />
-				</div>
-			))}
-		</div>
+		<Table>
+			<TableHeader>
+				<TableRow>
+					<TableHead className="w-[60px]">順位</TableHead>
+					<TableHead>記事タイトル</TableHead>
+					<TableHead className="w-[150px]">公開日</TableHead>
+					<TableHead className="w-[120px] text-right">閲覧数</TableHead>
+				</TableRow>
+			</TableHeader>
+			<TableBody>
+				{Array.from({ length: limit }).map((_, i) => (
+					<TableRow key={i}>
+						<TableCell>
+							<Skeleton className="h-8 w-8 rounded-full" />
+						</TableCell>
+						<TableCell>
+							<Skeleton className="h-4 w-[400px]" />
+						</TableCell>
+						<TableCell>
+							<Skeleton className="h-4 w-[100px]" />
+						</TableCell>
+						<TableCell>
+							<Skeleton className="h-4 w-[80px] ml-auto" />
+						</TableCell>
+					</TableRow>
+				))}
+			</TableBody>
+		</Table>
 	);
 
 	return (
-		<Card>
+		<Card className="w-full">
 			<CardHeader>
 				<div className="flex items-center space-x-2">
 					<TrendingUp className="h-5 w-5 text-primary" />
@@ -113,49 +137,55 @@ export function PopularArticles({
 						<p>まだ記事がありません</p>
 					</div>
 				) : (
-					<div className="space-y-4">
-						{articles.slice(0, limit).map((article, index) => (
-							<div
-								key={article.id}
-								className="flex items-center space-x-4 p-3 rounded-lg hover:bg-muted/50 transition-colors"
-							>
-								{/* ランキング番号 */}
-								<Badge
-									className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${getRankingBadgeColor(index)}`}
-								>
-									{index + 1}
-								</Badge>
-
-								{/* 記事情報 */}
-								<div className="flex-1 min-w-0">
-									<div className="flex items-center space-x-2">
-										<h3 className="font-medium text-sm text-foreground truncate">
-											{article.title}
-										</h3>
-										<Link
-											href={`/articles/${article.slug}`}
-											target="_blank"
-											rel="noopener noreferrer"
-											className="text-muted-foreground hover:text-primary"
+					<Table>
+						<TableHeader>
+							<TableRow>
+								<TableHead className="w-[60px]">順位</TableHead>
+								<TableHead>記事タイトル</TableHead>
+								<TableHead className="w-[150px]">公開日</TableHead>
+								<TableHead className="w-[120px] text-right">閲覧数</TableHead>
+							</TableRow>
+						</TableHeader>
+						<TableBody>
+							{articles.slice(0, limit).map((article, index) => (
+								<TableRow key={article.id}>
+									<TableCell>
+										<Badge
+											className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${getRankingBadgeColor(index)}`}
 										>
-											<ExternalLink className="h-3 w-3" />
-										</Link>
-									</div>
-									<p className="text-xs text-muted-foreground mt-1">
+											{index + 1}
+										</Badge>
+									</TableCell>
+									<TableCell>
+										<div className="flex items-center space-x-2">
+											<h3 className="font-medium text-sm text-foreground max-w-lg truncate">
+												{article.title}
+											</h3>
+											<Link
+												href={`/articles/${article.slug}`}
+												target="_blank"
+												rel="noopener noreferrer"
+												className="text-muted-foreground hover:text-primary flex-shrink-0"
+											>
+												<ExternalLink className="h-3 w-3" />
+											</Link>
+										</div>
+									</TableCell>
+									<TableCell className="text-muted-foreground">
 										{formatDate(article.publishedAt)}
-									</p>
-								</div>
-
-								{/* 閲覧数 */}
-								<div className="flex items-center space-x-1 text-muted-foreground">
-									<Eye className="h-4 w-4" />
-									<span className="text-sm font-medium">
-										{article.viewCount.toLocaleString()}
-									</span>
-								</div>
-							</div>
-						))}
-					</div>
+									</TableCell>
+									<TableCell className="text-right">
+										<div className="flex items-center justify-end space-x-1 text-muted-foreground">
+											<Eye className="h-4 w-4" />
+											<span className="font-medium">
+												{article.viewCount.toLocaleString()}
+											</span>
+										</div>
+									</TableCell>
+								</TableRow>
+							))}
+						</TableBody>
+					</Table>
 				)}
 
 				{/* 全体を見るリンク */}

@@ -3,16 +3,8 @@
 import { AlertCircle, RefreshCw } from "lucide-react";
 import { Alert, AlertDescription } from "../../../../shared/ui/alert/alert";
 import { Button } from "../../../../shared/ui/button/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "../../../../shared/ui/card/card";
 import { useDashboardOverview } from "../../api/use-dashboard-overview";
 import { PopularArticles } from "../popular-articles";
-import { RecentActivities } from "../recent-activities";
 import { DetailedStatsCards, StatsCards } from "../stats-cards";
 import { ViewsTrendChart } from "../views-trend-chart";
 
@@ -159,40 +151,12 @@ export function DashboardMain({ userName = "管理者" }: DashboardMainProps) {
 				loading={isLoading}
 			/>
 
-			{/* グリッドレイアウト：人気記事・最近の活動 */}
-			<div className="grid gap-6 md:grid-cols-2">
-				{/* 人気記事 */}
-				<PopularArticles
-					articles={dashboardData?.topArticles.articles || []}
-					loading={isLoading}
-					limit={5}
-				/>
-
-				{/* 最近の活動 */}
-				<RecentActivities
-					activities={dashboardData?.recentActivities.activities || []}
-					loading={isLoading}
-					limit={8}
-				/>
-			</div>
-
-			{/* クイックアクション */}
-			<Card>
-				<CardHeader>
-					<CardTitle>クイックアクション</CardTitle>
-					<CardDescription>よく使用する機能へのショートカット</CardDescription>
-				</CardHeader>
-				<CardContent>
-					<div className="grid gap-3 md:grid-cols-2">
-						<Button asChild className="justify-start">
-							<a href="/admin/articles/new">新しい記事を作成</a>
-						</Button>
-						<Button asChild variant="outline" className="justify-start">
-							<a href="/admin/articles">記事一覧を見る</a>
-						</Button>
-					</div>
-				</CardContent>
-			</Card>
+			{/* 人気記事ランキング（全幅） */}
+			<PopularArticles
+				articles={dashboardData?.topArticles.articles || []}
+				loading={isLoading}
+				limit={10}
+			/>
 		</div>
 	);
 }
