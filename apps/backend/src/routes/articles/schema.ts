@@ -168,14 +168,6 @@ export const ArticlesQuerySchema = z.object({
 	sortOrder: z.enum(["asc", "desc"]).optional().default("desc"),
 });
 
-/**
- * 記事タグのスキーマ
- */
-export const ArticleTagSchema = z.object({
-	id: z.number(),
-	slug: z.string(),
-	name: z.string(),
-});
 
 /**
  * 記事オブジェクトのスキーマ
@@ -192,7 +184,6 @@ export const ArticleSchema = z.object({
 	updatedAt: z.string(),
 	viewCount: z.number(),
 	totalViewCount: z.number(),
-	tags: z.array(ArticleTagSchema),
 });
 
 /**

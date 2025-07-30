@@ -5,7 +5,6 @@ import {
 	createDatabaseClient,
 } from "@saneatsu/db/worker";
 import {
-	articleDetailQuerySchema as ArticleDetailQuerySchema,
 	articleListQuerySchema as ArticlesQuerySchema,
 } from "@saneatsu/schemas";
 import { and, eq } from "drizzle-orm";
@@ -13,6 +12,10 @@ import { and, eq } from "drizzle-orm";
 // 一時的なスキーマ定義
 const ArticleParamSchema = z.object({
 	slug: z.string(),
+});
+
+const ArticleDetailQuerySchema = z.object({
+	lang: z.string().optional(),
 });
 
 const ArticleResponseSchema = z.object({
