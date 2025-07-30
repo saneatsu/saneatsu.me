@@ -39,7 +39,6 @@ export interface ArticleMessages {
 	};
 }
 
-
 export interface Messages extends CommonMessages {
 	article: ArticleMessages;
 }

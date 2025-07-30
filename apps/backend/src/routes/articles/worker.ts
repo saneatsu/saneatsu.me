@@ -4,9 +4,7 @@ import {
 	articleTranslations,
 	createDatabaseClient,
 } from "@saneatsu/db/worker";
-import {
-	articleListQuerySchema as ArticlesQuerySchema,
-} from "@saneatsu/schemas";
+import { articleListQuerySchema as ArticlesQuerySchema } from "@saneatsu/schemas";
 import { and, eq } from "drizzle-orm";
 
 // 一時的なスキーマ定義

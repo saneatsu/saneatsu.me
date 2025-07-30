@@ -23,7 +23,6 @@ export const articleStatsSchema = z.object({
 	thisMonthViews: z.number().int().min(0),
 });
 
-
 /** 人気記事スキーマ */
 export const popularArticleSchema = z.object({
 	id: idSchema,
@@ -124,11 +123,7 @@ export const recentActivityItemSchema = z.object({
 	/** 活動ID */
 	id: idSchema,
 	/** 活動タイプ */
-	type: z.enum([
-		"article_created",
-		"article_published",
-		"article_updated",
-	]),
+	type: z.enum(["article_created", "article_published", "article_updated"]),
 	/** 活動の説明 */
 	description: z.string(),
 	/** 関連記事またはタグのID */

@@ -9,11 +9,7 @@ dotenv.config();
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
 import * as schema from "./schema";
-import {
-	articles,
-	articleTranslations,
-	users,
-} from "./schema";
+import { articles, articleTranslations, users } from "./schema";
 
 // シード用のデータベース接続（ローカルSQLite）
 const client = createClient({
@@ -208,7 +204,6 @@ function generateRandomContent(title: string, isJapanese: boolean): string {
 	return `# ${title}\n\n${sections.map((section) => section.replace("{title}", title.replace(/ \d+$/, ""))).join("\n\n")}`;
 }
 
-
 /**
  * ランダムな閲覧数を取得
  * 記事のステータス、人気度、公開日からの経過日数に応じて現実的な数値を生成
@@ -372,7 +367,6 @@ async function seed() {
 		// 翻訳をバッチで挿入
 		await db.insert(articleTranslations).values(articleTranslationData);
 		console.log("✅ 400件の翻訳を作成しました");
-
 
 		console.log("🎉 200件シードデータの作成が完了しました！");
 

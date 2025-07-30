@@ -168,7 +168,6 @@ export const ArticlesQuerySchema = z.object({
 	sortOrder: z.enum(["asc", "desc"]).optional().default("desc"),
 });
 
-
 /**
  * 記事オブジェクトのスキーマ
  */
