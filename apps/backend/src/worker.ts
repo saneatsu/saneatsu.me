@@ -54,7 +54,7 @@ app.route("/api/articles", articlesRoute);
 // ルートエンドポイント
 app.get("/", (c) => {
 	return c.json({
-		message: "Welcome to Saneatsu Blog API",
+		message: "Welcome to saneatsu.me API",
 		version: "1.0.0",
 		runtime: "cloudflare-workers",
 	});

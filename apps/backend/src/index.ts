@@ -57,7 +57,7 @@ app.route("/api/dashboard", dashboardRoute);
 // ルートエンドポイント
 app.get("/", (c) => {
 	return c.json({
-		message: "Welcome to Saneatsu Blog API",
+		message: "Welcome to saneatsu.me API",
 		version: "1.0.0",
 	});
 });

@@ -55,7 +55,7 @@ describe("Unit Test", () => {
 			expect(res.status).toBe(200);
 			const data = await res.json();
 			expect(data).toEqual({
-				message: "Welcome to Saneatsu Blog API",
+				message: "Welcome to saneatsu.me API",
 				version: "1.0.0",
 			});
 		});

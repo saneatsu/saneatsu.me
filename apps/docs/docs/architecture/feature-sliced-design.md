@@ -54,7 +54,7 @@ export function HomeView() {
       {/* ヒーローセクション */}
       <section className="text-center py-16">
         <h1 className="text-4xl font-bold mb-4">
-          Saneatsu Blog
+          saneatsu.me
         </h1>
         <p className="text-xl text-gray-600 mb-8">
           技術とライフスタイルに関する記事をお届けします

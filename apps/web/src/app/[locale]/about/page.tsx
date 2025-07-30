@@ -17,12 +17,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 	const metadata = {
 		ja: {
-			title: "About - Saneatsu Blog",
+			title: "About - saneatsu.me",
 			description:
 				"フルスタック開発者Saneatsuの自己紹介ページ。技術スタック、経歴、趣味・関心事、連絡先情報を掲載しています。",
 		},
 		en: {
-			title: "About - Saneatsu Blog",
+			title: "About - saneatsu.me",
 			description:
 				"About page of Saneatsu, a full-stack developer. Learn about tech stack, experience, interests, and contact information.",
 		},
