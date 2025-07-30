@@ -4,5 +4,4 @@ export { apiClient } from "./api/client";
 export * from "./lib/utils";
 export * from "./types/article";
 export * from "./types/common";
-export * from "./types/tag";
 export { ThemeProvider } from "./ui/theme-provider";

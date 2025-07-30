@@ -8,12 +8,6 @@ export interface Article {
 	content: string;
 }
 
-export interface Tag {
-	id: number;
-	slug: string;
-	name: string;
-}
-
 export interface PaginatedResponse<T> {
 	data: T[];
 	pagination: {
