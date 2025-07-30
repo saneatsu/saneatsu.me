@@ -11,10 +11,7 @@ import { drizzle } from "drizzle-orm/libsql";
 import * as schema from "./schema";
 import {
 	articles,
-	articleTags,
 	articleTranslations,
-	tags,
-	tagTranslations,
 	users,
 } from "./schema";
 
@@ -33,11 +30,8 @@ async function clearAllTables() {
 
 	try {
 		// 外部キー制約を考慮して削除順序を設定
-		await db.delete(articleTags);
 		await db.delete(articleTranslations);
-		await db.delete(tagTranslations);
 		await db.delete(articles);
-		await db.delete(tags);
 		await db.delete(users);
 
 		console.log("✅ すべてのテーブルをクリアしました");
@@ -214,13 +208,6 @@ function generateRandomContent(title: string, isJapanese: boolean): string {
 	return `# ${title}\n\n${sections.map((section) => section.replace("{title}", title.replace(/ \d+$/, ""))).join("\n\n")}`;
 }
 
-/**
- * ランダムなタグIDを取得
- */
-function getRandomTagIds(tagIds: number[], count: number = 2): number[] {
-	const shuffled = [...tagIds].sort(() => 0.5 - Math.random());
-	return shuffled.slice(0, count);
-}
 
 /**
  * ランダムな閲覧数を取得
@@ -301,45 +288,6 @@ async function seed() {
 			})
 			.returning();
 		console.log("✅ ユーザーを作成しました");
-
-		// タグを作成
-		const tagSlugs = [
-			"tech",
-			"life",
-			"development",
-			"web",
-			"database",
-			"ai",
-			"design",
-		];
-
-		const tagData = await db
-			.insert(tags)
-			.values(tagSlugs.map((slug) => ({ slug })))
-			.returning();
-
-		console.log("✅ タグを作成しました");
-
-		// タグの翻訳を作成
-		const tagTranslationData = [
-			{ tagId: tagData[0].id, name: "技術", language: "ja" as const },
-			{ tagId: tagData[0].id, name: "Technology", language: "en" as const },
-			{ tagId: tagData[1].id, name: "ライフスタイル", language: "ja" as const },
-			{ tagId: tagData[1].id, name: "Lifestyle", language: "en" as const },
-			{ tagId: tagData[2].id, name: "開発", language: "ja" as const },
-			{ tagId: tagData[2].id, name: "Development", language: "en" as const },
-			{ tagId: tagData[3].id, name: "ウェブ", language: "ja" as const },
-			{ tagId: tagData[3].id, name: "Web", language: "en" as const },
-			{ tagId: tagData[4].id, name: "データベース", language: "ja" as const },
-			{ tagId: tagData[4].id, name: "Database", language: "en" as const },
-			{ tagId: tagData[5].id, name: "AI・機械学習", language: "ja" as const },
-			{ tagId: tagData[5].id, name: "AI & ML", language: "en" as const },
-			{ tagId: tagData[6].id, name: "デザイン", language: "ja" as const },
-			{ tagId: tagData[6].id, name: "Design", language: "en" as const },
-		];
-
-		await db.insert(tagTranslations).values(tagTranslationData);
-		console.log("✅ タグの翻訳を作成しました");
 
 		// 200件の記事を生成
 		console.log("📝 200件の記事を生成中...");
@@ -425,29 +373,6 @@ async function seed() {
 		await db.insert(articleTranslations).values(articleTranslationData);
 		console.log("✅ 400件の翻訳を作成しました");
 
-		// 記事とタグの関連付け
-		console.log("🔗 記事とタグを関連付け中...");
-
-		const articleTagData = [];
-		const tagIds = tagData.map((tag) => tag.id);
-
-		for (const article of articleData) {
-			const randomTagIds = getRandomTagIds(
-				tagIds,
-				Math.floor(Math.random() * 3) + 1
-			); // 1-3個のタグ
-			for (const tagId of randomTagIds) {
-				articleTagData.push({
-					articleId: article.id,
-					tagId,
-				});
-			}
-		}
-
-		await db.insert(articleTags).values(articleTagData);
-		console.log(
-			`✅ ${articleTagData.length}件の記事タグ関連付けを作成しました`
-		);
 
 		console.log("🎉 200件シードデータの作成が完了しました！");
 
@@ -464,11 +389,8 @@ async function seed() {
 		console.log(`
 📊 作成されたデータ:
 - ユーザー: 1件
-- タグ: ${tagData.length}件
-- タグ翻訳: ${tagTranslationData.length}件
 - 記事: ${articleData.length}件（公開日: 過去360日間に分散）
 - 記事翻訳: ${articleTranslationData.length}件（viewCount付き）
-- 記事タグ関連付け: ${articleTagData.length}件
 
 📈 閲覧数統計:
 - 合計閲覧数: ${totalViewCount.toLocaleString()}回

@@ -27,10 +27,7 @@ export const db = drizzle(client, { schema });
 // スキーマのエクスポート
 export {
 	articles,
-	articleTags,
 	articleTranslations,
-	tags,
-	tagTranslations,
 	users,
 } from "./schema";
 // 型定義のエクスポート
