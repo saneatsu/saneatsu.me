@@ -36,7 +36,7 @@ const sidebars: SidebarsConfig = {
 		{
 			type: "category",
 			label: "API",
-			items: ["api/overview", "api/articles", "api/tags"],
+			items: ["api/overview", "api/articles"],
 		},
 		{
 			type: "category",
