@@ -88,6 +88,22 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 					e.stopPropagation();
 					onOpenChange(false);
 					break;
+				case "Tab":
+					// Tab/Shift+Tabでナビゲーション
+					e.preventDefault();
+					e.stopPropagation();
+					if (e.shiftKey) {
+						// Shift+Tab: 上へ移動
+						setSelectedIndex((prev) =>
+							prev > 0 ? prev - 1 : suggestions.length - 1
+						);
+					} else {
+						// Tab: 下へ移動
+						setSelectedIndex((prev) =>
+							prev < suggestions.length - 1 ? prev + 1 : 0
+						);
+					}
+					break;
 				case "ArrowDown":
 					// 矢印キーとEnterはMDEditor内での操作時のみ
 					if (
