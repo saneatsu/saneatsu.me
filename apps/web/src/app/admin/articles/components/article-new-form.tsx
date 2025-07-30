@@ -5,7 +5,7 @@ import MDEditor, { commands, type ICommand } from "@uiw/react-md-editor";
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
 import { CalendarIcon, Loader2 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import {
@@ -16,12 +16,6 @@ import {
 import { ArticleSuggestionsPopover } from "../../../../entities/article/ui";
 import { useDebounce } from "../../../../shared/hooks/use-debounce";
 import { Button } from "../../../../shared/ui/button/button";
-import {
-	Card,
-	CardContent,
-	CardHeader,
-	CardTitle,
-} from "../../../../shared/ui/card/card";
 import { Input } from "../../../../shared/ui/input/input";
 import { Label } from "../../../../shared/ui/label/label";
 import {
@@ -310,164 +304,128 @@ export function ArticleNewForm() {
 	};
 
 	return (
-		<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-			<div className="grid gap-6 lg:grid-cols-2">
-				{/* 左カラム: 基本情報 */}
-				<div className="space-y-6">
-					<Card>
-						<CardHeader>
-							<CardTitle>基本情報</CardTitle>
-						</CardHeader>
-						<CardContent className="space-y-4">
-							{/* タイトル */}
-							<div className="space-y-2">
-								<Label htmlFor="title" className="required">
-									タイトル
-								</Label>
-								<Input
-									id="title"
-									{...register("title")}
-									placeholder="記事のタイトルを入力してください"
-									className={errors.title ? "border-destructive" : ""}
-								/>
-								{errors.title && (
-									<p className="text-sm text-destructive">
-										{errors.title.message}
-									</p>
-								)}
-							</div>
+		<form onSubmit={handleSubmit(onSubmit)} className="space-y-8 max-w-4xl">
+			{/* タイトル */}
+			<div className="space-y-2">
+				<Label htmlFor="title" className="required">
+					タイトル
+				</Label>
+				<Input
+					id="title"
+					{...register("title")}
+					placeholder="記事のタイトルを入力してください"
+					className={errors.title ? "border-destructive" : ""}
+				/>
+				{errors.title && (
+					<p className="text-sm text-destructive">{errors.title.message}</p>
+				)}
+			</div>
 
-							{/* スラッグ */}
-							<div className="space-y-2">
-								<Label htmlFor="slug" className="required">
-									スラッグ
-									{slugChecking && (
-										<span className="ml-2 text-sm text-muted-foreground">
-											確認中...
-										</span>
-									)}
-								</Label>
-								<div className="relative">
-									<Input
-										id="slug"
-										{...register("slug")}
-										placeholder="url-friendly-slug"
-										className={
-											errors.slug || slugError
-												? "border-destructive"
-												: slugChecking
-													? "border-blue-300"
-													: ""
-										}
-									/>
-									{slugChecking && (
-										<Loader2 className="absolute right-3 top-3 h-4 w-4 animate-spin text-muted-foreground" />
-									)}
-								</div>
-								{errors.slug && (
-									<p className="text-sm text-destructive">
-										{errors.slug.message}
-									</p>
-								)}
-								{slugError && (
-									<p className="text-sm text-destructive">{slugError}</p>
-								)}
-								{!errors.slug &&
-									!slugError &&
-									debouncedSlug &&
-									!slugChecking && (
-										<p className="text-sm text-green-600">
-											✓ このスラッグは利用可能です
-										</p>
-									)}
-								<p className="text-sm text-muted-foreground">
-									記事のURLに使用されます（小文字の英数字とハイフンのみ）
-								</p>
-							</div>
-
-							{/* ステータス */}
-							<div className="space-y-2">
-								<Label className="required">公開ステータス</Label>
-								<RadioGroup
-									defaultValue="draft"
-									onValueChange={(value) =>
-										setValue("status", value as "draft" | "published")
-									}
-								>
-									<div className="flex items-center space-x-2">
-										<RadioGroupItem value="draft" id="draft" />
-										<Label htmlFor="draft">下書き</Label>
-									</div>
-									<div className="flex items-center space-x-2">
-										<RadioGroupItem value="published" id="published" />
-										<Label htmlFor="published">公開</Label>
-									</div>
-								</RadioGroup>
-								{errors.status && (
-									<p className="text-sm text-destructive">
-										{errors.status.message}
-									</p>
-								)}
-							</div>
-
-							{/* 公開日時（公開時のみ表示） */}
-							{watch("status") === "published" && (
-								<div className="space-y-2">
-									<Label htmlFor="publishedAt">公開日時</Label>
-									<div className="relative">
-										<Input
-											id="publishedAt"
-											type="datetime-local"
-											{...register("publishedAt")}
-										/>
-										<CalendarIcon className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-									</div>
-								</div>
-							)}
-						</CardContent>
-					</Card>
+			{/* スラッグ */}
+			<div className="space-y-2">
+				<Label htmlFor="slug" className="required">
+					スラッグ
+					{slugChecking && (
+						<span className="ml-2 text-sm text-muted-foreground">
+							確認中...
+						</span>
+					)}
+				</Label>
+				<div className="relative">
+					<Input
+						id="slug"
+						{...register("slug")}
+						placeholder="url-friendly-slug"
+						className={
+							errors.slug || slugError
+								? "border-destructive"
+								: slugChecking
+									? "border-blue-300"
+									: ""
+						}
+					/>
+					{slugChecking && (
+						<Loader2 className="absolute right-3 top-3 h-4 w-4 animate-spin text-muted-foreground" />
+					)}
 				</div>
+				{errors.slug && (
+					<p className="text-sm text-destructive">{errors.slug.message}</p>
+				)}
+				{slugError && <p className="text-sm text-destructive">{slugError}</p>}
+				{!errors.slug && !slugError && debouncedSlug && !slugChecking && (
+					<p className="text-sm text-green-600">✓ このスラッグは利用可能です</p>
+				)}
+				<p className="text-sm text-muted-foreground">
+					記事のURLに使用されます（小文字の英数字とハイフンのみ）
+				</p>
+			</div>
 
-				{/* 右カラム: 記事内容 */}
-				<div className="space-y-6">
-					<Card>
-						<CardHeader>
-							<CardTitle>記事内容</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<div className="space-y-2">
-								<Label htmlFor="content" className="required">
-									本文（Markdown形式）
-								</Label>
-								<div
-									ref={editorRef}
-									className={
-										errors.content ? "border border-destructive rounded-md" : ""
-									}
-								>
-									<MDEditor
-										value={markdownValue}
-										onChange={handleEditorChange}
-										commands={customCommands}
-										preview="live"
-										visibleDragbar={true}
-										data-color-mode="light"
-										height={500}
-									/>
-								</div>
-								{errors.content && (
-									<p className="text-sm text-destructive">
-										{errors.content.message}
-									</p>
-								)}
-								<p className="text-sm text-muted-foreground">
-									日本語で入力してください。保存時に自動的に他の言語に翻訳されます。Ctrl+Shift+P（Mac:
-									Cmd+Shift+P）でプレビューモードを切り替えできます。[[で他の記事へのリンクを挿入できます。
-								</p>
-							</div>
-						</CardContent>
-					</Card>
+			{/* ステータス */}
+			<div className="space-y-2">
+				<Label className="required">公開ステータス</Label>
+				<RadioGroup
+					defaultValue="draft"
+					onValueChange={(value) =>
+						setValue("status", value as "draft" | "published")
+					}
+				>
+					<div className="flex items-center space-x-2">
+						<RadioGroupItem value="draft" id="draft" />
+						<Label htmlFor="draft">下書き</Label>
+					</div>
+					<div className="flex items-center space-x-2">
+						<RadioGroupItem value="published" id="published" />
+						<Label htmlFor="published">公開</Label>
+					</div>
+				</RadioGroup>
+				{errors.status && (
+					<p className="text-sm text-destructive">{errors.status.message}</p>
+				)}
+			</div>
+
+			{/* 公開日時（公開時のみ表示） */}
+			{watch("status") === "published" && (
+				<div className="space-y-2">
+					<Label htmlFor="publishedAt">公開日時</Label>
+					<div className="relative">
+						<Input
+							id="publishedAt"
+							type="datetime-local"
+							{...register("publishedAt")}
+						/>
+						<CalendarIcon className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+					</div>
 				</div>
+			)}
+
+			{/* 記事内容 */}
+			<div className="space-y-2">
+				<Label htmlFor="content" className="required">
+					本文（Markdown形式）
+				</Label>
+				<div
+					ref={editorRef}
+					className={
+						errors.content ? "border border-destructive rounded-md" : ""
+					}
+				>
+					<MDEditor
+						value={markdownValue}
+						onChange={handleEditorChange}
+						commands={customCommands}
+						preview="live"
+						visibleDragbar={true}
+						data-color-mode="light"
+						height={500}
+					/>
+				</div>
+				{errors.content && (
+					<p className="text-sm text-destructive">{errors.content.message}</p>
+				)}
+				<p className="text-sm text-muted-foreground">
+					日本語で入力してください。保存時に自動的に他の言語に翻訳されます。Ctrl+Shift+P（Mac:
+					Cmd+Shift+P）でプレビューモードを切り替えできます。[[で他の記事へのリンクを挿入できます。
+				</p>
 			</div>
 
 			{/* 送信ボタン */}
