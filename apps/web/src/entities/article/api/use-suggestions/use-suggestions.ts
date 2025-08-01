@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { useDebounce } from "../../../../shared/hooks/use-debounce";
 import { honoClient } from "../../../../shared/lib/hono-client";
 import { queryKeys } from "../../../../shared/lib/query-keys";
 import type { QueryConfig } from "../../../../shared/lib/react-query";
@@ -81,12 +82,15 @@ export function useArticleSuggestions({
 	limit = 20,
 	queryConfig = {},
 }: UseArticleSuggestionsOptions) {
+	// APIリクエストを300msでデバウンス
+	const debouncedQuery = useDebounce(query, 300);
+	
 	return useQuery({
-		queryKey: queryKeys.article.suggestions({ query, language, limit }),
+		queryKey: queryKeys.article.suggestions({ query: debouncedQuery, language, limit }),
 		queryFn: async () => {
 			const response = await honoClient.api.articles.suggestions.$get({
 				query: {
-					q: query,
+					q: debouncedQuery,
 					lang: language,
 					limit: limit.toString(),
 				},
@@ -105,6 +109,6 @@ export function useArticleSuggestions({
 		},
 		...queryConfig,
 		staleTime: 30 * 1000, // 30秒間はデータを新鮮とみなす
-		enabled: !!query && query.length > 0, // クエリが存在する場合のみ実行
+		enabled: !!debouncedQuery && debouncedQuery.length > 0, // デバウンスされたクエリが存在する場合のみ実行
 	});
 }
