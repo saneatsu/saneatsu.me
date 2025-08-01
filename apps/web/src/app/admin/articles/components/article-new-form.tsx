@@ -63,9 +63,6 @@ export function ArticleNewForm() {
 	const [cursorPosition, setCursorPosition] = useState({ top: 0, left: 0 });
 	const editorRef = useRef<HTMLDivElement>(null);
 
-	// サジェストクエリを300msでデバウンス
-	const debouncedSuggestionQuery = useDebounce(suggestionQuery, 300);
-
 	const {
 		register,
 		handleSubmit,
@@ -115,6 +112,145 @@ export function ArticleNewForm() {
 		...commands.link,
 		shortcuts: undefined, // ショートカットを無効化
 	};
+
+	// Wiki Link検知用のイベントリスナー
+	useEffect(() => {
+		let isComposing = false;
+
+		const checkWikiLink = (source: string) => {
+			const textarea = document.querySelector(
+				".w-md-editor-text-input"
+			) as HTMLTextAreaElement;
+			if (!textarea) return;
+
+			// textareaの値を直接使用
+			const value = textarea.value;
+			const cursorPos = textarea.selectionStart;
+			
+			// カーソル位置より前のテキストのみ処理
+			const beforeCursor = value.substring(0, cursorPos);
+
+			// [[の検出（最後の[[のみ）
+			const lastBracketIndex = beforeCursor.lastIndexOf("[[");
+			
+			if (lastBracketIndex === -1) {
+				// [[が見つからない場合は非表示
+				if (showSuggestions) {
+					setShowSuggestions(false);
+				}
+				return;
+			}
+
+			// [[以降のテキストを取得
+			const afterBracket = value.substring(lastBracketIndex + 2, cursorPos);
+			
+			// ]]が含まれている場合は閉じられている
+			if (afterBracket.includes("]]")) {
+				if (showSuggestions) {
+					setShowSuggestions(false);
+				}
+				return;
+			}
+
+			// サジェストを表示
+			setSuggestionQuery(afterBracket);
+			setShowSuggestions(true);
+
+			// カーソル位置を計算（シンプル化）
+			const rect = textarea.getBoundingClientRect();
+			const lineHeight = 20;
+			const charWidth = 8;
+			
+			// 改行数をカウント
+			const lines = beforeCursor.split("\n").length;
+			
+			// 現在の行での[[の位置
+			const lastLineStart = beforeCursor.lastIndexOf("\n") + 1;
+			const currentLineText = beforeCursor.substring(lastLineStart);
+			const bracketPosInLine = currentLineText.lastIndexOf("[[");
+
+			setCursorPosition({
+				top: rect.top + lines * lineHeight,
+				left: rect.left + bracketPosInLine * charWidth,
+			});
+		};
+
+		const handleInput = (e: Event) => {
+			if (!isComposing) {
+				// 少し遅延して処理を実行（入力処理の競合を避ける）
+				setTimeout(() => {
+					checkWikiLink("input");
+				}, 0);
+			}
+		};
+
+		const handleCompositionStart = () => {
+			isComposing = true;
+		};
+
+		const handleCompositionEnd = () => {
+			isComposing = false;
+			// IME確定後、MDEditorの内部処理を待ってからチェック
+			setTimeout(() => {
+				checkWikiLink("compositionend");
+			}, 100);
+		};
+
+		// textareaにイベントリスナーを追加する関数
+		const attachListeners = (textarea: HTMLTextAreaElement) => {
+			textarea.addEventListener("input", handleInput);
+			textarea.addEventListener("compositionstart", handleCompositionStart);
+			textarea.addEventListener("compositionend", handleCompositionEnd);
+		};
+
+		// textareaからイベントリスナーを削除する関数
+		const detachListeners = (textarea: HTMLTextAreaElement) => {
+			textarea.removeEventListener("input", handleInput);
+			textarea.removeEventListener("compositionstart", handleCompositionStart);
+			textarea.removeEventListener("compositionend", handleCompositionEnd);
+		};
+
+		// 初期のtextareaを探す
+		const textarea = document.querySelector(
+			".w-md-editor-text-input"
+		) as HTMLTextAreaElement;
+		
+		if (textarea) {
+			attachListeners(textarea);
+		}
+
+		// MutationObserverでtextareaの出現を監視
+		const observer = new MutationObserver(() => {
+			const newTextarea = document.querySelector(
+				".w-md-editor-text-input"
+			) as HTMLTextAreaElement;
+			if (newTextarea && !newTextarea.dataset.wikiLinkListener) {
+				// 既存のリスナーをクリーンアップ
+				const existingTextareas = document.querySelectorAll(
+					".w-md-editor-text-input[data-wiki-link-listener]"
+				);
+				existingTextareas.forEach((ta) => {
+					detachListeners(ta as HTMLTextAreaElement);
+					delete (ta as HTMLTextAreaElement).dataset.wikiLinkListener;
+				});
+				
+				newTextarea.dataset.wikiLinkListener = "true";
+				attachListeners(newTextarea);
+			}
+		});
+
+		observer.observe(document.body, { childList: true, subtree: true });
+
+		return () => {
+			observer.disconnect();
+			const currentTextarea = document.querySelector(
+				".w-md-editor-text-input"
+			) as HTMLTextAreaElement;
+			if (currentTextarea) {
+				detachListeners(currentTextarea);
+			}
+		};
+	}, [markdownValue]);
 
 	// キーボードショートカットの処理
 	useEffect(() => {
@@ -294,59 +430,12 @@ export function ArticleNewForm() {
 	};
 
 	/**
-	 * MDEditorの変更処理（Wiki Link検知を含む）
+	 * MDEditorの変更処理
 	 */
 	const handleEditorChange = (val: string | undefined) => {
 		const value = val || "";
 		setMarkdownValue(value);
 		setValue("content", value);
-
-		// Wiki Link検知
-		const textarea = editorRef.current?.querySelector("textarea");
-		if (!textarea) return;
-
-		const cursorPos = (textarea as HTMLTextAreaElement).selectionStart;
-		const beforeCursor = value.substring(0, cursorPos);
-
-		// [[の検出
-		const lastBracketIndex = beforeCursor.lastIndexOf("[[");
-		if (lastBracketIndex !== -1) {
-			// ]]で閉じられていないか確認
-			const afterBracket = value.substring(lastBracketIndex + 2, cursorPos);
-			if (!afterBracket.includes("]]")) {
-				// サジェストを表示
-				setSuggestionQuery(afterBracket);
-				setShowSuggestions(true);
-
-				// カーソル位置を取得
-				const textarea = editorRef.current?.querySelector("textarea");
-				if (textarea) {
-					// テキストエリアのスタイル情報を取得
-					const styles = window.getComputedStyle(textarea);
-					const lineHeight = parseInt(styles.lineHeight) || 20;
-
-					// カーソル位置を推定（簡易版）
-					// TODO: より正確な位置計算が必要な場合は getCaretCoordinates ライブラリを使用
-					const rect = textarea.getBoundingClientRect();
-					const textBeforeCursor = value.substring(0, cursorPos);
-					const lines = textBeforeCursor.split("\n").length;
-
-					// [[の位置を基準に計算
-					const lastLineStart = textBeforeCursor.lastIndexOf("\n") + 1;
-					const currentLineText = textBeforeCursor.substring(lastLineStart);
-					const bracketPosInLine = currentLineText.lastIndexOf("[[");
-
-					setCursorPosition({
-						top: rect.top + lines * lineHeight,
-						left: rect.left + bracketPosInLine * 8, // 文字幅の推定値
-					});
-				}
-			} else {
-				setShowSuggestions(false);
-			}
-		} else {
-			setShowSuggestions(false);
-		}
 	};
 
 	return (
@@ -491,7 +580,7 @@ export function ArticleNewForm() {
 			<ArticleSuggestionsPopover
 				open={showSuggestions}
 				onOpenChange={setShowSuggestions}
-				query={debouncedSuggestionQuery}
+				query={suggestionQuery}
 				language="ja"
 				onSelect={handleSuggestionSelect}
 				position={cursorPosition}
