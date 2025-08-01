@@ -138,8 +138,6 @@ export async function handleArticleSuggestions(c: Context) {
 				400
 			);
 		}
-
-
 		// TODO: Cloudflare KVからキャッシュを取得
 		// 現在は常にデータベースから取得
 
@@ -166,9 +164,7 @@ export async function handleArticleSuggestions(c: Context) {
 			)
 			.limit(limit);
 
-
 		const suggestions: Array<z.infer<typeof SuggestionItemSchema>> = [];
-
 		// 2. 記事タイトルをサジェストに追加
 		for (const article of articleResults) {
 			if (article.title) {
