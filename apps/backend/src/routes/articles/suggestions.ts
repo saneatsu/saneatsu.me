@@ -1,6 +1,6 @@
 import { createRoute, z } from "@hono/zod-openapi";
 import { articles, articleTranslations, db } from "@saneatsu/db";
-import { and, eq, like } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import type { Context } from "hono";
 import { extractHeadings } from "../../utils/markdown";
 
@@ -139,6 +139,7 @@ export async function handleArticleSuggestions(c: Context) {
 			);
 		}
 
+
 		// TODO: Cloudflare KVからキャッシュを取得
 		// 現在は常にデータベースから取得
 
@@ -160,10 +161,11 @@ export async function handleArticleSuggestions(c: Context) {
 			.where(
 				and(
 					eq(articles.status, "published"),
-					like(articleTranslations.title, `%${q}%`)
+					sql`LOWER(${articleTranslations.title}) LIKE LOWER(${`%${q}%`})`
 				)
 			)
 			.limit(limit);
+
 
 		const suggestions: Array<z.infer<typeof SuggestionItemSchema>> = [];
 
@@ -204,7 +206,7 @@ export async function handleArticleSuggestions(c: Context) {
 				// 見出しを抽出
 				const headings = extractHeadings(article.content, 3);
 
-				// 見出しから検索
+				// 見出しから検索（大文字小文字を無視）
 				for (const heading of headings) {
 					if (heading.text.toLowerCase().includes(q.toLowerCase())) {
 						suggestions.push({
