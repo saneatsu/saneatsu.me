@@ -114,6 +114,6 @@ export function useArticleSuggestions({
 		...queryConfig,
 		staleTime: 0, // 常に新しいデータを取得（リアルタイム検索のため）
 		gcTime: 0, // キャッシュを即座に削除（React Query v5）
-		enabled: !!debouncedQuery && debouncedQuery.length > 0, // デバウンスされたクエリが存在する場合のみ実行
+		enabled: debouncedQuery != null, // デバウンスされたクエリが存在する場合のみ実行（空文字列も有効）
 	});
 }
