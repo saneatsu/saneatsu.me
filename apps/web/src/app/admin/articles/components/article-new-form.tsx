@@ -7,6 +7,7 @@ import "@uiw/react-markdown-preview/markdown.css";
 import { CalendarIcon, Loader2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import remarkGfm from "remark-gfm";
 import { z } from "zod";
 import {
 	type SuggestionItem,
@@ -15,6 +16,7 @@ import {
 } from "../../../../entities/article/api";
 import { ArticleSuggestionsPopover } from "../../../../entities/article/ui";
 import { useDebounce } from "../../../../shared/hooks/use-debounce";
+import { remarkWikiLink } from "../../../../shared/lib/remark-wiki-link";
 import { Button } from "../../../../shared/ui/button/button";
 import { Input } from "../../../../shared/ui/input/input";
 import { Label } from "../../../../shared/ui/label/label";
@@ -695,6 +697,30 @@ export function ArticleNewForm() {
 						visibleDragbar={true}
 						data-color-mode="light"
 						height={500}
+						previewOptions={{
+							remarkPlugins: [[remarkGfm], [remarkWikiLink]],
+							components: {
+								a: ({ children, href, ...props }: any) => {
+									// Wiki Linkのスタイリング
+									const className = props.className as string;
+									const isWikiLinkWithAnchor = className?.includes("wiki-link-anchor");
+									
+									return (
+										<a
+											href={href}
+											className={
+												isWikiLinkWithAnchor 
+													? "text-blue-600 dark:text-blue-400 underline" 
+													: "underline"
+											}
+											{...props}
+										>
+											{children}
+										</a>
+									);
+								},
+							},
+						}}
 					/>
 				</div>
 				{errors.content && (
