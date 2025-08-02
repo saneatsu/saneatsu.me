@@ -5,6 +5,7 @@ import MDEditor, { commands, type ICommand } from "@uiw/react-md-editor";
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
 import { CalendarIcon, Loader2 } from "lucide-react";
+import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import remarkGfm from "remark-gfm";
@@ -24,6 +25,13 @@ import {
 	RadioGroup,
 	RadioGroupItem,
 } from "../../../../shared/ui/radio-group/radio-group";
+
+// Wiki Linkコンポーネントを動的インポート（クライアントサイドのみ）
+const WikiLink = dynamic(
+	() =>
+		import("../../../../shared/ui/wiki-link").then((mod) => mod.WikiLink),
+	{ ssr: false }
+);
 
 /**
  * 記事作成フォームのスキーマ
@@ -707,18 +715,29 @@ export function ArticleNewForm() {
 							remarkPlugins: [[remarkGfm], [remarkWikiLink]],
 							components: {
 								a: ({ children, href, ...props }: any) => {
-									// Wiki Linkのスタイリング
+									// Wiki Linkの判定
 									const className = props.className as string;
-									const isWikiLinkWithAnchor = className?.includes("wiki-link-anchor");
+									const isWikiLink = className?.includes("wiki-link");
 									
+									// Wiki Linkの場合はカスタムコンポーネントを使用
+									if (isWikiLink && href) {
+										return (
+											<WikiLink
+												href={href}
+												language="ja"
+												className={className}
+												{...props}
+											>
+												{children}
+											</WikiLink>
+										);
+									}
+									
+									// 通常のリンク
 									return (
 										<a
 											href={href}
-											className={
-												isWikiLinkWithAnchor 
-													? "text-blue-600 dark:text-blue-400 underline" 
-													: "underline"
-											}
+											className="underline"
 											{...props}
 										>
 											{children}

@@ -9,6 +9,7 @@ import { extractHeadings } from "../../../shared/lib/extract-headings";
 import { remarkWikiLink } from "../../../shared/lib/remark-wiki-link";
 import { cn } from "../../../shared/lib/utils";
 import { TableOfContents } from "../../../shared/ui/table-of-contents";
+import { WikiLink } from "../../../shared/ui/wiki-link";
 
 export interface ArticleDetailViewProps {
 	/** 表示する記事データ */
@@ -219,17 +220,29 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 										</blockquote>
 									),
 									a: ({ children, href, ...props }) => {
-										// Wiki Linkのスタイリング
+										// Wiki Linkの判定
 										const className = props.className as string;
-										const isWikiLinkWithAnchor = className?.includes("wiki-link-anchor");
+										const isWikiLink = className?.includes("wiki-link");
 										
+										// Wiki Linkの場合はカスタムコンポーネントを使用
+										if (isWikiLink && href) {
+											return (
+												<WikiLink
+													href={href}
+													language={locale as "ja" | "en"}
+													className={className}
+													{...props}
+												>
+													{children}
+												</WikiLink>
+											);
+										}
+										
+										// 通常のリンク
 										return (
 											<a
 												href={href}
-												className={cn(
-													"underline decoration-dotted underline-offset-4 hover:decoration-solid",
-													isWikiLinkWithAnchor && "text-blue-600 dark:text-blue-400"
-												)}
+												className="underline decoration-dotted underline-offset-4 hover:decoration-solid"
 												{...props}
 											>
 												{children}
