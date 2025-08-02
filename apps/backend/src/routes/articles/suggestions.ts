@@ -38,9 +38,9 @@ export const SuggestionItemSchema = z.object({
  * サジェスト取得のクエリパラメータスキーマ
  */
 export const ArticleSuggestionsQuerySchema = z.object({
-	q: z.string().min(1).openapi({
+	q: z.string().openapi({
 		example: "Next",
-		description: "検索クエリ文字列",
+		description: "検索クエリ文字列（空文字列の場合は全記事を取得）",
 	}),
 	lang: z.enum(["ja", "en"]).optional().default("ja").openapi({
 		example: "ja",
@@ -126,18 +126,7 @@ export async function handleArticleSuggestions(c: Context) {
 		const limitStr = query.limit || "20";
 		const limit = parseInt(limitStr || "20", 10);
 
-		// qが必須パラメータなので、存在チェック
-		if (!q) {
-			return c.json(
-				{
-					error: {
-						code: "BAD_REQUEST",
-						message: "検索クエリが必要です",
-					},
-				},
-				400
-			);
-		}
+		// 空クエリの場合は全記事を取得
 		// TODO: Cloudflare KVからキャッシュを取得
 		// 現在は常にデータベースから取得
 
