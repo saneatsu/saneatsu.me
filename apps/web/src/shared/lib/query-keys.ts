@@ -25,6 +25,9 @@ export const queryKeys = {
 		// 個別の記事（スラッグ指定）
 		bySlug: (slug: string, lang?: string) =>
 			["articles", slug, { lang }] as const,
+		// 記事詳細
+		detail: (params: { slug: string; language?: string }) =>
+			["articles", "detail", params] as const,
 		// スラッグ重複チェック
 		checkSlug: (slug: string) => ["articles", "check-slug", slug] as const,
 		// Wiki Linkサジェスト
