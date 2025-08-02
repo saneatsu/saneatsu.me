@@ -43,7 +43,7 @@ export function WikiLink({
 	const anchor = match?.[2] || "";
 
 	// 記事情報を取得
-	const { data, isLoading } = useArticle({
+	const { data, isLoading, isError } = useArticle({
 		slug: slug || "",
 		language,
 		queryConfig: {
@@ -52,6 +52,21 @@ export function WikiLink({
 			gcTime: 10 * 60 * 1000, // 10分間保持
 		},
 	});
+
+	// エラー状態（記事が見つからない場合）
+	if (isError) {
+		return (
+			<span
+				className={cn(
+					"text-red-600 dark:text-red-400 pointer-events-none",
+					className
+				)}
+				{...props}
+			>
+				記事が見つかりません
+			</span>
+		);
+	}
 
 	// 表示テキストの決定
 	let displayText = children;
