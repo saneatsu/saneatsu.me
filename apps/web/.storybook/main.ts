@@ -13,10 +13,12 @@ const config: StorybookConfig = {
 	addons: [
 		getAbsolutePath("@storybook/addon-docs"),
 		getAbsolutePath("@storybook/addon-onboarding"),
+		"msw-storybook-addon",
 	],
 	framework: {
 		name: getAbsolutePath("@storybook/nextjs"),
 		options: {},
 	},
+	staticDirs: ["../public"],
 };
 export default config;
