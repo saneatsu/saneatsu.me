@@ -6,6 +6,7 @@ import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
 import type { Article } from "../../../shared";
 import { extractHeadings } from "../../../shared/lib/extract-headings";
+import { remarkWikiLink } from "../../../shared/lib/remark-wiki-link";
 import { cn } from "../../../shared/lib/utils";
 import { TableOfContents } from "../../../shared/ui/table-of-contents";
 
@@ -103,7 +104,7 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 					<div className="min-w-0 order-2 lg:order-1">
 						<article className="prose prose-neutral dark:prose-invert max-w-none">
 							<ReactMarkdown
-								remarkPlugins={[remarkGfm]}
+								remarkPlugins={[remarkGfm, remarkWikiLink]}
 								rehypePlugins={[rehypeHighlight]}
 								components={{
 									h1: ({ children }) => (
@@ -217,6 +218,24 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 											{children}
 										</blockquote>
 									),
+									a: ({ children, href, ...props }) => {
+										// Wiki Linkのスタイリング
+										const className = props.className as string;
+										const isWikiLinkWithAnchor = className?.includes("wiki-link-anchor");
+										
+										return (
+											<a
+												href={href}
+												className={cn(
+													"underline decoration-dotted underline-offset-4 hover:decoration-solid",
+													isWikiLinkWithAnchor && "text-blue-600 dark:text-blue-400"
+												)}
+												{...props}
+											>
+												{children}
+											</a>
+										);
+									},
 								}}
 							>
 								{article.content}
