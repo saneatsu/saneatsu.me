@@ -117,7 +117,7 @@ export function ArticleNewForm() {
 	useEffect(() => {
 		let isComposing = false;
 
-		const checkWikiLink = (source: string) => {
+		const checkWikiLink = (_source: string) => {
 			const textarea = document.querySelector(
 				".w-md-editor-text-input"
 			) as HTMLTextAreaElement;
@@ -126,13 +126,13 @@ export function ArticleNewForm() {
 			// textareaの値を直接使用
 			const value = textarea.value;
 			const cursorPos = textarea.selectionStart;
-			
+
 			// カーソル位置より前のテキストのみ処理
 			const beforeCursor = value.substring(0, cursorPos);
 
 			// [[の検出（最後の[[のみ）
 			const lastBracketIndex = beforeCursor.lastIndexOf("[[");
-			
+
 			if (lastBracketIndex === -1) {
 				// [[が見つからない場合は非表示
 				if (showSuggestions) {
@@ -143,7 +143,7 @@ export function ArticleNewForm() {
 
 			// [[以降のテキストを取得
 			const afterBracket = value.substring(lastBracketIndex + 2, cursorPos);
-			
+
 			// ]]が含まれている場合は閉じられている
 			if (afterBracket.includes("]]")) {
 				if (showSuggestions) {
@@ -160,10 +160,10 @@ export function ArticleNewForm() {
 			const rect = textarea.getBoundingClientRect();
 			const lineHeight = 20;
 			const charWidth = 8;
-			
+
 			// 改行数をカウント
 			const lines = beforeCursor.split("\n").length;
-			
+
 			// 現在の行での[[の位置
 			const lastLineStart = beforeCursor.lastIndexOf("\n") + 1;
 			const currentLineText = beforeCursor.substring(lastLineStart);
@@ -175,7 +175,7 @@ export function ArticleNewForm() {
 			});
 		};
 
-		const handleInput = (e: Event) => {
+		const handleInput = (_e: Event) => {
 			if (!isComposing) {
 				// 少し遅延して処理を実行（入力処理の競合を避ける）
 				setTimeout(() => {
@@ -214,7 +214,7 @@ export function ArticleNewForm() {
 		const textarea = document.querySelector(
 			".w-md-editor-text-input"
 		) as HTMLTextAreaElement;
-		
+
 		if (textarea) {
 			attachListeners(textarea);
 		}
@@ -233,7 +233,7 @@ export function ArticleNewForm() {
 					detachListeners(ta as HTMLTextAreaElement);
 					delete (ta as HTMLTextAreaElement).dataset.wikiLinkListener;
 				});
-				
+
 				newTextarea.dataset.wikiLinkListener = "true";
 				attachListeners(newTextarea);
 			}
@@ -250,41 +250,178 @@ export function ArticleNewForm() {
 				detachListeners(currentTextarea);
 			}
 		};
-	}, [markdownValue]);
+	}, [showSuggestions]);
 
-	// キーボードショートカットの処理
+	// キーボードショートカットと括弧の自動補完処理
 	useEffect(() => {
+		// 括弧のペアを定義
+		const bracketPairs: { [key: string]: string } = {
+			"[": "]",
+			"(": ")",
+			"{": "}",
+			"`": "`",
+			'"': '"',
+			"'": "'",
+		};
+
+		// 閉じ括弧の定義
+		const closingBrackets = new Set(Object.values(bracketPairs));
+
 		const handleKeyDown = (e: KeyboardEvent) => {
+			const textarea = document.querySelector(
+				".w-md-editor-text-input"
+			) as HTMLTextAreaElement;
+			if (!textarea || document.activeElement !== textarea) return;
+
 			// Ctrl+K または Cmd+K を無効化（カタカナ変換のため）
 			if ((e.ctrlKey || e.metaKey) && (e.key === "k" || e.key === "K")) {
-				const textarea = document.querySelector(
-					".w-md-editor-text-input"
-				) as HTMLTextAreaElement;
-				if (textarea && document.activeElement === textarea) {
-					e.stopPropagation(); // MDEditorのデフォルト動作を防ぐ
-				}
+				e.stopPropagation(); // MDEditorのデフォルト動作を防ぐ
 				return; // ブラウザのデフォルト動作は維持
 			}
 
 			// Cmd+L を無効化
 			if (e.metaKey && (e.key === "l" || e.key === "L")) {
-				const textarea = document.querySelector(
-					".w-md-editor-text-input"
-				) as HTMLTextAreaElement;
-				if (textarea && document.activeElement === textarea) {
-					e.preventDefault();
-					e.stopPropagation();
+				e.preventDefault();
+				e.stopPropagation();
+				return;
+			}
+
+			// 括弧の自動補完処理
+			// 開き括弧が入力された場合
+			if (bracketPairs[e.key] && !e.ctrlKey && !e.metaKey && !e.altKey) {
+				e.preventDefault();
+
+				const start = textarea.selectionStart;
+				const end = textarea.selectionEnd;
+				const value = textarea.value;
+				const selectedText = value.substring(start, end);
+
+				// [[ の場合は [[]] に補完
+				if (e.key === "[" && start > 0 && value.charAt(start - 1) === "[") {
+					const newValue =
+						value.slice(0, start) +
+						"[" +
+						selectedText +
+						"]]" +
+						value.slice(end);
+					const newCursorPos = start + 1 + selectedText.length;
+
+					setMarkdownValue(newValue);
+					setValue("content", newValue);
+
+					setTimeout(() => {
+						textarea.value = newValue;
+						if (selectedText) {
+							// テキストが選択されていた場合は、そのテキストを選択状態にする
+							textarea.setSelectionRange(
+								start + 1,
+								start + 1 + selectedText.length
+							);
+						} else {
+							// テキストが選択されていない場合は、括弧の間にカーソルを配置
+							textarea.setSelectionRange(newCursorPos, newCursorPos);
+						}
+						textarea.focus();
+					}, 0);
+				} else {
+					// 通常の括弧補完
+					const closingBracket = bracketPairs[e.key];
+					const newValue =
+						value.slice(0, start) +
+						e.key +
+						selectedText +
+						closingBracket +
+						value.slice(end);
+					const newCursorPos = start + 1 + selectedText.length;
+
+					setMarkdownValue(newValue);
+					setValue("content", newValue);
+
+					setTimeout(() => {
+						textarea.value = newValue;
+						if (selectedText) {
+							// テキストが選択されていた場合は、そのテキストを選択状態にする
+							textarea.setSelectionRange(
+								start + 1,
+								start + 1 + selectedText.length
+							);
+						} else {
+							// テキストが選択されていない場合は、括弧の間にカーソルを配置
+							textarea.setSelectionRange(newCursorPos, newCursorPos);
+						}
+						textarea.focus();
+					}, 0);
 				}
 				return;
 			}
 
+			// 閉じ括弧のスキップ処理
+			if (closingBrackets.has(e.key) && !e.ctrlKey && !e.metaKey && !e.altKey) {
+				const start = textarea.selectionStart;
+				const value = textarea.value;
+
+				// カーソルの直後が同じ閉じ括弧の場合はスキップ
+				if (start < value.length && value.charAt(start) === e.key) {
+					e.preventDefault();
+					textarea.setSelectionRange(start + 1, start + 1);
+					return;
+				}
+			}
+
+			// バックスペースでのペア削除処理
+			if (e.key === "Backspace" && !e.ctrlKey && !e.metaKey && !e.altKey) {
+				const start = textarea.selectionStart;
+				const end = textarea.selectionEnd;
+				const value = textarea.value;
+
+				// 選択範囲がない場合のみペア削除を考慮
+				if (start === end && start > 0) {
+					const charBefore = value.charAt(start - 1);
+					const charAfter = value.charAt(start);
+
+					// 括弧のペアを削除
+					if (
+						bracketPairs[charBefore] &&
+						bracketPairs[charBefore] === charAfter
+					) {
+						e.preventDefault();
+						const newValue = value.slice(0, start - 1) + value.slice(start + 1);
+
+						setMarkdownValue(newValue);
+						setValue("content", newValue);
+
+						setTimeout(() => {
+							textarea.value = newValue;
+							textarea.setSelectionRange(start - 1, start - 1);
+							textarea.focus();
+						}, 0);
+						return;
+					}
+
+					// [[]] の特別な処理
+					if (
+						start >= 2 &&
+						value.substring(start - 2, start) === "[[" &&
+						value.substring(start, start + 2) === "]]"
+					) {
+						e.preventDefault();
+						const newValue = value.slice(0, start - 2) + value.slice(start + 2);
+
+						setMarkdownValue(newValue);
+						setValue("content", newValue);
+
+						setTimeout(() => {
+							textarea.value = newValue;
+							textarea.setSelectionRange(start - 2, start - 2);
+							textarea.focus();
+						}, 0);
+						return;
+					}
+				}
+			}
+
 			// Ctrl+H または Cmd+H を検知
 			if ((e.ctrlKey || e.metaKey) && (e.key === "h" || e.key === "H")) {
-				const textarea = document.querySelector(
-					".w-md-editor-text-input"
-				) as HTMLTextAreaElement;
-				if (!textarea || document.activeElement !== textarea) return;
-
 				e.preventDefault();
 				e.stopPropagation();
 
