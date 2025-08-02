@@ -84,9 +84,13 @@ export function useArticleSuggestions({
 }: UseArticleSuggestionsOptions) {
 	// APIリクエストを300msでデバウンス
 	const debouncedQuery = useDebounce(query, 300);
-	
+
 	return useQuery({
-		queryKey: queryKeys.article.suggestions({ query: debouncedQuery, language, limit }),
+		queryKey: queryKeys.article.suggestions({
+			query: debouncedQuery,
+			language,
+			limit,
+		}),
 		queryFn: async () => {
 			const response = await honoClient.api.articles.suggestions.$get({
 				query: {
@@ -109,6 +113,7 @@ export function useArticleSuggestions({
 		},
 		...queryConfig,
 		staleTime: 0, // 常に新しいデータを取得（リアルタイム検索のため）
+		gcTime: 0, // キャッシュを即座に削除（React Query v5）
 		enabled: !!debouncedQuery && debouncedQuery.length > 0, // デバウンスされたクエリが存在する場合のみ実行
 	});
 }
