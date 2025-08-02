@@ -212,6 +212,9 @@ importers:
       '@tanstack/react-query-devtools':
         specifier: ^5.83.0
         version: 5.83.0(@tanstack/react-query@5.83.0(react@19.1.0))(react@19.1.0)
+      '@types/unist':
+        specifier: ^3.0.3
+        version: 3.0.3
       '@uiw/react-md-editor':
         specifier: ^4.0.8
         version: 4.0.8(@types/react@18.3.23)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -278,6 +281,12 @@ importers:
       tailwindcss:
         specifier: ^4.1.11
         version: 4.1.11
+      unified:
+        specifier: ^11.0.5
+        version: 11.0.5
+      unist-util-visit:
+        specifier: ^5.0.0
+        version: 5.0.0
       zod:
         specifier: ^4.0.10
         version: 4.0.10
