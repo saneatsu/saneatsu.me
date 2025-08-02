@@ -12,7 +12,8 @@
 			".next/**",
 			"dist/**",
 			"build/**",
-			".turbo/**"
+			".turbo/**",
+			"**/mockServiceWorker.js"
 		],
 		"includes": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.json"]
 	},
