@@ -108,7 +108,7 @@ export function useArticleSuggestions({
 			return data as SuggestionsResponse;
 		},
 		...queryConfig,
-		staleTime: 30 * 1000, // 30秒間はデータを新鮮とみなす
+		staleTime: 0, // 常に新しいデータを取得（リアルタイム検索のため）
 		enabled: !!debouncedQuery && debouncedQuery.length > 0, // デバウンスされたクエリが存在する場合のみ実行
 	});
 }
