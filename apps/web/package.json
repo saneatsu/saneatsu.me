@@ -48,6 +48,7 @@
 		"@saneatsu/schemas": "workspace:*",
 		"@tanstack/react-query": "^5.83.0",
 		"@tanstack/react-query-devtools": "^5.83.0",
+		"@types/unist": "^3.0.3",
 		"@uiw/react-md-editor": "^4.0.8",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
@@ -70,6 +71,8 @@
 		"remark-gfm": "^4.0.1",
 		"tailwind-merge": "^3.3.1",
 		"tailwindcss": "^4.1.11",
+		"unified": "^11.0.5",
+		"unist-util-visit": "^5.0.0",
 		"zod": "^4.0.10"
 	},
 	"devDependencies": {
