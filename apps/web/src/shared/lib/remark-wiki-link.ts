@@ -69,7 +69,7 @@ export const remarkWikiLink: Plugin = () => {
 						newNodes.push({
 							type: "text",
 							value: value.slice(lastIndex, matchIndex),
-						});
+						} as TextNode);
 					}
 
 					// リンクコンテンツを解析（スラッグ#アンカー形式に対応）

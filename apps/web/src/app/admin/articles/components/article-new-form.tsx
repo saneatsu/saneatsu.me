@@ -553,11 +553,17 @@ export function ArticleNewForm() {
 		const startIndex = beforeCursor.lastIndexOf("[[");
 		if (startIndex === -1) return;
 
+		// カーソル後のテキストが]]で始まる場合はスキップ
+		let adjustedAfterCursor = afterCursor;
+		if (afterCursor.startsWith("]]")) {
+			adjustedAfterCursor = afterCursor.substring(2);
+		}
+
 		// 新しいコンテンツを構築
 		const newContent =
 			markdownValue.substring(0, startIndex) +
 			`[[${suggestion.slug}]]` +
-			afterCursor;
+			adjustedAfterCursor;
 
 		// 新しいカーソル位置を計算
 		const newCursorPos = startIndex + `[[${suggestion.slug}]]`.length;
