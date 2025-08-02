@@ -298,12 +298,18 @@ export function ArticleNewForm() {
 
 				// [[ の場合は [[]] に補完
 				if (e.key === "[" && start > 0 && value.charAt(start - 1) === "[") {
+					// カーソルの直後に ] がある場合は削除する（[] の中で [ を押した場合）
+					let endPos = end;
+					if (value.charAt(end) === "]") {
+						endPos = end + 1;
+					}
+
 					const newValue =
 						value.slice(0, start) +
 						"[" +
 						selectedText +
 						"]]" +
-						value.slice(end);
+						value.slice(endPos);
 					const newCursorPos = start + 1 + selectedText.length;
 
 					setMarkdownValue(newValue);
