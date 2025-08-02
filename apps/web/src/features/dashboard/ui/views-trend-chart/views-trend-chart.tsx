@@ -197,9 +197,7 @@ export function ViewsTrendChart({
 					</div>
 				</div>
 			</CardHeader>
-			<CardContent>
-				{content}
-			</CardContent>
+			<CardContent>{content}</CardContent>
 		</Card>
 	);
 }

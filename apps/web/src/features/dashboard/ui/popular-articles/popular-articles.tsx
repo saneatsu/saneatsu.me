@@ -203,9 +203,7 @@ export function PopularArticles({
 					過去{selectedDays}日間の閲覧数の多い記事トップ{limit}
 				</CardDescription>
 			</CardHeader>
-			<CardContent>
-				{content}
-			</CardContent>
+			<CardContent>{content}</CardContent>
 		</Card>
 	);
 }

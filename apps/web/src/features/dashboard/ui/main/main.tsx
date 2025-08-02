@@ -145,13 +145,17 @@ export function DashboardMain({ userName = "管理者" }: DashboardMainProps) {
 							<BarChart3 className="h-5 w-5 text-primary" />
 							<div>
 								<CardTitle>期間分析</CardTitle>
-								<CardDescription>選択した期間の閲覧データと人気記事</CardDescription>
+								<CardDescription>
+									選択した期間の閲覧データと人気記事
+								</CardDescription>
 							</div>
 						</div>
 						<Select
 							value={selectedDays.toString()}
 							onValueChange={(value) =>
-								setSelectedDays(Number.parseInt(value, 10) as 30 | 90 | 180 | 360)
+								setSelectedDays(
+									Number.parseInt(value, 10) as 30 | 90 | 180 | 360
+								)
 							}
 						>
 							<SelectTrigger className="w-[120px]">
@@ -169,7 +173,7 @@ export function DashboardMain({ userName = "管理者" }: DashboardMainProps) {
 				<CardContent className="space-y-6">
 					{/* 閲覧数推移グラフ */}
 					<ViewsTrendChart selectedDays={selectedDays} hideCard={true} />
-					
+
 					{/* 人気記事ランキング */}
 					<PopularArticles
 						articles={dashboardData?.topArticles.articles || []}
