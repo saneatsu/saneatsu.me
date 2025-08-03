@@ -119,10 +119,10 @@ export function ArticleNewForm() {
 			? slugCheckData.message || "このスラッグは既に使用されています"
 			: null;
 
-	// カスタムboldコマンド（Ctrl+Bを無効化）
+	// カスタムboldコマンド（Cmd+Bを使用）
 	const customBold: ICommand = {
 		...commands.bold,
-		shortcuts: undefined, // ショートカットを無効化
+		shortcuts: "cmd+b", // macOSの標準的なBoldショートカット
 	};
 
 	// カスタムhrコマンド（Ctrl+Hを無効化）
