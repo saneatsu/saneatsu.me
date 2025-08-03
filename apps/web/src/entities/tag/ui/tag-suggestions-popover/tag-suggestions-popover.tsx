@@ -54,6 +54,14 @@ export function TagSuggestionsPopover({
 			return;
 		}
 
+		// 空クエリの場合はAPI呼び出しを行わない
+		if (query.trim().length === 0) {
+			setSuggestions([]);
+			setSelectedIndex(0);
+			setLoading(false);
+			return;
+		}
+
 		const fetchSuggestions = async () => {
 			setLoading(true);
 			try {
@@ -150,7 +158,24 @@ export function TagSuggestionsPopover({
 	return (
 		<>
 			<div style={anchorStyle} />
-			<Popover open={open} onOpenChange={onOpenChange}>
+			<Popover
+				open={open}
+				onOpenChange={(newOpen) => {
+					onOpenChange(newOpen);
+					// ポップオーバーが閉じられた時にtextareaにフォーカスを戻す
+					if (!newOpen) {
+						setTimeout(() => {
+							const textarea = document.querySelector(
+								".w-md-editor-text-input"
+							) as HTMLTextAreaElement;
+							if (textarea) {
+								textarea.focus();
+							}
+						}, 0);
+					}
+				}}
+				modal={false}
+			>
 				<PopoverContent
 					ref={popoverRef}
 					className="w-64 p-0"
@@ -165,15 +190,15 @@ export function TagSuggestionsPopover({
 					<Command>
 						<CommandList className="max-h-72 overflow-y-auto">
 							{loading ? (
-								<CommandItem disabled>
+								<div className="px-2 py-3 text-sm text-muted-foreground flex items-center">
 									<Tag className="mr-2 h-4 w-4" />
 									読み込み中...
-								</CommandItem>
+								</div>
 							) : suggestions.length === 0 ? (
-								<CommandItem disabled>
+								<div className="px-2 py-3 text-sm text-muted-foreground flex items-center">
 									<Tag className="mr-2 h-4 w-4" />
 									{query ? "タグが見つかりません" : "まだタグがありません"}
-								</CommandItem>
+								</div>
 							) : (
 								suggestions.map((suggestion, index) => (
 									<CommandItem

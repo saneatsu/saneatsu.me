@@ -341,6 +341,14 @@ export function ArticleNewForm() {
 				return;
 			}
 
+			// 空のクエリ（#のみ）の場合はサジェストを表示しない
+			if (afterHash.length === 0) {
+				if (showTagSuggestions) {
+					setShowTagSuggestions(false);
+				}
+				return;
+			}
+
 			// サジェストを表示
 			setTagQuery(afterHash);
 			setShowTagSuggestions(true);
@@ -902,13 +910,13 @@ export function ArticleNewForm() {
 							if (matchingPos !== -1) {
 								e.preventDefault();
 								const newValue =
-								// カーソル位置を計算：削除前の位置から削除された文字数を引く
-								// 外側の括弧ペア（2文字）が削除されるので、元の位置から1を引く
-								const newCursorPos = start - 1;
-
 									value.slice(0, matchingPos) +
 									value.slice(matchingPos + 1, start - 1) +
 									value.slice(start);
+
+								// カーソル位置を計算：削除前の位置から削除された文字数を引く
+								// 外側の括弧ペア（2文字）が削除されるので、元の位置から1を引く
+								const newCursorPos = start - 1;
 
 								setMarkdownValue(newValue);
 								setValue("content", newValue);
@@ -994,13 +1002,13 @@ export function ArticleNewForm() {
 							if (matchingPos !== -1) {
 								e.preventDefault();
 								const newValue =
-								// カーソル位置を計算：削除前の位置から削除された文字数を引く
-								// 外側の括弧ペア（2文字）が削除されるので、元の位置から1を引く
-								const newCursorPos = start - 1;
-
 									value.slice(0, start - 1) +
 									value.slice(start, matchingPos) +
 									value.slice(matchingPos + 1);
+
+								// カーソル位置を計算：削除前の位置から削除された文字数を引く
+								// 外側の括弧ペア（2文字）が削除されるので、元の位置から1を引く
+								const newCursorPos = start - 1;
 
 								setMarkdownValue(newValue);
 								setValue("content", newValue);
@@ -1131,13 +1139,13 @@ export function ArticleNewForm() {
 							);
 							if (matchingPos !== -1) {
 								const newValue =
-								// カーソル位置を計算：削除前の位置から削除された文字数を引く
-								// 外側の括弧ペア（2文字）が削除されるので、元の位置から1を引く
-								const newCursorPos = start - 1;
-
 									value.slice(0, matchingPos) +
 									value.slice(matchingPos + 1, start - 1) +
 									value.slice(start);
+
+								// カーソル位置を計算：削除前の位置から削除された文字数を引く
+								// 外側の括弧ペア（2文字）が削除されるので、元の位置から1を引く
+								const newCursorPos = start - 1;
 
 								setMarkdownValue(newValue);
 								setValue("content", newValue);
@@ -1220,13 +1228,13 @@ export function ArticleNewForm() {
 							);
 							if (matchingPos !== -1) {
 								const newValue =
-								// カーソル位置を計算：削除前の位置から削除された文字数を引く
-								// 外側の括弧ペア（2文字）が削除されるので、元の位置から1を引く
-								const newCursorPos = start - 1;
-
 									value.slice(0, start - 1) +
 									value.slice(start, matchingPos) +
 									value.slice(matchingPos + 1);
+
+								// カーソル位置を計算：削除前の位置から削除された文字数を引く
+								// 外側の括弧ペア（2文字）が削除されるので、元の位置から1を引く
+								const newCursorPos = start - 1;
 
 								setMarkdownValue(newValue);
 								setValue("content", newValue);
@@ -1665,11 +1673,17 @@ export function ArticleNewForm() {
 		setShowTagSuggestions(false);
 		setTagQuery("");
 
-		// フォーカスをMDEditorのテキストエリアに戻す
+		// フォーカスをMDEditorのテキストエリアに戻す（確実な復帰処理）
 		setTimeout(() => {
-			textarea.focus();
-			textarea.setSelectionRange(newCursorPos, newCursorPos);
-		}, 0);
+			// 再度textareaを取得して確実にフォーカス
+			const currentTextarea = editorRef.current?.querySelector(
+				"textarea"
+			) as HTMLTextAreaElement;
+			if (currentTextarea) {
+				currentTextarea.focus();
+				currentTextarea.setSelectionRange(newCursorPos, newCursorPos);
+			}
+		}, 10); // 少し遅延を増やして確実にフォーカス復帰
 	};
 
 	/**
