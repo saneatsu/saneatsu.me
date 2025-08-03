@@ -73,7 +73,7 @@ export function WikiLink({
 	if (data?.data?.title) {
 		if (anchor) {
 			// アンカー部分をデコード（#を除去してデコード後、#を戻す）
-			const decodedAnchor = anchor.startsWith('#') 
+			const decodedAnchor = anchor.startsWith("#")
 				? `#${decodeURIComponent(anchor.substring(1))}`
 				: decodeURIComponent(anchor);
 			displayText = `${data.data.title}${decodedAnchor}`;

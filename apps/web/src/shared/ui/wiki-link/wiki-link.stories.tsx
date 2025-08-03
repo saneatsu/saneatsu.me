@@ -259,6 +259,8 @@ export const ComplexJapaneseAnchor: Story = {
 		const link = await canvas.findByRole("link");
 
 		// 特殊文字を含む日本語が正しく表示されることを確認
-		expect(link).toHaveTextContent("JavaScript ES2024新機能#新機能：配列のグループ化");
+		expect(link).toHaveTextContent(
+			"JavaScript ES2024新機能#新機能：配列のグループ化"
+		);
 	},
 };
