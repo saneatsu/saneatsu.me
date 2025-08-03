@@ -403,6 +403,131 @@ export const CmdBAndCtrlBBehavior: Story = {
 };
 
 /**
+ * エディターショートカットの包括的テスト
+ * 無効化されたショートカットと有効なショートカットの動作を確認
+ */
+export const ComprehensiveShortcutTest: Story = {
+	name: "エディターショートカット包括テスト",
+	tags: ["validation"],
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+
+		// MDEditorのテキストエリアを探す
+		const editorTextarea = await waitFor(
+			async () => {
+				const textarea = canvas.getByRole("textbox", {
+					name: "本文（Markdown形式）",
+				});
+				return textarea as HTMLTextAreaElement;
+			},
+			{ timeout: 5000 }
+		);
+
+		// テキストを入力
+		await userEvent.click(editorTextarea);
+		await userEvent.type(editorTextarea, "Test content for shortcuts");
+
+		// 初期状態を記録
+		const initialText = editorTextarea.value;
+		const initialCursorPos = editorTextarea.selectionStart;
+
+		// === 無効化されたショートカットのテスト ===
+
+		// 1. Ctrl+K: MDEditorのデフォルト動作を無効化
+		await userEvent.keyboard("{Control>}k{/Control}");
+		await waitFor(() => {
+			expect(editorTextarea.value).toBe(initialText);
+		});
+
+		// 2. Cmd+K: MDEditorのデフォルト動作を無効化
+		await userEvent.keyboard("{Meta>}k{/Meta}");
+		await waitFor(() => {
+			expect(editorTextarea.value).toBe(initialText);
+		});
+
+		// 3. Ctrl+H: HR挿入機能を無効化
+		await userEvent.keyboard("{Control>}h{/Control}");
+		await waitFor(() => {
+			expect(editorTextarea.value).toBe(initialText);
+			expect(editorTextarea.value).not.toContain("---");
+		});
+
+		// 4. Cmd+H: HR挿入機能を無効化
+		await userEvent.keyboard("{Meta>}h{/Meta}");
+		await waitFor(() => {
+			expect(editorTextarea.value).toBe(initialText);
+			expect(editorTextarea.value).not.toContain("---");
+		});
+
+		// 5. Cmd+L: 完全に無効化
+		await userEvent.keyboard("{Meta>}l{/Meta}");
+		await waitFor(() => {
+			expect(editorTextarea.value).toBe(initialText);
+		});
+
+		// === 有効なショートカットのテスト ===
+
+		// 6. Ctrl+B: カーソル左移動（Unixキーバインド）
+		const beforeCtrlB = editorTextarea.selectionStart;
+		await userEvent.keyboard("{Control>}b{/Control}");
+		await waitFor(() => {
+			expect(editorTextarea.selectionStart).toBe(beforeCtrlB - 1);
+			expect(editorTextarea.value).toBe(initialText); // テキストは変更されない
+		});
+
+		// 7. Ctrl+F: カーソル右移動（Unixキーバインド）
+		const beforeCtrlF = editorTextarea.selectionStart;
+		await userEvent.keyboard("{Control>}f{/Control}");
+		await waitFor(() => {
+			expect(editorTextarea.selectionStart).toBe(beforeCtrlF + 1);
+			expect(editorTextarea.value).toBe(initialText); // テキストは変更されない
+		});
+
+		// 8. Cmd+B: Boldフォーマット（選択時のみ）
+		editorTextarea.setSelectionRange(5, 12); // "content"を選択
+		await userEvent.keyboard("{Meta>}b{/Meta}");
+		await waitFor(() => {
+			expect(editorTextarea.value).toBe("Test **content** for shortcuts");
+		});
+
+		// Bold解除も確認
+		editorTextarea.setSelectionRange(7, 14); // "content"を選択（**を含む位置）
+		await userEvent.keyboard("{Meta>}b{/Meta}");
+		await waitFor(() => {
+			expect(editorTextarea.value).toBe(initialText); // 元に戻る
+		});
+
+		// 9. Cmd+I: Italic（MDEditor標準機能、無効化していない）
+		editorTextarea.setSelectionRange(5, 12); // "content"を選択
+		await userEvent.keyboard("{Meta>}i{/Meta}");
+		await waitFor(() => {
+			expect(editorTextarea.value).toBe("Test *content* for shortcuts");
+		});
+
+		// Italic解除も確認
+		editorTextarea.setSelectionRange(6, 13); // "content"を選択（*を含む位置）
+		await userEvent.keyboard("{Meta>}i{/Meta}");
+		await waitFor(() => {
+			expect(editorTextarea.value).toBe(initialText); // 元に戻る
+		});
+
+		// === 競合がないことの確認 ===
+		// 複数のショートカットを連続実行して互いに干渉しないことを確認
+
+		// カーソルを中央に移動
+		editorTextarea.setSelectionRange(10, 10);
+
+		// Ctrl+B (左移動) → Ctrl+F (右移動) を連続実行
+		await userEvent.keyboard("{Control>}b{/Control}");
+		await userEvent.keyboard("{Control>}f{/Control}");
+		await waitFor(() => {
+			expect(editorTextarea.selectionStart).toBe(10); // 元の位置に戻る
+			expect(editorTextarea.value).toBe(initialText); // テキストは変更されない
+		});
+	},
+};
+
+/**
  * 基本的なフォーム表示
  */
 export const BasicForm: Story = {
