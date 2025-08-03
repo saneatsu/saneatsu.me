@@ -16,7 +16,12 @@ import {
 	useCreate,
 } from "../../../../entities/article/api";
 import { ArticleSuggestionsPopover } from "../../../../entities/article/ui";
+import {
+	type TagSuggestionItem,
+	TagSuggestionsPopover,
+} from "../../../../entities/tag/ui";
 import { useDebounce } from "../../../../shared/hooks/use-debounce";
+import { remarkTag } from "../../../../shared/lib/remark-tag";
 import { remarkWikiLink } from "../../../../shared/lib/remark-wiki-link";
 import { Button } from "../../../../shared/ui/button/button";
 import { Input } from "../../../../shared/ui/input/input";
@@ -70,6 +75,12 @@ export function ArticleNewForm() {
 	const [showSuggestions, setShowSuggestions] = useState(false);
 	const [suggestionQuery, setSuggestionQuery] = useState("");
 	const [cursorPosition, setCursorPosition] = useState({ top: 0, left: 0 });
+	const [showTagSuggestions, setShowTagSuggestions] = useState(false);
+	const [tagQuery, setTagQuery] = useState("");
+	const [tagCursorPosition, setTagCursorPosition] = useState({
+		top: 0,
+		left: 0,
+	});
 	const editorRef = useRef<HTMLDivElement>(null);
 
 	const {
@@ -291,6 +302,157 @@ export function ArticleNewForm() {
 		};
 	}, [showSuggestions]);
 
+	// タグ検知用のイベントリスナー
+	useEffect(() => {
+		let isComposing = false;
+
+		const checkTag = (_source: string) => {
+			const textarea = document.querySelector(
+				".w-md-editor-text-input"
+			) as HTMLTextAreaElement;
+			if (!textarea) return;
+
+			// textareaの値を直接使用
+			const value = textarea.value;
+			const cursorPos = textarea.selectionStart;
+
+			// カーソル位置より前のテキストのみ処理
+			const beforeCursor = value.substring(0, cursorPos);
+
+			// #の検出（最後の#のみ）
+			const lastHashIndex = beforeCursor.lastIndexOf("#");
+
+			if (lastHashIndex === -1) {
+				// #が見つからない場合は非表示
+				if (showTagSuggestions) {
+					setShowTagSuggestions(false);
+				}
+				return;
+			}
+
+			// #以降のテキストを取得
+			const afterHash = value.substring(lastHashIndex + 1, cursorPos);
+
+			// スペース、改行、または他の区切り文字が含まれている場合は閉じられている
+			if (afterHash.match(/[\s\n\r\t]/)) {
+				if (showTagSuggestions) {
+					setShowTagSuggestions(false);
+				}
+				return;
+			}
+
+			// サジェストを表示
+			setTagQuery(afterHash);
+			setShowTagSuggestions(true);
+
+			// カーソル位置を計算（シンプル化）
+			const rect = textarea.getBoundingClientRect();
+			const lineHeight = 20;
+			const charWidth = 8;
+
+			// 改行数をカウント
+			const lines = beforeCursor.split("\n").length;
+
+			// 現在の行での#の位置
+			const lastLineStart = beforeCursor.lastIndexOf("\n") + 1;
+			const currentLineText = beforeCursor.substring(lastLineStart);
+			const hashPosInLine = currentLineText.lastIndexOf("#");
+
+			setTagCursorPosition({
+				top: rect.top + lines * lineHeight,
+				left: rect.left + hashPosInLine * charWidth,
+			});
+		};
+
+		const handleInput = (_e: Event) => {
+			if (!isComposing) {
+				// 少し遅延して処理を実行（入力処理の競合を避ける）
+				setTimeout(() => {
+					checkTag("input");
+				}, 0);
+			}
+		};
+
+		const handleCompositionStart = () => {
+			isComposing = true;
+		};
+
+		const handleCompositionEnd = () => {
+			isComposing = false;
+			// IME確定後、MDEditorの内部処理を待ってからチェック
+			setTimeout(() => {
+				checkTag("compositionend");
+			}, 100);
+		};
+
+		const handleSelectionChange = () => {
+			// カーソル位置が変更されたらチェック
+			if (!isComposing) {
+				checkTag("selectionchange");
+			}
+		};
+
+		// textareaにイベントリスナーを追加する関数
+		const attachListeners = (textarea: HTMLTextAreaElement) => {
+			textarea.addEventListener("input", handleInput);
+			textarea.addEventListener("compositionstart", handleCompositionStart);
+			textarea.addEventListener("compositionend", handleCompositionEnd);
+			// selectionchangeはdocumentレベルで監視
+			document.addEventListener("selectionchange", handleSelectionChange);
+		};
+
+		// textareaからイベントリスナーを削除する関数
+		const detachListeners = (textarea: HTMLTextAreaElement) => {
+			textarea.removeEventListener("input", handleInput);
+			textarea.removeEventListener("compositionstart", handleCompositionStart);
+			textarea.removeEventListener("compositionend", handleCompositionEnd);
+			document.removeEventListener("selectionchange", handleSelectionChange);
+		};
+
+		// 初期のtextareaを探す
+		const textarea = document.querySelector(
+			".w-md-editor-text-input"
+		) as HTMLTextAreaElement;
+
+		if (textarea) {
+			attachListeners(textarea);
+		}
+
+		// MutationObserverでtextareaの出現を監視
+		const observer = new MutationObserver(() => {
+			const newTextarea = document.querySelector(
+				".w-md-editor-text-input"
+			) as HTMLTextAreaElement;
+			if (newTextarea && !newTextarea.dataset.tagListener) {
+				// 既存のリスナーをクリーンアップ
+				const existingTextareas = document.querySelectorAll(
+					".w-md-editor-text-input[data-tag-listener]"
+				);
+				existingTextareas.forEach((ta) => {
+					detachListeners(ta as HTMLTextAreaElement);
+					delete (ta as HTMLTextAreaElement).dataset.tagListener;
+				});
+
+				newTextarea.dataset.tagListener = "true";
+				attachListeners(newTextarea);
+			}
+		});
+
+		observer.observe(document.body, { childList: true, subtree: true });
+
+		return () => {
+			observer.disconnect();
+			const currentTextarea = document.querySelector(
+				".w-md-editor-text-input"
+			) as HTMLTextAreaElement;
+			if (currentTextarea) {
+				detachListeners(currentTextarea);
+			}
+			// documentレベルのイベントリスナーもクリーンアップ
+			document.removeEventListener("selectionchange", handleSelectionChange);
+		};
+	}, [showTagSuggestions]);
+
 	// キーボードショートカットと括弧の自動補完処理
 	useEffect(() => {
 		// 括弧のペアを定義
@@ -332,37 +494,40 @@ export function ArticleNewForm() {
 					const start = textarea.selectionStart;
 					const end = textarea.selectionEnd;
 					const value = textarea.value;
-					
+
 					// 選択範囲がある場合はBoldフォーマットを適用
 					if (start !== end) {
 						e.preventDefault();
 						e.stopPropagation();
-						
+						e.stopImmediatePropagation();
+
 						const selectedText = value.substring(start, end);
 						const beforeText = value.substring(0, start);
 						const afterText = value.substring(end);
-						
+
 						// **で囲まれているかチェック
-						const isBold = beforeText.endsWith("**") && afterText.startsWith("**");
-						
+						const isBold =
+							beforeText.endsWith("**") && afterText.startsWith("**");
+
 						let newValue;
 						let newStart, newEnd;
-						
+
 						if (isBold) {
 							// Bold解除
-							newValue = beforeText.slice(0, -2) + selectedText + afterText.slice(2);
+							newValue =
+								beforeText.slice(0, -2) + selectedText + afterText.slice(2);
 							newStart = start - 2;
 							newEnd = end - 2;
 						} else {
 							// Bold適用
-							newValue = beforeText + "**" + selectedText + "**" + afterText;
+							newValue = `${beforeText}**${selectedText}**${afterText}`;
 							newStart = start + 2;
 							newEnd = end + 2;
 						}
-						
+
 						setMarkdownValue(newValue);
 						setValue("content", newValue);
-						
+
 						setTimeout(() => {
 							textarea.value = newValue;
 							textarea.setSelectionRange(newStart, newEnd);
@@ -372,7 +537,8 @@ export function ArticleNewForm() {
 						// 選択がない場合はカーソルを左へ移動
 						e.preventDefault();
 						e.stopPropagation();
-						
+						e.stopImmediatePropagation();
+
 						const cursorPos = textarea.selectionStart;
 						if (cursorPos > 0) {
 							textarea.setSelectionRange(cursorPos - 1, cursorPos - 1);
@@ -687,6 +853,43 @@ export function ArticleNewForm() {
 	};
 
 	/**
+	 * タグサジェスト選択時の処理
+	 */
+	const handleTagSelect = (tag: TagSuggestionItem) => {
+		// 現在のカーソル位置から#を検索
+		const textarea = editorRef.current?.querySelector(
+			"textarea"
+		) as HTMLTextAreaElement;
+		if (!textarea) return;
+
+		const cursorPos = textarea.selectionStart;
+		const beforeCursor = markdownValue.substring(0, cursorPos);
+		const afterCursor = markdownValue.substring(cursorPos);
+
+		// #の開始位置を検索
+		const startIndex = beforeCursor.lastIndexOf("#");
+		if (startIndex === -1) return;
+
+		// 新しいコンテンツを構築（タグの後にスペースを追加）
+		const newContent =
+			markdownValue.substring(0, startIndex) + `#${tag.name} ` + afterCursor;
+
+		// 新しいカーソル位置を計算
+		const newCursorPos = startIndex + `#${tag.name} `.length;
+
+		setMarkdownValue(newContent);
+		setValue("content", newContent);
+		setShowTagSuggestions(false);
+		setTagQuery("");
+
+		// フォーカスをMDEditorのテキストエリアに戻す
+		setTimeout(() => {
+			textarea.focus();
+			textarea.setSelectionRange(newCursorPos, newCursorPos);
+		}, 0);
+	};
+
+	/**
 	 * MDEditorの変更処理
 	 */
 	const handleEditorChange = (val: string | undefined) => {
@@ -810,7 +1013,7 @@ export function ArticleNewForm() {
 						data-color-mode="light"
 						height={500}
 						previewOptions={{
-							remarkPlugins: [[remarkGfm], [remarkWikiLink]],
+							remarkPlugins: [[remarkGfm], [remarkWikiLink], [remarkTag]],
 							components: {
 								a: ({ children, href, ...props }: any) => {
 									// Wiki Linkの判定
@@ -872,6 +1075,15 @@ export function ArticleNewForm() {
 				language="ja"
 				onSelect={handleSuggestionSelect}
 				position={cursorPosition}
+			/>
+
+			{/* タグサジェストポップアップ */}
+			<TagSuggestionsPopover
+				open={showTagSuggestions}
+				onOpenChange={setShowTagSuggestions}
+				query={tagQuery}
+				onSelect={handleTagSelect}
+				position={tagCursorPosition}
 			/>
 		</form>
 	);

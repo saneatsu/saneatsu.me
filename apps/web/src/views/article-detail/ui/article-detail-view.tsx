@@ -6,6 +6,7 @@ import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
 import type { Article } from "../../../shared";
 import { extractHeadings } from "../../../shared/lib/extract-headings";
+import { remarkTag } from "../../../shared/lib/remark-tag";
 import { remarkWikiLink } from "../../../shared/lib/remark-wiki-link";
 import { cn } from "../../../shared/lib/utils";
 import { TableOfContents } from "../../../shared/ui/table-of-contents";
@@ -105,7 +106,7 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 					<div className="min-w-0 order-2 lg:order-1">
 						<article className="prose prose-neutral dark:prose-invert max-w-none">
 							<ReactMarkdown
-								remarkPlugins={[remarkGfm, remarkWikiLink]}
+								remarkPlugins={[remarkGfm, remarkWikiLink, remarkTag]}
 								rehypePlugins={[rehypeHighlight]}
 								components={{
 									h1: ({ children }) => (
@@ -223,7 +224,7 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 										// Wiki Linkの判定
 										const className = props.className as string;
 										const isWikiLink = className?.includes("wiki-link");
-										
+
 										// Wiki Linkの場合はカスタムコンポーネントを使用
 										if (isWikiLink && href) {
 											return (
@@ -237,7 +238,7 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 												</WikiLink>
 											);
 										}
-										
+
 										// 通常のリンク
 										return (
 											<a
