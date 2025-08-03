@@ -112,6 +112,134 @@ export const UnixKeyBindings: Story = {
 };
 
 /**
+ * Wiki Link見出し選択時の形式テスト
+ * 見出しを選択した場合は [[slug#見出しタイトル]] 形式で挿入されることを確認
+ */
+export const WikiLinkHeadingFormat: Story = {
+	name: "Wiki Link見出し選択時の形式",
+	tags: ["validation"],
+	parameters: {
+		msw: {
+			handlers: [
+				// スラッグチェックAPI
+				http.get("*/api/articles/check-slug", ({ request }) => {
+					const url = new URL(request.url);
+					const slug = url.searchParams.get("slug");
+					return HttpResponse.json({
+						available: slug !== "existing-slug",
+						message:
+							slug === "existing-slug"
+								? "このスラッグは既に使用されています"
+								: null,
+					});
+				}),
+				// Wiki Linkサジェスト（記事と見出しを含む）
+				http.get("*/api/articles/suggestions", () => {
+					return HttpResponse.json({
+						suggestions: [
+							{
+								slug: "nextjs-performance",
+								title: "Next.jsパフォーマンス最適化",
+								type: "article",
+							},
+							{
+								slug: "nextjs-performance",
+								title: "基本的な概念",
+								type: "heading",
+								headingLevel: 2,
+								headingId: "basic-concepts",
+								articleTitle: "Next.jsパフォーマンス最適化",
+							},
+							{
+								slug: "web-optimization",
+								title: "基本的な概念",
+								type: "heading",
+								headingLevel: 2,
+								headingId: "basic-concepts",
+								articleTitle: "Webアプリケーション設計",
+							},
+						],
+						fromCache: false,
+					});
+				}),
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+
+		// MDEditorのテキストエリアを探す
+		const editorTextarea = await waitFor(
+			async () => {
+				const textarea = canvas.getByRole("textbox", {
+					name: "本文（Markdown形式）",
+				});
+				return textarea as HTMLTextAreaElement;
+			},
+			{ timeout: 5000 }
+		);
+
+		// テストケース1: 記事を選択した場合
+		await userEvent.click(editorTextarea);
+		await userEvent.type(editorTextarea, "記事リンク: [[");
+
+		// サジェストポップアップが表示されるまで待つ
+		await waitFor(
+			async () => {
+				const firstItem = await canvas.findByText("Next.jsパフォーマンス最適化");
+				expect(firstItem).toBeInTheDocument();
+			},
+			{ timeout: 5000 }
+		);
+
+		// 最初の項目（記事）をクリック
+		const articleItem = canvas.getByText("Next.jsパフォーマンス最適化");
+		await userEvent.click(articleItem.closest('[role="option"]') as HTMLElement);
+
+		// [[nextjs-performance]] が挿入されたことを確認
+		await waitFor(() => {
+			expect(editorTextarea.value).toContain("記事リンク: [[nextjs-performance]]");
+		});
+
+		// テストケース2: 見出しを選択した場合
+		await userEvent.type(editorTextarea, "\n\n見出しリンク: [[");
+
+		// サジェストポップアップが表示されるまで待つ
+		await waitFor(
+			async () => {
+				// 見出しアイテムを探す（複数の「基本的な概念」がある）
+				const headingItems = await canvas.findAllByText("基本的な概念");
+				expect(headingItems.length).toBeGreaterThan(0);
+			},
+			{ timeout: 5000 }
+		);
+
+		// 見出しアイテムを選択（Next.jsパフォーマンス最適化の方）
+		const allOptions = canvas.getAllByRole("option");
+		const headingOption = allOptions.find(option => {
+			const titleText = option.querySelector("span")?.textContent;
+			const subtitleText = option.querySelector(".text-muted-foreground")?.textContent;
+			return titleText === "基本的な概念" && 
+				   subtitleText === "Next.jsパフォーマンス最適化";
+		});
+
+		if (headingOption) {
+			await userEvent.click(headingOption);
+		}
+
+		// [[nextjs-performance#基本的な概念]] が挿入されたことを確認
+		await waitFor(() => {
+			expect(editorTextarea.value).toContain("見出しリンク: [[nextjs-performance#基本的な概念]]");
+		});
+
+		// 最終的なテキストを確認
+		expect(editorTextarea.value).toBe(
+			"記事リンク: [[nextjs-performance]]\n\n見出しリンク: [[nextjs-performance#基本的な概念]]"
+		);
+	},
+};
+
+/**
  * Wiki Link内でのUnixキーバインドのテスト
  */
 export const UnixKeyBindingsWithWikiLink: Story = {

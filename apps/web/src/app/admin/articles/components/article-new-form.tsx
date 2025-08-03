@@ -834,14 +834,24 @@ export function ArticleNewForm() {
 			adjustedAfterCursor = afterCursor.substring(2);
 		}
 
+		// リンクテキストを生成（見出しの場合は#付き）
+		let linkText: string;
+		if (suggestion.type === "heading") {
+			// 見出しの場合は [[slug#見出しタイトル]] 形式
+			linkText = `[[${suggestion.slug}#${suggestion.title}]]`;
+		} else {
+			// 記事の場合は [[slug]] 形式
+			linkText = `[[${suggestion.slug}]]`;
+		}
+
 		// 新しいコンテンツを構築
 		const newContent =
 			markdownValue.substring(0, startIndex) +
-			`[[${suggestion.slug}]]` +
+			linkText +
 			adjustedAfterCursor;
 
 		// 新しいカーソル位置を計算
-		const newCursorPos = startIndex + `[[${suggestion.slug}]]`.length;
+		const newCursorPos = startIndex + linkText.length;
 
 		setMarkdownValue(newContent);
 		setValue("content", newContent);
