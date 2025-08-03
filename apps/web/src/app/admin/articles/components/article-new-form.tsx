@@ -182,15 +182,36 @@ export function ArticleNewForm() {
 			// カーソル後の最初の]]を探す
 			const closingBracketIndex = afterCursor.indexOf("]]");
 
-			// カーソルが[[]]の外にある場合（]]が見つからない、または]]より後に文字がある）
-			if (closingBracketIndex === -1 || closingBracketIndex > 0) {
+			// Wiki Linkが完成している場合の判定
+			// 1. ]]が見つからない場合
+			// 2. ]]がカーソルの直後にあるが、Wiki Link内に既にコンテンツがある場合
+			if (closingBracketIndex === -1) {
+				// ]]が見つからない場合は非表示
 				if (showSuggestions) {
 					setShowSuggestions(false);
 				}
 				return;
 			}
 
-			// サジェストを表示
+			// カーソルが]]の直前または内部にある場合でも、
+			// すでにWiki Linkが完成している（コンテンツがある）場合は非表示
+			if (closingBracketIndex === 0 && afterBracket.trim().length > 0) {
+				// [[hoge]] のようにすでに完成している場合
+				if (showSuggestions) {
+					setShowSuggestions(false);
+				}
+				return;
+			}
+
+			// カーソルが]]より前に文字がある場合（例: カーソルが"e]"の間）
+			if (closingBracketIndex > 0) {
+				if (showSuggestions) {
+					setShowSuggestions(false);
+				}
+				return;
+			}
+
+			// 空のWiki Link（[[]]）または入力中の場合のみサジェストを表示
 			setSuggestionQuery(afterBracket);
 			setShowSuggestions(true);
 
