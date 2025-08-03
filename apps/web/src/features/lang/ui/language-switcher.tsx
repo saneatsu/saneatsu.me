@@ -1,13 +1,13 @@
 "use client";
 
-import { Check, Globe } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import { Button } from "../../../shared/ui/button/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
-	DropdownMenuItem,
+	DropdownMenuRadioGroup,
+	DropdownMenuRadioItem,
 	DropdownMenuTrigger,
 } from "../../../shared/ui/dropdown-menu/dropdown-menu";
 
@@ -29,27 +29,39 @@ export function LanguageSwitcher() {
 		router.push(newPathname);
 	};
 
-	const currentLanguage = languages.find((lang) => lang.code === locale);
+	// 現在の言語のフラグを取得
+	const currentFlag = () => {
+		const currentLanguage = languages.find((lang) => lang.code === locale);
+		return currentLanguage?.flag || "🌐";
+	};
 
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
 				<Button variant="ghost" size="icon" aria-label="言語を切り替え">
-					<Globe className="h-4 w-4" />
+					<span className="text-base">{currentFlag()}</span>
 				</Button>
 			</DropdownMenuTrigger>
-			<DropdownMenuContent align="end">
-				{languages.map((language) => (
-					<DropdownMenuItem
-						key={language.code}
-						onClick={() => switchLanguage(language.code)}
-						className="flex items-center gap-2"
-					>
-						<span>{language.flag}</span>
-						<span>{language.label}</span>
-						{locale === language.code && <Check className="ml-auto h-4 w-4" />}
-					</DropdownMenuItem>
-				))}
+			<DropdownMenuContent align="end" className="w-36">
+				<DropdownMenuRadioGroup
+					value={locale}
+					onValueChange={(value) => {
+						if (value) {
+							switchLanguage(value);
+						}
+					}}
+				>
+					{languages.map((language) => (
+						<DropdownMenuRadioItem
+							key={language.code}
+							value={language.code}
+							className="cursor-pointer flex items-center"
+						>
+							<span className="mr-2">{language.flag}</span>
+							{language.label}
+						</DropdownMenuRadioItem>
+					))}
+				</DropdownMenuRadioGroup>
 			</DropdownMenuContent>
 		</DropdownMenu>
 	);
