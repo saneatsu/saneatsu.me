@@ -186,7 +186,9 @@ export const WikiLinkHeadingFormat: Story = {
 		// サジェストポップアップが表示されるまで待つ
 		await waitFor(
 			async () => {
-				const firstItem = await canvas.findByText("Next.jsパフォーマンス最適化");
+				const firstItem = await canvas.findByText(
+					"Next.jsパフォーマンス最適化"
+				);
 				expect(firstItem).toBeInTheDocument();
 			},
 			{ timeout: 5000 }
@@ -194,11 +196,15 @@ export const WikiLinkHeadingFormat: Story = {
 
 		// 最初の項目（記事）をクリック
 		const articleItem = canvas.getByText("Next.jsパフォーマンス最適化");
-		await userEvent.click(articleItem.closest('[role="option"]') as HTMLElement);
+		await userEvent.click(
+			articleItem.closest('[role="option"]') as HTMLElement
+		);
 
 		// [[nextjs-performance]] が挿入されたことを確認
 		await waitFor(() => {
-			expect(editorTextarea.value).toContain("記事リンク: [[nextjs-performance]]");
+			expect(editorTextarea.value).toContain(
+				"記事リンク: [[nextjs-performance]]"
+			);
 		});
 
 		// テストケース2: 見出しを選択した場合
@@ -216,11 +222,15 @@ export const WikiLinkHeadingFormat: Story = {
 
 		// 見出しアイテムを選択（Next.jsパフォーマンス最適化の方）
 		const allOptions = canvas.getAllByRole("option");
-		const headingOption = allOptions.find(option => {
+		const headingOption = allOptions.find((option) => {
 			const titleText = option.querySelector("span")?.textContent;
-			const subtitleText = option.querySelector(".text-muted-foreground")?.textContent;
-			return titleText === "基本的な概念" && 
-				   subtitleText === "Next.jsパフォーマンス最適化";
+			const subtitleText = option.querySelector(
+				".text-muted-foreground"
+			)?.textContent;
+			return (
+				titleText === "基本的な概念" &&
+				subtitleText === "Next.jsパフォーマンス最適化"
+			);
 		});
 
 		if (headingOption) {
@@ -229,7 +239,9 @@ export const WikiLinkHeadingFormat: Story = {
 
 		// [[nextjs-performance#基本的な概念]] が挿入されたことを確認
 		await waitFor(() => {
-			expect(editorTextarea.value).toContain("見出しリンク: [[nextjs-performance#基本的な概念]]");
+			expect(editorTextarea.value).toContain(
+				"見出しリンク: [[nextjs-performance#基本的な概念]]"
+			);
 		});
 
 		// 最終的なテキストを確認
@@ -686,7 +698,10 @@ export const ExpandedClickArea: Story = {
 
 		// 初期状態でテキストを入力
 		await userEvent.click(editorTextarea);
-		await userEvent.type(editorTextarea, "Initial content\n\nSecond line\n\nThird line");
+		await userEvent.type(
+			editorTextarea,
+			"Initial content\n\nSecond line\n\nThird line"
+		);
 
 		// テキストエリアのフォーカスを外す
 		const titleInput = canvas.getByLabelText("タイトル");
@@ -696,11 +711,15 @@ export const ExpandedClickArea: Story = {
 		expect(document.activeElement).not.toBe(editorTextarea);
 
 		// MDEditorコンテナを取得
-		const editorContainer = editorTextarea.closest('.w-md-editor') as HTMLElement;
+		const editorContainer = editorTextarea.closest(
+			".w-md-editor"
+		) as HTMLElement;
 		expect(editorContainer).toBeInTheDocument();
 
 		// プレビュー側の領域をクリック（.w-md-editor-previewを探す）
-		const previewArea = editorContainer.querySelector('.w-md-editor-preview') as HTMLElement;
+		const previewArea = editorContainer.querySelector(
+			".w-md-editor-preview"
+		) as HTMLElement;
 		if (previewArea) {
 			await userEvent.click(previewArea);
 
@@ -710,7 +729,8 @@ export const ExpandedClickArea: Story = {
 			});
 
 			// カーソルが最後に移動していることを確認
-			const expectedLength = "Initial content\n\nSecond line\n\nThird line".length;
+			const expectedLength = "Initial content\n\nSecond line\n\nThird line"
+				.length;
 			expect(editorTextarea.selectionStart).toBe(expectedLength);
 			expect(editorTextarea.selectionEnd).toBe(expectedLength);
 		}
@@ -720,7 +740,9 @@ export const ExpandedClickArea: Story = {
 		expect(document.activeElement).not.toBe(editorTextarea);
 
 		// エディター側（左側）の空白部分をクリック
-		const editorSide = editorContainer.querySelector('.w-md-editor-text') as HTMLElement;
+		const editorSide = editorContainer.querySelector(
+			".w-md-editor-text"
+		) as HTMLElement;
 		if (editorSide) {
 			await userEvent.click(editorSide);
 
@@ -732,16 +754,20 @@ export const ExpandedClickArea: Story = {
 
 		// ツールバーのボタンをクリックしても通常の動作をすることを確認
 		// （フォーカスが奪われないことを確認）
-		const boldButton = editorContainer.querySelector('[data-name="bold"]') as HTMLElement;
+		const boldButton = editorContainer.querySelector(
+			'[data-name="bold"]'
+		) as HTMLElement;
 		if (boldButton) {
 			// 一部のテキストを選択
 			editorTextarea.setSelectionRange(0, 7); // "Initial"を選択
-			
+
 			await userEvent.click(boldButton);
-			
+
 			// テキストにBoldが適用されたことを確認
 			await waitFor(() => {
-				expect(editorTextarea.value).toBe("**Initial** content\n\nSecond line\n\nThird line");
+				expect(editorTextarea.value).toBe(
+					"**Initial** content\n\nSecond line\n\nThird line"
+				);
 			});
 		}
 	},
@@ -797,13 +823,13 @@ export const BracketPairDeletionCursorFix: Story = {
 		// テストケース1: {{}}の最後の}を削除
 		await userEvent.click(editorTextarea);
 		await userEvent.type(editorTextarea, "{{}}");
-		
+
 		// カーソルを最後の}の後に配置
 		editorTextarea.setSelectionRange(4, 4);
-		
+
 		// Backspaceで最後の}を削除
 		await userEvent.keyboard("{Backspace}");
-		
+
 		// テキストが{{}になり、カーソルが最後の}の後（位置3）にあることを確認
 		await waitFor(() => {
 			expect(editorTextarea.value).toBe("{{}");
@@ -817,10 +843,10 @@ export const BracketPairDeletionCursorFix: Story = {
 		// テストケース2: {{}}の最後の}をCtrl+Hで削除
 		await userEvent.type(editorTextarea, "{{}}");
 		editorTextarea.setSelectionRange(4, 4);
-		
+
 		// Ctrl+Hで最後の}を削除
 		await userEvent.keyboard("{Control>}h{/Control}");
-		
+
 		// テキストが{{}になり、カーソルが最後の}の後（位置3）にあることを確認
 		await waitFor(() => {
 			expect(editorTextarea.value).toBe("{{}");
@@ -833,11 +859,11 @@ export const BracketPairDeletionCursorFix: Story = {
 
 		// テストケース3: ネストした括弧での削除
 		await userEvent.type(editorTextarea, "{{{text}}}");
-		
+
 		// 最後の}を削除（位置9の後）
 		editorTextarea.setSelectionRange(9, 9);
 		await userEvent.keyboard("{Backspace}");
-		
+
 		// テキストが{{{text}}になり、カーソルが最後の}の後（位置8）にあることを確認
 		await waitFor(() => {
 			expect(editorTextarea.value).toBe("{{{text}}");
@@ -850,11 +876,11 @@ export const BracketPairDeletionCursorFix: Story = {
 
 		// テストケース4: 最初の{を削除する場合
 		await userEvent.type(editorTextarea, "{{}}");
-		
+
 		// 最初の{の前に配置（位置1）
 		editorTextarea.setSelectionRange(1, 1);
 		await userEvent.keyboard("{Backspace}");
-		
+
 		// テキストが{}}になり、カーソルが最初の{の前（位置0）にあることを確認
 		await waitFor(() => {
 			expect(editorTextarea.value).toBe("{}}");
@@ -867,11 +893,11 @@ export const BracketPairDeletionCursorFix: Story = {
 
 		// テストケース5: その他の括弧でも同様に動作することを確認
 		await userEvent.type(editorTextarea, "((()))");
-		
+
 		// 最後の)を削除
 		editorTextarea.setSelectionRange(6, 6);
 		await userEvent.keyboard("{Backspace}");
-		
+
 		// テキストが(((()))になり、カーソルが最後の)の後（位置5）にあることを確認
 		await waitFor(() => {
 			expect(editorTextarea.value).toBe("(((()))");
@@ -884,11 +910,28 @@ export const BracketPairDeletionCursorFix: Story = {
 
 		// テストケース6: [[]]の最後の]を削除した時、[]が残ることを確認（バグ修正テスト）
 		await userEvent.type(editorTextarea, "[[]]");
+
+		// 最後の]の後に配置（位置4）
+
+		// リセット
+		await userEvent.clear(editorTextarea);
+
+		// テストケース8: Ctrl+Hでの[[]]の最後の]削除もカーソル位置が正しいことを確認
+		await userEvent.type(editorTextarea, "[[]]");
 		
 		// 最後の]の後に配置（位置4）
 		editorTextarea.setSelectionRange(4, 4);
-		await userEvent.keyboard("{Backspace}");
+		await userEvent.keyboard("{Control>}h{/Control}");
 		
+		// テキストが[]になり、カーソルが]の後（位置2）にあることを確認
+		await waitFor(() => {
+			expect(editorTextarea.value).toBe("[]");
+			expect(editorTextarea.selectionStart).toBe(2);
+			expect(editorTextarea.selectionEnd).toBe(2);
+		});
+		editorTextarea.setSelectionRange(4, 4);
+		await userEvent.keyboard("{Backspace}");
+
 		// テキストが[]になり、カーソルが]の後（位置2）にあることを確認
 		await waitFor(() => {
 			expect(editorTextarea.value).toBe("[]");
@@ -901,11 +944,11 @@ export const BracketPairDeletionCursorFix: Story = {
 
 		// テストケース7: [[]]の最初の[を削除した時、[]が残ることを確認
 		await userEvent.type(editorTextarea, "[[]]");
-		
+
 		// 最初の[の後に配置（位置1）
 		editorTextarea.setSelectionRange(1, 1);
 		await userEvent.keyboard("{Backspace}");
-		
+
 		// テキストが[]になり、カーソルが[の前（位置0）にあることを確認
 		await waitFor(() => {
 			expect(editorTextarea.value).toBe("[]");

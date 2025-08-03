@@ -576,7 +576,11 @@ export function ArticleNewForm() {
 							if (depth === 0) {
 								return i - 1; // [[ の開始位置
 							}
-						} else if (i === 0 && i < value.length - 1 && value.substring(i, i + 2) === "[[") {
+						} else if (
+							i === 0 &&
+							i < value.length - 1 &&
+							value.substring(i, i + 2) === "[["
+						) {
 							// i = 0 の場合の特別処理
 							depth--;
 							if (depth === 0) {
@@ -594,7 +598,10 @@ export function ArticleNewForm() {
 					for (let i = position + 2; i <= value.length - 2; i++) {
 						if (i <= value.length - 2 && value.substring(i, i + 2) === "[[") {
 							depth++;
-						} else if (i <= value.length - 2 && value.substring(i, i + 2) === "]]") {
+						} else if (
+							i <= value.length - 2 &&
+							value.substring(i, i + 2) === "]]"
+						) {
 							depth--;
 							if (depth === 0) {
 								return i; // ]] の開始位置
@@ -895,6 +902,10 @@ export function ArticleNewForm() {
 							if (matchingPos !== -1) {
 								e.preventDefault();
 								const newValue =
+								// カーソル位置を計算：削除前の位置から削除された文字数を引く
+								// 外側の括弧ペア（2文字）が削除されるので、元の位置から1を引く
+								const newCursorPos = start - 1;
+
 									value.slice(0, matchingPos) +
 									value.slice(matchingPos + 1, start - 1) +
 									value.slice(start);
@@ -904,7 +915,7 @@ export function ArticleNewForm() {
 
 								setTimeout(() => {
 									textarea.value = newValue;
-									textarea.setSelectionRange(matchingPos, matchingPos);
+									textarea.setSelectionRange(newCursorPos, newCursorPos);
 									textarea.focus();
 								}, 0);
 								return;
@@ -983,6 +994,10 @@ export function ArticleNewForm() {
 							if (matchingPos !== -1) {
 								e.preventDefault();
 								const newValue =
+								// カーソル位置を計算：削除前の位置から削除された文字数を引く
+								// 外側の括弧ペア（2文字）が削除されるので、元の位置から1を引く
+								const newCursorPos = start - 1;
+
 									value.slice(0, start - 1) +
 									value.slice(start, matchingPos) +
 									value.slice(matchingPos + 1);
@@ -992,7 +1007,7 @@ export function ArticleNewForm() {
 
 								setTimeout(() => {
 									textarea.value = newValue;
-									textarea.setSelectionRange(start - 2, start - 2);
+									textarea.setSelectionRange(newCursorPos, newCursorPos);
 									textarea.focus();
 								}, 0);
 								return;
@@ -1116,6 +1131,10 @@ export function ArticleNewForm() {
 							);
 							if (matchingPos !== -1) {
 								const newValue =
+								// カーソル位置を計算：削除前の位置から削除された文字数を引く
+								// 外側の括弧ペア（2文字）が削除されるので、元の位置から1を引く
+								const newCursorPos = start - 1;
+
 									value.slice(0, matchingPos) +
 									value.slice(matchingPos + 1, start - 1) +
 									value.slice(start);
@@ -1125,7 +1144,7 @@ export function ArticleNewForm() {
 
 								setTimeout(() => {
 									textarea.value = newValue;
-									textarea.setSelectionRange(matchingPos, matchingPos);
+									textarea.setSelectionRange(newCursorPos, newCursorPos);
 									textarea.focus();
 								}, 0);
 								return;
@@ -1201,6 +1220,10 @@ export function ArticleNewForm() {
 							);
 							if (matchingPos !== -1) {
 								const newValue =
+								// カーソル位置を計算：削除前の位置から削除された文字数を引く
+								// 外側の括弧ペア（2文字）が削除されるので、元の位置から1を引く
+								const newCursorPos = start - 1;
+
 									value.slice(0, start - 1) +
 									value.slice(start, matchingPos) +
 									value.slice(matchingPos + 1);
@@ -1210,7 +1233,7 @@ export function ArticleNewForm() {
 
 								setTimeout(() => {
 									textarea.value = newValue;
-									textarea.setSelectionRange(start - 2, start - 2);
+									textarea.setSelectionRange(newCursorPos, newCursorPos);
 									textarea.focus();
 								}, 0);
 								return;
