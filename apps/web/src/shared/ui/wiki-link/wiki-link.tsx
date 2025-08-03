@@ -71,7 +71,15 @@ export function WikiLink({
 	// 表示テキストの決定
 	let displayText = children;
 	if (data?.data?.title) {
-		displayText = anchor ? `${data.data.title}${anchor}` : data.data.title;
+		if (anchor) {
+			// アンカー部分をデコード（#を除去してデコード後、#を戻す）
+			const decodedAnchor = anchor.startsWith('#') 
+				? `#${decodeURIComponent(anchor.substring(1))}`
+				: decodeURIComponent(anchor);
+			displayText = `${data.data.title}${decodedAnchor}`;
+		} else {
+			displayText = data.data.title;
+		}
 	}
 
 	// アンカーリンクがある場合は青色にする
