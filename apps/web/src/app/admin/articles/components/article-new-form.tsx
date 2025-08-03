@@ -487,62 +487,65 @@ export function ArticleNewForm() {
 				return;
 			}
 
+			// Cmd+B でBoldフォーマット
+			if (e.metaKey && !e.ctrlKey && !e.altKey && (e.key === "b" || e.key === "B")) {
+				const start = textarea.selectionStart;
+				const end = textarea.selectionEnd;
+				const value = textarea.value;
+
+				// 選択範囲がある場合のみBoldフォーマットを適用
+				if (start !== end) {
+					e.preventDefault();
+					e.stopPropagation();
+					e.stopImmediatePropagation();
+
+					const selectedText = value.substring(start, end);
+					const beforeText = value.substring(0, start);
+					const afterText = value.substring(end);
+
+					// **で囲まれているかチェック
+					const isBold =
+						beforeText.endsWith("**") && afterText.startsWith("**");
+
+					let newValue;
+					let newStart, newEnd;
+
+					if (isBold) {
+						// Bold解除
+						newValue =
+							beforeText.slice(0, -2) + selectedText + afterText.slice(2);
+						newStart = start - 2;
+						newEnd = end - 2;
+					} else {
+						// Bold適用
+						newValue = `${beforeText}**${selectedText}**${afterText}`;
+						newStart = start + 2;
+						newEnd = end + 2;
+					}
+
+					setMarkdownValue(newValue);
+					setValue("content", newValue);
+
+					setTimeout(() => {
+						textarea.value = newValue;
+						textarea.setSelectionRange(newStart, newEnd);
+						textarea.focus();
+					}, 0);
+				}
+				return;
+			}
+
 			// Unixキーバインドの実装
 			if (e.ctrlKey && !e.metaKey && !e.altKey) {
-				// Ctrl+B: 選択がある場合はBold、ない場合はカーソル左移動
+				// Ctrl+B: カーソルを左へ移動
 				if (e.key === "b" || e.key === "B") {
-					const start = textarea.selectionStart;
-					const end = textarea.selectionEnd;
-					const value = textarea.value;
+					e.preventDefault();
+					e.stopPropagation();
+					e.stopImmediatePropagation();
 
-					// 選択範囲がある場合はBoldフォーマットを適用
-					if (start !== end) {
-						e.preventDefault();
-						e.stopPropagation();
-						e.stopImmediatePropagation();
-
-						const selectedText = value.substring(start, end);
-						const beforeText = value.substring(0, start);
-						const afterText = value.substring(end);
-
-						// **で囲まれているかチェック
-						const isBold =
-							beforeText.endsWith("**") && afterText.startsWith("**");
-
-						let newValue;
-						let newStart, newEnd;
-
-						if (isBold) {
-							// Bold解除
-							newValue =
-								beforeText.slice(0, -2) + selectedText + afterText.slice(2);
-							newStart = start - 2;
-							newEnd = end - 2;
-						} else {
-							// Bold適用
-							newValue = `${beforeText}**${selectedText}**${afterText}`;
-							newStart = start + 2;
-							newEnd = end + 2;
-						}
-
-						setMarkdownValue(newValue);
-						setValue("content", newValue);
-
-						setTimeout(() => {
-							textarea.value = newValue;
-							textarea.setSelectionRange(newStart, newEnd);
-							textarea.focus();
-						}, 0);
-					} else {
-						// 選択がない場合はカーソルを左へ移動
-						e.preventDefault();
-						e.stopPropagation();
-						e.stopImmediatePropagation();
-
-						const cursorPos = textarea.selectionStart;
-						if (cursorPos > 0) {
-							textarea.setSelectionRange(cursorPos - 1, cursorPos - 1);
-						}
+					const cursorPos = textarea.selectionStart;
+					if (cursorPos > 0) {
+						textarea.setSelectionRange(cursorPos - 1, cursorPos - 1);
 					}
 					return;
 				}
@@ -751,7 +754,7 @@ export function ArticleNewForm() {
 
 	// カスタムコマンドリスト（bold、hr、linkを置き換え）
 	const customCommands = [
-		customBold, // カスタムboldコマンドを使用（Ctrl+B無効化）
+		customBold, // カスタムboldコマンドを使用（Cmd+Bに変更）
 		commands.italic,
 		commands.strikethrough,
 		commands.code,
