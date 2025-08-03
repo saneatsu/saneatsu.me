@@ -748,6 +748,146 @@ export const ExpandedClickArea: Story = {
 };
 
 /**
+ * 括弧ペア削除のテスト
+ * [[]]などの括弧ペアで片方を削除すると対応する括弧も削除される
+ */
+export const BracketPairDeletion: Story = {
+	name: "括弧ペア削除機能",
+	tags: ["validation"],
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+
+		// MDEditorのテキストエリアを探す
+		const editorTextarea = await waitFor(
+			async () => {
+				const textarea = canvas.getByRole("textbox", {
+					name: "本文（Markdown形式）",
+				});
+				return textarea as HTMLTextAreaElement;
+			},
+			{ timeout: 5000 }
+		);
+
+		// テストケース1: [[]] で右側の ] を削除
+		await userEvent.click(editorTextarea);
+		await userEvent.type(editorTextarea, "[[test]]");
+		
+		// カーソルを ]] の間に移動: [[test]|]
+		editorTextarea.setSelectionRange(7, 7);
+		
+		// バックスペースで ] を削除
+		await userEvent.keyboard("{Backspace}");
+		
+		// 対応する [ も削除されて [test] になることを確認
+		await waitFor(() => {
+			expect(editorTextarea.value).toBe("[test]");
+		});
+
+		// クリア
+		await userEvent.clear(editorTextarea);
+
+		// テストケース2: [[]] で左側の [ を削除
+		await userEvent.type(editorTextarea, "[[test]]");
+		
+		// カーソルを [[ の間に移動: [|[test]]
+		editorTextarea.setSelectionRange(1, 1);
+		
+		// バックスペースで [ を削除
+		await userEvent.keyboard("{Backspace}");
+		
+		// 対応する ] も削除されて [test] になることを確認
+		await waitFor(() => {
+			expect(editorTextarea.value).toBe("[test]");
+		});
+
+		// クリア
+		await userEvent.clear(editorTextarea);
+
+		// テストケース3: 通常の括弧ペア（""）でも動作確認
+		await userEvent.type(editorTextarea, '"quoted text"');
+		
+		// カーソルを最後の " の前に移動
+		editorTextarea.setSelectionRange(12, 12);
+		
+		// バックスペースで " を削除
+		await userEvent.keyboard("{Backspace}");
+		
+		// 対応する開始の " も削除されることを確認
+		await waitFor(() => {
+			expect(editorTextarea.value).toBe("quoted text");
+		});
+
+		// クリア
+		await userEvent.clear(editorTextarea);
+
+		// テストケース4: ネストされた括弧での動作
+		await userEvent.type(editorTextarea, "[[ [inner] ]]");
+		
+		// 外側の ]] の間にカーソルを移動
+		editorTextarea.setSelectionRange(12, 12);
+		
+		// バックスペースで ] を削除
+		await userEvent.keyboard("{Backspace}");
+		
+		// 外側の [[ と ]] が削除されることを確認
+		await waitFor(() => {
+			expect(editorTextarea.value).toBe("[ [inner] ]");
+		});
+
+		// クリア
+		await userEvent.clear(editorTextarea);
+
+		// テストケース5: Delete キーでの動作
+		await userEvent.type(editorTextarea, "[[test]]");
+		
+		// カーソルを最初の [ の前に移動: |[[test]]
+		editorTextarea.setSelectionRange(0, 0);
+		
+		// Delete キーで [ を削除
+		await userEvent.keyboard("{Delete}");
+		
+		// 対応する ] も削除されることを確認
+		await waitFor(() => {
+			expect(editorTextarea.value).toBe("[test]");
+		});
+
+		// クリア
+		await userEvent.clear(editorTextarea);
+
+		// テストケース6: {} ペアの削除
+		await userEvent.type(editorTextarea, "{object}");
+		
+		// カーソルを } の前に移動
+		editorTextarea.setSelectionRange(7, 7);
+		
+		// バックスペースで } を削除
+		await userEvent.keyboard("{Backspace}");
+		
+		// 対応する { も削除されることを確認
+		await waitFor(() => {
+			expect(editorTextarea.value).toBe("object");
+		});
+
+		// クリア
+		await userEvent.clear(editorTextarea);
+
+		// テストケース7: 不完全なペアでは削除されないことを確認
+		await userEvent.type(editorTextarea, "[[test]");
+		
+		// カーソルを最後に移動
+		editorTextarea.setSelectionRange(7, 7);
+		
+		// バックスペースで ] を削除
+		await userEvent.keyboard("{Backspace}");
+		
+		// 単独の ] だけが削除されることを確認
+		await waitFor(() => {
+			expect(editorTextarea.value).toBe("[[test");
+		});
+	},
+};
+
+/**
  * スラッグ重複エラーの表示
  */
 export const SlugDuplicateError: Story = {

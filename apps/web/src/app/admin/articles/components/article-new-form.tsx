@@ -537,6 +537,89 @@ export function ArticleNewForm() {
 		// 閉じ括弧の定義
 		const closingBrackets = new Set(Object.values(bracketPairs));
 
+		// 複数文字の括弧ペア（Wiki Link用）
+		const multiCharBrackets = {
+			"[[": "]]",
+		};
+
+		// 対応する括弧を探す関数
+		const findMatchingBracket = (
+			value: string,
+			position: number,
+			bracket: string,
+			isClosing: boolean
+		): number => {
+			// 複数文字の括弧をチェック
+			if (bracket === "[" || bracket === "]") {
+				// [[]] のペアをチェック
+				if (isClosing && position >= 1 && value.substring(position - 1, position + 1) === "]]") {
+					// ]] を削除する場合、対応する [[ を探す
+					let depth = 1;
+					for (let i = position - 2; i >= 1; i--) {
+						if (value.substring(i - 1, i + 1) === "]]") {
+							depth++;
+						} else if (value.substring(i - 1, i + 1) === "[[") {
+							depth--;
+							if (depth === 0) {
+								return i - 1; // [[ の開始位置
+							}
+						}
+					}
+				} else if (!isClosing && position < value.length - 1 && value.substring(position, position + 2) === "[[") {
+					// [[ を削除する場合、対応する ]] を探す
+					let depth = 1;
+					for (let i = position + 2; i < value.length - 1; i++) {
+						if (value.substring(i, i + 2) === "[[") {
+							depth++;
+						} else if (value.substring(i, i + 2) === "]]") {
+							depth--;
+							if (depth === 0) {
+								return i; // ]] の開始位置
+							}
+						}
+					}
+				}
+			}
+
+			// 単一文字の括弧をチェック
+			const openBracket = isClosing ? 
+				Object.keys(bracketPairs).find(key => bracketPairs[key] === bracket) : 
+				bracket;
+			const closeBracket = isClosing ? bracket : bracketPairs[bracket];
+
+			if (!openBracket || !closeBracket) return -1;
+
+			if (isClosing) {
+				// 閉じ括弧から開き括弧を探す
+				let depth = 1;
+				for (let i = position - 1; i >= 0; i--) {
+					if (value[i] === closeBracket) {
+						depth++;
+					} else if (value[i] === openBracket) {
+						depth--;
+						if (depth === 0) {
+							return i;
+						}
+					}
+				}
+			} else {
+				// 開き括弧から閉じ括弧を探す
+				let depth = 1;
+				for (let i = position + 1; i < value.length; i++) {
+					if (value[i] === openBracket) {
+						depth++;
+					} else if (value[i] === closeBracket) {
+						depth--;
+						if (depth === 0) {
+							return i;
+						}
+					}
+				}
+			}
+
+			return -1;
+		};
+
 		const handleKeyDown = (e: KeyboardEvent) => {
 			const textarea = document.querySelector(
 				".w-md-editor-text-input"
@@ -731,7 +814,7 @@ export function ArticleNewForm() {
 					const charBefore = value.charAt(start - 1);
 					const charAfter = value.charAt(start);
 
-					// 括弧のペアを削除
+					// まず、カーソルが括弧ペアの間にある場合の処理
 					if (
 						bracketPairs[charBefore] &&
 						bracketPairs[charBefore] === charAfter
@@ -750,7 +833,7 @@ export function ArticleNewForm() {
 						return;
 					}
 
-					// [[]] の特別な処理
+					// [[]] の間にカーソルがある場合
 					if (
 						start >= 2 &&
 						value.substring(start - 2, start) === "[[" &&
@@ -768,6 +851,132 @@ export function ArticleNewForm() {
 							textarea.focus();
 						}, 0);
 						return;
+					}
+
+					// 削除される文字が括弧の場合、対応するペアも削除
+					// ] を削除する場合
+					if (charBefore === "]") {
+						// ]] の一部かチェック
+						if (start >= 2 && value.charAt(start - 2) === "]") {
+							const matchingPos = findMatchingBracket(value, start - 2, "]", true);
+							if (matchingPos !== -1) {
+								e.preventDefault();
+								const newValue = value.slice(0, matchingPos) + 
+									value.slice(matchingPos + 2, start - 2) + 
+									value.slice(start);
+
+								setMarkdownValue(newValue);
+								setValue("content", newValue);
+
+								setTimeout(() => {
+									textarea.value = newValue;
+									textarea.setSelectionRange(matchingPos, matchingPos);
+									textarea.focus();
+								}, 0);
+								return;
+							}
+						} else {
+							// 単一の ] を削除
+							const matchingPos = findMatchingBracket(value, start - 1, "]", true);
+							if (matchingPos !== -1) {
+								e.preventDefault();
+								const newValue = value.slice(0, matchingPos) + 
+									value.slice(matchingPos + 1, start - 1) + 
+									value.slice(start);
+
+								setMarkdownValue(newValue);
+								setValue("content", newValue);
+
+								setTimeout(() => {
+									textarea.value = newValue;
+									textarea.setSelectionRange(matchingPos, matchingPos);
+									textarea.focus();
+								}, 0);
+								return;
+							}
+						}
+					}
+					// その他の閉じ括弧を削除する場合
+					else if (closingBrackets.has(charBefore)) {
+						const matchingPos = findMatchingBracket(value, start - 1, charBefore, true);
+						if (matchingPos !== -1) {
+							e.preventDefault();
+							const newValue = value.slice(0, matchingPos) + 
+								value.slice(matchingPos + 1, start - 1) + 
+								value.slice(start);
+
+							setMarkdownValue(newValue);
+							setValue("content", newValue);
+
+							setTimeout(() => {
+								textarea.value = newValue;
+								textarea.setSelectionRange(matchingPos, matchingPos);
+								textarea.focus();
+							}, 0);
+							return;
+						}
+					}
+					// [ を削除する場合
+					else if (charBefore === "[") {
+						// [[ の一部かチェック
+						if (start >= 2 && value.charAt(start - 2) === "[") {
+							const matchingPos = findMatchingBracket(value, start - 2, "[", false);
+							if (matchingPos !== -1) {
+								e.preventDefault();
+								const newValue = value.slice(0, start - 2) + 
+									value.slice(start, matchingPos) + 
+									value.slice(matchingPos + 2);
+
+								setMarkdownValue(newValue);
+								setValue("content", newValue);
+
+								setTimeout(() => {
+									textarea.value = newValue;
+									textarea.setSelectionRange(start - 2, start - 2);
+									textarea.focus();
+								}, 0);
+								return;
+							}
+						} else {
+							// 単一の [ を削除
+							const matchingPos = findMatchingBracket(value, start - 1, "[", false);
+							if (matchingPos !== -1) {
+								e.preventDefault();
+								const newValue = value.slice(0, start - 1) + 
+									value.slice(start, matchingPos) + 
+									value.slice(matchingPos + 1);
+
+								setMarkdownValue(newValue);
+								setValue("content", newValue);
+
+								setTimeout(() => {
+									textarea.value = newValue;
+									textarea.setSelectionRange(start - 1, start - 1);
+									textarea.focus();
+								}, 0);
+								return;
+							}
+						}
+					}
+					// その他の開き括弧を削除する場合
+					else if (bracketPairs[charBefore]) {
+						const matchingPos = findMatchingBracket(value, start - 1, charBefore, false);
+						if (matchingPos !== -1) {
+							e.preventDefault();
+							const newValue = value.slice(0, start - 1) + 
+								value.slice(start, matchingPos) + 
+								value.slice(matchingPos + 1);
+
+							setMarkdownValue(newValue);
+							setValue("content", newValue);
+
+							setTimeout(() => {
+								textarea.value = newValue;
+								textarea.setSelectionRange(start - 1, start - 1);
+								textarea.focus();
+							}, 0);
+							return;
+						}
 					}
 				}
 			}
@@ -809,6 +1018,185 @@ export function ArticleNewForm() {
 						textarea.setSelectionRange(start, start);
 						textarea.focus();
 					}, 0);
+				}
+			}
+
+			// Delete キーでのペア削除処理
+			if (e.key === "Delete" && !e.ctrlKey && !e.metaKey && !e.altKey) {
+				const start = textarea.selectionStart;
+				const end = textarea.selectionEnd;
+				const value = textarea.value;
+
+				// 選択範囲がない場合のみペア削除を考慮
+				if (start === end && start < value.length) {
+					const charAfter = value.charAt(start);
+					const charBefore = value.charAt(start - 1);
+
+					// カーソルが括弧ペアの間にある場合の処理
+					if (
+						start > 0 &&
+						bracketPairs[charBefore] &&
+						bracketPairs[charBefore] === charAfter
+					) {
+						e.preventDefault();
+						const newValue = value.slice(0, start - 1) + value.slice(start + 1);
+
+						setMarkdownValue(newValue);
+						setValue("content", newValue);
+
+						setTimeout(() => {
+							textarea.value = newValue;
+							textarea.setSelectionRange(start - 1, start - 1);
+							textarea.focus();
+						}, 0);
+						return;
+					}
+
+					// [[]] の間にカーソルがある場合
+					if (
+						start >= 2 &&
+						value.substring(start - 2, start) === "[[" &&
+						value.substring(start, start + 2) === "]]"
+					) {
+						e.preventDefault();
+						const newValue = value.slice(0, start - 2) + value.slice(start + 2);
+
+						setMarkdownValue(newValue);
+						setValue("content", newValue);
+
+						setTimeout(() => {
+							textarea.value = newValue;
+							textarea.setSelectionRange(start - 2, start - 2);
+							textarea.focus();
+						}, 0);
+						return;
+					}
+
+					// 削除される文字が括弧の場合、対応するペアも削除
+					// [ を削除する場合
+					if (charAfter === "[") {
+						// [[ の一部かチェック
+						if (start < value.length - 1 && value.charAt(start + 1) === "[") {
+							const matchingPos = findMatchingBracket(value, start, "[", false);
+							if (matchingPos !== -1) {
+								e.preventDefault();
+								const newValue = value.slice(0, start) + 
+									value.slice(start + 2, matchingPos) + 
+									value.slice(matchingPos + 2);
+
+								setMarkdownValue(newValue);
+								setValue("content", newValue);
+
+								setTimeout(() => {
+									textarea.value = newValue;
+									textarea.setSelectionRange(start, start);
+									textarea.focus();
+								}, 0);
+								return;
+							}
+						} else {
+							// 単一の [ を削除
+							const matchingPos = findMatchingBracket(value, start, "[", false);
+							if (matchingPos !== -1) {
+								e.preventDefault();
+								const newValue = value.slice(0, start) + 
+									value.slice(start + 1, matchingPos) + 
+									value.slice(matchingPos + 1);
+
+								setMarkdownValue(newValue);
+								setValue("content", newValue);
+
+								setTimeout(() => {
+									textarea.value = newValue;
+									textarea.setSelectionRange(start, start);
+									textarea.focus();
+								}, 0);
+								return;
+							}
+						}
+					}
+					// ] を削除する場合
+					else if (charAfter === "]") {
+						// ]] の一部かチェック
+						if (start < value.length - 1 && value.charAt(start + 1) === "]") {
+							const matchingPos = findMatchingBracket(value, start, "]", true);
+							if (matchingPos !== -1) {
+								e.preventDefault();
+								const newValue = value.slice(0, matchingPos) + 
+									value.slice(matchingPos + 2, start) + 
+									value.slice(start + 2);
+
+								setMarkdownValue(newValue);
+								setValue("content", newValue);
+
+								setTimeout(() => {
+									textarea.value = newValue;
+									textarea.setSelectionRange(matchingPos, matchingPos);
+									textarea.focus();
+								}, 0);
+								return;
+							}
+						} else {
+							// 単一の ] を削除
+							const matchingPos = findMatchingBracket(value, start, "]", true);
+							if (matchingPos !== -1) {
+								e.preventDefault();
+								const newValue = value.slice(0, matchingPos) + 
+									value.slice(matchingPos + 1, start) + 
+									value.slice(start + 1);
+
+								setMarkdownValue(newValue);
+								setValue("content", newValue);
+
+								setTimeout(() => {
+									textarea.value = newValue;
+									textarea.setSelectionRange(matchingPos, matchingPos);
+									textarea.focus();
+								}, 0);
+								return;
+							}
+						}
+					}
+					// その他の開き括弧を削除する場合
+					else if (bracketPairs[charAfter]) {
+						const matchingPos = findMatchingBracket(value, start, charAfter, false);
+						if (matchingPos !== -1) {
+							e.preventDefault();
+							const newValue = value.slice(0, start) + 
+								value.slice(start + 1, matchingPos) + 
+								value.slice(matchingPos + 1);
+
+							setMarkdownValue(newValue);
+							setValue("content", newValue);
+
+							setTimeout(() => {
+								textarea.value = newValue;
+								textarea.setSelectionRange(start, start);
+								textarea.focus();
+							}, 0);
+							return;
+						}
+					}
+					// その他の閉じ括弧を削除する場合
+					else if (closingBrackets.has(charAfter)) {
+						const matchingPos = findMatchingBracket(value, start, charAfter, true);
+						if (matchingPos !== -1) {
+							e.preventDefault();
+							const newValue = value.slice(0, matchingPos) + 
+								value.slice(matchingPos + 1, start) + 
+								value.slice(start + 1);
+
+							setMarkdownValue(newValue);
+							setValue("content", newValue);
+
+							setTimeout(() => {
+								textarea.value = newValue;
+								textarea.setSelectionRange(matchingPos, matchingPos);
+								textarea.focus();
+							}, 0);
+							return;
+						}
+					}
 				}
 			}
 		};
