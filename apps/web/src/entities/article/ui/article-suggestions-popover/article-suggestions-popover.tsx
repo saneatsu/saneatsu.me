@@ -31,6 +31,10 @@ export interface ArticleSuggestionsPopoverProps {
 	onSelect: (suggestion: SuggestionItem) => void;
 	/** カーソル位置（ポップアップの表示位置用） */
 	position?: { top: number; left: number };
+	/** フィルターモード（見出しのみ表示する場合） */
+	filterMode?: "heading";
+	/** 対象記事のスラッグ（見出しフィルタリング用） */
+	targetSlug?: string;
 }
 
 /**
@@ -61,6 +65,8 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 	language = "ja",
 	onSelect,
 	position,
+	filterMode,
+	targetSlug,
 }) => {
 	const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -69,11 +75,14 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 		query,
 		language,
 		limit: 20,
+		targetSlug,
 		queryConfig: {
-			enabled: open && query.length > 0,
+			// 空文字列でも全記事を表示するために、openだけで有効化
+			enabled: open,
 		},
 	});
 
+	// サジェスト一覧（targetSlugが指定されている場合はバックエンドで既にフィルタリング済み）
 	const suggestions = data?.suggestions || [];
 
 	// キーボードナビゲーション
@@ -215,23 +224,57 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 	// カスタムドロップダウンの実装（Popoverを使わない）
 	if (!open) return null;
 
-	// スマート位置調整（上下2方向）
+	// スマート位置調整（入力テキストとの重複を避ける）
 	const calculatePosition = () => {
 		if (!position) return undefined;
 
 		const popoverHeight = 300; // 推定高さ
-		const offset = 10; // カーソルからの余白
+		const popoverWidth = 400; // Popoverの幅
+		const lineHeight = 24; // 推定行高
+		const minOffset = 30; // 最小オフセット（テキスト行との重複を避ける）
 		const windowHeight = window.innerHeight;
+		const windowWidth = window.innerWidth;
+		const scrollY = window.scrollY;
+		const scrollX = window.scrollX;
 
-		// 画面の下半分にカーソルがある場合は上に表示
-		const showAbove = position.top > windowHeight / 2;
+		// Popoverを下に表示した場合のスペースを計算
+		const spaceBelow = windowHeight - (position.top - scrollY) - lineHeight;
+		const spaceAbove = (position.top - scrollY) - minOffset;
 
-		return {
-			top: showAbove
-				? position.top - popoverHeight - offset
-				: position.top + offset,
-			left: position.left,
-		};
+		// 下に十分なスペースがあるかチェック
+		const canShowBelow = spaceBelow >= popoverHeight + minOffset;
+		const canShowAbove = spaceAbove >= popoverHeight;
+
+		// 優先順位: 下→上
+		const showBelow = canShowBelow || (!canShowAbove && spaceBelow > spaceAbove);
+
+		let top: number;
+		if (showBelow) {
+			// 下に表示（カーソル行の下に十分な余白を設ける）
+			top = position.top + lineHeight + minOffset;
+		} else {
+			// 上に表示
+			top = position.top - popoverHeight - minOffset;
+		}
+
+		// 左右の位置調整（画面からはみ出さないように）
+		let left = position.left;
+		if (left + popoverWidth > windowWidth + scrollX) {
+			left = windowWidth + scrollX - popoverWidth - 10; // 右端から10px余白
+		}
+		if (left < scrollX) {
+			left = scrollX + 10; // 左端から10px余白
+		}
+
+		// 上下の境界チェック
+		if (top < scrollY) {
+			top = scrollY + 10; // 画面上端から10px余白
+		}
+		if (top + popoverHeight > windowHeight + scrollY) {
+			top = windowHeight + scrollY - popoverHeight - 10; // 画面下端から10px余白
+		}
+
+		return { top, left };
 	};
 
 	return (
@@ -248,7 +291,11 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 						</div>
 					)}
 					{!isLoading && suggestions.length === 0 && (
-						<CommandEmpty>該当する記事が見つかりません</CommandEmpty>
+						<CommandEmpty>
+							{filterMode === "heading" 
+								? "この記事には見出しがありません" 
+								: "該当する記事が見つかりません"}
+						</CommandEmpty>
 					)}
 					{!isLoading && suggestions.length > 0 && (
 						<>

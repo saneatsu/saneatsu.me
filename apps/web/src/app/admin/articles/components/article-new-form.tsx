@@ -223,11 +223,14 @@ export function ArticleNewForm() {
 				setShowSuggestions(true);
 			}
 
-			// カーソル位置を計算（シンプル化）
+			// より正確なカーソル位置を計算
 			const rect = textarea.getBoundingClientRect();
-			const lineHeight = 20;
-			const charWidth = 8;
-
+			
+			// テキストエリアのスタイルから実際のフォントサイズと行高を取得
+			const computedStyle = window.getComputedStyle(textarea);
+			const fontSize = parseInt(computedStyle.fontSize) || 16;
+			const lineHeight = parseInt(computedStyle.lineHeight) || fontSize * 1.5;
+			
 			// 改行数をカウント
 			const lines = beforeCursor.split("\n").length;
 
@@ -235,10 +238,13 @@ export function ArticleNewForm() {
 			const lastLineStart = beforeCursor.lastIndexOf("\n") + 1;
 			const currentLineText = beforeCursor.substring(lastLineStart);
 			const bracketPosInLine = currentLineText.lastIndexOf("[[");
+			
+			// より正確な文字幅を計算（モノスペースフォントでない場合も考慮）
+			const charWidth = fontSize * 0.6; // 大まかな文字幅の推定
 
 			setCursorPosition({
-				top: rect.top + lines * lineHeight,
-				left: rect.left + bracketPosInLine * charWidth,
+				top: rect.top + window.scrollY + (lines - 1) * lineHeight,
+				left: rect.left + window.scrollX + bracketPosInLine * charWidth,
 			});
 		};
 
