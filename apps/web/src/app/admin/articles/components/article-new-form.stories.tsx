@@ -284,8 +284,8 @@ export const BoldFormattingWithSelection: Story = {
 		// "test"を選択（10文字目から14文字目）
 		editorTextarea.setSelectionRange(10, 14);
 
-		// Ctrl+BでBoldフォーマットを適用
-		await userEvent.keyboard("{Control>}b{/Control}");
+		// Cmd+BでBoldフォーマットを適用
+		await userEvent.keyboard("{Meta>}b{/Meta}");
 
 		// Bold記号が追加されたことを確認
 		await waitFor(() => {
@@ -295,8 +295,8 @@ export const BoldFormattingWithSelection: Story = {
 			expect(editorTextarea.selectionEnd).toBe(16); // **の前
 		});
 
-		// もう一度Ctrl+BでBoldを解除
-		await userEvent.keyboard("{Control>}b{/Control}");
+		// もう一度Cmd+BでBoldを解除
+		await userEvent.keyboard("{Meta>}b{/Meta}");
 
 		// Bold記号が削除されたことを確認
 		await waitFor(() => {
@@ -347,10 +347,10 @@ export const CtrlBCursorMovementWithoutSelection: Story = {
 };
 
 /**
- * Ctrl+Bがサイドバーを開閉しないことを確認するテスト
+ * Cmd+BでBoldフォーマット、Ctrl+Bでカーソル移動の確認
  */
-export const CtrlBDoesNotToggleSidebar: Story = {
-	name: "Ctrl+Bがサイドバーを開閉しない",
+export const CmdBAndCtrlBBehavior: Story = {
+	name: "Cmd+BでBold、Ctrl+Bでカーソル移動",
 	tags: ["validation"],
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
@@ -370,24 +370,24 @@ export const CtrlBDoesNotToggleSidebar: Story = {
 		await userEvent.click(editorTextarea);
 		await userEvent.type(editorTextarea, "Bold test text");
 
-		// 選択ありの場合：Boldフォーマット適用
+		// 選択ありの場合：Cmd+BでBoldフォーマット適用
 		editorTextarea.setSelectionRange(5, 9); // "test"を選択
 
-		// Ctrl+BでBoldフォーマットを適用（サイドバーは開閉しない）
-		await userEvent.keyboard("{Control>}b{/Control}");
+		// Cmd+BでBoldフォーマットを適用
+		await userEvent.keyboard("{Meta>}b{/Meta}");
 
 		// Bold記号が追加されたことを確認
 		await waitFor(() => {
 			expect(editorTextarea.value).toBe("Bold **test** text");
 		});
 
-		// 選択なしの場合：カーソル移動
+		// 選択なしの場合：Ctrl+Bでカーソル移動
 		editorTextarea.setSelectionRange(5, 5);
 
-		// Ctrl+Bでカーソル移動（サイドバーは開閉しない）
+		// Ctrl+Bでカーソル移動（Unixキーバインド）
 		await userEvent.keyboard("{Control>}b{/Control}");
 
-		// カーソルが移動したことを確認
+		// カーソルが左に移動したことを確認
 		await waitFor(() => {
 			expect(editorTextarea.selectionStart).toBe(4);
 		});
