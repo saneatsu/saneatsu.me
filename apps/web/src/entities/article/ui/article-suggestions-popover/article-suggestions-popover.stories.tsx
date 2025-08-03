@@ -109,7 +109,7 @@ export const 検索結果なし: Story = {
  * キーボードナビゲーションのテスト
  */
 export const キーボードナビゲーション: Story = {
-	name: "キーボードナビゲーション",
+	name: "キーボードナビゲーション（Tab/矢印キー）",
 	tags: ["validation"],
 	args: {
 		open: true,
@@ -150,6 +150,93 @@ export const キーボードナビゲーション: Story = {
 
 		// Shift+Tabで前のアイテムへ戻る
 		await userEvent.keyboard("{Shift>}{Tab}{/Shift}");
+		await waitFor(() => {
+			expect(commandItems[0]).toHaveAttribute("data-selected", "true");
+		});
+	},
+};
+
+/**
+ * Ctrl+P/Ctrl+Nでのナビゲーション
+ */
+export const CtrlPNナビゲーション: Story = {
+	name: "Ctrl+P/Ctrl+Nでのナビゲーション",
+	tags: ["validation"],
+	args: {
+		open: true,
+		query: "type",
+		language: "ja",
+		position: { top: 200, left: 100 },
+		onSelect: fn(),
+		onOpenChange: fn(),
+	},
+	parameters: {},
+	render: (args) => {
+		// MDEditorのコンテキストをシミュレート
+		return (
+			<div className="w-md-editor">
+				<textarea className="w-md-editor-text-input" defaultValue="[[type" />
+				<ArticleSuggestionsPopover {...args} />
+			</div>
+		);
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+
+		// textareaにフォーカス
+		const textarea = canvas.getByRole("textbox");
+		await userEvent.click(textarea);
+
+		// サジェストが表示されるまで待つ
+		await waitFor(
+			async () => {
+				const firstItem = await canvas.findByText(
+					"TypeScript実践テクニック 106"
+				);
+				expect(firstItem).toBeInTheDocument();
+			},
+			{ timeout: 5000 }
+		);
+
+		// コマンドアイテムを探す
+		const commandItems = await canvas.findAllByRole("option");
+		expect(commandItems).toHaveLength(4);
+
+		// 最初のアイテムがハイライトされているか確認
+		expect(commandItems[0]).toHaveAttribute("data-selected", "true");
+
+		// Ctrl+Nで次のアイテムへ移動
+		await userEvent.keyboard("{Control>}n{/Control}");
+		await waitFor(() => {
+			expect(commandItems[1]).toHaveAttribute("data-selected", "true");
+		});
+
+		// さらにCtrl+Nで移動
+		await userEvent.keyboard("{Control>}n{/Control}");
+		await waitFor(() => {
+			expect(commandItems[2]).toHaveAttribute("data-selected", "true");
+		});
+
+		// Ctrl+Pで前のアイテムへ戻る
+		await userEvent.keyboard("{Control>}p{/Control}");
+		await waitFor(() => {
+			expect(commandItems[1]).toHaveAttribute("data-selected", "true");
+		});
+
+		// さらにCtrl+Pで最初のアイテムへ
+		await userEvent.keyboard("{Control>}p{/Control}");
+		await waitFor(() => {
+			expect(commandItems[0]).toHaveAttribute("data-selected", "true");
+		});
+
+		// 最初のアイテムからCtrl+Pで最後へループ
+		await userEvent.keyboard("{Control>}p{/Control}");
+		await waitFor(() => {
+			expect(commandItems[3]).toHaveAttribute("data-selected", "true");
+		});
+
+		// 最後のアイテムからCtrl+Nで最初へループ
+		await userEvent.keyboard("{Control>}n{/Control}");
 		await waitFor(() => {
 			expect(commandItems[0]).toHaveAttribute("data-selected", "true");
 		});
@@ -418,6 +505,95 @@ export const 記事と見出しの混在: Story = {
 				}),
 			],
 		},
+	},
+};
+
+/**
+ * カーソル位置チェックの動作確認
+ */
+export const カーソル位置チェック: Story = {
+	name: "カーソル位置チェック",
+	tags: ["validation"],
+	args: {
+		open: true,
+		query: "type",
+		language: "ja",
+		position: { top: 200, left: 100 },
+		onSelect: fn(),
+		onOpenChange: fn(),
+	},
+	parameters: {},
+	render: (args) => {
+		const [isOpen, setIsOpen] = React.useState(true);
+		const [query, setQuery] = React.useState("type");
+
+		// MDEditorのコンテキストをシミュレート
+		return (
+			<div className="w-md-editor">
+				<textarea
+					className="w-md-editor-text-input"
+					defaultValue="[[type]]ここにカーソルを移動"
+					style={{ width: "400px", height: "100px" }}
+				/>
+				<ArticleSuggestionsPopover
+					{...args}
+					open={isOpen}
+					query={query}
+					onOpenChange={(open) => {
+						setIsOpen(open);
+						args.onOpenChange(open);
+					}}
+				/>
+				<div style={{ marginTop: "20px", fontSize: "14px" }}>
+					ポップアップ状態: {isOpen ? "開いている" : "閉じている"}
+				</div>
+			</div>
+		);
+	},
+	play: async ({ canvasElement, args }) => {
+		const canvas = within(canvasElement);
+
+		// textareaを取得
+		const textarea = canvas.getByRole("textbox") as HTMLTextAreaElement;
+
+		// サジェストが表示されるまで待つ
+		await waitFor(
+			async () => {
+				const firstItem = await canvas.findByText(
+					"TypeScript実践テクニック 106"
+				);
+				expect(firstItem).toBeInTheDocument();
+			},
+			{ timeout: 5000 }
+		);
+
+		// テキストエリアの説明テキスト
+		const statusText = canvas.getByText(/ポップアップ状態:/);
+		expect(statusText).toHaveTextContent("ポップアップ状態: 開いている");
+
+		// カーソルを[[type]]の中に設定（6文字目 = [[typ|e]]）
+		await userEvent.click(textarea);
+		textarea.setSelectionRange(6, 6);
+		await userEvent.click(textarea); // フォーカスを再設定
+
+		// まだポップアップは開いているはず
+		await waitFor(() => {
+			expect(statusText).toHaveTextContent("ポップアップ状態: 開いている");
+		});
+
+		// カーソルを[[type]]の外に移動（]]の後ろ = 9文字目）
+		textarea.setSelectionRange(9, 9);
+		// selectionchangeイベントを手動で発火
+		const event = new Event("selectionchange", { bubbles: true });
+		document.dispatchEvent(event);
+
+		// ポップアップが閉じることを確認
+		await waitFor(
+			() => {
+				expect(args.onOpenChange).toHaveBeenCalledWith(false);
+			},
+			{ timeout: 2000 }
+		);
 	},
 };
 

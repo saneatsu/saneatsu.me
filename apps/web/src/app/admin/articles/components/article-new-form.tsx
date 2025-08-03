@@ -28,8 +28,7 @@ import {
 
 // Wiki Linkコンポーネントを動的インポート（クライアントサイドのみ）
 const WikiLink = dynamic(
-	() =>
-		import("../../../../shared/ui/wiki-link").then((mod) => mod.WikiLink),
+	() => import("../../../../shared/ui/wiki-link").then((mod) => mod.WikiLink),
 	{ ssr: false }
 );
 
@@ -139,6 +138,7 @@ export function ArticleNewForm() {
 
 			// カーソル位置より前のテキストのみ処理
 			const beforeCursor = value.substring(0, cursorPos);
+			const afterCursor = value.substring(cursorPos);
 
 			// [[の検出（最後の[[のみ）
 			const lastBracketIndex = beforeCursor.lastIndexOf("[[");
@@ -156,6 +156,17 @@ export function ArticleNewForm() {
 
 			// ]]が含まれている場合は閉じられている
 			if (afterBracket.includes("]]")) {
+				if (showSuggestions) {
+					setShowSuggestions(false);
+				}
+				return;
+			}
+
+			// カーソル後の最初の]]を探す
+			const closingBracketIndex = afterCursor.indexOf("]]");
+
+			// カーソルが[[]]の外にある場合（]]が見つからない、または]]より後に文字がある）
+			if (closingBracketIndex === -1 || closingBracketIndex > 0) {
 				if (showSuggestions) {
 					setShowSuggestions(false);
 				}
@@ -206,11 +217,20 @@ export function ArticleNewForm() {
 			}, 100);
 		};
 
+		const handleSelectionChange = () => {
+			// カーソル位置が変更されたらチェック
+			if (!isComposing) {
+				checkWikiLink("selectionchange");
+			}
+		};
+
 		// textareaにイベントリスナーを追加する関数
 		const attachListeners = (textarea: HTMLTextAreaElement) => {
 			textarea.addEventListener("input", handleInput);
 			textarea.addEventListener("compositionstart", handleCompositionStart);
 			textarea.addEventListener("compositionend", handleCompositionEnd);
+			// selectionchangeはdocumentレベルで監視
+			document.addEventListener("selectionchange", handleSelectionChange);
 		};
 
 		// textareaからイベントリスナーを削除する関数
@@ -218,6 +238,7 @@ export function ArticleNewForm() {
 			textarea.removeEventListener("input", handleInput);
 			textarea.removeEventListener("compositionstart", handleCompositionStart);
 			textarea.removeEventListener("compositionend", handleCompositionEnd);
+			document.removeEventListener("selectionchange", handleSelectionChange);
 		};
 
 		// 初期のtextareaを探す
@@ -259,6 +280,8 @@ export function ArticleNewForm() {
 			if (currentTextarea) {
 				detachListeners(currentTextarea);
 			}
+			// documentレベルのイベントリスナーもクリーンアップ
+			document.removeEventListener("selectionchange", handleSelectionChange);
 		};
 	}, [showSuggestions]);
 
@@ -718,7 +741,7 @@ export function ArticleNewForm() {
 									// Wiki Linkの判定
 									const className = props.className as string;
 									const isWikiLink = className?.includes("wiki-link");
-									
+
 									// Wiki Linkの場合はカスタムコンポーネントを使用
 									if (isWikiLink && href) {
 										return (
@@ -732,14 +755,10 @@ export function ArticleNewForm() {
 											</WikiLink>
 										);
 									}
-									
+
 									// 通常のリンク
 									return (
-										<a
-											href={href}
-											className="underline"
-											{...props}
-										>
+										<a href={href} className="underline" {...props}>
 											{children}
 										</a>
 									);
