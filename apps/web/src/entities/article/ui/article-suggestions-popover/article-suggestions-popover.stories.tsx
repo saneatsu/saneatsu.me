@@ -598,6 +598,107 @@ export const カーソル位置チェック: Story = {
 };
 
 /**
+ * IME入力競合の防止テスト
+ * 日本語変換中のEnterがPopover選択に影響しないことを確認
+ */
+export const IME入力競合防止: Story = {
+	name: "IME入力競合防止テスト",
+	tags: ["validation"],
+	args: {
+		open: true,
+		query: "test",
+		position: { top: 200, left: 100 },
+		onOpenChange: fn(),
+		onSelect: fn(),
+	},
+	parameters: {},
+	render: (args) => {
+		const [selectedCount, setSelectedCount] = React.useState(0);
+		
+		return (
+			<div>
+				<div style={{ marginBottom: "20px" }}>
+					<p>選択実行回数: {selectedCount}回</p>
+					<p>
+						テスト内容: IME入力中のEnterはPopoverを発火させず、
+						通常のEnterは発火させることを確認
+					</p>
+				</div>
+				<ArticleSuggestionsPopover
+					{...args}
+					onSelect={(suggestion) => {
+						setSelectedCount(prev => prev + 1);
+						args.onSelect(suggestion);
+					}}
+				/>
+			</div>
+		);
+	},
+	play: async ({ canvasElement, args }) => {
+		const canvas = within(canvasElement);
+
+		// サジェストが表示されるまで待つ
+		await waitFor(
+			async () => {
+				const firstItem = await canvas.findByText(
+					"TypeScript実践テクニック 106"
+				);
+				expect(firstItem).toBeInTheDocument();
+			},
+			{ timeout: 5000 }
+		);
+
+		// 選択実行回数の初期値を確認
+		const countDisplay = canvas.getByText(/選択実行回数: 0回/);
+		expect(countDisplay).toBeInTheDocument();
+
+		// 1. IME入力中のEnterイベントを送信（isComposing: true）
+		const imeEnterEvent = new KeyboardEvent("keydown", {
+			key: "Enter",
+			isComposing: true,
+			bubbles: true,
+		});
+		window.dispatchEvent(imeEnterEvent);
+
+		// 少し待つ
+		await new Promise((resolve) => setTimeout(resolve, 100));
+
+		// IME入力中のEnterではonSelectが呼ばれないことを確認
+		expect(args.onSelect).not.toHaveBeenCalled();
+		expect(canvas.getByText(/選択実行回数: 0回/)).toBeInTheDocument();
+
+		// 2. 通常のEnterイベントを送信（isComposing: false）
+		const normalEnterEvent = new KeyboardEvent("keydown", {
+			key: "Enter",
+			isComposing: false,
+			bubbles: true,
+		});
+		window.dispatchEvent(normalEnterEvent);
+
+		// 通常のEnterでonSelectが呼ばれることを確認
+		await waitFor(() => {
+			expect(args.onSelect).toHaveBeenCalledTimes(1);
+			expect(canvas.getByText(/選択実行回数: 1回/)).toBeInTheDocument();
+		});
+
+		// 3. 再度IME入力中のEnterを送信して影響がないことを確認
+		const imeEnterEvent2 = new KeyboardEvent("keydown", {
+			key: "Enter",
+			isComposing: true,
+			bubbles: true,
+		});
+		window.dispatchEvent(imeEnterEvent2);
+
+		// 少し待つ
+		await new Promise((resolve) => setTimeout(resolve, 100));
+
+		// 回数が増えていないことを確認
+		expect(args.onSelect).toHaveBeenCalledTimes(1);
+		expect(canvas.getByText(/選択実行回数: 1回/)).toBeInTheDocument();
+	},
+};
+
+/**
  * デバウンスの動作確認
  */
 export const デバウンス動作確認: Story = {

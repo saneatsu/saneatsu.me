@@ -165,6 +165,11 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 					}
 					break;
 				case "Enter":
+					// IME入力中（日本語変換など）は処理をスキップして重複を防ぐ
+					if (e.isComposing) {
+						return;
+					}
+					
 					if (
 						e.target &&
 						((e.target as HTMLElement).tagName === "TEXTAREA" ||
