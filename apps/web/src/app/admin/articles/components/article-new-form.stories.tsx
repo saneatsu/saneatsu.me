@@ -965,7 +965,7 @@ export const CtrlDForwardDelete: Story = {
 	name: "Ctrl+Dで前方削除（Forward Delete）",
 	tags: ["validation"],
 	play: async ({ canvas }) => {
-		const editorContainer = await within(canvas).findByTestId("md-editor");
+		const editorContainer = await within(canvas as HTMLElement).findByTestId("md-editor");
 		const editorTextarea = within(editorContainer).getByRole(
 			"textbox"
 		) as HTMLTextAreaElement;
@@ -1068,5 +1068,115 @@ export const CtrlDForwardDelete: Story = {
 			expect(editorTextarea.selectionStart).toBe(5);
 			expect(editorTextarea.selectionEnd).toBe(5);
 		});
+	},
+};
+
+/**
+ * [[入力時にWiki Link Popoverが表示されることをテスト
+ */
+export const WikiLinkPopoverAppears: Story = {
+	name: "[[入力時にWiki Link Popoverが表示される",
+	tags: ["validation"],
+	play: async ({ canvas }) => {
+		const editorContainer = await within(canvas as HTMLElement).findByTestId("md-editor");
+		const editorTextarea = within(editorContainer).getByRole("textbox") as HTMLTextAreaElement;
+
+		// テストケース1: [[入力でPopoverが表示される
+		await userEvent.type(editorTextarea, "[[");
+		
+		// Wiki Link サジェストポップアップが表示されることを確認
+		await waitFor(() => {
+			const popup = within(canvas as HTMLElement).queryByTestId("wiki-link-suggestions");
+			expect(popup).toBeInTheDocument();
+		}, { timeout: 2000 });
+		
+		// リセット
+		await userEvent.clear(editorTextarea);
+		
+		// Wiki Link サジェストポップアップが非表示になることを確認
+		await waitFor(() => {
+			const popup = within(canvas as HTMLElement).queryByTestId("wiki-link-suggestions");
+			expect(popup).not.toBeInTheDocument();
+		}, { timeout: 1000 });
+
+		// テストケース2: [[文字入力でもPopoverが表示される
+		await userEvent.type(editorTextarea, "[[test");
+		
+		// Wiki Link サジェストポップアップが表示されることを確認
+		await waitFor(() => {
+			const popup = within(canvas as HTMLElement).queryByTestId("wiki-link-suggestions");
+			expect(popup).toBeInTheDocument();
+		}, { timeout: 2000 });
+
+		// テストケース3: [[article-040#で見出しサジェストが表示される
+		await userEvent.clear(editorTextarea);
+		await userEvent.type(editorTextarea, "[[article-040#");
+		
+		// Wiki Link サジェストポップアップが表示されることを確認
+		await waitFor(() => {
+			const popup = within(canvas as HTMLElement).queryByTestId("wiki-link-suggestions");
+			expect(popup).toBeInTheDocument();
+		}, { timeout: 2000 });
+	},
+};
+
+/**
+ * 日本語入力時にWiki Link Popoverが正常に表示されることをテスト
+ */
+export const WikiLinkJapaneseInput: Story = {
+	name: "日本語入力時にWiki Link Popoverが表示される",
+	tags: ["validation"],
+	play: async ({ canvas }) => {
+		const editorContainer = await within(canvas as HTMLElement).findByTestId("md-editor");
+		const editorTextarea = within(editorContainer).getByRole("textbox") as HTMLTextAreaElement;
+
+		// テストケース1: 日本語のみでPopoverが表示される
+		await userEvent.type(editorTextarea, "[[概念");
+		
+		// Wiki Link サジェストポップアップが表示されることを確認
+		await waitFor(() => {
+			const popup = within(canvas as HTMLElement).queryByTestId("wiki-link-suggestions");
+			expect(popup).toBeInTheDocument();
+		}, { timeout: 2000 });
+		
+		// リセット
+		await userEvent.clear(editorTextarea);
+		
+		// テストケース2: 英語と日本語の混合でPopoverが表示される
+		await userEvent.type(editorTextarea, "[[React開発");
+		
+		// Wiki Link サジェストポップアップが表示されることを確認
+		await waitFor(() => {
+			const popup = within(canvas as HTMLElement).queryByTestId("wiki-link-suggestions");
+			expect(popup).toBeInTheDocument();
+		}, { timeout: 2000 });
+		
+		// リセット
+		await userEvent.clear(editorTextarea);
+		
+		// テストケース3: 完成したWiki Linkでカーソルが内部にある場合もPopoverが表示される
+		await userEvent.type(editorTextarea, "[[概念]]");
+		
+		// カーソルを「概念」と「]]」の間に移動
+		editorTextarea.setSelectionRange(4, 4); // "[[概念" の後にカーソルを配置
+		
+		// 少し待ってからチェック（カーソル移動後の処理を待つ）
+		await new Promise(resolve => setTimeout(resolve, 200));
+		
+		// Wiki Link サジェストポップアップが表示されることを確認
+		await waitFor(() => {
+			const popup = within(canvas as HTMLElement).queryByTestId("wiki-link-suggestions");
+			expect(popup).toBeInTheDocument();
+		}, { timeout: 2000 });
+		
+		// テストケース4: 日本語での見出しサジェスト
+		await userEvent.clear(editorTextarea);
+		await userEvent.type(editorTextarea, "[[記事名#概");
+		
+		// Wiki Link サジェストポップアップが表示されることを確認
+		await waitFor(() => {
+			const popup = within(canvas as HTMLElement).queryByTestId("wiki-link-suggestions");
+			expect(popup).toBeInTheDocument();
+		}, { timeout: 2000 });
 	},
 };

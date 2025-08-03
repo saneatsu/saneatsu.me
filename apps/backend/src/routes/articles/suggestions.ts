@@ -50,6 +50,10 @@ export const ArticleSuggestionsQuerySchema = z.object({
 		example: "20",
 		description: "取得する最大件数",
 	}),
+	targetSlug: z.string().optional().openapi({
+		example: "article-007",
+		description: "特定記事の見出しのみを取得したい場合の記事スラッグ",
+	}),
 });
 
 /**
@@ -125,7 +129,72 @@ export async function handleArticleSuggestions(c: Context) {
 		const lang = (query.lang === "en" ? "en" : "ja") as "ja" | "en";
 		const limitStr = query.limit || "20";
 		const limit = parseInt(limitStr || "20", 10);
+		const targetSlug = query.targetSlug;
+		
 
+		// targetSlugが指定された場合、その記事の見出しのみを返す
+		if (targetSlug) {
+			// 指定された記事を取得
+			const targetArticle = await db
+				.select({
+					slug: articles.slug,
+					title: articleTranslations.title,
+					content: articleTranslations.content,
+				})
+				.from(articles)
+				.innerJoin(
+					articleTranslations,
+					and(
+						eq(articles.id, articleTranslations.articleId),
+						eq(articleTranslations.language, lang)
+					)
+				)
+				.where(
+					and(
+						eq(articles.status, "published"),
+						eq(articles.slug, targetSlug)
+					)
+				)
+				.limit(1);
+
+			if (targetArticle.length === 0 || !targetArticle[0].content) {
+				// 記事が見つからない場合は空の結果を返す
+				return c.json({
+					suggestions: [],
+					fromCache: false,
+				});
+			}
+
+			const article = targetArticle[0];
+			// 見出しを抽出
+			const headings = extractHeadings(article.content, 6); // 全レベルの見出しを取得
+			
+			const suggestions: Array<z.infer<typeof SuggestionItemSchema>> = [];
+
+			// 見出しから検索（クエリが空の場合は全見出しを返す）
+			for (const heading of headings) {
+				const matchesQuery = q === "" || heading.text.toLowerCase().includes(q.toLowerCase());
+				if (matchesQuery) {
+					suggestions.push({
+						slug: article.slug,
+						title: heading.text,
+						type: "heading",
+						headingLevel: heading.level,
+						headingId: heading.id,
+						articleTitle: article.title,
+					});
+
+					if (suggestions.length >= limit) break;
+				}
+			}
+
+			return c.json({
+				suggestions,
+				fromCache: false,
+			});
+		}
+
+		// 通常の検索処理（targetSlugが指定されていない場合）
 		// 空クエリの場合は全記事を取得
 		// TODO: Cloudflare KVからキャッシュを取得
 		// 現在は常にデータベースから取得

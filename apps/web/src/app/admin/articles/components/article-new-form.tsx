@@ -81,6 +81,9 @@ export function ArticleNewForm() {
 		top: 0,
 		left: 0,
 	});
+	// 見出しサジェスト用の状態
+	const [isHeadingSuggestion, setIsHeadingSuggestion] = useState(false);
+	const [targetArticleSlug, setTargetArticleSlug] = useState("");
 	const editorRef = useRef<HTMLDivElement>(null);
 
 	const {
@@ -182,28 +185,8 @@ export function ArticleNewForm() {
 			// カーソル後の最初の]]を探す
 			const closingBracketIndex = afterCursor.indexOf("]]");
 
-			// Wiki Linkが完成している場合の判定
-			// 1. ]]が見つからない場合
-			// 2. ]]がカーソルの直後にあるが、Wiki Link内に既にコンテンツがある場合
-			if (closingBracketIndex === -1) {
-				// ]]が見つからない場合は非表示
-				if (showSuggestions) {
-					setShowSuggestions(false);
-				}
-				return;
-			}
-
-			// カーソルが]]の直前または内部にある場合でも、
-			// すでにWiki Linkが完成している（コンテンツがある）場合は非表示
-			if (closingBracketIndex === 0 && afterBracket.trim().length > 0) {
-				// [[hoge]] のようにすでに完成している場合
-				if (showSuggestions) {
-					setShowSuggestions(false);
-				}
-				return;
-			}
-
-			// カーソルが]]より前に文字がある場合（例: カーソルが"e]"の間）
+			// カーソルが]]より前に文字がある場合のみ非表示
+			// （例: `[[test]]more` でカーソルが "e]" の間にある場合）
 			if (closingBracketIndex > 0) {
 				if (showSuggestions) {
 					setShowSuggestions(false);
@@ -211,9 +194,34 @@ export function ArticleNewForm() {
 				return;
 			}
 
-			// 空のWiki Link（[[]]）または入力中の場合のみサジェストを表示
-			setSuggestionQuery(afterBracket);
-			setShowSuggestions(true);
+			// ]]が見つからない場合（[[入力中）またはカーソルが空のWiki Link内にある場合はサジェスト表示
+
+			// #が含まれているかチェック（見出しサジェスト）
+			const hashIndex = afterBracket.indexOf("#");
+			if (hashIndex !== -1) {
+				// [[article-slug#heading-query]] の形式
+				const articleSlug = afterBracket.substring(0, hashIndex);
+				const headingQuery = afterBracket.substring(hashIndex + 1);
+
+				// 記事スラッグが空の場合はサジェストを表示しない
+				if (!articleSlug) {
+					if (showSuggestions) {
+						setShowSuggestions(false);
+					}
+					return;
+				}
+
+				setTargetArticleSlug(articleSlug);
+				setSuggestionQuery(headingQuery || ""); // 空文字列でも全見出しを表示
+				setIsHeadingSuggestion(true);
+				setShowSuggestions(true);
+			} else {
+				// 通常の記事サジェスト
+				setTargetArticleSlug("");
+				setSuggestionQuery(afterBracket);
+				setIsHeadingSuggestion(false);
+				setShowSuggestions(true);
+			}
 
 			// カーソル位置を計算（シンプル化）
 			const rect = textarea.getBoundingClientRect();
@@ -723,8 +731,8 @@ export function ArticleNewForm() {
 					const isBold =
 						beforeText.endsWith("**") && afterText.startsWith("**");
 
-					let newValue;
-					let newStart, newEnd;
+					let newValue: string;
+					let newStart: number, newEnd: number;
 
 					if (isBold) {
 						// Bold解除
@@ -1859,9 +1867,24 @@ export function ArticleNewForm() {
 
 		// リンクテキストを生成（見出しの場合は#付き）
 		let linkText: string;
-		if (suggestion.type === "heading") {
-			// 見出しの場合は [[slug#見出しタイトル]] 形式
-			linkText = `[[${suggestion.slug}#${suggestion.title}]]`;
+		if (isHeadingSuggestion && suggestion.type === "heading") {
+			// 見出しサジェストモードで見出しが選択された場合
+			// [[article-040#]] -> [[article-040#heading-title]]
+			const hashIndex = beforeCursor.substring(startIndex).indexOf("#");
+			if (hashIndex !== -1) {
+				// #の位置までの文字列を使用
+				const beforeHash = beforeCursor.substring(
+					startIndex,
+					startIndex + hashIndex + 3
+				); // [[article-040#
+				linkText = `${beforeHash}${suggestion.headingId || suggestion.title}]]`;
+			} else {
+				// フォールバック
+				linkText = `[[${targetArticleSlug}#${suggestion.headingId || suggestion.title}]]`;
+			}
+		} else if (suggestion.type === "heading") {
+			// 通常の見出しサジェスト（記事も含めて表示される場合）
+			linkText = `[[${suggestion.slug}#${suggestion.headingId || suggestion.title}]]`;
 		} else {
 			// 記事の場合は [[slug]] 形式
 			linkText = `[[${suggestion.slug}]]`;
@@ -1878,6 +1901,8 @@ export function ArticleNewForm() {
 		setValue("content", newContent);
 		setShowSuggestions(false);
 		setSuggestionQuery("");
+		setIsHeadingSuggestion(false);
+		setTargetArticleSlug("");
 
 		// フォーカスをMDEditorのテキストエリアに戻す
 		setTimeout(() => {
@@ -2054,7 +2079,15 @@ export function ArticleNewForm() {
 						previewOptions={{
 							remarkPlugins: [[remarkGfm], [remarkWikiLink], [remarkTag]],
 							components: {
-								a: ({ children, href, ...props }: any) => {
+								a: ({
+									children,
+									href,
+									...props
+								}: {
+									children?: React.ReactNode;
+									href?: string;
+									className?: string;
+								}) => {
 									// Wiki Linkの判定
 									const className = props.className as string;
 									const isWikiLink = className?.includes("wiki-link");
@@ -2114,6 +2147,8 @@ export function ArticleNewForm() {
 				language="ja"
 				onSelect={handleSuggestionSelect}
 				position={cursorPosition}
+				filterMode={isHeadingSuggestion ? "heading" : undefined}
+				targetSlug={isHeadingSuggestion ? targetArticleSlug : undefined}
 			/>
 
 			{/* タグサジェストポップアップ */}
