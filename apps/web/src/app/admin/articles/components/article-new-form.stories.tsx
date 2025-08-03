@@ -664,6 +664,90 @@ export const BasicForm: Story = {
 };
 
 /**
+ * MDEditorクリック領域拡張のテスト
+ * エディター内のどこをクリックしてもテキストエリアにフォーカスが当たることを確認
+ */
+export const ExpandedClickArea: Story = {
+	name: "MDEditorクリック領域拡張テスト",
+	tags: ["validation"],
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+
+		// MDEditorのテキストエリアを探す
+		const editorTextarea = await waitFor(
+			async () => {
+				const textarea = canvas.getByRole("textbox", {
+					name: "本文（Markdown形式）",
+				});
+				return textarea as HTMLTextAreaElement;
+			},
+			{ timeout: 5000 }
+		);
+
+		// 初期状態でテキストを入力
+		await userEvent.click(editorTextarea);
+		await userEvent.type(editorTextarea, "Initial content\n\nSecond line\n\nThird line");
+
+		// テキストエリアのフォーカスを外す
+		const titleInput = canvas.getByLabelText("タイトル");
+		await userEvent.click(titleInput);
+
+		// テキストエリアがフォーカスを失ったことを確認
+		expect(document.activeElement).not.toBe(editorTextarea);
+
+		// MDEditorコンテナを取得
+		const editorContainer = editorTextarea.closest('.w-md-editor') as HTMLElement;
+		expect(editorContainer).toBeInTheDocument();
+
+		// プレビュー側の領域をクリック（.w-md-editor-previewを探す）
+		const previewArea = editorContainer.querySelector('.w-md-editor-preview') as HTMLElement;
+		if (previewArea) {
+			await userEvent.click(previewArea);
+
+			// テキストエリアにフォーカスが当たったことを確認
+			await waitFor(() => {
+				expect(document.activeElement).toBe(editorTextarea);
+			});
+
+			// カーソルが最後に移動していることを確認
+			const expectedLength = "Initial content\n\nSecond line\n\nThird line".length;
+			expect(editorTextarea.selectionStart).toBe(expectedLength);
+			expect(editorTextarea.selectionEnd).toBe(expectedLength);
+		}
+
+		// 再度フォーカスを外す
+		await userEvent.click(titleInput);
+		expect(document.activeElement).not.toBe(editorTextarea);
+
+		// エディター側（左側）の空白部分をクリック
+		const editorSide = editorContainer.querySelector('.w-md-editor-text') as HTMLElement;
+		if (editorSide) {
+			await userEvent.click(editorSide);
+
+			// テキストエリアにフォーカスが当たったことを確認
+			await waitFor(() => {
+				expect(document.activeElement).toBe(editorTextarea);
+			});
+		}
+
+		// ツールバーのボタンをクリックしても通常の動作をすることを確認
+		// （フォーカスが奪われないことを確認）
+		const boldButton = editorContainer.querySelector('[data-name="bold"]') as HTMLElement;
+		if (boldButton) {
+			// 一部のテキストを選択
+			editorTextarea.setSelectionRange(0, 7); // "Initial"を選択
+			
+			await userEvent.click(boldButton);
+			
+			// テキストにBoldが適用されたことを確認
+			await waitFor(() => {
+				expect(editorTextarea.value).toBe("**Initial** content\n\nSecond line\n\nThird line");
+			});
+		}
+	},
+};
+
+/**
  * スラッグ重複エラーの表示
  */
 export const SlugDuplicateError: Story = {
