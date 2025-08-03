@@ -238,6 +238,7 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 		<div
 			className="fixed z-50 w-[400px] rounded-md border bg-popover shadow-md"
 			style={calculatePosition()}
+			data-testid="wiki-link-suggestions"
 		>
 			<Command shouldFilter={false} loop={true}>
 				<CommandList>
@@ -269,6 +270,8 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 														actualIndex === selectedIndex ? "bg-accent" : ""
 													}
 													data-suggestion-index={actualIndex}
+													data-testid="wiki-link-suggestion-item"
+													data-highlighted={actualIndex === selectedIndex}
 												>
 													<FileText className="mr-2 h-4 w-4" />
 													<span>{suggestion.title}</span>
@@ -296,6 +299,8 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 														actualIndex === selectedIndex ? "bg-accent" : ""
 													}
 													data-suggestion-index={actualIndex}
+													data-testid="wiki-link-suggestion-item"
+													data-highlighted={actualIndex === selectedIndex}
 												>
 													<Hash className="mr-2 h-4 w-4" />
 													<div className="flex flex-col">
