@@ -108,6 +108,12 @@ export function ArticleNewForm() {
 			? slugCheckData.message || "このスラッグは既に使用されています"
 			: null;
 
+	// カスタムboldコマンド（Ctrl+Bを無効化）
+	const customBold: ICommand = {
+		...commands.bold,
+		shortcuts: undefined, // ショートカットを無効化
+	};
+
 	// カスタムhrコマンド（Ctrl+Hを無効化）
 	const customHr: ICommand = {
 		...commands.hr,
@@ -319,6 +325,33 @@ export function ArticleNewForm() {
 				return;
 			}
 
+			// Unixキーバインドの実装
+			if (e.ctrlKey && !e.metaKey && !e.altKey) {
+				// Ctrl+B: カーソルを左へ移動（Boldを無効化）
+				if (e.key === "b" || e.key === "B") {
+					e.preventDefault();
+					e.stopPropagation();
+					
+					const cursorPos = textarea.selectionStart;
+					if (cursorPos > 0) {
+						textarea.setSelectionRange(cursorPos - 1, cursorPos - 1);
+					}
+					return;
+				}
+				
+				// Ctrl+F: カーソルを右へ移動
+				if (e.key === "f" || e.key === "F") {
+					e.preventDefault();
+					e.stopPropagation();
+					
+					const cursorPos = textarea.selectionStart;
+					if (cursorPos < textarea.value.length) {
+						textarea.setSelectionRange(cursorPos + 1, cursorPos + 1);
+					}
+					return;
+				}
+			}
+
 			// 括弧の自動補完処理
 			// 開き括弧が入力された場合
 			if (bracketPairs[e.key] && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -508,9 +541,9 @@ export function ArticleNewForm() {
 		};
 	}, [setValue]);
 
-	// カスタムコマンドリスト（hrとlinkを置き換え）
+	// カスタムコマンドリスト（bold、hr、linkを置き換え）
 	const customCommands = [
-		commands.bold,
+		customBold, // カスタムboldコマンドを使用（Ctrl+B無効化）
 		commands.italic,
 		commands.strikethrough,
 		commands.code,
