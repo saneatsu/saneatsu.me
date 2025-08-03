@@ -568,13 +568,19 @@ export function ArticleNewForm() {
 				) {
 					// ]] を削除する場合、対応する [[ を探す
 					let depth = 1;
-					for (let i = position - 2; i >= 1; i--) {
-						if (value.substring(i - 1, i + 1) === "]]") {
+					for (let i = position - 2; i >= 0; i--) {
+						if (i >= 1 && value.substring(i - 1, i + 1) === "]]") {
 							depth++;
-						} else if (value.substring(i - 1, i + 1) === "[[") {
+						} else if (i >= 1 && value.substring(i - 1, i + 1) === "[[") {
 							depth--;
 							if (depth === 0) {
 								return i - 1; // [[ の開始位置
+							}
+						} else if (i === 0 && i < value.length - 1 && value.substring(i, i + 2) === "[[") {
+							// i = 0 の場合の特別処理
+							depth--;
+							if (depth === 0) {
+								return i; // [[ の開始位置
 							}
 						}
 					}
@@ -585,10 +591,10 @@ export function ArticleNewForm() {
 				) {
 					// [[ を削除する場合、対応する ]] を探す
 					let depth = 1;
-					for (let i = position + 2; i < value.length - 1; i++) {
-						if (value.substring(i, i + 2) === "[[") {
+					for (let i = position + 2; i <= value.length - 2; i++) {
+						if (i <= value.length - 2 && value.substring(i, i + 2) === "[[") {
 							depth++;
-						} else if (value.substring(i, i + 2) === "]]") {
+						} else if (i <= value.length - 2 && value.substring(i, i + 2) === "]]") {
 							depth--;
 							if (depth === 0) {
 								return i; // ]] の開始位置
@@ -882,7 +888,7 @@ export function ArticleNewForm() {
 						if (start >= 2 && value.charAt(start - 2) === "]") {
 							const matchingPos = findMatchingBracket(
 								value,
-								start - 2,
+								start - 1,
 								"]",
 								true
 							);
@@ -890,7 +896,7 @@ export function ArticleNewForm() {
 								e.preventDefault();
 								const newValue =
 									value.slice(0, matchingPos) +
-									value.slice(matchingPos + 2, start - 2) +
+									value.slice(matchingPos + 1, start - 1) +
 									value.slice(start);
 
 								setMarkdownValue(newValue);
@@ -921,9 +927,13 @@ export function ArticleNewForm() {
 								setMarkdownValue(newValue);
 								setValue("content", newValue);
 
+								// カーソル位置を計算：削除された文字数を考慮
+								// 開き括弧が削除されるので、元のカーソル位置から2文字分戻る
+								const newCursorPos = start - 2;
+
 								setTimeout(() => {
 									textarea.value = newValue;
-									textarea.setSelectionRange(matchingPos, matchingPos);
+									textarea.setSelectionRange(newCursorPos, newCursorPos);
 									textarea.focus();
 								}, 0);
 								return;
@@ -948,9 +958,13 @@ export function ArticleNewForm() {
 							setMarkdownValue(newValue);
 							setValue("content", newValue);
 
+							// カーソル位置を計算：削除された文字数を考慮
+							// 開き括弧が削除されるので、元のカーソル位置から2文字分戻る
+							const newCursorPos = start - 2;
+
 							setTimeout(() => {
 								textarea.value = newValue;
-								textarea.setSelectionRange(matchingPos, matchingPos);
+								textarea.setSelectionRange(newCursorPos, newCursorPos);
 								textarea.focus();
 							}, 0);
 							return;
@@ -962,16 +976,16 @@ export function ArticleNewForm() {
 						if (start >= 2 && value.charAt(start - 2) === "[") {
 							const matchingPos = findMatchingBracket(
 								value,
-								start - 2,
+								start - 1,
 								"[",
 								false
 							);
 							if (matchingPos !== -1) {
 								e.preventDefault();
 								const newValue =
-									value.slice(0, start - 2) +
+									value.slice(0, start - 1) +
 									value.slice(start, matchingPos) +
-									value.slice(matchingPos + 2);
+									value.slice(matchingPos + 1);
 
 								setMarkdownValue(newValue);
 								setValue("content", newValue);
@@ -1096,14 +1110,14 @@ export function ArticleNewForm() {
 						if (start >= 2 && value.charAt(start - 2) === "]") {
 							const matchingPos = findMatchingBracket(
 								value,
-								start - 2,
+								start - 1,
 								"]",
 								true
 							);
 							if (matchingPos !== -1) {
 								const newValue =
 									value.slice(0, matchingPos) +
-									value.slice(matchingPos + 2, start - 2) +
+									value.slice(matchingPos + 1, start - 1) +
 									value.slice(start);
 
 								setMarkdownValue(newValue);
@@ -1133,9 +1147,13 @@ export function ArticleNewForm() {
 								setMarkdownValue(newValue);
 								setValue("content", newValue);
 
+								// カーソル位置を計算：削除された文字数を考慮
+								// 開き括弧が削除されるので、元のカーソル位置から2文字分戻る
+								const newCursorPos = start - 2;
+
 								setTimeout(() => {
 									textarea.value = newValue;
-									textarea.setSelectionRange(matchingPos, matchingPos);
+									textarea.setSelectionRange(newCursorPos, newCursorPos);
 									textarea.focus();
 								}, 0);
 								return;
@@ -1159,9 +1177,13 @@ export function ArticleNewForm() {
 							setMarkdownValue(newValue);
 							setValue("content", newValue);
 
+							// カーソル位置を計算：削除された文字数を考慮
+							// 開き括弧が削除されるので、元のカーソル位置から2文字分戻る
+							const newCursorPos = start - 2;
+
 							setTimeout(() => {
 								textarea.value = newValue;
-								textarea.setSelectionRange(matchingPos, matchingPos);
+								textarea.setSelectionRange(newCursorPos, newCursorPos);
 								textarea.focus();
 							}, 0);
 							return;
@@ -1173,15 +1195,15 @@ export function ArticleNewForm() {
 						if (start >= 2 && value.charAt(start - 2) === "[") {
 							const matchingPos = findMatchingBracket(
 								value,
-								start - 2,
+								start - 1,
 								"[",
 								false
 							);
 							if (matchingPos !== -1) {
 								const newValue =
-									value.slice(0, start - 2) +
+									value.slice(0, start - 1) +
 									value.slice(start, matchingPos) +
-									value.slice(matchingPos + 2);
+									value.slice(matchingPos + 1);
 
 								setMarkdownValue(newValue);
 								setValue("content", newValue);
