@@ -30,7 +30,7 @@ const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 const SIDEBAR_WIDTH = "16rem";
 const SIDEBAR_WIDTH_MOBILE = "18rem";
 const SIDEBAR_WIDTH_ICON = "3rem";
-const SIDEBAR_KEYBOARD_SHORTCUT = "b";
+const SIDEBAR_KEYBOARD_SHORTCUT = "e";
 
 type SidebarContextProps = {
 	state: "expanded" | "collapsed";
@@ -101,7 +101,8 @@ function SidebarProvider({
 				event.key === SIDEBAR_KEYBOARD_SHORTCUT &&
 				(event.metaKey || event.ctrlKey)
 			) {
-				// textarea または MDEditor 内でのイベントはスキップ
+				// textarea、input、または MDEditor 内でのイベントはスキップ
+				// これにより、エディタ内でのショートカット（Ctrl+E等）との競合を防ぐ
 				const target = event.target as HTMLElement;
 				if (
 					target.tagName === "TEXTAREA" ||
