@@ -576,7 +576,7 @@ export function ArticleNewForm() {
 		const closingBrackets = new Set(Object.values(bracketPairs));
 
 		// 複数文字の括弧ペア（Wiki Link用）
-		const multiCharBrackets = {
+		const _multiCharBrackets = {
 			"[[": "]]",
 		};
 
@@ -1349,6 +1349,228 @@ export function ArticleNewForm() {
 				}
 			}
 
+			// Ctrl+D での前方削除処理（Deleteキーと同じ挙動）
+			if (
+				e.ctrlKey &&
+				!e.metaKey &&
+				!e.altKey &&
+				(e.key === "d" || e.key === "D")
+			) {
+				e.preventDefault();
+				e.stopPropagation();
+
+				const start = textarea.selectionStart;
+				const end = textarea.selectionEnd;
+				const value = textarea.value;
+
+				// 選択範囲がある場合は選択範囲を削除
+				if (start !== end) {
+					const newValue = value.slice(0, start) + value.slice(end);
+
+					setMarkdownValue(newValue);
+					setValue("content", newValue);
+
+					setTimeout(() => {
+						textarea.value = newValue;
+						textarea.setSelectionRange(start, start);
+						textarea.focus();
+					}, 0);
+					return;
+				}
+
+				// 選択範囲がない場合のペア削除を考慮
+				if (start < value.length) {
+					const charAfter = value.charAt(start);
+					const charBefore = value.charAt(start - 1);
+
+					// カーソルが括弧ペアの間にある場合の処理
+					if (
+						start > 0 &&
+						bracketPairs[charBefore] &&
+						bracketPairs[charBefore] === charAfter
+					) {
+						const newValue = value.slice(0, start - 1) + value.slice(start + 1);
+
+						setMarkdownValue(newValue);
+						setValue("content", newValue);
+
+						setTimeout(() => {
+							textarea.value = newValue;
+							textarea.setSelectionRange(start - 1, start - 1);
+							textarea.focus();
+						}, 0);
+						return;
+					}
+
+					// [[]] の間にカーソルがある場合
+					if (
+						start >= 2 &&
+						value.substring(start - 2, start) === "[[" &&
+						value.substring(start, start + 2) === "]]"
+					) {
+						const newValue = value.slice(0, start - 2) + value.slice(start + 2);
+
+						setMarkdownValue(newValue);
+						setValue("content", newValue);
+
+						setTimeout(() => {
+							textarea.value = newValue;
+							textarea.setSelectionRange(start - 2, start - 2);
+							textarea.focus();
+						}, 0);
+						return;
+					}
+
+					// 削除される文字が括弧の場合、対応するペアも削除
+					// [ を削除する場合
+					if (charAfter === "[") {
+						// [[ の一部かチェック
+						if (start < value.length - 1 && value.charAt(start + 1) === "[") {
+							const matchingPos = findMatchingBracket(value, start, "[", false);
+							if (matchingPos !== -1) {
+								const newValue =
+									value.slice(0, start) +
+									value.slice(start + 2, matchingPos) +
+									value.slice(matchingPos + 2);
+
+								setMarkdownValue(newValue);
+								setValue("content", newValue);
+
+								setTimeout(() => {
+									textarea.value = newValue;
+									textarea.setSelectionRange(start, start);
+									textarea.focus();
+								}, 0);
+								return;
+							}
+						} else {
+							// 単一の [ を削除
+							const matchingPos = findMatchingBracket(value, start, "[", false);
+							if (matchingPos !== -1) {
+								const newValue =
+									value.slice(0, start) +
+									value.slice(start + 1, matchingPos) +
+									value.slice(matchingPos + 1);
+
+								setMarkdownValue(newValue);
+								setValue("content", newValue);
+
+								setTimeout(() => {
+									textarea.value = newValue;
+									textarea.setSelectionRange(start, start);
+									textarea.focus();
+								}, 0);
+								return;
+							}
+						}
+					}
+					// ] を削除する場合
+					else if (charAfter === "]") {
+						// ]] の一部かチェック
+						if (start < value.length - 1 && value.charAt(start + 1) === "]") {
+							const matchingPos = findMatchingBracket(value, start, "]", true);
+							if (matchingPos !== -1) {
+								const newValue =
+									value.slice(0, matchingPos) +
+									value.slice(matchingPos + 2, start) +
+									value.slice(start + 2);
+
+								setMarkdownValue(newValue);
+								setValue("content", newValue);
+
+								setTimeout(() => {
+									textarea.value = newValue;
+									textarea.setSelectionRange(matchingPos, matchingPos);
+									textarea.focus();
+								}, 0);
+								return;
+							}
+						} else {
+							// 単一の ] を削除
+							const matchingPos = findMatchingBracket(value, start, "]", true);
+							if (matchingPos !== -1) {
+								const newValue =
+									value.slice(0, matchingPos) +
+									value.slice(matchingPos + 1, start) +
+									value.slice(start + 1);
+
+								setMarkdownValue(newValue);
+								setValue("content", newValue);
+
+								setTimeout(() => {
+									textarea.value = newValue;
+									textarea.setSelectionRange(matchingPos, matchingPos);
+									textarea.focus();
+								}, 0);
+								return;
+							}
+						}
+					}
+					// その他の開き括弧を削除する場合
+					else if (bracketPairs[charAfter]) {
+						const matchingPos = findMatchingBracket(
+							value,
+							start,
+							charAfter,
+							false
+						);
+						if (matchingPos !== -1) {
+							const newValue =
+								value.slice(0, start) +
+								value.slice(start + 1, matchingPos) +
+								value.slice(matchingPos + 1);
+
+							setMarkdownValue(newValue);
+							setValue("content", newValue);
+
+							setTimeout(() => {
+								textarea.value = newValue;
+								textarea.setSelectionRange(start, start);
+								textarea.focus();
+							}, 0);
+							return;
+						}
+					}
+					// その他の閉じ括弧を削除する場合
+					else if (closingBrackets.has(charAfter)) {
+						const matchingPos = findMatchingBracket(
+							value,
+							start,
+							charAfter,
+							true
+						);
+						if (matchingPos !== -1) {
+							const newValue =
+								value.slice(0, matchingPos) +
+								value.slice(matchingPos + 1, start) +
+								value.slice(start + 1);
+
+							setMarkdownValue(newValue);
+							setValue("content", newValue);
+
+							setTimeout(() => {
+								textarea.value = newValue;
+								textarea.setSelectionRange(matchingPos, matchingPos);
+								textarea.focus();
+							}, 0);
+							return;
+						}
+					}
+
+					// 通常の前方削除（括弧ペアでない場合）
+					const newValue = value.slice(0, start) + value.slice(start + 1);
+
+					setMarkdownValue(newValue);
+					setValue("content", newValue);
+
+					setTimeout(() => {
+						textarea.value = newValue;
+						textarea.setSelectionRange(start, start);
+						textarea.focus();
+					}, 0);
+				}
+			}
+
 			// Delete キーでのペア削除処理
 			if (e.key === "Delete" && !e.ctrlKey && !e.metaKey && !e.altKey) {
 				const start = textarea.selectionStart;
@@ -1683,8 +1905,7 @@ export function ArticleNewForm() {
 		if (startIndex === -1) return;
 
 		// 新しいコンテンツを構築（タグの後にスペースを追加）
-		const newContent =
-			markdownValue.substring(0, startIndex) + `#${tag.name} ` + afterCursor;
+		const newContent = `${markdownValue.substring(0, startIndex)}#${tag.name} ${afterCursor}`;
 
 		// 新しいカーソル位置を計算
 		const newCursorPos = startIndex + `#${tag.name} `.length;

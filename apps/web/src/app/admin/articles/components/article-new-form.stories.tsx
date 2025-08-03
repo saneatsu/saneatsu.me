@@ -569,7 +569,7 @@ export const ComprehensiveShortcutTest: Story = {
 
 		// 初期状態を記録
 		const initialText = editorTextarea.value;
-		const initialCursorPos = editorTextarea.selectionStart;
+		const _initialCursorPos = editorTextarea.selectionStart;
 
 		// === 無効化されたショートカットのテスト ===
 
@@ -918,11 +918,11 @@ export const BracketPairDeletionCursorFix: Story = {
 
 		// テストケース8: Ctrl+Hでの[[]]の最後の]削除もカーソル位置が正しいことを確認
 		await userEvent.type(editorTextarea, "[[]]");
-		
+
 		// 最後の]の後に配置（位置4）
 		editorTextarea.setSelectionRange(4, 4);
 		await userEvent.keyboard("{Control>}h{/Control}");
-		
+
 		// テキストが[]になり、カーソルが]の後（位置2）にあることを確認
 		await waitFor(() => {
 			expect(editorTextarea.value).toBe("[]");
@@ -954,6 +954,119 @@ export const BracketPairDeletionCursorFix: Story = {
 			expect(editorTextarea.value).toBe("[]");
 			expect(editorTextarea.selectionStart).toBe(0);
 			expect(editorTextarea.selectionEnd).toBe(0);
+		});
+	},
+};
+
+/**
+ * Ctrl+Dで前方削除（Delete相当）の動作をテスト
+ */
+export const CtrlDForwardDelete: Story = {
+	name: "Ctrl+Dで前方削除（Forward Delete）",
+	tags: ["validation"],
+	play: async ({ canvas }) => {
+		const editorContainer = await within(canvas).findByTestId("md-editor");
+		const editorTextarea = within(editorContainer).getByRole(
+			"textbox"
+		) as HTMLTextAreaElement;
+
+		// テストケース1: 通常の文字の前方削除
+		await userEvent.type(editorTextarea, "Hello World");
+
+		// カーソルを"Hello"の後に配置（位置5）
+		editorTextarea.setSelectionRange(5, 5);
+		await userEvent.keyboard("{Control>}d{/Control}");
+
+		// スペースが削除されて"HelloWorld"になることを確認
+		await waitFor(() => {
+			expect(editorTextarea.value).toBe("HelloWorld");
+			expect(editorTextarea.selectionStart).toBe(5);
+			expect(editorTextarea.selectionEnd).toBe(5);
+		});
+
+		// リセット
+		await userEvent.clear(editorTextarea);
+
+		// テストケース2: 行末でのCtrl+D（何も削除されない）
+		await userEvent.type(editorTextarea, "Test");
+
+		// カーソルを最後に配置（位置4）
+		editorTextarea.setSelectionRange(4, 4);
+		await userEvent.keyboard("{Control>}d{/Control}");
+
+		// 何も変わらないことを確認
+		await waitFor(() => {
+			expect(editorTextarea.value).toBe("Test");
+			expect(editorTextarea.selectionStart).toBe(4);
+			expect(editorTextarea.selectionEnd).toBe(4);
+		});
+
+		// リセット
+		await userEvent.clear(editorTextarea);
+
+		// テストケース3: 括弧ペアの前方削除
+		await userEvent.type(editorTextarea, "()");
+
+		// カーソルを(の後に配置（位置1）
+		editorTextarea.setSelectionRange(1, 1);
+		await userEvent.keyboard("{Control>}d{/Control}");
+
+		// 括弧ペアが削除されて空になることを確認
+		await waitFor(() => {
+			expect(editorTextarea.value).toBe("");
+			expect(editorTextarea.selectionStart).toBe(0);
+			expect(editorTextarea.selectionEnd).toBe(0);
+		});
+
+		// リセット
+		await userEvent.clear(editorTextarea);
+
+		// テストケース4: [[]]での前方削除
+		await userEvent.type(editorTextarea, "[[]]");
+
+		// カーソルを最初の[の後に配置（位置1）
+		editorTextarea.setSelectionRange(1, 1);
+		await userEvent.keyboard("{Control>}d{/Control}");
+
+		// 内側の括弧だけ削除されて[]になることを確認
+		await waitFor(() => {
+			expect(editorTextarea.value).toBe("[]");
+			expect(editorTextarea.selectionStart).toBe(1);
+			expect(editorTextarea.selectionEnd).toBe(1);
+		});
+
+		// リセット
+		await userEvent.clear(editorTextarea);
+
+		// テストケース5: 選択範囲がある場合のCtrl+D
+		await userEvent.type(editorTextarea, "Selected Text");
+
+		// "Selected"を選択（位置0-8）
+		editorTextarea.setSelectionRange(0, 8);
+		await userEvent.keyboard("{Control>}d{/Control}");
+
+		// 選択範囲が削除されることを確認
+		await waitFor(() => {
+			expect(editorTextarea.value).toBe(" Text");
+			expect(editorTextarea.selectionStart).toBe(0);
+			expect(editorTextarea.selectionEnd).toBe(0);
+		});
+
+		// リセット
+		await userEvent.clear(editorTextarea);
+
+		// テストケース6: 改行の前方削除
+		await userEvent.type(editorTextarea, "Line1{Enter}Line2");
+
+		// Line1の後、改行の前に配置（位置5）
+		editorTextarea.setSelectionRange(5, 5);
+		await userEvent.keyboard("{Control>}d{/Control}");
+
+		// 改行が削除されてLine1Line2になることを確認
+		await waitFor(() => {
+			expect(editorTextarea.value).toBe("Line1Line2");
+			expect(editorTextarea.selectionStart).toBe(5);
+			expect(editorTextarea.selectionEnd).toBe(5);
 		});
 	},
 };
