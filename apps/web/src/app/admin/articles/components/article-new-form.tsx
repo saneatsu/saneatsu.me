@@ -327,23 +327,65 @@ export function ArticleNewForm() {
 
 			// Unixキーバインドの実装
 			if (e.ctrlKey && !e.metaKey && !e.altKey) {
-				// Ctrl+B: カーソルを左へ移動（Boldを無効化）
+				// Ctrl+B: 選択がある場合はBold、ない場合はカーソル左移動
 				if (e.key === "b" || e.key === "B") {
-					e.preventDefault();
-					e.stopPropagation();
+					const start = textarea.selectionStart;
+					const end = textarea.selectionEnd;
+					const value = textarea.value;
 					
-					const cursorPos = textarea.selectionStart;
-					if (cursorPos > 0) {
-						textarea.setSelectionRange(cursorPos - 1, cursorPos - 1);
+					// 選択範囲がある場合はBoldフォーマットを適用
+					if (start !== end) {
+						e.preventDefault();
+						e.stopPropagation();
+						
+						const selectedText = value.substring(start, end);
+						const beforeText = value.substring(0, start);
+						const afterText = value.substring(end);
+						
+						// **で囲まれているかチェック
+						const isBold = beforeText.endsWith("**") && afterText.startsWith("**");
+						
+						let newValue;
+						let newStart, newEnd;
+						
+						if (isBold) {
+							// Bold解除
+							newValue = beforeText.slice(0, -2) + selectedText + afterText.slice(2);
+							newStart = start - 2;
+							newEnd = end - 2;
+						} else {
+							// Bold適用
+							newValue = beforeText + "**" + selectedText + "**" + afterText;
+							newStart = start + 2;
+							newEnd = end + 2;
+						}
+						
+						setMarkdownValue(newValue);
+						setValue("content", newValue);
+						
+						setTimeout(() => {
+							textarea.value = newValue;
+							textarea.setSelectionRange(newStart, newEnd);
+							textarea.focus();
+						}, 0);
+					} else {
+						// 選択がない場合はカーソルを左へ移動
+						e.preventDefault();
+						e.stopPropagation();
+						
+						const cursorPos = textarea.selectionStart;
+						if (cursorPos > 0) {
+							textarea.setSelectionRange(cursorPos - 1, cursorPos - 1);
+						}
 					}
 					return;
 				}
-				
+
 				// Ctrl+F: カーソルを右へ移動
 				if (e.key === "f" || e.key === "F") {
 					e.preventDefault();
 					e.stopPropagation();
-					
+
 					const cursorPos = textarea.selectionStart;
 					if (cursorPos < textarea.value.length) {
 						textarea.setSelectionRange(cursorPos + 1, cursorPos + 1);

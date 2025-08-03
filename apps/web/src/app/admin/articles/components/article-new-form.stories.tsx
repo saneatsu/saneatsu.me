@@ -258,6 +258,95 @@ export const UnixKeyBindingsBoundary: Story = {
 };
 
 /**
+ * 選択テキストのBoldフォーマットテスト
+ */
+export const BoldFormattingWithSelection: Story = {
+	name: "選択テキストのBoldフォーマット",
+	tags: ["validation"],
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+
+		// MDEditorのテキストエリアを探す
+		const editorTextarea = await waitFor(
+			async () => {
+				const textarea = canvas.getByRole("textbox", {
+					name: "本文（Markdown形式）",
+				});
+				return textarea as HTMLTextAreaElement;
+			},
+			{ timeout: 5000 }
+		);
+
+		// テキストを入力
+		await userEvent.click(editorTextarea);
+		await userEvent.type(editorTextarea, "This is a test text.");
+
+		// "test"を選択（10文字目から14文字目）
+		editorTextarea.setSelectionRange(10, 14);
+
+		// Ctrl+BでBoldフォーマットを適用
+		await userEvent.keyboard("{Control>}b{/Control}");
+
+		// Bold記号が追加されたことを確認
+		await waitFor(() => {
+			expect(editorTextarea.value).toBe("This is a **test** text.");
+			// 選択範囲がBold記号の内側にあることを確認
+			expect(editorTextarea.selectionStart).toBe(12); // **の後
+			expect(editorTextarea.selectionEnd).toBe(16); // **の前
+		});
+
+		// もう一度Ctrl+BでBoldを解除
+		await userEvent.keyboard("{Control>}b{/Control}");
+
+		// Bold記号が削除されたことを確認
+		await waitFor(() => {
+			expect(editorTextarea.value).toBe("This is a test text.");
+			expect(editorTextarea.selectionStart).toBe(10);
+			expect(editorTextarea.selectionEnd).toBe(14);
+		});
+	},
+};
+
+/**
+ * 選択なしでのCtrl+Bカーソル移動テスト
+ */
+export const CtrlBCursorMovementWithoutSelection: Story = {
+	name: "選択なしでのCtrl+Bカーソル移動",
+	tags: ["validation"],
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+
+		// MDEditorのテキストエリアを探す
+		const editorTextarea = await waitFor(
+			async () => {
+				const textarea = canvas.getByRole("textbox", {
+					name: "本文（Markdown形式）",
+				});
+				return textarea as HTMLTextAreaElement;
+			},
+			{ timeout: 5000 }
+		);
+
+		// テキストを入力
+		await userEvent.click(editorTextarea);
+		await userEvent.type(editorTextarea, "Test");
+
+		// カーソルを最後に配置（選択なし）
+		editorTextarea.setSelectionRange(4, 4);
+
+		// Ctrl+Bでカーソルを左へ移動
+		await userEvent.keyboard("{Control>}b{/Control}");
+
+		// カーソルが左に移動し、テキストは変更されないことを確認
+		await waitFor(() => {
+			expect(editorTextarea.selectionStart).toBe(3);
+			expect(editorTextarea.selectionEnd).toBe(3);
+			expect(editorTextarea.value).toBe("Test"); // テキストは変更されない
+		});
+	},
+};
+
+/**
  * 基本的なフォーム表示
  */
 export const BasicForm: Story = {
