@@ -101,6 +101,16 @@ function SidebarProvider({
 				event.key === SIDEBAR_KEYBOARD_SHORTCUT &&
 				(event.metaKey || event.ctrlKey)
 			) {
+				// textarea または MDEditor 内でのイベントはスキップ
+				const target = event.target as HTMLElement;
+				if (
+					target.tagName === "TEXTAREA" ||
+					target.tagName === "INPUT" ||
+					target.closest(".w-md-editor")
+				) {
+					return;
+				}
+
 				event.preventDefault();
 				toggleSidebar();
 			}
