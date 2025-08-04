@@ -150,7 +150,9 @@ export function ArticleNewForm() {
 			const textarea = document.querySelector(
 				".w-md-editor-text-input"
 			) as HTMLTextAreaElement;
-			if (!textarea) return;
+			if (!textarea) {
+				return;
+			}
 
 			// textareaの値を直接使用
 			const value = textarea.value;
@@ -225,27 +227,27 @@ export function ArticleNewForm() {
 
 			// より正確なカーソル位置を計算
 			const rect = textarea.getBoundingClientRect();
-			
+
 			// テキストエリアのスタイルから実際のフォントサイズと行高を取得
 			const computedStyle = window.getComputedStyle(textarea);
 			const fontSize = parseInt(computedStyle.fontSize) || 16;
 			const lineHeight = parseInt(computedStyle.lineHeight) || fontSize * 1.5;
-			
+
 			// 改行数をカウント
 			const lines = beforeCursor.split("\n").length;
 
-			// 現在の行での[[の位置
+			// 現在の行でのカーソル位置（[[の位置ではなく実際のカーソル位置）
 			const lastLineStart = beforeCursor.lastIndexOf("\n") + 1;
 			const currentLineText = beforeCursor.substring(lastLineStart);
-			const bracketPosInLine = currentLineText.lastIndexOf("[[");
-			
+
 			// より正確な文字幅を計算（モノスペースフォントでない場合も考慮）
 			const charWidth = fontSize * 0.6; // 大まかな文字幅の推定
 
-			setCursorPosition({
+			const calculatedPosition = {
 				top: rect.top + window.scrollY + (lines - 1) * lineHeight,
-				left: rect.left + window.scrollX + bracketPosInLine * charWidth,
-			});
+				left: rect.left + window.scrollX + currentLineText.length * charWidth,
+			};
+			setCursorPosition(calculatedPosition);
 		};
 
 		const handleInput = (_e: Event) => {

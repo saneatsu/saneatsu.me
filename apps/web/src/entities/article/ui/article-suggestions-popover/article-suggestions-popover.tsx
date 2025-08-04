@@ -228,17 +228,28 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 	const calculatePosition = () => {
 		if (!position) return undefined;
 
+		// textareaから実際のフォントサイズと行高を取得
+		const textarea = document.querySelector(
+			".w-md-editor-text-input"
+		) as HTMLTextAreaElement;
+		
+		let actualLineHeight = 24; // デフォルト値
+		if (textarea) {
+			const computedStyle = window.getComputedStyle(textarea);
+			const fontSize = parseInt(computedStyle.fontSize) || 16;
+			actualLineHeight = parseInt(computedStyle.lineHeight) || fontSize * 1.5;
+		}
+
 		const popoverHeight = 300; // 推定高さ
 		const popoverWidth = 400; // Popoverの幅
-		const lineHeight = 24; // 推定行高
-		const minOffset = 30; // 最小オフセット（テキスト行との重複を避ける）
+		const minOffset = 5; // 最小オフセット（テキスト行との重複を避ける）
 		const windowHeight = window.innerHeight;
 		const windowWidth = window.innerWidth;
 		const scrollY = window.scrollY;
 		const scrollX = window.scrollX;
 
 		// Popoverを下に表示した場合のスペースを計算
-		const spaceBelow = windowHeight - (position.top - scrollY) - lineHeight;
+		const spaceBelow = windowHeight - (position.top - scrollY) - actualLineHeight;
 		const spaceAbove = (position.top - scrollY) - minOffset;
 
 		// 下に十分なスペースがあるかチェック
@@ -250,10 +261,10 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 
 		let top: number;
 		if (showBelow) {
-			// 下に表示（カーソル行の下に十分な余白を設ける）
-			top = position.top + lineHeight + minOffset;
+			// 下に表示（カーソル行のすぐ下）
+			top = position.top + actualLineHeight + minOffset;
 		} else {
-			// 上に表示
+			// 上に表示（カーソル行のすぐ上）
 			top = position.top - popoverHeight - minOffset;
 		}
 

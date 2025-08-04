@@ -130,7 +130,6 @@ export async function handleArticleSuggestions(c: Context) {
 		const limitStr = query.limit || "20";
 		const limit = parseInt(limitStr || "20", 10);
 		const targetSlug = query.targetSlug;
-		
 
 		// targetSlugが指定された場合、その記事の見出しのみを返す
 		if (targetSlug) {
@@ -150,10 +149,7 @@ export async function handleArticleSuggestions(c: Context) {
 					)
 				)
 				.where(
-					and(
-						eq(articles.status, "published"),
-						eq(articles.slug, targetSlug)
-					)
+					and(eq(articles.status, "published"), eq(articles.slug, targetSlug))
 				)
 				.limit(1);
 
@@ -168,12 +164,13 @@ export async function handleArticleSuggestions(c: Context) {
 			const article = targetArticle[0];
 			// 見出しを抽出
 			const headings = extractHeadings(article.content, 6); // 全レベルの見出しを取得
-			
+
 			const suggestions: Array<z.infer<typeof SuggestionItemSchema>> = [];
 
 			// 見出しから検索（クエリが空の場合は全見出しを返す）
 			for (const heading of headings) {
-				const matchesQuery = q === "" || heading.text.toLowerCase().includes(q.toLowerCase());
+				const matchesQuery =
+					q === "" || heading.text.toLowerCase().includes(q.toLowerCase());
 				if (matchesQuery) {
 					suggestions.push({
 						slug: article.slug,
