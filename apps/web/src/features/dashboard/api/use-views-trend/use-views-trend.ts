@@ -1,6 +1,6 @@
 "use client";
 
-import type { ViewsTrendResponse } from "@saneatsu/schemas/dist/dashboard";
+import type { ViewsTrendResponse } from "@saneatsu/schemas";
 import { useQuery } from "@tanstack/react-query";
 import { honoClient } from "../../../../shared/lib/hono-client";
 import { queryKeys } from "../../../../shared/lib/query-keys";

@@ -1,6 +1,6 @@
 "use client";
 
-import type { DashboardOverviewResponse } from "@saneatsu/schemas/dist/dashboard";
+import type { DashboardOverviewResponse } from "@saneatsu/schemas";
 import { useQuery } from "@tanstack/react-query";
 import { honoClient } from "../../../../shared/lib/hono-client";
 import { queryKeys } from "../../../../shared/lib/query-keys";

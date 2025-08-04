@@ -6,7 +6,7 @@ import {
 	dashboardStatsQuerySchema,
 	type ViewsTrendResponse,
 	viewsTrendQuerySchema,
-} from "@saneatsu/schemas/dist/dashboard";
+} from "@saneatsu/schemas";
 import { and, count, desc, eq, gte, sql } from "drizzle-orm";
 
 // OpenAPI用のクエリスキーマ（packages/schemasをOpenAPI対応でラップ）
