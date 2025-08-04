@@ -12,7 +12,6 @@ build/
 # Cloudflare Workers / OpenNext
 .open-next/
 .wrangler/
-open-next.config.ts
 
 # Claude
 .claude/settings.local.json
