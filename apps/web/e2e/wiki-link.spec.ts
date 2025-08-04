@@ -28,7 +28,9 @@ test.describe("Wiki Link機能", () => {
 		await textarea.fill("[[");
 
 		// サジェストポップオーバーが表示されることを確認
-		await expect(page.locator('[data-testid="wiki-link-suggestions"]')).toBeVisible();
+		await expect(
+			page.locator('[data-testid="wiki-link-suggestions"]')
+		).toBeVisible();
 	});
 
 	test("サジェストでキーボードナビゲーションが動作する", async ({ page }) => {
@@ -39,24 +41,30 @@ test.describe("Wiki Link機能", () => {
 		await textarea.fill("[[");
 
 		// サジェストポップオーバーが表示されるまで待機
-		await expect(page.locator('[data-testid="wiki-link-suggestions"]')).toBeVisible();
+		await expect(
+			page.locator('[data-testid="wiki-link-suggestions"]')
+		).toBeVisible();
 
 		// 最初のアイテムがハイライトされていることを確認
-		const firstItem = page.locator('[data-testid="wiki-link-suggestion-item"]').first();
-		await expect(firstItem).toHaveAttribute('data-highlighted', 'true');
+		const firstItem = page
+			.locator('[data-testid="wiki-link-suggestion-item"]')
+			.first();
+		await expect(firstItem).toHaveAttribute("data-highlighted", "true");
 
 		// 下矢印キーで次のアイテムへ移動
 		await page.keyboard.press("ArrowDown");
-		
+
 		// 2番目のアイテムがハイライトされていることを確認
-		const secondItem = page.locator('[data-testid="wiki-link-suggestion-item"]').nth(1);
-		await expect(secondItem).toHaveAttribute('data-highlighted', 'true');
+		const secondItem = page
+			.locator('[data-testid="wiki-link-suggestion-item"]')
+			.nth(1);
+		await expect(secondItem).toHaveAttribute("data-highlighted", "true");
 
 		// 上矢印キーで前のアイテムへ戻る
 		await page.keyboard.press("ArrowUp");
-		
+
 		// 最初のアイテムが再びハイライトされていることを確認
-		await expect(firstItem).toHaveAttribute('data-highlighted', 'true');
+		await expect(firstItem).toHaveAttribute("data-highlighted", "true");
 	});
 
 	test("Enterキーでサジェストアイテムを選択できる", async ({ page }) => {
@@ -67,13 +75,17 @@ test.describe("Wiki Link機能", () => {
 		await textarea.fill("[[");
 
 		// サジェストポップオーバーが表示されるまで待機
-		await expect(page.locator('[data-testid="wiki-link-suggestions"]')).toBeVisible();
+		await expect(
+			page.locator('[data-testid="wiki-link-suggestions"]')
+		).toBeVisible();
 
 		// Enterキーで選択
 		await page.keyboard.press("Enter");
 
 		// サジェストが閉じることを確認
-		await expect(page.locator('[data-testid="wiki-link-suggestions"]')).not.toBeVisible();
+		await expect(
+			page.locator('[data-testid="wiki-link-suggestions"]')
+		).not.toBeVisible();
 
 		// テキストにWiki Linkが挿入されていることを確認（具体的なslugは環境依存）
 		const value = await textarea.inputValue();
@@ -88,13 +100,17 @@ test.describe("Wiki Link機能", () => {
 		await textarea.fill("[[");
 
 		// サジェストポップオーバーが表示されるまで待機
-		await expect(page.locator('[data-testid="wiki-link-suggestions"]')).toBeVisible();
+		await expect(
+			page.locator('[data-testid="wiki-link-suggestions"]')
+		).toBeVisible();
 
 		// Escapeキーでサジェストを閉じる
 		await page.keyboard.press("Escape");
 
 		// サジェストが閉じることを確認
-		await expect(page.locator('[data-testid="wiki-link-suggestions"]')).not.toBeVisible();
+		await expect(
+			page.locator('[data-testid="wiki-link-suggestions"]')
+		).not.toBeVisible();
 
 		// テキストは[[のままであることを確認
 		await expect(textarea).toHaveValue("[[");
@@ -108,14 +124,19 @@ test.describe("Wiki Link機能", () => {
 		await textarea.fill("[[");
 
 		// サジェストポップオーバーが表示されるまで待機
-		await expect(page.locator('[data-testid="wiki-link-suggestions"]')).toBeVisible();
+		await expect(
+			page.locator('[data-testid="wiki-link-suggestions"]')
+		).toBeVisible();
 
 		// 見出し付きのアイテムがある場合は選択
-		const headingItem = page.locator('[data-testid="wiki-link-suggestion-item"]').filter({
-			hasText: "#"
-		}).first();
+		const headingItem = page
+			.locator('[data-testid="wiki-link-suggestion-item"]')
+			.filter({
+				hasText: "#",
+			})
+			.first();
 
-		if (await headingItem.count() > 0) {
+		if ((await headingItem.count()) > 0) {
 			await headingItem.click();
 
 			// 見出し付きWiki Linkが挿入されていることを確認
@@ -155,7 +176,9 @@ test.describe("Wiki Link機能", () => {
 
 		// プレビューでWiki Linkがリンクとして表示されることを確認
 		const previewContent = page.locator(".w-md-editor-preview");
-		await expect(previewContent.locator('a[href*="test-article"]')).toBeVisible();
+		await expect(
+			previewContent.locator('a[href*="test-article"]')
+		).toBeVisible();
 	});
 
 	test("存在しない記事のWiki Linkでエラー表示される", async ({ page }) => {

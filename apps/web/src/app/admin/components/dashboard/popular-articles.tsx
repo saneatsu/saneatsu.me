@@ -83,6 +83,7 @@ export function PopularArticles({
 	const renderSkeleton = () => (
 		<div className="space-y-4">
 			{Array.from({ length: limit }).map((_, i) => (
+				// biome-ignore lint/suspicious/noArrayIndexKey: Static skeleton components don't reorder
 				<div key={i} className="flex items-center space-x-4">
 					<Skeleton className="h-8 w-8 rounded" />
 					<div className="flex-1">

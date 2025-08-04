@@ -1,7 +1,7 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { SuggestionItem } from "../../api/use-suggestions";
 import { ArticleSuggestionsPopover } from "./article-suggestions-popover";
 
@@ -394,7 +394,7 @@ describe("Unit Test", () => {
 			// 2番目のアイテムに移動
 			const user = userEvent.setup();
 			await user.keyboard("{Tab}");
-			
+
 			// 2番目が選択されていることを確認
 			const secondItem = screen.getAllByRole("option")[1];
 			expect(secondItem).toHaveClass("bg-accent");
@@ -427,7 +427,7 @@ describe("Unit Test", () => {
 			);
 
 			// 少し待つ
-			await new Promise(resolve => setTimeout(resolve, 100));
+			await new Promise((resolve) => setTimeout(resolve, 100));
 
 			// クエリが空の場合、enabled: falseとなるので呼ばれない
 			expect(mockFetch).not.toHaveBeenCalled();
@@ -440,7 +440,7 @@ describe("Unit Test", () => {
 			);
 
 			// 少し待つ
-			await new Promise(resolve => setTimeout(resolve, 100));
+			await new Promise((resolve) => setTimeout(resolve, 100));
 
 			// openがfalseの場合、コンポーネントがnullを返すのでfetchも呼ばれない
 			expect(mockFetch).not.toHaveBeenCalled();

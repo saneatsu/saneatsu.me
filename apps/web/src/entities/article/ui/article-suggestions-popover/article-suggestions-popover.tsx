@@ -178,7 +178,7 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 					if (e.isComposing) {
 						return;
 					}
-					
+
 					if (
 						e.target &&
 						((e.target as HTMLElement).tagName === "TEXTAREA" ||
@@ -232,7 +232,7 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 		const textarea = document.querySelector(
 			".w-md-editor-text-input"
 		) as HTMLTextAreaElement;
-		
+
 		let actualLineHeight = 24; // デフォルト値
 		if (textarea) {
 			const computedStyle = window.getComputedStyle(textarea);
@@ -249,15 +249,17 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 		const scrollX = window.scrollX;
 
 		// Popoverを下に表示した場合のスペースを計算
-		const spaceBelow = windowHeight - (position.top - scrollY) - actualLineHeight;
-		const spaceAbove = (position.top - scrollY) - minOffset;
+		const spaceBelow =
+			windowHeight - (position.top - scrollY) - actualLineHeight;
+		const spaceAbove = position.top - scrollY - minOffset;
 
 		// 下に十分なスペースがあるかチェック
 		const canShowBelow = spaceBelow >= popoverHeight + minOffset;
 		const canShowAbove = spaceAbove >= popoverHeight;
 
 		// 優先順位: 下→上
-		const showBelow = canShowBelow || (!canShowAbove && spaceBelow > spaceAbove);
+		const showBelow =
+			canShowBelow || (!canShowAbove && spaceBelow > spaceAbove);
 
 		let top: number;
 		if (showBelow) {
@@ -303,8 +305,8 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 					)}
 					{!isLoading && suggestions.length === 0 && (
 						<CommandEmpty>
-							{filterMode === "heading" 
-								? "この記事には見出しがありません" 
+							{filterMode === "heading"
+								? "この記事には見出しがありません"
 								: "該当する記事が見つかりません"}
 						</CommandEmpty>
 					)}

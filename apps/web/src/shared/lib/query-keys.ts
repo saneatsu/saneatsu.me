@@ -35,6 +35,7 @@ export const queryKeys = {
 			query: string;
 			language?: string;
 			limit?: number;
+			targetSlug?: string;
 		}) => ["articles", "suggestions", params] as const,
 	},
 

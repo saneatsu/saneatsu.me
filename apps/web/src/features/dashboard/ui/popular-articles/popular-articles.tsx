@@ -106,6 +106,7 @@ export function PopularArticles({
 			</TableHeader>
 			<TableBody>
 				{Array.from({ length: limit }).map((_, i) => (
+					// biome-ignore lint/suspicious/noArrayIndexKey: Static skeleton components don't reorder
 					<TableRow key={i}>
 						<TableCell>
 							<Skeleton className="h-8 w-8 rounded-full" />

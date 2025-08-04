@@ -4,7 +4,7 @@ import {
 	articleTranslations,
 	createDatabaseClient,
 } from "@saneatsu/db/worker";
-import { articleListQuerySchema as ArticlesQuerySchema } from "@saneatsu/schemas";
+import { articleListQuerySchema as ImportedArticlesQuerySchema } from "@saneatsu/schemas";
 import { and, eq } from "drizzle-orm";
 
 // 一時的なスキーマ定義
@@ -69,7 +69,7 @@ const listArticlesRoute = createRoute({
 	method: "get",
 	path: "/",
 	request: {
-		query: ArticlesQuerySchema,
+		query: ImportedArticlesQuerySchema,
 	},
 	responses: {
 		200: {

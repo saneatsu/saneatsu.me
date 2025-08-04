@@ -114,6 +114,7 @@ export function RecentActivities({
 	const renderSkeleton = () => (
 		<div className="space-y-4">
 			{Array.from({ length: limit }).map((_, i) => (
+				// biome-ignore lint/suspicious/noArrayIndexKey: Static skeleton components don't reorder
 				<div key={i} className="flex items-start space-x-3">
 					<Skeleton className="h-8 w-8 rounded-full mt-1" />
 					<div className="flex-1">

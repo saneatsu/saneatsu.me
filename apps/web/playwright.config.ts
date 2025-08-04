@@ -23,10 +23,7 @@ export default defineConfig({
 	workers: process.env.CI ? 1 : undefined,
 
 	// レポーター設定
-	reporter: [
-		["html"],
-		["list"]
-	],
+	reporter: [["html"], ["list"]],
 
 	// グローバル設定
 	use: {

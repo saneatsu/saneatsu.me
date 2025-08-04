@@ -614,7 +614,7 @@ export const IME入力競合防止: Story = {
 	parameters: {},
 	render: (args) => {
 		const [selectedCount, setSelectedCount] = React.useState(0);
-		
+
 		return (
 			<div>
 				<div style={{ marginBottom: "20px" }}>
@@ -627,7 +627,7 @@ export const IME入力競合防止: Story = {
 				<ArticleSuggestionsPopover
 					{...args}
 					onSelect={(suggestion) => {
-						setSelectedCount(prev => prev + 1);
+						setSelectedCount((prev) => prev + 1);
 						args.onSelect(suggestion);
 					}}
 				/>

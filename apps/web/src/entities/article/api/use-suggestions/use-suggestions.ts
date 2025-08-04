@@ -44,6 +44,8 @@ export type UseArticleSuggestionsOptions = {
 	language?: "ja" | "en";
 	/** 最大件数 */
 	limit?: number;
+	/** 特定記事の見出しのみを取得したい場合の記事スラッグ */
+	targetSlug?: string;
 	/** React Queryの設定 */
 	queryConfig?: QueryConfig<() => Promise<SuggestionsResponse>>;
 };
@@ -80,6 +82,7 @@ export function useArticleSuggestions({
 	query,
 	language = "ja",
 	limit = 20,
+	targetSlug,
 	queryConfig = {},
 }: UseArticleSuggestionsOptions) {
 	// APIリクエストを300msでデバウンス
@@ -90,14 +93,27 @@ export function useArticleSuggestions({
 			query: debouncedQuery,
 			language,
 			limit,
+			targetSlug,
 		}),
 		queryFn: async () => {
+			const queryParams: {
+				q: string;
+				lang: "ja" | "en";
+				limit: string;
+				targetSlug?: string;
+			} = {
+				q: debouncedQuery,
+				lang: language,
+				limit: limit.toString(),
+			};
+
+			// targetSlugが指定されている場合のみ追加
+			if (targetSlug) {
+				queryParams.targetSlug = targetSlug;
+			}
+
 			const response = await honoClient.api.articles.suggestions.$get({
-				query: {
-					q: debouncedQuery,
-					lang: language,
-					limit: limit.toString(),
-				},
+				query: queryParams,
 			});
 
 			if (!response.ok) {
@@ -111,9 +127,9 @@ export function useArticleSuggestions({
 			const data = await response.json();
 			return data as SuggestionsResponse;
 		},
-		...queryConfig,
 		staleTime: 0, // 常に新しいデータを取得（リアルタイム検索のため）
 		gcTime: 0, // キャッシュを即座に削除（React Query v5）
 		enabled: debouncedQuery != null, // デバウンスされたクエリが存在する場合のみ実行（空文字列も有効）
+		...queryConfig, // queryConfigのenabledでオーバーライド可能
 	});
 }
