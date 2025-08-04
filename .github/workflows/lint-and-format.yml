@@ -1,0 +1,34 @@
+name: 👨🏻‍🔧 Lint and format
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+
+jobs:
+  biome:
+    # Draft PRではチェックをスキップ
+    if: github.event.pull_request.draft == false
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Setup Biome
+        uses: biomejs/setup-biome@v2
+        with:
+          version: 2.1.1
+
+      - name: Run Biome
+        run: biome ci .

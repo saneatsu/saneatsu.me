@@ -1,0 +1,51 @@
+name: ⚡️ Vitest
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+
+jobs:
+  test:
+    # Draft PRではテストをスキップ
+    if: github.event.pull_request.draft == false
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Playwrightブラウザをインストール（E2E用）
+      - name: Install Playwright browsers
+        run: pnpm --filter @saneatsu/web exec playwright install chromium
+
+      # Vitestテストを実行（カバレッジ含む）
+      - name: Run Vitest tests with coverage
+        run: pnpm test -- --coverage
+
+      - name: Copy coverage files to root directory
+        run: |
+          mkdir -p coverage
+          if [ -d "./apps/web/coverage" ]; then
+            cp -r ./apps/web/coverage/* ./coverage/
+          fi
+          if [ -d "./apps/backend/coverage" ]; then
+            cp -r ./apps/backend/coverage/* ./coverage/
+          fi
+
+      - name: Report Coverage
+        uses: davelosert/vitest-coverage-report-action@v2

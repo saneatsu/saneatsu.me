@@ -1,0 +1,79 @@
+name: 🚀 Deploy Backend to Cloudflare Workers
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/backend/**'
+      - 'packages/**'
+      - '.github/workflows/deploy-backend.yml'
+  pull_request:
+    paths:
+      - 'apps/backend/**'
+      - 'packages/**'
+      - '.github/workflows/deploy-backend.yml'
+
+jobs:
+  deploy:
+    name: Deploy to Cloudflare Workers
+    runs-on: ubuntu-latest
+    # Draft PRの場合はスキップ
+    if: github.event.pull_request.draft != true
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # 環境に応じた変数を設定（mainは本番、それ以外はすべてpreview）
+      - name: Set environment variables
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "ENVIRONMENT=production" >> $GITHUB_ENV
+            echo "WRANGLER_ENV=production" >> $GITHUB_ENV
+          else
+            echo "ENVIRONMENT=preview" >> $GITHUB_ENV
+            echo "WRANGLER_ENV=preview" >> $GITHUB_ENV
+          fi
+
+      # TypeScriptビルド
+      - name: Build backend
+        run: pnpm --filter @saneatsu/backend build
+
+      # Cloudflare Workersにデプロイ
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --env ${{ env.WRANGLER_ENV }}
+          workingDirectory: apps/backend
+
+      # PRの場合、デプロイURLをコメントで通知
+      - name: Comment deployment URL
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const environment = '${{ env.ENVIRONMENT }}';
+            const deploymentUrl = environment === 'production' 
+              ? 'https://api.saneatsu.me' 
+              : 'https://saneatsu-api-preview.w-saneatsu-e8c.workers.dev';
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `🚀 **Backend Preview Deployed!**\n\n🔗 **API URL**: ${deploymentUrl}\n\n*Environment: ${environment}*`
+            });
