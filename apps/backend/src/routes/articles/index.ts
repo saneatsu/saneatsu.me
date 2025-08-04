@@ -1,9 +1,6 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { articles, articleTranslations, db } from "@saneatsu/db";
-import {
-	articleListQuerySchema,
-	type SortOrder,
-} from "@saneatsu/schemas";
+import { articleListQuerySchema, type SortOrder } from "@saneatsu/schemas";
 import { and, asc, desc, eq, sql } from "drizzle-orm";
 import { convertWikiLinks } from "../../utils/wiki-link";
 import { getSuggestionsRoute, handleArticleSuggestions } from "./suggestions";
