@@ -186,6 +186,7 @@ export function TagSuggestionsPopover({
 						top: position.top + 20,
 						left: position.left,
 					}}
+					data-testid="tag-suggestions"
 				>
 					<Command>
 						<CommandList className="max-h-72 overflow-y-auto">

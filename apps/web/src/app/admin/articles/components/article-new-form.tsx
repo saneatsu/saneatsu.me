@@ -356,6 +356,45 @@ export function ArticleNewForm() {
 			// カーソル位置より前のテキストのみ処理
 			const beforeCursor = value.substring(0, cursorPos);
 
+			// カーソル位置の直前2文字が ]] かチェック
+			if (
+				cursorPos >= 2 &&
+				value.substring(cursorPos - 2, cursorPos) === "]]"
+			) {
+				// ]]の直後にカーソルがある場合はタグサジェストを表示しない
+				if (showTagSuggestions) {
+					setShowTagSuggestions(false);
+				}
+				return;
+			}
+
+			// カーソルがWiki Link内にあるかチェック
+			const lastWikiLinkStart = beforeCursor.lastIndexOf("[[");
+
+			if (lastWikiLinkStart !== -1) {
+				// [[の後のテキストを取得
+				const afterWikiLinkStart = value.substring(lastWikiLinkStart);
+				// ]]の位置を探す
+				const wikiLinkEnd = afterWikiLinkStart.indexOf("]]");
+
+				if (wikiLinkEnd !== -1) {
+					// Wiki Link全体の終了位置（2つ目の]の位置）
+					const wikiLinkEndAbsolute = lastWikiLinkStart + wikiLinkEnd + 1;
+
+					// カーソルがWiki Link内にある場合（]]の間も含む）
+					if (
+						cursorPos >= lastWikiLinkStart &&
+						cursorPos <= wikiLinkEndAbsolute
+					) {
+						// Wiki Link内にカーソルがある場合はタグサジェストを表示しない
+						if (showTagSuggestions) {
+							setShowTagSuggestions(false);
+						}
+						return;
+					}
+				}
+			}
+
 			// #の検出（最後の#のみ）
 			const lastHashIndex = beforeCursor.lastIndexOf("#");
 

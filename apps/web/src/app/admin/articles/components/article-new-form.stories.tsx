@@ -1238,8 +1238,12 @@ export const WikiLinkPopoverPositioning: Story = {
 	name: "Popover位置が入力テキストと重ならない",
 	tags: ["validation"],
 	play: async ({ canvas }) => {
-		const editorContainer = await within(canvas as HTMLElement).findByTestId("md-editor");
-		const editorTextarea = within(editorContainer).getByRole("textbox") as HTMLTextAreaElement;
+		const editorContainer = await within(canvas as HTMLElement).findByTestId(
+			"md-editor"
+		);
+		const editorTextarea = within(editorContainer).getByRole(
+			"textbox"
+		) as HTMLTextAreaElement;
 
 		// 複数行のテキストを入力して、下の方でWiki Linkを入力
 		const multilineText = `# タイトル
@@ -1260,35 +1264,129 @@ export const WikiLinkPopoverPositioning: Story = {
 		await userEvent.type(editorTextarea, "[[記事");
 
 		// Wiki Link サジェストポップアップが表示されることを確認
-		await waitFor(() => {
-			const popup = within(canvas as HTMLElement).queryByTestId("wiki-link-suggestions");
-			expect(popup).toBeInTheDocument();
-		}, { timeout: 2000 });
+		await waitFor(
+			() => {
+				const popup = within(canvas as HTMLElement).queryByTestId(
+					"wiki-link-suggestions"
+				);
+				expect(popup).toBeInTheDocument();
+			},
+			{ timeout: 2000 }
+		);
 
 		// Popoverの位置を取得
-		const popup = within(canvas as HTMLElement).getByTestId("wiki-link-suggestions");
+		const popup = within(canvas as HTMLElement).getByTestId(
+			"wiki-link-suggestions"
+		);
 		const popupRect = popup.getBoundingClientRect();
-		
+
 		// エディタの位置を取得
 		const editorRect = editorTextarea.getBoundingClientRect();
-		
+
 		// カーソル位置（最後の文字位置）を推定
-		const textLines = editorTextarea.value.split('\n');
+		const textLines = editorTextarea.value.split("\n");
 		const estimatedLineHeight = 24; // MDEditorの推定行高
-		const estimatedCursorTop = editorRect.top + (textLines.length - 1) * estimatedLineHeight;
-		
+		const estimatedCursorTop =
+			editorRect.top + (textLines.length - 1) * estimatedLineHeight;
+
 		// Popoverが入力中のテキストと重ならないことを確認
 		// Popoverの下端がカーソル位置より上にあるか、
 		// Popoverの上端がカーソル位置より十分下にあること
 		const isAboveCursor = popupRect.bottom < estimatedCursorTop - 5; // 5pxのマージン
-		const isBelowCursor = popupRect.top > estimatedCursorTop + estimatedLineHeight + 5; // 5pxのマージン
-		
+		const isBelowCursor =
+			popupRect.top > estimatedCursorTop + estimatedLineHeight + 5; // 5pxのマージン
+
 		expect(isAboveCursor || isBelowCursor).toBe(true);
-		
+
 		// デバッグ情報を出力（テスト時に位置を確認するため）
-		console.log("Popup position:", { top: popupRect.top, bottom: popupRect.bottom });
+		console.log("Popup position:", {
+			top: popupRect.top,
+			bottom: popupRect.bottom,
+		});
 		console.log("Estimated cursor position:", estimatedCursorTop);
 		console.log("Is above cursor:", isAboveCursor);
 		console.log("Is below cursor:", isBelowCursor);
+	},
+};
+
+export const WikiLinkHashNotTriggerTag: Story = {
+	name: "WikiLink内の#はタグサジェストを表示しない",
+	play: async ({ canvas }) => {
+		// エディタのtextareaを取得
+		const editorContainer = within(canvas as HTMLElement).getByRole("textbox", {
+			name: /本文/,
+		});
+		const editorTextarea = editorContainer.querySelector(
+			".w-md-editor-text-input"
+		) as HTMLTextAreaElement;
+		expect(editorTextarea).toBeInTheDocument();
+
+		// エディタに Wiki Link を入力
+		await userEvent.clear(editorTextarea);
+		await userEvent.type(editorTextarea, "[[article-038#はじめに]]");
+
+		// カーソルを「はじめに」の部分に移動（#の後）
+		const textLength = editorTextarea.value.length;
+		const hashPosition = editorTextarea.value.indexOf("#");
+		// #の後の「は」の位置にカーソルを設定
+		editorTextarea.setSelectionRange(hashPosition + 2, hashPosition + 2);
+
+		// selectionchange イベントを発火
+		const selectionChangeEvent = new Event("selectionchange", {
+			bubbles: true,
+		});
+		document.dispatchEvent(selectionChangeEvent);
+
+		// 少し待機
+		await new Promise((resolve) => setTimeout(resolve, 300));
+
+		// タグサジェストポップアップが表示されていないことを確認
+		const tagPopup = within(canvas as HTMLElement).queryByTestId(
+			"tag-suggestions"
+		);
+		expect(tagPopup).not.toBeInTheDocument();
+
+		// Wiki Link サジェストポップアップも表示されていないことを確認
+		const wikiLinkPopup = within(canvas as HTMLElement).queryByTestId(
+			"wiki-link-suggestions"
+		);
+		expect(wikiLinkPopup).not.toBeInTheDocument();
+	},
+};
+
+export const WikiLinkClosingBracketsNotTriggerTag: Story = {
+	name: "WikiLink閉じ括弧の間でタグサジェストを表示しない",
+	play: async ({ canvas }) => {
+		// エディタのtextareaを取得
+		const editorContainer = within(canvas as HTMLElement).getByRole("textbox", {
+			name: /本文/,
+		});
+		const editorTextarea = editorContainer.querySelector(
+			".w-md-editor-text-input"
+		) as HTMLTextAreaElement;
+		expect(editorTextarea).toBeInTheDocument();
+
+		// エディタに Wiki Link を入力
+		await userEvent.clear(editorTextarea);
+		await userEvent.type(editorTextarea, "[[article-038]]");
+
+		// カーソルを ]] の間に移動（最後から1文字前）
+		const textLength = editorTextarea.value.length;
+		editorTextarea.setSelectionRange(textLength - 1, textLength - 1);
+
+		// selectionchange イベントを発火
+		const selectionChangeEvent = new Event("selectionchange", {
+			bubbles: true,
+		});
+		document.dispatchEvent(selectionChangeEvent);
+
+		// 少し待機
+		await new Promise((resolve) => setTimeout(resolve, 300));
+
+		// タグサジェストポップアップが表示されていないことを確認
+		const tagPopup = within(canvas as HTMLElement).queryByTestId(
+			"tag-suggestions"
+		);
+		expect(tagPopup).not.toBeInTheDocument();
 	},
 };
