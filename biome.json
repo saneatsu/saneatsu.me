@@ -28,6 +28,30 @@
 			"recommended": true
 		}
 	},
+	"overrides": [
+		{
+			"includes": [
+				"**/*.test.ts",
+				"**/*.test.tsx",
+				"**/*.stories.tsx",
+				"**/test-utils/**",
+				"**/vitest-setup.ts",
+				"**/hono-client.ts",
+				"**/api-client.ts",
+				"**/auth.ts",
+				"**/worker.ts",
+				"**/remark-tag.ts",
+				"apps/docs/**"
+			],
+			"linter": {
+				"rules": {
+					"suspicious": {
+						"noExplicitAny": "off"
+					}
+				}
+			}
+		}
+	],
 	"javascript": {
 		"formatter": {
 			"quoteStyle": "double",
