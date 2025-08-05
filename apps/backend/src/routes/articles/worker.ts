@@ -6,7 +6,6 @@ import {
 } from "@saneatsu/db/worker";
 import { articleListQuerySchema as ImportedArticlesQuerySchema } from "@saneatsu/schemas";
 import { and, eq } from "drizzle-orm";
-import type { Context } from "hono";
 
 // 一時的なスキーマ定義
 const ArticleParamSchema = z.object({
@@ -99,78 +98,75 @@ const listArticlesRoute = createRoute({
 /**
  * GET /api/articles - 記事一覧取得
  */
-articlesRoute.openapi(
-	listArticlesRoute,
-	async (c: any) => {
-		try {
-			// Cloudflare Workers環境でデータベースクライアントを初期化
-			const db = createDatabaseClient(c.env);
+articlesRoute.openapi(listArticlesRoute, async (c: any) => {
+	try {
+		// Cloudflare Workers環境でデータベースクライアントを初期化
+		const db = createDatabaseClient(c.env);
 
-			const {
-				page: pageStr = "1",
-				limit: limitStr = "10",
-				lang = "ja",
-			} = c.req.valid("query");
-			const page = Number(pageStr);
-			const limit = Number(limitStr);
+		const {
+			page: pageStr = "1",
+			limit: limitStr = "10",
+			lang = "ja",
+		} = c.req.valid("query");
+		const page = Number(pageStr);
+		const limit = Number(limitStr);
 
-			// ページネーションの計算
-			const offset = (page - 1) * limit;
+		// ページネーションの計算
+		const offset = (page - 1) * limit;
 
-			// 記事一覧を取得（公開済みのみ）
-			const articleList = await db
-				.select({
-					id: articles.id,
-					slug: articles.slug,
-					cfImageId: articles.cfImageId,
-					status: articles.status,
-					publishedAt: articles.publishedAt,
-					title: articleTranslations.title,
-					content: articleTranslations.content,
-				})
-				.from(articles)
-				.leftJoin(
-					articleTranslations,
-					eq(articles.id, articleTranslations.articleId)
+		// 記事一覧を取得（公開済みのみ）
+		const articleList = await db
+			.select({
+				id: articles.id,
+				slug: articles.slug,
+				cfImageId: articles.cfImageId,
+				status: articles.status,
+				publishedAt: articles.publishedAt,
+				title: articleTranslations.title,
+				content: articleTranslations.content,
+			})
+			.from(articles)
+			.leftJoin(
+				articleTranslations,
+				eq(articles.id, articleTranslations.articleId)
+			)
+			.where(
+				and(
+					eq(articles.status, "published"),
+					eq(articleTranslations.language, lang)
 				)
-				.where(
-					and(
-						eq(articles.status, "published"),
-						eq(articleTranslations.language, lang)
-					)
-				)
-				.limit(limit)
-				.offset(offset);
+			)
+			.limit(limit)
+			.offset(offset);
 
-			// 総記事数を取得
-			const totalCount = await db
-				.select({ count: articles.id })
-				.from(articles)
-				.where(eq(articles.status, "published"));
+		// 総記事数を取得
+		const totalCount = await db
+			.select({ count: articles.id })
+			.from(articles)
+			.where(eq(articles.status, "published"));
 
-			return c.json({
-				data: articleList,
-				pagination: {
-					page,
-					limit,
-					total: totalCount.length,
-					totalPages: Math.ceil(totalCount.length / limit),
+		return c.json({
+			data: articleList,
+			pagination: {
+				page,
+				limit,
+				total: totalCount.length,
+				totalPages: Math.ceil(totalCount.length / limit),
+			},
+		});
+	} catch (error) {
+		console.error("Error fetching articles:", error);
+		return c.json(
+			{
+				error: {
+					code: "DATABASE_ERROR",
+					message: "Failed to fetch articles",
 				},
-			});
-		} catch (error) {
-			console.error("Error fetching articles:", error);
-			return c.json(
-				{
-					error: {
-						code: "DATABASE_ERROR",
-						message: "Failed to fetch articles",
-					},
-				},
-				500
-			);
-		}
+			},
+			500
+		);
 	}
-);
+});
 
 /**
  * 記事詳細取得のルート定義
@@ -216,63 +212,60 @@ const getArticleRoute = createRoute({
 /**
  * GET /api/articles/:slug - 記事詳細取得
  */
-articlesRoute.openapi(
-	getArticleRoute,
-	async (c: any) => {
-		try {
-			// Cloudflare Workers環境でデータベースクライアントを初期化
-			const db = createDatabaseClient(c.env);
+articlesRoute.openapi(getArticleRoute, async (c: any) => {
+	try {
+		// Cloudflare Workers環境でデータベースクライアントを初期化
+		const db = createDatabaseClient(c.env);
 
-			const { slug } = c.req.valid("param");
-			const { lang = "ja" } = c.req.valid("query");
+		const { slug } = c.req.valid("param");
+		const { lang = "ja" } = c.req.valid("query");
 
-			// 記事詳細を取得
-			const article = await db
-				.select({
-					id: articles.id,
-					slug: articles.slug,
-					cfImageId: articles.cfImageId,
-					status: articles.status,
-					publishedAt: articles.publishedAt,
-					title: articleTranslations.title,
-					content: articleTranslations.content,
-				})
-				.from(articles)
-				.leftJoin(
-					articleTranslations,
-					eq(articles.id, articleTranslations.articleId)
-				)
-				.where(
-					and(eq(articles.slug, slug), eq(articleTranslations.language, lang))
-				)
-				.limit(1);
+		// 記事詳細を取得
+		const article = await db
+			.select({
+				id: articles.id,
+				slug: articles.slug,
+				cfImageId: articles.cfImageId,
+				status: articles.status,
+				publishedAt: articles.publishedAt,
+				title: articleTranslations.title,
+				content: articleTranslations.content,
+			})
+			.from(articles)
+			.leftJoin(
+				articleTranslations,
+				eq(articles.id, articleTranslations.articleId)
+			)
+			.where(
+				and(eq(articles.slug, slug), eq(articleTranslations.language, lang))
+			)
+			.limit(1);
 
-			if (article.length === 0) {
-				return c.json(
-					{
-						error: {
-							code: "NOT_FOUND",
-							message: "Article not found",
-						},
-					},
-					404
-				);
-			}
-
-			return c.json({
-				data: article[0],
-			});
-		} catch (error) {
-			console.error("Error fetching article:", error);
+		if (article.length === 0) {
 			return c.json(
 				{
 					error: {
-						code: "DATABASE_ERROR",
-						message: "Failed to fetch article",
+						code: "NOT_FOUND",
+						message: "Article not found",
 					},
 				},
-				500
+				404
 			);
 		}
+
+		return c.json({
+			data: article[0],
+		});
+	} catch (error) {
+		console.error("Error fetching article:", error);
+		return c.json(
+			{
+				error: {
+					code: "DATABASE_ERROR",
+					message: "Failed to fetch article",
+				},
+			},
+			500
+		);
 	}
-);
+});

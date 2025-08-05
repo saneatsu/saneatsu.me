@@ -22,7 +22,7 @@ function HomepageHeader() {
 					{(Link as any)({
 						className: "button button--secondary button--lg",
 						to: "/docs/intro",
-						children: "Get Started - 5min ⏱️"
+						children: "Get Started - 5min ⏱️",
 					})}
 				</div>
 			</div>

@@ -1,6 +1,4 @@
 import NextAuth from "next-auth";
-import type { JWT } from "next-auth/jwt";
-import type { Account, Profile, Session, User } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { isAdminEmail } from "../../../../shared/config/admin";
 import { createDbClient } from "../../../../shared/lib/db";
