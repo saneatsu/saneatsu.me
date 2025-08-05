@@ -1326,7 +1326,7 @@ export const WikiLinkHashNotTriggerTag: Story = {
 		await userEvent.type(editorTextarea, "[[article-038#はじめに]]");
 
 		// カーソルを「はじめに」の部分に移動（#の後）
-		const textLength = editorTextarea.value.length;
+		const _textLength = editorTextarea.value.length;
 		const hashPosition = editorTextarea.value.indexOf("#");
 		// #の後の「は」の位置にカーソルを設定
 		editorTextarea.setSelectionRange(hashPosition + 2, hashPosition + 2);

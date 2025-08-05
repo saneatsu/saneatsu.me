@@ -7,6 +7,11 @@ import { Header } from "../../widgets/header";
 
 // サポートされているロケール
 const locales = ["ja", "en"] as const;
+type Locale = (typeof locales)[number];
+
+function isValidLocale(locale: string): locale is Locale {
+	return locales.includes(locale as Locale);
+}
 
 type Props = {
 	children: React.ReactNode;
@@ -24,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 	const { locale } = await params;
 
 	// 現在のロケールに応じたタイトルと説明
-	const metadata = {
+	const metadata: Record<Locale, { title: string; description: string }> = {
 		ja: {
 			title: "saneatsu.me - 技術とライフスタイルのブログ",
 			description:
@@ -37,8 +42,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 		},
 	};
 
-	const currentMetadata =
-		metadata[locale as keyof typeof metadata] || metadata.ja;
+	const currentMetadata = isValidLocale(locale)
+		? metadata[locale]
+		: metadata.ja;
 
 	return {
 		title: currentMetadata.title,
@@ -56,7 +62,7 @@ export default async function LocaleLayout({ children, params }: Props) {
 	const { locale } = await params;
 
 	// ロケールの検証
-	if (!locales.includes(locale as any)) {
+	if (!isValidLocale(locale)) {
 		notFound();
 	}
 

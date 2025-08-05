@@ -50,9 +50,14 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 		page: urlQuery.page,
 		limit: urlQuery.limit,
 		language: "ja",
-		status: filters.status === "all" ? undefined : (filters.status as any),
+		status: filters.status === "all" ? undefined : filters.status,
 		search: filters.search.trim() || undefined,
-		sortBy: sort.key as any,
+		sortBy: sort.key as
+			| "createdAt"
+			| "updatedAt"
+			| "publishedAt"
+			| "title"
+			| "viewCount",
 		sortOrder: sort.direction,
 	});
 
@@ -229,11 +234,7 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 				onSortChange={handleSortChange}
 				loading={isLoading}
 				error={
-					error
-						? error instanceof Error
-							? error.message
-							: "エラーが発生しました"
-						: null
+					error ? (error as Error).message || "エラーが発生しました" : null
 				}
 				emptyMessage="記事が見つかりません"
 			/>

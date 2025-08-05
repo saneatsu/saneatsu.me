@@ -1,6 +1,6 @@
 "use client";
 
-import { BarChart3, Eye, FileText, Hash, TrendingUp } from "lucide-react";
+import { BarChart3, Eye, FileText, TrendingUp } from "lucide-react";
 import type { ArticleStats } from "../../../../shared/types/dashboard";
 import {
 	Card,

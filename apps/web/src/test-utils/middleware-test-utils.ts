@@ -40,7 +40,7 @@ export function createMockNextRequest(
  * @param token - 返すトークンオブジェクト（nullで未認証）
  * @returns モック関数
  */
-export function createGetTokenMock(token: any) {
+export function createGetTokenMock(token: unknown) {
 	return vi.fn().mockResolvedValue(token);
 }
 

@@ -1,7 +1,6 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { honoClient } from "../../../../shared/lib/hono-client";
 import { queryKeys } from "../../../../shared/lib/query-keys";
 
 /**
@@ -40,7 +39,7 @@ export function useUpdateStatus() {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: async ({ id, status }: UpdateStatusParams) => {
+		mutationFn: async ({ id: _id, status: _status }: UpdateStatusParams) => {
 			// TODO: バックエンドにPATCH /admin/articles/:id/status エンドポイントを実装後にHono Client版に書き換え
 			throw new Error("Not implemented yet");
 		},

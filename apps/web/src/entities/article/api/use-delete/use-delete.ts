@@ -1,7 +1,6 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { honoClient } from "../../../../shared/lib/hono-client";
 import { queryKeys } from "../../../../shared/lib/query-keys";
 
 /**
@@ -29,7 +28,7 @@ export function useDelete() {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: async (id: number) => {
+		mutationFn: async (_id: number) => {
 			// TODO: バックエンドにDELETE /admin/articles/:id エンドポイントを実装後にHono Client版に書き換え
 			throw new Error("Not implemented yet");
 		},

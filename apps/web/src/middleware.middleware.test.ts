@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { middleware } from "./middleware";
 import {
@@ -13,7 +12,7 @@ vi.mock("next-auth/jwt", () => ({
 }));
 
 const { getToken } = await import("next-auth/jwt");
-const mockGetToken = getToken as any;
+const mockGetToken = vi.mocked(getToken);
 
 describe("middleware", () => {
 	beforeEach(() => {
@@ -23,7 +22,7 @@ describe("middleware", () => {
 	describe("認証チェック機能", () => {
 		it("/adminパスへの認証済みアクセスは通常処理される", async () => {
 			// 認証済みのトークンを返す
-			mockGetToken.mockResolvedValue({ email: "test@example.com" });
+			mockGetToken.mockResolvedValue({ id: "1", email: "test@example.com", name: "Test", picture: "" });
 
 			const request = createMockNextRequest("http://localhost:3333/admin");
 			const response = await middleware(request);
@@ -180,7 +179,7 @@ describe("middleware", () => {
 
 		it("/admin/loginのような複合パスも正しく処理される", async () => {
 			// 認証済みの場合
-			mockGetToken.mockResolvedValue({ email: "test@example.com" });
+			mockGetToken.mockResolvedValue({ id: "1", email: "test@example.com", name: "Test", picture: "" });
 
 			const request = createMockNextRequest(
 				"http://localhost:3333/admin/login"

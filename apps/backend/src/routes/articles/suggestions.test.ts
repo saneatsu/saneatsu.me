@@ -7,8 +7,7 @@ import { getSuggestionsRoute, handleArticleSuggestions } from "./suggestions";
 
 // テスト用のアプリケーションを作成
 const testApp = new OpenAPIHono();
-// @ts-ignore - 型エラーを無視
-testApp.openapi(getSuggestionsRoute, handleArticleSuggestions);
+testApp.openapi(getSuggestionsRoute, handleArticleSuggestions as never);
 
 // モックの設定
 vi.mock("@saneatsu/db", () => ({

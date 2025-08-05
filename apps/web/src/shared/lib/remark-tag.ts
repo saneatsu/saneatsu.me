@@ -24,7 +24,7 @@ export const remarkTag: Plugin<[], any> = () => {
 			let lastIndex = 0;
 
 			for (const match of matches) {
-				const matchIndex = match.index!;
+				const matchIndex = match.index ?? 0;
 				const tagName = match[1];
 
 				// タグ前のテキスト

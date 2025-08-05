@@ -1,6 +1,6 @@
-import type { Account, Profile, User } from "next-auth";
 import NextAuth from "next-auth";
 import type { JWT } from "next-auth/jwt";
+import type { Account, Profile, Session, User } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { isAdminEmail } from "../../../../shared/config/admin";
 import { createDbClient } from "../../../../shared/lib/db";
@@ -25,7 +25,8 @@ export const authOptions = {
 		maxAge: 30 * 24 * 60 * 60, // 30日間
 	},
 	callbacks: {
-		async signIn({ user, account, profile }: any) {
+		async signIn(params: any) {
+			const { user, account, profile } = params;
 			try {
 				// Google認証の場合のみ処理
 				if (account?.provider === "google" && profile?.email) {
@@ -59,7 +60,8 @@ export const authOptions = {
 				return false; // 認証失敗
 			}
 		},
-		async jwt({ token, user }: any) {
+		async jwt(params: any) {
+			const { token, user } = params;
 			// 初回ログイン時にユーザー情報をトークンに追加
 			if (user) {
 				token.id = user.id || "";
@@ -69,8 +71,8 @@ export const authOptions = {
 			}
 			return token;
 		},
-		// @ts-ignore - NextAuth session type is complex
-		async session({ session, token }: { session: any; token: JWT }) {
+		async session(params: any) {
+			const { session, token } = params;
 			// JWTトークンからセッション情報を構築
 			if (token && session.user) {
 				session.user.id = token.id as string;

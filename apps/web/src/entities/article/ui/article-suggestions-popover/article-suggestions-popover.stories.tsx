@@ -525,7 +525,7 @@ export const カーソル位置チェック: Story = {
 	parameters: {},
 	render: (args) => {
 		const [isOpen, setIsOpen] = React.useState(true);
-		const [query, setQuery] = React.useState("type");
+		const [query, _setQuery] = React.useState("type");
 
 		// MDEditorのコンテキストをシミュレート
 		return (

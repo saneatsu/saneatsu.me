@@ -1080,8 +1080,8 @@ describe("GET /articles/:slug", () => {
 			const client = testClient(articlesRoute) as any;
 			const res = await client.index.$get({
 				query: {
-					sortBy: "invalidColumn" as any,
-					sortOrder: "invalidOrder" as any,
+					sortBy: "invalidColumn" as unknown as "createdAt",
+					sortOrder: "invalidOrder" as unknown as "asc",
 				},
 			});
 

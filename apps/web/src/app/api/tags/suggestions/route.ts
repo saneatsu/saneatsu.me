@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
 
 			return NextResponse.json({
 				suggestions: popularTags.map((tag: (typeof popularTags)[0]) => ({
-					id: tag.id!,
+					id: tag.id ?? 0,
 					name: tag.name,
 					usageCount: tag.usageCount,
 					type: "tag" as const,
@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
 
 		return NextResponse.json({
 			suggestions: matchingTags.map((tag: (typeof matchingTags)[0]) => ({
-				id: tag.id!,
+				id: tag.id ?? 0,
 				name: tag.name,
 				usageCount: tag.usageCount,
 				type: "tag" as const,

@@ -140,8 +140,8 @@ export async function fetchAllArticles(
  * 現在は未実装のため、仮実装として残す
  */
 export async function updateArticleStatus(
-	id: number,
-	status: string
+	_id: number,
+	_status: string
 ): Promise<{ success: boolean }> {
 	// TODO: バックエンドにPATCH /admin/articles/:id/status エンドポイントを実装後にHono Client版に書き換え
 	throw new Error("Not implemented yet");
@@ -152,7 +152,9 @@ export async function updateArticleStatus(
  * 注意：この関数は管理画面専用です。実際の実装では認証が必要です。
  * 現在は未実装のため、仮実装として残す
  */
-export async function deleteArticle(id: number): Promise<{ success: boolean }> {
+export async function deleteArticle(
+	_id: number
+): Promise<{ success: boolean }> {
 	// TODO: バックエンドにDELETE /admin/articles/:id エンドポイントを実装後にHono Client版に書き換え
 	throw new Error("Not implemented yet");
 }
