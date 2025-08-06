@@ -3,7 +3,7 @@
 import { Languages } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useTransition } from "react";
-import { localeItems } from "../../config/locale";
+import { localeItems as getLocaleItems } from "../../config/locale";
 import type { Locale } from "../../config/locale-constants";
 import { setUserLocale } from "../../lib/locale";
 import { cn } from "../../lib/utils";
@@ -20,7 +20,7 @@ export function LocaleSwitcher() {
 	const locale = useLocale();
 	const t = useTranslations("LocaleSwitcher");
 
-	const items = localeItems(t);
+	const items = getLocaleItems(t);
 
 	const [isPending, startTransition] = useTransition();
 
