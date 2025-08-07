@@ -14,59 +14,73 @@ on:
       - 'packages/**'
       - '.github/workflows/deploy-backend.yml'
 
+# deploy-backend で必要になる権限
+permissions:
+  contents: read
+  deployments: write
+  statuses: write
+
 jobs:
-  deploy:
-    name: Deploy to Cloudflare Workers
+  # 環境に応じた .env ファイルを作成
+  create-env-file:
+    name: Create environment file
     runs-on: ubuntu-latest
     # Draft PRの場合はスキップ
     if: github.event.pull_request.draft != true
-
+    permissions:
+      contents: read
+      deployments: write
+      statuses: write
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.x
-
-      - name: Install pnpm
-        run: npm install -g pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      # 環境に応じた変数を設定（mainは本番、それ以外はすべてpreview）
-      - name: Set environment variables
+      - name: Set environment
+        id: set-env
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "ENVIRONMENT=production" >> $GITHUB_ENV
-            echo "WRANGLER_ENV=production" >> $GITHUB_ENV
+            echo "env=production" >> $GITHUB_OUTPUT
           else
-            echo "ENVIRONMENT=preview" >> $GITHUB_ENV
-            echo "WRANGLER_ENV=preview" >> $GITHUB_ENV
+            echo "env=preview" >> $GITHUB_OUTPUT
           fi
+    outputs:
+      environment: ${{ steps.set-env.outputs.env }}
+      
+  create-backend-env-file:
+    needs: create-env-file
+    permissions:
+      contents: read
+      deployments: write
+      statuses: write
+    uses: ./.github/workflows/_create-env-file.yml
+    with:
+      ENV: ${{ needs.create-env-file.outputs.environment }}
+    secrets:
+      # Backend用環境変数（環境別のGitHub Secretsを使用）
+      TURSO_DATABASE_URL: ${{ needs.create-env-file.outputs.environment == 'production' && secrets.TURSO_DATABASE_URL_PROD || secrets.TURSO_DATABASE_URL_PREVIEW }}
+      TURSO_AUTH_TOKEN: ${{ needs.create-env-file.outputs.environment == 'production' && secrets.TURSO_AUTH_TOKEN_PROD || secrets.TURSO_AUTH_TOKEN_PREVIEW }}
+      CORS_ORIGIN: ${{ needs.create-env-file.outputs.environment == 'production' && secrets.CORS_ORIGIN_PROD || secrets.CORS_ORIGIN_PREVIEW }}
+      # Web用環境変数（必要ないがワークフローでrequiredなので）
+      NEXT_PUBLIC_API_URL: ${{ needs.create-env-file.outputs.environment == 'production' && 'https://api.saneatsu.me' || 'https://saneatsu-api-preview.w-saneatsu-e8c.workers.dev' }}
 
-      # TypeScriptビルド
-      - name: Build backend
-        run: pnpm --filter @saneatsu/backend build
+  # バックエンドをデプロイ
+  backend-deploy:
+    needs: [create-env-file, create-backend-env-file]
+    uses: ./.github/workflows/_deploy-backend.yml
+    with:
+      ENV: ${{ needs.create-env-file.outputs.environment }}
+    secrets:
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
-      # Cloudflare Workersにデプロイ
-      - name: Deploy to Cloudflare Workers
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: deploy --env ${{ env.WRANGLER_ENV }}
-          workingDirectory: apps/backend
-
-      # PRの場合、デプロイURLをコメントで通知
+  # PRの場合、デプロイURLをコメントで通知
+  comment-deployment:
+    needs: [create-env-file, backend-deploy]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
       - name: Comment deployment URL
-        if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
           script: |
-            const environment = '${{ env.ENVIRONMENT }}';
+            const environment = '${{ needs.create-env-file.outputs.environment }}';
             const deploymentUrl = environment === 'production' 
               ? 'https://api.saneatsu.me' 
               : 'https://saneatsu-api-preview.w-saneatsu-e8c.workers.dev';
