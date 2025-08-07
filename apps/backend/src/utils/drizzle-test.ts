@@ -42,6 +42,9 @@ export function setupDbMocks() {
 					offset: vi.fn().mockResolvedValue(finalResult),
 				}),
 			}),
+			groupBy: vi.fn().mockReturnValue({
+				as: vi.fn().mockReturnValue(finalResult),
+			}),
 		}),
 	});
 
@@ -86,11 +89,24 @@ export function setupDbMocks() {
 		}),
 	});
 
+	/**
+	 * サブクエリ用のモックチェーン（groupByを含む）
+	 */
+	const createSubqueryMock = (asResult?: unknown) => {
+		const result = asResult || [];
+		return {
+			from: vi.fn().mockReturnThis(),
+			groupBy: vi.fn().mockReturnThis(),
+			as: vi.fn().mockReturnValue(result),
+		};
+	};
+
 	return {
 		mockDb,
 		createMockChain,
 		createSimpleMockChain,
 		createJoinMockChain,
 		createInnerJoinMockChain,
+		createSubqueryMock,
 	};
 }
