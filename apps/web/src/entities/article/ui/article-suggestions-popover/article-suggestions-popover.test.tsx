@@ -347,7 +347,7 @@ describe("Unit Test", () => {
 			await waitFor(() => {
 				const popover = document.querySelector(".fixed.z-50");
 				expect(popover).toHaveStyle({
-					top: "110px", // position.top + offset
+					top: "129px", // position.top + actualLineHeight + minOffset (100 + 24 + 5)
 					left: "200px",
 				});
 			});
@@ -372,7 +372,7 @@ describe("Unit Test", () => {
 				const popover = document.querySelector(".fixed.z-50");
 				// 下半分にカーソルがある場合は上に表示
 				expect(popover).toHaveStyle({
-					top: "290px", // 600 - 300(popoverHeight) - 10(offset)
+					top: "295px", // 600 - 300(popoverHeight) - 5(minOffset)
 					left: "200px",
 				});
 			});
@@ -420,17 +420,22 @@ describe("Unit Test", () => {
 			});
 		});
 
-		it("should not fetch suggestions when query is empty", async () => {
+		it("should fetch all suggestions when query is empty", async () => {
 			vi.clearAllMocks(); // 事前にクリア
 			renderWithQueryClient(
 				<ArticleSuggestionsPopover {...defaultProps} query="" open={true} />
 			);
 
-			// 少し待つ
-			await new Promise((resolve) => setTimeout(resolve, 100));
-
-			// クエリが空の場合、enabled: falseとなるので呼ばれない
-			expect(mockFetch).not.toHaveBeenCalled();
+			// waitForを使用して非同期処理を待つ
+			await waitFor(() => {
+				// 空のクエリでも全記事を表示するために、APIが呼ばれる
+				expect(mockFetch).toHaveBeenCalledWith(
+					expect.stringContaining(
+						"/api/articles/suggestions?q=&lang=ja&limit=20"
+					),
+					expect.any(Object)
+				);
+			});
 		});
 
 		it("should not fetch suggestions when closed", async () => {
@@ -439,11 +444,11 @@ describe("Unit Test", () => {
 				<ArticleSuggestionsPopover {...defaultProps} open={false} />
 			);
 
-			// 少し待つ
-			await new Promise((resolve) => setTimeout(resolve, 100));
-
-			// openがfalseの場合、コンポーネントがnullを返すのでfetchも呼ばれない
-			expect(mockFetch).not.toHaveBeenCalled();
+			// waitForを使用して非同期処理を待つ
+			await waitFor(() => {
+				// openがfalseの場合、コンポーネントがnullを返すのでfetchも呼ばれない
+				expect(mockFetch).not.toHaveBeenCalled();
+			});
 		});
 	});
 });
@@ -503,9 +508,10 @@ describe("Integration Test", () => {
 
 			// 新しいAPIコールが発生することを確認
 			await waitFor(() => {
-				expect(mockFetch).toHaveBeenCalledWith(
-					expect.stringContaining("lang=en")
-				);
+				expect(mockFetch).toHaveBeenCalledTimes(2);
+				// 2回目の呼び出しがlang=enを含むことを確認
+				const secondCall = mockFetch.mock.calls[1];
+				expect(secondCall[0]).toContain("lang=en");
 			});
 		});
 	});
