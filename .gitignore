@@ -55,7 +55,6 @@ temp/
 
 # Test files
 apps/web/src/app/test/
-apps/web/src/shared/config/locale.ts
 
 # Misplaced files
 /src/
