@@ -342,7 +342,42 @@ describe("GET /api/articles/suggestions", () => {
 	});
 
 	describe("基本機能", () => {
-		it("空のクエリで400エラーが返ること", async () => {
+		it("空のクエリで全記事を取得できること", async () => {
+			// Arrange
+			const { extractHeadings } = await import("../../utils/markdown");
+			const mockExtractHeadings = vi.mocked(extractHeadings);
+			mockExtractHeadings.mockReturnValue([]);
+
+			const mockArticles = [
+				createMockArticleWithTranslation({
+					article: {
+						slug: "article-001",
+					},
+					translation: {
+						title: "テスト記事1",
+					},
+				}),
+				createMockArticleWithTranslation({
+					article: {
+						slug: "article-002",
+					},
+					translation: {
+						title: "テスト記事2",
+					},
+				}),
+			];
+
+			const { mockDb } = setupDbMocks();
+			mockDb.select.mockReturnValue({
+				from: vi.fn().mockReturnValue({
+					innerJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockReturnValue({
+							limit: vi.fn().mockResolvedValue(mockArticles),
+						}),
+					}),
+				}),
+			});
+
 			// Act
 			const client = testClient(testApp) as any;
 			const res = await client.suggestions.$get({
@@ -352,13 +387,12 @@ describe("GET /api/articles/suggestions", () => {
 					limit: "5",
 				},
 			});
-
 			// Assert
-			expect(res.status).toBe(400);
+			expect(res.status).toBe(200);
 			const json = await res.json();
-			// OpenAPIHonoのZodバリデーションエラーレスポンス
-			expect(json).toHaveProperty("error");
-			expect(json.error).toHaveProperty("name", "ZodError");
+			expect(json.suggestions).toHaveLength(2);
+			expect(json.suggestions[0].title).toBe("テスト記事1");
+			expect(json.suggestions[1].title).toBe("テスト記事2");
 		});
 
 		it("公開済みの記事のみが検索されること", async () => {

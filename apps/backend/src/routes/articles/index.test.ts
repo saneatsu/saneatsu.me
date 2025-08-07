@@ -13,6 +13,17 @@ vi.mock("@saneatsu/db", () => ({
 	articleTranslations: {},
 }));
 
+// 共通のサブクエリモックを作成するヘルパー
+const createViewCountSubqueryMock = () => ({
+	from: vi.fn().mockReturnValue({
+		groupBy: vi.fn().mockReturnValue({
+			as: vi.fn().mockReturnValue({
+				totalViewCount: 100,
+			}),
+		}),
+	}),
+});
+
 describe("GET /articles", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
@@ -49,13 +60,17 @@ describe("GET /articles", () => {
 
 		const { mockDb } = setupDbMocks();
 
-		// 記事一覧取得のモック
+		// 記事一覧取得のモック（サブクエリも含む）
 		const articleListMock = {
 			from: vi.fn().mockReturnValue({
 				leftJoin: vi.fn().mockReturnValue({
-					where: vi.fn().mockReturnValue({
-						limit: vi.fn().mockReturnValue({
-							offset: vi.fn().mockResolvedValue(mockArticles),
+					leftJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockReturnValue({
+							orderBy: vi.fn().mockReturnValue({
+								limit: vi.fn().mockReturnValue({
+									offset: vi.fn().mockResolvedValue(mockArticles),
+								}),
+							}),
 						}),
 					}),
 				}),
@@ -65,11 +80,14 @@ describe("GET /articles", () => {
 		// 総記事数取得のモック
 		const countMock = {
 			from: vi.fn().mockReturnValue({
-				where: vi.fn().mockResolvedValue(mockTotalCount),
+				leftJoin: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue(mockTotalCount),
+				}),
 			}),
 		};
 
 		mockDb.select
+			.mockReturnValueOnce(createViewCountSubqueryMock()) // サブクエリ
 			.mockReturnValueOnce(articleListMock) // 記事一覧取得
 			.mockReturnValueOnce(countMock); // 総記事数取得
 
@@ -109,9 +127,13 @@ describe("GET /articles", () => {
 		const articleListMock = {
 			from: vi.fn().mockReturnValue({
 				leftJoin: vi.fn().mockReturnValue({
-					where: vi.fn().mockReturnValue({
-						limit: vi.fn().mockReturnValue({
-							offset: vi.fn().mockResolvedValue(mockArticles),
+					leftJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockReturnValue({
+							orderBy: vi.fn().mockReturnValue({
+								limit: vi.fn().mockReturnValue({
+									offset: vi.fn().mockResolvedValue(mockArticles),
+								}),
+							}),
 						}),
 					}),
 				}),
@@ -120,13 +142,16 @@ describe("GET /articles", () => {
 
 		const countMock = {
 			from: vi.fn().mockReturnValue({
-				where: vi.fn().mockResolvedValue(mockTotalCount),
+				leftJoin: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue(mockTotalCount),
+				}),
 			}),
 		};
 
 		mockDb.select
-			.mockReturnValueOnce(articleListMock)
-			.mockReturnValueOnce(countMock);
+			.mockReturnValueOnce(createViewCountSubqueryMock()) // サブクエリ
+			.mockReturnValueOnce(articleListMock) // 記事一覧取得
+			.mockReturnValueOnce(countMock); // 総記事数取得
 
 		// Act
 		const client = testClient(articlesRoute) as any;
@@ -169,9 +194,13 @@ describe("GET /articles", () => {
 		const articleListMock = {
 			from: vi.fn().mockReturnValue({
 				leftJoin: vi.fn().mockReturnValue({
-					where: vi.fn().mockReturnValue({
-						limit: vi.fn().mockReturnValue({
-							offset: vi.fn().mockResolvedValue(mockArticles),
+					leftJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockReturnValue({
+							orderBy: vi.fn().mockReturnValue({
+								limit: vi.fn().mockReturnValue({
+									offset: vi.fn().mockResolvedValue(mockArticles),
+								}),
+							}),
 						}),
 					}),
 				}),
@@ -180,13 +209,16 @@ describe("GET /articles", () => {
 
 		const countMock = {
 			from: vi.fn().mockReturnValue({
-				where: vi.fn().mockResolvedValue(mockTotalCount),
+				leftJoin: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue(mockTotalCount),
+				}),
 			}),
 		};
 
 		mockDb.select
-			.mockReturnValueOnce(articleListMock)
-			.mockReturnValueOnce(countMock);
+			.mockReturnValueOnce(createViewCountSubqueryMock()) // サブクエリ
+			.mockReturnValueOnce(articleListMock) // 記事一覧取得
+			.mockReturnValueOnce(countMock); // 総記事数取得
 
 		// Act
 		const client = testClient(articlesRoute) as any;
@@ -210,9 +242,13 @@ describe("GET /articles", () => {
 		const articleListMock = {
 			from: vi.fn().mockReturnValue({
 				leftJoin: vi.fn().mockReturnValue({
-					where: vi.fn().mockReturnValue({
-						limit: vi.fn().mockReturnValue({
-							offset: vi.fn().mockResolvedValue([]),
+					leftJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockReturnValue({
+							orderBy: vi.fn().mockReturnValue({
+								limit: vi.fn().mockReturnValue({
+									offset: vi.fn().mockResolvedValue([]),
+								}),
+							}),
 						}),
 					}),
 				}),
@@ -221,13 +257,16 @@ describe("GET /articles", () => {
 
 		const countMock = {
 			from: vi.fn().mockReturnValue({
-				where: vi.fn().mockResolvedValue([]),
+				leftJoin: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue([]),
+				}),
 			}),
 		};
 
 		mockDb.select
-			.mockReturnValueOnce(articleListMock)
-			.mockReturnValueOnce(countMock);
+			.mockReturnValueOnce(createViewCountSubqueryMock()) // サブクエリ
+			.mockReturnValueOnce(articleListMock) // 記事一覧取得
+			.mockReturnValueOnce(countMock); // 総記事数取得
 
 		// Act
 		const client = testClient(articlesRoute) as any;
@@ -265,6 +304,7 @@ describe("GET /articles/:slug", () => {
 				status: "published",
 			},
 			translation: {
+				id: "translation1",
 				title: "テスト記事",
 				content: "これはテスト記事の内容です。",
 			},
@@ -276,13 +316,25 @@ describe("GET /articles/:slug", () => {
 			from: vi.fn().mockReturnValue({
 				leftJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
-						limit: vi.fn().mockResolvedValue([mockArticle]),
+						limit: vi.fn().mockResolvedValue([
+							{
+								...mockArticle,
+								translationId: "translation1",
+							},
+						]),
 					}),
 				}),
 			}),
 		};
 
-		mockDb.select.mockReturnValue(articleMock);
+		// ビューカウント更新のモック
+		mockDb.update = vi.fn().mockReturnValue({
+			set: vi.fn().mockReturnValue({
+				where: vi.fn().mockResolvedValue({}),
+			}),
+		});
+
+		mockDb.select.mockReturnValueOnce(articleMock);
 
 		// Act
 		const client = testClient(articlesRoute) as any;
@@ -313,7 +365,7 @@ describe("GET /articles/:slug", () => {
 			}),
 		};
 
-		mockDb.select.mockReturnValue(articleMock);
+		mockDb.select.mockReturnValueOnce(articleMock);
 
 		// Act
 		const client = testClient(articlesRoute) as any;
@@ -339,8 +391,10 @@ describe("GET /articles/:slug", () => {
 			article: {
 				id: "article1",
 				slug: "test-article",
+				status: "published",
 			},
 			translation: {
+				id: "translation1",
 				language: "en",
 				title: "Test Article",
 				content: "This is test article content.",
@@ -353,13 +407,25 @@ describe("GET /articles/:slug", () => {
 			from: vi.fn().mockReturnValue({
 				leftJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
-						limit: vi.fn().mockResolvedValue([mockArticle]),
+						limit: vi.fn().mockResolvedValue([
+							{
+								...mockArticle,
+								translationId: "translation1",
+							},
+						]),
 					}),
 				}),
 			}),
 		};
 
-		mockDb.select.mockReturnValue(articleMock);
+		// ビューカウント更新のモック
+		mockDb.update = vi.fn().mockReturnValue({
+			set: vi.fn().mockReturnValue({
+				where: vi.fn().mockResolvedValue({}),
+			}),
+		});
+
+		mockDb.select.mockReturnValueOnce(articleMock);
 
 		// Act
 		const client = testClient(articlesRoute) as any;
@@ -389,6 +455,8 @@ describe("GET /articles/:slug", () => {
 			content: "Test content",
 			createdAt: new Date("2024-01-15"),
 			updatedAt: new Date("2024-01-15"),
+			translationId: "translation1",
+			viewCount: 0,
 		};
 
 		// 記事取得のモック
@@ -402,24 +470,15 @@ describe("GET /articles/:slug", () => {
 			}),
 		};
 
-		// タグ情報取得のモック
-		const tagsMock = {
-			from: vi.fn().mockReturnValue({
-				innerJoin: vi.fn().mockReturnValue({
-					innerJoin: vi.fn().mockReturnValue({
-						where: vi.fn().mockResolvedValue([
-							{ id: 1, slug: "tech", name: "技術" },
-							{ id: 2, slug: "life", name: "生活" },
-						]),
-					}),
-				}),
+		// ビューカウント更新のモック
+		mockDb.update = vi.fn().mockReturnValue({
+			set: vi.fn().mockReturnValue({
+				where: vi.fn().mockResolvedValue({}),
 			}),
-		};
+		});
 
-		// select呼び出しを順番に返すようにモック
-		mockDb.select
-			.mockReturnValueOnce(articleMock) // 記事取得
-			.mockReturnValueOnce(tagsMock); // タグ取得
+		// select呼び出しを返すようにモック
+		mockDb.select.mockReturnValueOnce(articleMock); // 記事取得
 
 		// Act
 		const client = testClient(articlesRoute) as any;
@@ -450,6 +509,7 @@ describe("GET /articles/:slug", () => {
 			content: "Draft content",
 			createdAt: new Date("2024-01-15"),
 			updatedAt: new Date("2024-01-15"),
+			viewCount: 0,
 		};
 
 		const articleMock = {
@@ -462,7 +522,7 @@ describe("GET /articles/:slug", () => {
 			}),
 		};
 
-		mockDb.select.mockReturnValue(articleMock);
+		mockDb.select.mockReturnValueOnce(articleMock);
 
 		// Act
 		const client = testClient(articlesRoute) as any;
@@ -496,6 +556,7 @@ describe("GET /articles/:slug", () => {
 			content: "Archived content",
 			createdAt: new Date("2024-01-15"),
 			updatedAt: new Date("2024-01-15"),
+			viewCount: 0,
 		};
 
 		const articleMock = {
@@ -508,7 +569,7 @@ describe("GET /articles/:slug", () => {
 			}),
 		};
 
-		mockDb.select.mockReturnValue(articleMock);
+		mockDb.select.mockReturnValueOnce(articleMock);
 
 		// Act
 		const client = testClient(articlesRoute) as any;
@@ -539,6 +600,7 @@ describe("GET /articles/:slug", () => {
 				status: "published",
 			},
 			translation: {
+				id: "translation1",
 				title: "テスト記事",
 				content: "これはテスト記事の内容です。",
 				viewCount: 42,
@@ -549,7 +611,12 @@ describe("GET /articles/:slug", () => {
 			from: vi.fn().mockReturnValue({
 				leftJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
-						limit: vi.fn().mockResolvedValue([mockArticle]),
+						limit: vi.fn().mockResolvedValue([
+							{
+								...mockArticle,
+								translationId: "translation1",
+							},
+						]),
 					}),
 				}),
 			}),
@@ -563,20 +630,7 @@ describe("GET /articles/:slug", () => {
 		};
 		mockDb.update = vi.fn().mockReturnValue(updateMock);
 
-		// タグ検索のモック
-		const tagMock = {
-			from: vi.fn().mockReturnValue({
-				innerJoin: vi.fn().mockReturnValue({
-					innerJoin: vi.fn().mockReturnValue({
-						where: vi.fn().mockResolvedValue([]),
-					}),
-				}),
-			}),
-		};
-
-		mockDb.select
-			.mockReturnValueOnce(articleMock) // 記事取得
-			.mockReturnValueOnce(tagMock); // タグ取得
+		mockDb.select.mockReturnValueOnce(articleMock); // 記事取得
 
 		// Act
 		const client = testClient(articlesRoute) as any;
@@ -625,9 +679,13 @@ describe("GET /articles/:slug", () => {
 		const articleListMock = {
 			from: vi.fn().mockReturnValue({
 				leftJoin: vi.fn().mockReturnValue({
-					where: vi.fn().mockReturnValue({
-						limit: vi.fn().mockReturnValue({
-							offset: vi.fn().mockResolvedValue(mockArticles),
+					leftJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockReturnValue({
+							orderBy: vi.fn().mockReturnValue({
+								limit: vi.fn().mockReturnValue({
+									offset: vi.fn().mockResolvedValue(mockArticles),
+								}),
+							}),
 						}),
 					}),
 				}),
@@ -693,10 +751,12 @@ describe("GET /articles/:slug", () => {
 			const articleListMock = {
 				from: vi.fn().mockReturnValue({
 					leftJoin: vi.fn().mockReturnValue({
-						where: vi.fn().mockReturnValue({
-							orderBy: vi.fn().mockReturnValue({
-								limit: vi.fn().mockReturnValue({
-									offset: vi.fn().mockResolvedValue(mockArticles),
+						leftJoin: vi.fn().mockReturnValue({
+							where: vi.fn().mockReturnValue({
+								orderBy: vi.fn().mockReturnValue({
+									limit: vi.fn().mockReturnValue({
+										offset: vi.fn().mockResolvedValue(mockArticles),
+									}),
 								}),
 							}),
 						}),
@@ -713,6 +773,7 @@ describe("GET /articles/:slug", () => {
 			};
 
 			mockDb.select
+				.mockReturnValueOnce(createViewCountSubqueryMock()) // サブクエリ
 				.mockReturnValueOnce(articleListMock)
 				.mockReturnValueOnce(countMock);
 
@@ -768,10 +829,12 @@ describe("GET /articles/:slug", () => {
 			const articleListMock = {
 				from: vi.fn().mockReturnValue({
 					leftJoin: vi.fn().mockReturnValue({
-						where: vi.fn().mockReturnValue({
-							orderBy: vi.fn().mockReturnValue({
-								limit: vi.fn().mockReturnValue({
-									offset: vi.fn().mockResolvedValue(mockArticles),
+						leftJoin: vi.fn().mockReturnValue({
+							where: vi.fn().mockReturnValue({
+								orderBy: vi.fn().mockReturnValue({
+									limit: vi.fn().mockReturnValue({
+										offset: vi.fn().mockResolvedValue(mockArticles),
+									}),
 								}),
 							}),
 						}),
@@ -788,6 +851,7 @@ describe("GET /articles/:slug", () => {
 			};
 
 			mockDb.select
+				.mockReturnValueOnce(createViewCountSubqueryMock()) // サブクエリ
 				.mockReturnValueOnce(articleListMock)
 				.mockReturnValueOnce(countMock);
 
@@ -845,10 +909,12 @@ describe("GET /articles/:slug", () => {
 			const articleListMock = {
 				from: vi.fn().mockReturnValue({
 					leftJoin: vi.fn().mockReturnValue({
-						where: vi.fn().mockReturnValue({
-							orderBy: vi.fn().mockReturnValue({
-								limit: vi.fn().mockReturnValue({
-									offset: vi.fn().mockResolvedValue(mockArticles),
+						leftJoin: vi.fn().mockReturnValue({
+							where: vi.fn().mockReturnValue({
+								orderBy: vi.fn().mockReturnValue({
+									limit: vi.fn().mockReturnValue({
+										offset: vi.fn().mockResolvedValue(mockArticles),
+									}),
 								}),
 							}),
 						}),
@@ -865,6 +931,7 @@ describe("GET /articles/:slug", () => {
 			};
 
 			mockDb.select
+				.mockReturnValueOnce(createViewCountSubqueryMock()) // サブクエリ
 				.mockReturnValueOnce(articleListMock)
 				.mockReturnValueOnce(countMock);
 
@@ -918,10 +985,12 @@ describe("GET /articles/:slug", () => {
 			const articleListMock = {
 				from: vi.fn().mockReturnValue({
 					leftJoin: vi.fn().mockReturnValue({
-						where: vi.fn().mockReturnValue({
-							orderBy: vi.fn().mockReturnValue({
-								limit: vi.fn().mockReturnValue({
-									offset: vi.fn().mockResolvedValue(mockArticles),
+						leftJoin: vi.fn().mockReturnValue({
+							where: vi.fn().mockReturnValue({
+								orderBy: vi.fn().mockReturnValue({
+									limit: vi.fn().mockReturnValue({
+										offset: vi.fn().mockResolvedValue(mockArticles),
+									}),
 								}),
 							}),
 						}),
@@ -938,6 +1007,7 @@ describe("GET /articles/:slug", () => {
 			};
 
 			mockDb.select
+				.mockReturnValueOnce(createViewCountSubqueryMock()) // サブクエリ
 				.mockReturnValueOnce(articleListMock)
 				.mockReturnValueOnce(countMock);
 
@@ -991,10 +1061,12 @@ describe("GET /articles/:slug", () => {
 			const articleListMock = {
 				from: vi.fn().mockReturnValue({
 					leftJoin: vi.fn().mockReturnValue({
-						where: vi.fn().mockReturnValue({
-							orderBy: vi.fn().mockReturnValue({
-								limit: vi.fn().mockReturnValue({
-									offset: vi.fn().mockResolvedValue(mockArticles),
+						leftJoin: vi.fn().mockReturnValue({
+							where: vi.fn().mockReturnValue({
+								orderBy: vi.fn().mockReturnValue({
+									limit: vi.fn().mockReturnValue({
+										offset: vi.fn().mockResolvedValue(mockArticles),
+									}),
 								}),
 							}),
 						}),
@@ -1011,6 +1083,7 @@ describe("GET /articles/:slug", () => {
 			};
 
 			mockDb.select
+				.mockReturnValueOnce(createViewCountSubqueryMock()) // サブクエリ
 				.mockReturnValueOnce(articleListMock)
 				.mockReturnValueOnce(countMock);
 
@@ -1053,10 +1126,12 @@ describe("GET /articles/:slug", () => {
 			const articleListMock = {
 				from: vi.fn().mockReturnValue({
 					leftJoin: vi.fn().mockReturnValue({
-						where: vi.fn().mockReturnValue({
-							orderBy: vi.fn().mockReturnValue({
-								limit: vi.fn().mockReturnValue({
-									offset: vi.fn().mockResolvedValue(mockArticles),
+						leftJoin: vi.fn().mockReturnValue({
+							where: vi.fn().mockReturnValue({
+								orderBy: vi.fn().mockReturnValue({
+									limit: vi.fn().mockReturnValue({
+										offset: vi.fn().mockResolvedValue(mockArticles),
+									}),
 								}),
 							}),
 						}),
@@ -1073,6 +1148,7 @@ describe("GET /articles/:slug", () => {
 			};
 
 			mockDb.select
+				.mockReturnValueOnce(createViewCountSubqueryMock()) // サブクエリ
 				.mockReturnValueOnce(articleListMock)
 				.mockReturnValueOnce(countMock);
 
@@ -1147,7 +1223,7 @@ describe("POST /articles", () => {
 		};
 
 		// Insert記事タグのモック
-		const insertArticleTagMock = {
+		const _insertArticleTagMock = {
 			values: vi.fn().mockResolvedValue({}),
 		};
 
@@ -1176,14 +1252,23 @@ describe("POST /articles", () => {
 			}),
 		};
 
-		mockDb.insert
-			.mockReturnValueOnce(insertArticleMock) // 記事作成
-			.mockReturnValueOnce(insertTranslationMock) // 翻訳作成
-			.mockReturnValueOnce(insertArticleTagMock); // 記事タグ作成
+		// 既存記事チェック用のモック
+		const checkExistingMock = {
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockReturnValue({
+					limit: vi.fn().mockResolvedValue([]), // 既存記事なし
+				}),
+			}),
+		};
 
 		mockDb.select
+			.mockReturnValueOnce(checkExistingMock) // 既存記事チェック
 			.mockReturnValueOnce(selectArticleMock) // 記事取得
 			.mockReturnValueOnce(selectTagsMock); // タグ取得
+
+		mockDb.insert
+			.mockReturnValueOnce(insertArticleMock) // 記事作成
+			.mockReturnValueOnce(insertTranslationMock); // 翻訳作成
 
 		// Act
 		const client = testClient(articlesRoute) as any;
@@ -1206,8 +1291,8 @@ describe("POST /articles", () => {
 			message: "記事が正常に作成されました",
 		});
 
-		expect(mockDb.insert).toHaveBeenCalledTimes(3); // 記事、翻訳、記事タグ
-		expect(mockDb.select).toHaveBeenCalledTimes(2); // 記事取得、タグ取得
+		expect(mockDb.insert).toHaveBeenCalledTimes(2); // 記事、翻訳
+		expect(mockDb.select).toHaveBeenCalledTimes(3); // 既存チェック、記事取得、タグ取得
 	});
 
 	it("バリデーションエラー: タイトルが空の場合", async () => {
@@ -1291,11 +1376,11 @@ describe("GET /articles/check-slug", () => {
 			}),
 		};
 
-		mockDb.select.mockReturnValue(selectMock);
+		mockDb.select.mockReturnValueOnce(selectMock);
 
 		// Act
 		const client = testClient(articlesRoute) as any;
-		const res = await client["check-slug"].$get({
+		const res = await (client as any)["check-slug"].$get({
 			query: {
 				slug: "available-slug",
 			},
@@ -1323,11 +1408,11 @@ describe("GET /articles/check-slug", () => {
 			}),
 		};
 
-		mockDb.select.mockReturnValue(selectMock);
+		mockDb.select.mockReturnValueOnce(selectMock);
 
 		// Act
 		const client = testClient(articlesRoute) as any;
-		const res = await client["check-slug"].$get({
+		const res = await (client as any)["check-slug"].$get({
 			query: {
 				slug: "used-slug",
 			},
@@ -1348,7 +1433,7 @@ describe("GET /articles/check-slug", () => {
 
 		// Act
 		const client = testClient(articlesRoute) as any;
-		const res = await client["check-slug"].$get({
+		const res = await (client as any)["check-slug"].$get({
 			query: {
 				slug: "",
 			},
