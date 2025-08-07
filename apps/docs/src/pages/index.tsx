@@ -7,6 +7,27 @@ import clsx from "clsx";
 import styles from "./index.module.css";
 
 /**
+ * React 19とDocusaurusの型の不整合を回避するためのLinkラッパー
+ */
+function DocLink({
+	className,
+	to,
+	children,
+}: {
+	className: string;
+	to: string;
+	children: React.ReactNode;
+}) {
+	// React 19とReact 18の型不整合を回避するためanyキャスト
+	const LinkComponent = Link as any;
+	return (
+		<LinkComponent className={className} to={to}>
+			{children}
+		</LinkComponent>
+	);
+}
+
+/**
  * ホームページのヒーローセクション
  */
 function HomepageHeader() {
@@ -19,12 +40,12 @@ function HomepageHeader() {
 				</Heading>
 				<p className="hero__subtitle">{siteConfig.tagline}</p>
 				<div className={styles.buttons}>
-					<Link
+					<DocLink
 						className="button button--secondary button--lg"
 						to="/docs/intro"
 					>
 						Get Started - 5min ⏱️
-					</Link>
+					</DocLink>
 				</div>
 			</div>
 		</header>
