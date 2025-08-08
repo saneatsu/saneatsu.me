@@ -65,7 +65,7 @@ const sidebars: SidebarsConfig = {
 		{
 			type: "category",
 			label: "Deployment",
-			items: ["deployment/overview", "deployment/ci-cd"],
+			items: ["deployment/overview", "deployment/ci-cd", "deployment/environment-variables"],
 		},
 		// Additional docs will be added as we create them
 	],

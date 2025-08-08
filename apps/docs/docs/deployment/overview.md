@@ -136,28 +136,29 @@ graph LR
 
 ## 環境変数の管理
 
-### 開発環境
+環境変数は用途に応じて3つのカテゴリに分けて管理されています：
 
-`.env.local`ファイルで管理：
+- **ビルド時環境変数**（GitHub Secrets）
+- **実行時環境変数**（Cloudflare Worker Secrets）
+- **公開設定値**（wrangler.toml）
+
+詳細な設定方法については、[環境変数管理ドキュメント](./environment-variables.md)を参照してください。
+
+### クイックスタート
+
+開発環境では `.env` ファイルで管理：
 
 ```bash
-# apps/web/.env.local
-NEXT_PUBLIC_API_URL=http://localhost:3333/api
+# apps/web/.env
+NEXT_PUBLIC_API_URL=http://localhost:3333
+NEXTAUTH_URL=http://localhost:3210
+# その他の環境変数...
 
 # apps/backend/.env
-PORT=3333
 TURSO_DATABASE_URL=...
 TURSO_AUTH_TOKEN=...
+CORS_ORIGIN=http://localhost:3210
 ```
-
-### 本番環境
-
-Vercelダッシュボードで設定：
-
-1. プロジェクト設定を開く
-2. Environment Variablesセクション
-3. 必要な環境変数を追加
-4. スコープ（Production/Preview/Development）を設定
 
 ## Vercelの設定
 
