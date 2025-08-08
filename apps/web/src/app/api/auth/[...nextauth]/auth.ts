@@ -1,8 +1,7 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { isAdminEmail } from "../../../../shared/config/admin";
-import { createDbClient } from "../../../../shared/lib/db";
-import { upsertUserFromGoogle } from "../../../../shared/services/auth";
+import { upsertUser } from "../../../../shared/lib/api-client";
 
 export const authOptions = {
 	providers: [
@@ -28,27 +27,34 @@ export const authOptions = {
 			try {
 				// Google認証の場合のみ処理
 				if (account?.provider === "google" && profile?.email) {
-					// 管理者権限チェック
+					// 管理者権限チェック（フロント側でも事前チェック）
 					if (!isAdminEmail(profile.email)) {
 						console.log(`Unauthorized access attempt: ${profile.email}`);
 						return false; // 管理者でない場合は認証拒否
 					}
 
-					// ビルド時やテスト時は環境変数がない場合があるのでスキップ
-					if (
-						process.env.NODE_ENV === "production" ||
-						process.env.TURSO_DATABASE_URL
-					) {
-						const db = createDbClient();
-						await upsertUserFromGoogle(db, {
-							email: profile.email,
-							name: profile.name || user.name || "Unknown",
-							picture: profile.picture || user.image,
-							sub: profile.sub || account.providerAccountId,
-						});
+					// Backend APIを呼び出してユーザー情報を保存
+					// ビルド時はAPI URLが設定されていない場合があるのでスキップ
+					if (process.env.NEXT_PUBLIC_API_URL) {
+						try {
+							await upsertUser({
+								email: profile.email,
+								name: profile.name || user.name || "Unknown",
+								picture: profile.picture || user.image,
+								sub: profile.sub || account.providerAccountId,
+							});
+						} catch (error) {
+							// APIエラーが403（Forbidden）の場合は認証拒否
+							if (error instanceof Error && "status" in error && error.status === 403) {
+								console.log(`Backend rejected authentication for: ${profile.email}`);
+								return false;
+							}
+							// その他のエラーはログを出すが認証は続行
+							console.error("Failed to save user via API:", error);
+						}
 					} else {
 						console.warn(
-							"Database operations skipped during build/development"
+							"API operations skipped during build/development"
 						);
 					}
 				}

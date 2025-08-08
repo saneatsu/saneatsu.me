@@ -216,3 +216,75 @@ export function getErrorMessage(error: unknown): string {
 
 	return "不明なエラーが発生しました";
 }
+
+/**
+ * ユーザー情報を作成または更新
+ * 
+ * @param profile - Googleプロフィール情報
+ * @returns 作成または更新されたユーザー情報
+ */
+export async function upsertUser(profile: {
+	email: string;
+	name: string;
+	picture?: string;
+	sub: string;
+}) {
+	try {
+		const response = await fetch(`${API_BASE_URL}/api/auth/user`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(profile),
+		});
+
+		if (!response.ok) {
+			const error = await response.json();
+			throw new ApiClientError(
+				error.error?.message || "Failed to upsert user",
+				response.status,
+				error.error?.code
+			);
+		}
+
+		return await response.json();
+	} catch (error) {
+		console.error("Error upserting user:", error);
+		throw error;
+	}
+}
+
+/**
+ * メールアドレスからユーザー情報を取得
+ * 
+ * @param email - ユーザーのメールアドレス
+ * @returns ユーザー情報またはnull
+ */
+export async function getUserByEmail(email: string) {
+	try {
+		const response = await fetch(`${API_BASE_URL}/api/auth/user/${encodeURIComponent(email)}`, {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+
+		if (response.status === 404) {
+			return null;
+		}
+
+		if (!response.ok) {
+			const error = await response.json();
+			throw new ApiClientError(
+				error.error?.message || "Failed to get user",
+				response.status,
+				error.error?.code
+			);
+		}
+
+		return await response.json();
+	} catch (error) {
+		console.error("Error getting user:", error);
+		throw error;
+	}
+}
