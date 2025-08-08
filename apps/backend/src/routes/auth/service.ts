@@ -1,4 +1,4 @@
-import { users } from "@saneatsu/db";
+import { users } from "@saneatsu/db/worker";
 import { eq } from "drizzle-orm";
 import type { DrizzleClient } from "../../lib/db";
 

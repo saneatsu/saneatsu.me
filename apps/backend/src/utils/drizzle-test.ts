@@ -1,4 +1,3 @@
-import { db } from "@saneatsu/db";
 import { vi } from "vitest";
 import type { MockDb } from "./vitest";
 
@@ -7,8 +6,9 @@ import type { MockDb } from "./vitest";
  * NitoプロジェクトのsetupDbMocksを参考に実装
  */
 export function setupDbMocks() {
-	// vi.setup.tsでモックされたdbオブジェクトを取得
-	const mockDb = db as unknown as MockDb;
+	// テスト環境ではdbはvi.setup.tsでモックされているため、
+	// 直接インポートせず、グローバルなモックを使用
+	const mockDb = {} as unknown as MockDb;
 
 	// insertとupdateのメソッドを追加
 	mockDb.insert = vi.fn();
