@@ -103,6 +103,7 @@ describe("wiki-link utilities", () => {
 				mockDb.db.select = mockSelect;
 
 				const result = await fetchArticleInfoBySlugs(
+					mockDb.db,
 					["article-1", "article-2"],
 					"ja"
 				);
@@ -139,6 +140,7 @@ describe("wiki-link utilities", () => {
 				mockDb.db.select = mockSelect;
 
 				const result = await fetchArticleInfoBySlugs(
+					mockDb.db,
 					["existing-article", "non-existent-article"],
 					"ja"
 				);
@@ -174,7 +176,11 @@ describe("wiki-link utilities", () => {
 				// @ts-ignore
 				mockDb.db.select = mockSelect;
 
-				const result = await fetchArticleInfoBySlugs(["draft-article"], "ja");
+				const result = await fetchArticleInfoBySlugs(
+					mockDb.db,
+					["draft-article"],
+					"ja"
+				);
 
 				expect(result.size).toBe(1);
 				expect(result.get("draft-article")).toEqual({
@@ -185,7 +191,9 @@ describe("wiki-link utilities", () => {
 			});
 
 			it("should return empty map for empty slug array", async () => {
-				const result = await fetchArticleInfoBySlugs([], "ja");
+				// 空配列の場合はDBアクセスしないが、型の整合性のためmockDbを渡す
+				const mockDb = {} as any;
+				const result = await fetchArticleInfoBySlugs(mockDb, [], "ja");
 
 				expect(result.size).toBe(0);
 			});
@@ -222,7 +230,7 @@ describe("wiki-link utilities", () => {
 詳細は[[article-2]]を参照してください。
 				`;
 
-				const converted = await convertWikiLinks(content, "ja");
+				const converted = await convertWikiLinks(mockDb.db, content, "ja");
 
 				expect(converted).toContain(
 					"[記事1のタイトル](/ja/articles/article-1)"
@@ -248,7 +256,7 @@ describe("wiki-link utilities", () => {
 
 				const content = "この記事では[[non-existent]]について説明します。";
 
-				const converted = await convertWikiLinks(content, "ja");
+				const converted = await convertWikiLinks(mockDb.db, content, "ja");
 
 				expect(converted).toBe(content); // 変換されない
 			});
@@ -276,7 +284,7 @@ describe("wiki-link utilities", () => {
 [[non-existing]]は変換されません。
 				`;
 
-				const converted = await convertWikiLinks(content, "ja");
+				const converted = await convertWikiLinks(mockDb.db, content, "ja");
 
 				expect(converted).toContain("[存在する記事](/ja/articles/existing)");
 				expect(converted).toContain("[[non-existing]]");
@@ -284,8 +292,10 @@ describe("wiki-link utilities", () => {
 
 			it("should return original content when no wiki links found", async () => {
 				const content = "これは通常のMarkdownテキストです。";
+				// Wiki linkがない場合はDBアクセスしないが、型の整合性のためmockDbを渡す
+				const mockDb = {} as any;
 
-				const converted = await convertWikiLinks(content, "ja");
+				const converted = await convertWikiLinks(mockDb, content, "ja");
 
 				expect(converted).toBe(content);
 			});
@@ -313,7 +323,7 @@ describe("wiki-link utilities", () => {
 二回目の[[repeated]]です。
 				`;
 
-				const converted = await convertWikiLinks(content, "ja");
+				const converted = await convertWikiLinks(mockDb.db, content, "ja");
 
 				expect(converted).not.toContain("[[repeated]]");
 				expect(converted.match(/繰り返し記事/g)).toHaveLength(2);
