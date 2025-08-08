@@ -89,10 +89,13 @@ authRoute.openapi(upsertUserRoute, async (c) => {
 		const user = await upsertUserFromGoogle(db, profile);
 
 		// レスポンスの構築
-		return c.json({
-			...user,
-			isAdmin: true, // 管理者チェックを通過しているため
-		}, 200);
+		return c.json(
+			{
+				...user,
+				isAdmin: true, // 管理者チェックを通過しているため
+			},
+			200
+		);
 	} catch (error) {
 		console.error("Error upserting user:", error);
 		return c.json(
@@ -175,10 +178,13 @@ authRoute.openapi(getUserRoute, async (c) => {
 		}
 
 		// レスポンスの構築
-		return c.json({
-			...user,
-			isAdmin: isAdminEmail(user.email, adminEmails),
-		}, 200);
+		return c.json(
+			{
+				...user,
+				isAdmin: isAdminEmail(user.email, adminEmails),
+			},
+			200
+		);
 	} catch (error) {
 		console.error("Error getting user:", error);
 		return c.json(
