@@ -219,7 +219,7 @@ export function getErrorMessage(error: unknown): string {
 
 /**
  * ユーザー情報を作成または更新
- * 
+ *
  * @param profile - Googleプロフィール情報
  * @returns 作成または更新されたユーザー情報
  */
@@ -256,18 +256,21 @@ export async function upsertUser(profile: {
 
 /**
  * メールアドレスからユーザー情報を取得
- * 
+ *
  * @param email - ユーザーのメールアドレス
  * @returns ユーザー情報またはnull
  */
 export async function getUserByEmail(email: string) {
 	try {
-		const response = await fetch(`${API_BASE_URL}/api/auth/user/${encodeURIComponent(email)}`, {
-			method: "GET",
-			headers: {
-				"Content-Type": "application/json",
-			},
-		});
+		const response = await fetch(
+			`${API_BASE_URL}/api/auth/user/${encodeURIComponent(email)}`,
+			{
+				method: "GET",
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}
+		);
 
 		if (response.status === 404) {
 			return null;

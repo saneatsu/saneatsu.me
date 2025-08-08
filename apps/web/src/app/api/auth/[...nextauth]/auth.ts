@@ -45,17 +45,21 @@ export const authOptions = {
 							});
 						} catch (error) {
 							// APIエラーが403（Forbidden）の場合は認証拒否
-							if (error instanceof Error && "status" in error && error.status === 403) {
-								console.log(`Backend rejected authentication for: ${profile.email}`);
+							if (
+								error instanceof Error &&
+								"status" in error &&
+								error.status === 403
+							) {
+								console.log(
+									`Backend rejected authentication for: ${profile.email}`
+								);
 								return false;
 							}
 							// その他のエラーはログを出すが認証は続行
 							console.error("Failed to save user via API:", error);
 						}
 					} else {
-						console.warn(
-							"API operations skipped during build/development"
-						);
+						console.warn("API operations skipped during build/development");
 					}
 				}
 				return true;

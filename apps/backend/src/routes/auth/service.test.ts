@@ -1,4 +1,3 @@
-import { eq } from "drizzle-orm";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { getUserByEmail, isAdminEmail, upsertUserFromGoogle } from "./service";
 
@@ -28,7 +27,7 @@ describe("Auth Service", () => {
 	describe("isAdminEmail", () => {
 		it("管理者メールアドレスのリストに含まれている場合はtrueを返す", () => {
 			const adminEmails = "admin@example.com,test@example.com,root@domain.com";
-			
+
 			expect(isAdminEmail("admin@example.com", adminEmails)).toBe(true);
 			expect(isAdminEmail("test@example.com", adminEmails)).toBe(true);
 			expect(isAdminEmail("root@domain.com", adminEmails)).toBe(true);
@@ -36,14 +35,15 @@ describe("Auth Service", () => {
 
 		it("管理者メールアドレスのリストに含まれていない場合はfalseを返す", () => {
 			const adminEmails = "admin@example.com,test@example.com";
-			
+
 			expect(isAdminEmail("user@example.com", adminEmails)).toBe(false);
 			expect(isAdminEmail("notadmin@domain.com", adminEmails)).toBe(false);
 		});
 
 		it("空白を含むメールアドレスでも正しく判定できる", () => {
-			const adminEmails = " admin@example.com , test@example.com , root@domain.com ";
-			
+			const adminEmails =
+				" admin@example.com , test@example.com , root@domain.com ";
+
 			expect(isAdminEmail("admin@example.com", adminEmails)).toBe(true);
 			expect(isAdminEmail("test@example.com", adminEmails)).toBe(true);
 		});
@@ -73,16 +73,18 @@ describe("Auth Service", () => {
 			// 新規作成のモック
 			const mockInsertChain = {
 				values: vi.fn().mockReturnValue({
-					returning: vi.fn().mockResolvedValue([{
-						id: 1,
-						email: "new@example.com",
-						name: "New User",
-						avatarUrl: "https://example.com/avatar.jpg",
-						provider: "google",
-						providerId: "123456",
-						createdAt: "2024-01-01T00:00:00.000Z",
-						updatedAt: "2024-01-01T00:00:00.000Z",
-					}]),
+					returning: vi.fn().mockResolvedValue([
+						{
+							id: 1,
+							email: "new@example.com",
+							name: "New User",
+							avatarUrl: "https://example.com/avatar.jpg",
+							provider: "google",
+							providerId: "123456",
+							createdAt: "2024-01-01T00:00:00.000Z",
+							updatedAt: "2024-01-01T00:00:00.000Z",
+						},
+					]),
 				}),
 			};
 			mockDb.insert.mockReturnValue(mockInsertChain);
@@ -120,7 +122,7 @@ describe("Auth Service", () => {
 				name: "Old Name",
 				avatarUrl: null,
 			};
-			
+
 			const mockSelectChain = {
 				from: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
@@ -134,12 +136,14 @@ describe("Auth Service", () => {
 			const mockUpdateChain = {
 				set: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
-						returning: vi.fn().mockResolvedValue([{
-							...existingUser,
-							name: "Updated Name",
-							avatarUrl: "https://example.com/new-avatar.jpg",
-							updatedAt: expect.any(String),
-						}]),
+						returning: vi.fn().mockResolvedValue([
+							{
+								...existingUser,
+								name: "Updated Name",
+								avatarUrl: "https://example.com/new-avatar.jpg",
+								updatedAt: expect.any(String),
+							},
+						]),
 					}),
 				}),
 			};
@@ -180,14 +184,16 @@ describe("Auth Service", () => {
 
 			const mockInsertChain = {
 				values: vi.fn().mockReturnValue({
-					returning: vi.fn().mockResolvedValue([{
-						id: 1,
-						email: "nopic@example.com",
-						name: "No Picture User",
-						avatarUrl: undefined,
-						provider: "google",
-						providerId: "123456",
-					}]),
+					returning: vi.fn().mockResolvedValue([
+						{
+							id: 1,
+							email: "nopic@example.com",
+							name: "No Picture User",
+							avatarUrl: undefined,
+							provider: "google",
+							providerId: "123456",
+						},
+					]),
 				}),
 			};
 			mockDb.insert.mockReturnValue(mockInsertChain);
@@ -253,7 +259,10 @@ describe("Auth Service", () => {
 			};
 			mockDb.select.mockReturnValue(mockSelectChain);
 
-			const result = await getUserByEmail(mockDb as any, "notfound@example.com");
+			const result = await getUserByEmail(
+				mockDb as any,
+				"notfound@example.com"
+			);
 
 			expect(result).toBeNull();
 		});
@@ -272,9 +281,7 @@ describe("Auth Service", () => {
 
 			await getUserByEmail(mockDb as any, "query@example.com");
 
-			expect(mockWhere).toHaveBeenCalledWith(
-				expect.anything()
-			);
+			expect(mockWhere).toHaveBeenCalledWith(expect.anything());
 			expect(mockLimit).toHaveBeenCalledWith(1);
 		});
 	});

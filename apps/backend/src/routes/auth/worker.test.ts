@@ -56,18 +56,22 @@ describe("Auth API Routes", () => {
 				updatedAt: "2024-01-01T00:00:00.000Z",
 			});
 
-			const res = await app.request("/api/auth/user", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
+			const res = await app.request(
+				"/api/auth/user",
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						email: "admin@example.com",
+						name: "Admin User",
+						picture: "https://example.com/avatar.jpg",
+						sub: "123456",
+					}),
 				},
-				body: JSON.stringify({
-					email: "admin@example.com",
-					name: "Admin User",
-					picture: "https://example.com/avatar.jpg",
-					sub: "123456",
-				}),
-			}, mockEnv);
+				mockEnv
+			);
 
 			expect(res.status).toBe(200);
 			const data = await res.json();
@@ -82,18 +86,22 @@ describe("Auth API Routes", () => {
 			const { isAdminEmail } = await import("./service");
 			vi.mocked(isAdminEmail).mockReturnValue(false);
 
-			const res = await app.request("/api/auth/user", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
+			const res = await app.request(
+				"/api/auth/user",
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						email: "notadmin@example.com",
+						name: "Not Admin",
+						picture: "https://example.com/avatar.jpg",
+						sub: "123456",
+					}),
 				},
-				body: JSON.stringify({
-					email: "notadmin@example.com",
-					name: "Not Admin",
-					picture: "https://example.com/avatar.jpg",
-					sub: "123456",
-				}),
-			}, mockEnv);
+				mockEnv
+			);
 
 			expect(res.status).toBe(403);
 			const data = await res.json();
@@ -122,18 +130,22 @@ describe("Auth API Routes", () => {
 				updatedAt: "2024-01-02T00:00:00.000Z",
 			});
 
-			const res = await app.request("/api/auth/user", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
+			const res = await app.request(
+				"/api/auth/user",
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						email: "admin@example.com",
+						name: "Updated Name",
+						picture: "https://example.com/new-avatar.jpg",
+						sub: "123456",
+					}),
 				},
-				body: JSON.stringify({
-					email: "admin@example.com",
-					name: "Updated Name",
-					picture: "https://example.com/new-avatar.jpg",
-					sub: "123456",
-				}),
-			}, mockEnv);
+				mockEnv
+			);
 
 			expect(res.status).toBe(200);
 			const data = await res.json();
@@ -169,9 +181,13 @@ describe("Auth API Routes", () => {
 				updatedAt: "2024-01-01T00:00:00.000Z",
 			});
 
-			const res = await app.request("/api/auth/user/admin@example.com", {
-				method: "GET",
-			}, mockEnv);
+			const res = await app.request(
+				"/api/auth/user/admin@example.com",
+				{
+					method: "GET",
+				},
+				mockEnv
+			);
 
 			expect(res.status).toBe(200);
 			const data = await res.json();
@@ -189,9 +205,13 @@ describe("Auth API Routes", () => {
 			vi.mocked(createDbClient).mockReturnValue({} as any);
 			vi.mocked(getUserByEmail).mockResolvedValue(null);
 
-			const res = await app.request("/api/auth/user/notfound@example.com", {
-				method: "GET",
-			}, mockEnv);
+			const res = await app.request(
+				"/api/auth/user/notfound@example.com",
+				{
+					method: "GET",
+				},
+				mockEnv
+			);
 
 			expect(res.status).toBe(404);
 			const data = await res.json();
@@ -221,9 +241,13 @@ describe("Auth API Routes", () => {
 			// user@example.comは管理者リストに含まれていないため、falseを返すように設定
 			vi.mocked(isAdminEmail).mockReturnValueOnce(false);
 
-			const res = await app.request("/api/auth/user/user@example.com", {
-				method: "GET",
-			}, mockEnv);
+			const res = await app.request(
+				"/api/auth/user/user@example.com",
+				{
+					method: "GET",
+				},
+				mockEnv
+			);
 
 			expect(res.status).toBe(200);
 			const data = await res.json();
