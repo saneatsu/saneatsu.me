@@ -15,6 +15,7 @@ build/
 
 # Claude
 .claude/settings.local.json
+.claude/task.md
 
 # Environment variables
 .env
