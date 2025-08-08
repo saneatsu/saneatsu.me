@@ -41,7 +41,7 @@ jobs:
       - name: Download .env artifact
         uses: actions/download-artifact@v4
         with:
-          name: env-file-${{ env.ENV }}
+          name: backend-env-file-${{ env.ENV }}
           path: apps/backend
 
       - name: Verify .env file

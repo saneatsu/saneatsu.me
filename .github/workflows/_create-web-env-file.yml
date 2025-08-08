@@ -1,0 +1,39 @@
+name: 🔑 [Common] Create Web env file
+
+on:
+  workflow_call:
+    inputs:
+      ENV:
+        description: 'Environment name (preview/production)'
+        type: string
+        required: true
+    secrets:
+      # Web用環境変数  
+      NEXT_PUBLIC_API_URL:
+        required: true
+
+env:
+  ENV: ${{ inputs.ENV }}
+
+jobs:
+  # Web用の .env ファイルを作成し、Artifactとしてアップロードする
+  create:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Web .env file for ${{ env.ENV }}
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+        run: |
+          ENV_FILE=".env"
+          echo "Creating Web $ENV_FILE for ${{ env.ENV }} environment..."
+          
+          echo "NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL" >> $ENV_FILE
+          
+          echo "✅ Created Web $ENV_FILE with ${{ env.ENV }} configuration"
+
+      - name: Upload .env as an artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-env-file-${{ env.ENV }}
+          path: .env
+          include-hidden-files: true

@@ -1,4 +1,4 @@
-name: 🔑 [Common] Create env file
+name: 🔑 [Common] Create Backend env file
 
 on:
   workflow_call:
@@ -15,47 +15,33 @@ on:
         required: true
       CORS_ORIGIN:
         required: true
-      # Web用環境変数  
-      NEXT_PUBLIC_API_URL:
-        required: true
 
 env:
   ENV: ${{ inputs.ENV }}
 
 jobs:
-  # inputs.ENV によって .env ファイルを作成し、Artifactとしてアップロードする
+  # Backend用の .env ファイルを作成し、Artifactとしてアップロードする
   create:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      deployments: write
-      statuses: write
     steps:
-      - name: Create .env file for ${{ env.ENV }}
+      - name: Create Backend .env file for ${{ env.ENV }}
         env:
-          # Backend用環境変数
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
           CORS_ORIGIN: ${{ secrets.CORS_ORIGIN }}
-          # Web用環境変数
-          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
         run: |
           ENV_FILE=".env"
-          echo "Creating $ENV_FILE for ${{ env.ENV }} environment..."
+          echo "Creating Backend $ENV_FILE for ${{ env.ENV }} environment..."
           
-          # Backend用環境変数
           echo "TURSO_DATABASE_URL=$TURSO_DATABASE_URL" >> $ENV_FILE
           echo "TURSO_AUTH_TOKEN=$TURSO_AUTH_TOKEN" >> $ENV_FILE
           echo "CORS_ORIGIN=$CORS_ORIGIN" >> $ENV_FILE
           
-          # Web用環境変数
-          echo "NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL" >> $ENV_FILE
-          
-          echo "✅ Created $ENV_FILE with ${{ env.ENV }} configuration"
+          echo "✅ Created Backend $ENV_FILE with ${{ env.ENV }} configuration"
 
       - name: Upload .env as an artifact
         uses: actions/upload-artifact@v4
         with:
-          name: env-file-${{ env.ENV }}
+          name: backend-env-file-${{ env.ENV }}
           path: .env
           include-hidden-files: true

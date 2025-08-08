@@ -29,10 +29,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # Playwrightブラウザをインストール（E2E用）
-      - name: Install Playwright browsers
-        run: pnpm --filter @saneatsu/web exec playwright install chromium
-
       # Vitestテストを実行（カバレッジ含む）
       - name: Run Vitest tests with coverage
         run: pnpm test -- --coverage

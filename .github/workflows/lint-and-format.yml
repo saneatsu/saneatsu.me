@@ -25,10 +25,8 @@ jobs:
       - name: Install pnpm
         run: npm install -g pnpm
 
-      - name: Setup Biome
-        uses: biomejs/setup-biome@v2
-        with:
-          version: 2.1.1
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Run Biome
-        run: biome ci . --diagnostic-level=error
+        run: pnpm check --diagnostic-level=error

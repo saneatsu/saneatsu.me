@@ -10,26 +10,19 @@ directory = ".open-next/assets"
 binding = "ASSETS"
 
 # OpenNext configuration will be handled by @opennextjs/cloudflare
-# This is a placeholder configuration
-
-# Environment variables for Next.js
-[vars]
-# NEXT_PUBLIC_API_URL will be set based on environment
+# Environment variables are injected via .env file during build
 
 # Development environment
 [env.development]
 name = "saneatsu-web-dev"
-vars = { NEXT_PUBLIC_API_URL = "https://saneatsu-api-dev.w-saneatsu-e8c.workers.dev" }
 
 # Preview/staging environment
 [env.preview]
 name = "saneatsu-web-preview"
-vars = { NEXT_PUBLIC_API_URL = "https://saneatsu-api-preview.w-saneatsu-e8c.workers.dev" }
 
 # Production environment
 [env.production]
 name = "saneatsu-web-prod"
-vars = { NEXT_PUBLIC_API_URL = "https://api.saneatsu.me" }
 
 # Custom domain configuration for production
 [[env.production.routes]]

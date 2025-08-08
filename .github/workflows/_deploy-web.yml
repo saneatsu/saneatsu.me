@@ -41,7 +41,7 @@ jobs:
       - name: Download .env artifact
         uses: actions/download-artifact@v4
         with:
-          name: env-file-${{ env.ENV }}
+          name: web-env-file-${{ env.ENV }}
           path: apps/web
 
       - name: Verify .env file
@@ -62,7 +62,7 @@ jobs:
         env:
           NODE_ENV: production
 
-      - name: Deploy to Cloudflare Pages
+      - name: Deploy to Cloudflare Workers
         id: cloudflare-wrangler
         uses: cloudflare/wrangler-action@v3
         with:
