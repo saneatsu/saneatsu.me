@@ -47,7 +47,7 @@ echo ""
 # TURSO_DATABASE_URL
 read -p "Turso Database URL を入力してください: " TURSO_DATABASE_URL
 if [ -n "$TURSO_DATABASE_URL" ]; then
-    echo "$TURSO_DATABASE_URL" | wrangler secret put TURSO_DATABASE_URL --env "$ENVIRONMENT" --name saneatsu-api
+    echo "$TURSO_DATABASE_URL" | wrangler secret put TURSO_DATABASE_URL --env "$ENVIRONMENT" --name saneatsu-backend
     echo -e "${GREEN}✅ TURSO_DATABASE_URL を設定しました${NC}"
 else
     echo -e "${YELLOW}⚠️  TURSO_DATABASE_URL をスキップしました${NC}"
@@ -56,7 +56,7 @@ fi
 # TURSO_AUTH_TOKEN
 read -p "Turso Auth Token を入力してください: " TURSO_AUTH_TOKEN
 if [ -n "$TURSO_AUTH_TOKEN" ]; then
-    echo "$TURSO_AUTH_TOKEN" | wrangler secret put TURSO_AUTH_TOKEN --env "$ENVIRONMENT" --name saneatsu-api
+    echo "$TURSO_AUTH_TOKEN" | wrangler secret put TURSO_AUTH_TOKEN --env "$ENVIRONMENT" --name saneatsu-backend
     echo -e "${GREEN}✅ TURSO_AUTH_TOKEN を設定しました${NC}"
 else
     echo -e "${YELLOW}⚠️  TURSO_AUTH_TOKEN をスキップしました${NC}"
@@ -71,16 +71,16 @@ echo ""
 # NEXT_PUBLIC_API_URL（環境別デフォルト値）
 case "$ENVIRONMENT" in
     "development")
-        DEFAULT_API_URL="https://saneatsu-api-dev.workers.dev"
+        DEFAULT_API_URL="https://saneatsu-backend-dev.workers.dev"
         ;;
     "preview")
-        DEFAULT_API_URL="https://saneatsu-api-preview.workers.dev"
+        DEFAULT_API_URL="https://saneatsu-backend-preview.workers.dev"
         ;;
     "production")
         DEFAULT_API_URL="https://api.saneatsu.me"
         ;;
     *)
-        DEFAULT_API_URL="https://saneatsu-api-dev.workers.dev"
+        DEFAULT_API_URL="https://saneatsu-backend-dev.workers.dev"
         ;;
 esac
 
@@ -100,7 +100,7 @@ echo ""
 echo -e "${BLUE}📋 設定された環境変数を確認します${NC}"
 echo ""
 
-echo -e "${YELLOW}バックエンド (saneatsu-api):${NC}"
+echo -e "${YELLOW}バックエンド (saneatsu-backend):${NC}"
 cd apps/backend
 wrangler secret list --env "$ENVIRONMENT" 2>/dev/null || echo "環境変数が設定されていません"
 cd ../..

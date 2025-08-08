@@ -22,7 +22,7 @@ name = "saneatsu-web-preview"
 
 # Production environment
 [env.production]
-name = "saneatsu-web-prod"
+name = "saneatsu-web"
 
 # Custom domain configuration for production
 [[env.production.routes]]

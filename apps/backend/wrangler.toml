@@ -8,15 +8,15 @@ compatibility_flags = ["nodejs_compat"]
 
 # Development configuration
 [env.development]
-name = "saneatsu-api-dev"
+name = "saneatsu-backend-dev"
 
 # Preview/staging environment
 [env.preview]
-name = "saneatsu-api-preview"
+name = "saneatsu-backend-preview"
 
 # Production environment
 [env.production]
-name = "saneatsu-api-prod"
+name = "saneatsu-backend"
 
 # Custom domain configuration for production
 [[env.production.routes]]

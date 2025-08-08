@@ -77,7 +77,7 @@ jobs:
             const environment = '${{ env.ENV }}';
             const deploymentUrl = environment === 'production' 
               ? 'https://api.saneatsu.me' 
-              : 'https://saneatsu-api-preview.w-saneatsu-e8c.workers.dev';
+              : 'https://saneatsu-backend-preview.w-saneatsu-e8c.workers.dev';
             
             await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,

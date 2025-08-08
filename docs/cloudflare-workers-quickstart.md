@@ -266,12 +266,12 @@ saneatsu.me/
 ### 開発環境
 
 - **フロントエンド**: `https://saneatsu-web-dev.workers.dev`
-- **バックエンド**: `https://saneatsu-api-dev.workers.dev`
+- **バックエンド**: `https://saneatsu-backend-dev.workers.dev`
 
 ### プレビュー環境
 
 - **フロントエンド**: `https://saneatsu-web-preview.workers.dev`
-- **バックエンド**: `https://saneatsu-api-preview.workers.dev`
+- **バックエンド**: `https://saneatsu-backend-preview.workers.dev`
 
 ### 本番環境
 

@@ -47,7 +47,7 @@ jobs:
       ENV: ${{ needs.set-environment.outputs.environment }}
     secrets:
       # Web用環境変数
-      NEXT_PUBLIC_API_URL: ${{ needs.set-environment.outputs.environment == 'production' && 'https://api.saneatsu.me' || 'https://saneatsu-api-preview.w-saneatsu-e8c.workers.dev' }}
+      NEXT_PUBLIC_API_URL: ${{ needs.set-environment.outputs.environment == 'production' && 'https://api.saneatsu.me' || 'https://saneatsu-backend-preview.w-saneatsu-e8c.workers.dev' }}
 
   # Webをデプロイ
   web-deploy:
