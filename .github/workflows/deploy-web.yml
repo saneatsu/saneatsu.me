@@ -48,6 +48,13 @@ jobs:
     secrets:
       # Web用環境変数
       NEXT_PUBLIC_API_URL: ${{ needs.set-environment.outputs.environment == 'production' && 'https://api.saneatsu.me' || 'https://saneatsu-backend-preview.w-saneatsu-e8c.workers.dev' }}
+      # NextAuth.js関連
+      NEXTAUTH_URL: ${{ needs.set-environment.outputs.environment == 'production' && 'https://saneatsu.me' || 'https://saneatsu-web-preview.w-saneatsu-e8c.workers.dev' }}
+      NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      # 管理者設定
+      ADMIN_EMAILS: ${{ secrets.ADMIN_EMAILS }}
 
   # Webをデプロイ
   web-deploy:

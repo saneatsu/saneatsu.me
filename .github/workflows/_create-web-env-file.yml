@@ -11,6 +11,18 @@ on:
       # Web用環境変数  
       NEXT_PUBLIC_API_URL:
         required: true
+      # NextAuth.js関連
+      NEXTAUTH_URL:
+        required: true
+      NEXTAUTH_SECRET:
+        required: true
+      GOOGLE_CLIENT_ID:
+        required: true
+      GOOGLE_CLIENT_SECRET:
+        required: true
+      # 管理者設定
+      ADMIN_EMAILS:
+        required: true
 
 env:
   ENV: ${{ inputs.ENV }}
@@ -23,11 +35,30 @@ jobs:
       - name: Create Web .env file for ${{ env.ENV }}
         env:
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          AUTH_TRUST_HOST: "true"
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          ADMIN_EMAILS: ${{ secrets.ADMIN_EMAILS }}
         run: |
           ENV_FILE=".env"
           echo "Creating Web $ENV_FILE for ${{ env.ENV }} environment..."
           
+          # API URL
           echo "NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL" >> $ENV_FILE
+          
+          # NextAuth.js関連
+          echo "NEXTAUTH_URL=$NEXTAUTH_URL" >> $ENV_FILE
+          echo "NEXTAUTH_SECRET=$NEXTAUTH_SECRET" >> $ENV_FILE
+          echo "AUTH_TRUST_HOST=$AUTH_TRUST_HOST" >> $ENV_FILE
+          
+          # Google OAuth
+          echo "GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID" >> $ENV_FILE
+          echo "GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET" >> $ENV_FILE
+          
+          # 管理者設定
+          echo "ADMIN_EMAILS=$ADMIN_EMAILS" >> $ENV_FILE
           
           echo "✅ Created Web $ENV_FILE with ${{ env.ENV }} configuration"
 
