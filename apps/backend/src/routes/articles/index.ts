@@ -1,7 +1,8 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
-import { articles, articleTranslations, db } from "@saneatsu/db";
+import { articles, articleTranslations } from "@saneatsu/db/worker";
 import { articleListQuerySchema, type SortOrder } from "@saneatsu/schemas";
 import { and, asc, desc, eq, sql } from "drizzle-orm";
+import { createDbClient } from "../../lib/db";
 import { convertWikiLinks } from "../../utils/wiki-link";
 import { getSuggestionsRoute, handleArticleSuggestions } from "./suggestions";
 
@@ -189,10 +190,16 @@ const ArticleCreateResponseSchema = z.object({
 	}),
 });
 
+// Cloudflare Workers環境の型定義
+type Env = {
+	TURSO_DATABASE_URL: string;
+	TURSO_AUTH_TOKEN: string;
+};
+
 /**
  * 記事関連のAPIルート
  */
-export const articlesRoute = new OpenAPIHono();
+export const articlesRoute = new OpenAPIHono<{ Bindings: Env }>();
 
 /**
  * 記事一覧取得のルート定義
@@ -233,6 +240,9 @@ const listArticlesRoute = createRoute({
 // @ts-ignore - OpenAPIの型推論エラーを一時的に回避
 articlesRoute.openapi(listArticlesRoute, async (c) => {
 	try {
+		// Cloudflare Workers環境でDBクライアントを作成
+		const db = createDbClient(c.env);
+
 		// OpenAPIスキーマでクエリパラメータを取得
 		const rawQuery = c.req.valid("query");
 
@@ -436,6 +446,9 @@ articlesRoute.openapi(getSuggestionsRoute, handleArticleSuggestions);
 // @ts-ignore - OpenAPIの型推論エラーを一時的に回避
 articlesRoute.openapi(getArticleRoute, async (c) => {
 	try {
+		// Cloudflare Workers環境でDBクライアントを作成
+		const db = createDbClient(c.env);
+
 		const { slug } = c.req.valid("param");
 		const { lang = "ja" } = c.req.valid("query");
 
@@ -505,7 +518,7 @@ articlesRoute.openapi(getArticleRoute, async (c) => {
 
 		// 4. Wiki Linkをコンテンツ内で変換
 		const convertedContent = articleData.content
-			? await convertWikiLinks(articleData.content, lang)
+			? await convertWikiLinks(db, articleData.content, lang)
 			: articleData.content;
 
 		return c.json({
@@ -581,6 +594,9 @@ const checkSlugRoute = createRoute({
 // @ts-ignore - OpenAPIの型推論エラーを一時的に回避
 articlesRoute.openapi(checkSlugRoute, async (c) => {
 	try {
+		// Cloudflare Workers環境でDBクライアントを作成
+		const db = createDbClient(c.env);
+
 		const { slug } = c.req.valid("query");
 
 		// 指定されたスラッグが既に存在するかチェック
@@ -671,6 +687,9 @@ const createArticleRoute = createRoute({
 // @ts-ignore - OpenAPIの型推論エラーを一時的に回避
 articlesRoute.openapi(createArticleRoute, async (c) => {
 	try {
+		// Cloudflare Workers環境でDBクライアントを作成
+		const db = createDbClient(c.env);
+
 		const { title, slug, content, status, publishedAt } = c.req.valid("json");
 
 		// 1. スラッグの重複チェック

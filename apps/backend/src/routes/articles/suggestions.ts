@@ -1,7 +1,8 @@
 import { createRoute, z } from "@hono/zod-openapi";
-import { articles, articleTranslations, db } from "@saneatsu/db";
+import { articles, articleTranslations } from "@saneatsu/db/worker";
 import { and, eq, sql } from "drizzle-orm";
 import type { Context } from "hono";
+import { createDbClient } from "../../lib/db";
 import { extractHeadings } from "../../utils/markdown";
 
 /**
@@ -121,9 +122,17 @@ export const getSuggestionsRoute = createRoute({
 /**
  * GET /api/articles/suggestions - Wiki Linkサジェスト取得ハンドラー
  */
-// @ts-ignore - Hono Context型の互換性問題を回避
-export async function handleArticleSuggestions(c: Context) {
+export async function handleArticleSuggestions(
+	c: Context<{
+		Bindings: {
+			TURSO_DATABASE_URL: string;
+			TURSO_AUTH_TOKEN: string;
+		};
+	}>
+) {
 	try {
+		// Cloudflare Workers環境でDBクライアントを作成
+		const db = createDbClient(c.env);
 		const query = c.req.query();
 		const q = query.q || "";
 		const lang = (query.lang === "en" ? "en" : "ja") as "ja" | "en";

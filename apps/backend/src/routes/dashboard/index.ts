@@ -1,5 +1,5 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
-import { articles, articleTranslations, db } from "@saneatsu/db";
+import { articles, articleTranslations } from "@saneatsu/db/worker";
 import {
 	type DashboardOverviewResponse,
 	type DashboardStatsResponse,
@@ -8,6 +8,7 @@ import {
 	viewsTrendQuerySchema,
 } from "@saneatsu/schemas";
 import { and, count, desc, eq, gte, sql } from "drizzle-orm";
+import { createDbClient } from "../../lib/db";
 
 // OpenAPI用のクエリスキーマ（packages/schemasをOpenAPI対応でラップ）
 const dashboardStatsOpenApiQuerySchema = z.object({
@@ -158,7 +159,13 @@ const viewsTrendOpenApiResponseSchema = z.object({
 	}),
 });
 
-const app = new OpenAPIHono();
+// Cloudflare Workers環境の型定義
+type Env = {
+	TURSO_DATABASE_URL: string;
+	TURSO_AUTH_TOKEN: string;
+};
+
+const app = new OpenAPIHono<{ Bindings: Env }>();
 
 /**
  * ダッシュボード統計取得API
@@ -215,9 +222,12 @@ const getDashboardOverviewRoute = createRoute({
 	description: "ダッシュボードトップページで表示する概要統計データを取得します",
 });
 
-// @ts-ignore
+// @ts-ignore - OpenAPIの型推論エラーを一時的に回避
 app.openapi(getDashboardStatsRoute, async (c) => {
 	try {
+		// Cloudflare Workers環境でDBクライアントを作成
+		const db = createDbClient(c.env);
+
 		const query = c.req.valid("query");
 		const validated = dashboardStatsQuerySchema.parse(query);
 		const { language, timeRange } = validated;
@@ -345,9 +355,12 @@ app.openapi(getDashboardStatsRoute, async (c) => {
 	}
 });
 
-// @ts-ignore
+// @ts-ignore - OpenAPIの型推論エラーを一時的に回避
 app.openapi(getDashboardOverviewRoute, async (c) => {
 	try {
+		// Cloudflare Workers環境でDBクライアントを作成
+		const db = createDbClient(c.env);
+
 		const query = c.req.valid("query");
 		const language = query.language || "ja";
 
@@ -504,9 +517,12 @@ const getViewsTrendRoute = createRoute({
 /**
  * GET /api/dashboard/views-trend - 閲覧数推移取得
  */
-// @ts-ignore
+// @ts-ignore - OpenAPIの型推論エラーを一時的に回避
 app.openapi(getViewsTrendRoute, async (c) => {
 	try {
+		// Cloudflare Workers環境でDBクライアントを作成
+		const db = createDbClient(c.env);
+
 		const query = c.req.valid("query");
 		const validated = viewsTrendQuerySchema.parse(query);
 		const { language, days } = validated;

@@ -1,5 +1,6 @@
-import { articles, articleTranslations, db } from "@saneatsu/db";
+import { articles, articleTranslations } from "@saneatsu/db/worker";
 import { and, eq, inArray } from "drizzle-orm";
+import type { DrizzleClient } from "../lib/db";
 
 /**
  * Wiki Linkの情報
@@ -46,11 +47,13 @@ export function extractWikiLinks(content: string): string[] {
  * 指定されたslugの配列から、対応する記事のタイトルを取得する。
  * 存在しない記事の場合はnullを返す。
  *
+ * @param db - データベースクライアント
  * @param slugs - 取得する記事のslug配列
  * @param language - 言語（ja/en）
  * @returns slug→WikiLinkInfoのマップ
  */
 export async function fetchArticleInfoBySlugs(
+	db: DrizzleClient,
 	slugs: string[],
 	language: "ja" | "en"
 ): Promise<Map<string, WikiLinkInfo>> {
@@ -108,11 +111,13 @@ export async function fetchArticleInfoBySlugs(
  * [[slug]]形式のテキストを[タイトル](/locale/articles/slug)形式に変換する。
  * 記事が存在しない場合は[[slug]]のまま残す。
  *
+ * @param db - データベースクライアント
  * @param content - 変換前のMarkdownコンテンツ
  * @param language - 言語（ja/en）
  * @returns 変換後のMarkdownコンテンツ
  */
 export async function convertWikiLinks(
+	db: DrizzleClient,
 	content: string,
 	language: "ja" | "en"
 ): Promise<string> {
@@ -124,7 +129,7 @@ export async function convertWikiLinks(
 	}
 
 	// slug情報を取得
-	const linkInfoMap = await fetchArticleInfoBySlugs(slugs, language);
+	const linkInfoMap = await fetchArticleInfoBySlugs(db, slugs, language);
 
 	// Wiki LinkをMarkdownリンクに置換
 	let convertedContent = content;
