@@ -198,5 +198,102 @@
 				"idPositive": "ID must be a positive integer"
 			}
 		}
+	},
+	"Privacy": {
+		"title": "Privacy Policy",
+		"introduction": {
+			"title": "Introduction",
+			"content": "saneatsu.me (the 'Site') respects your privacy and is committed to protecting your personal information. This Privacy Policy explains how we handle personal information on our Site."
+		},
+		"dataCollection": {
+			"title": "Information We Collect",
+			"content": "We may collect the following information:",
+			"items": {
+				"email": "Email address",
+				"name": "Name",
+				"profile": "Profile picture"
+			}
+		},
+		"dataUsage": {
+			"title": "How We Use Your Information",
+			"content": "We use the collected information for user authentication, service provision and improvement, and responding to inquiries. We do not provide information to third parties except as required by law."
+		},
+		"dataSecurity": {
+			"title": "Data Protection",
+			"content": "We manage personal information appropriately and implement necessary and appropriate security measures to prevent unauthorized access, loss, damage, alteration, or leakage."
+		},
+		"cookies": {
+			"title": "Use of Cookies",
+			"content": "We use cookies to improve user experience. If you do not wish to use cookies, you can disable them in your browser settings."
+		},
+		"thirdParty": {
+			"title": "Third-Party Services",
+			"content": "We use third-party services such as Google authentication. When using these services, the privacy policies of each service apply."
+		},
+		"contact": {
+			"title": "Contact Us",
+			"content": "For inquiries about this Privacy Policy, please contact us through the contact form on the Site."
+		},
+		"changes": {
+			"title": "Changes to This Policy",
+			"content": "This Privacy Policy may be changed as necessary. Any changes will be announced on the Site."
+		},
+		"lastUpdated": "Last Updated"
+	},
+	"Terms": {
+		"title": "Terms of Service",
+		"acceptance": {
+			"title": "Acceptance of Terms",
+			"content": "By using saneatsu.me (the 'Site'), you are deemed to have agreed to these Terms of Service."
+		},
+		"service": {
+			"title": "Service Description",
+			"content": "The Site is a web service that provides technical articles and blog content. Service content may change without notice."
+		},
+		"userObligations": {
+			"title": "User Obligations",
+			"content": "Users must comply with the following when using the Site:",
+			"items": {
+				"lawful": "Not engage in activities that violate laws or public order and morals",
+				"respectful": "Not infringe on the rights of other users or third parties",
+				"accurate": "Not register false information",
+				"security": "Not engage in unauthorized access or activities that burden the system"
+			}
+		},
+		"prohibited": {
+			"title": "Prohibited Activities",
+			"content": "The following activities are prohibited:",
+			"items": {
+				"illegal": "Activities related to illegal acts or criminal acts",
+				"harmful": "Activities that damage the reputation or credibility of others",
+				"spam": "Spam or other nuisance activities",
+				"unauthorized": "Unauthorized commercial use or reproduction"
+			}
+		},
+		"intellectualProperty": {
+			"title": "Intellectual Property Rights",
+			"content": "The copyright of the content on the Site (text, images, programs, etc.) belongs to the Site or legitimate rights holders. Unauthorized copying, reproduction, or modification is prohibited."
+		},
+		"disclaimer": {
+			"title": "Disclaimer",
+			"content": "The Site does not guarantee the accuracy or completeness of the information provided. The Site assumes no responsibility for any damages arising from the use of the Site."
+		},
+		"limitation": {
+			"title": "Limitation of Liability",
+			"content": "The Site is not responsible for damages caused by interruption, suspension, termination, change, or unavailability of the service."
+		},
+		"termination": {
+			"title": "Termination of Use",
+			"content": "If a user violates these Terms, the Site may suspend the use of the service without prior notice."
+		},
+		"governing": {
+			"title": "Governing Law",
+			"content": "These Terms are governed by and construed in accordance with Japanese law."
+		},
+		"changes": {
+			"title": "Changes to Terms",
+			"content": "These Terms may be changed as necessary. Changed terms become effective when posted on the Site."
+		},
+		"lastUpdated": "Last Updated"
 	}
 }
