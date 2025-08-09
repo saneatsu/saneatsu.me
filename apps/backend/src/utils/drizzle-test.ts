@@ -10,9 +10,10 @@ export function setupDbMocks() {
 	// 直接インポートせず、グローバルなモックを使用
 	const mockDb = {} as unknown as MockDb;
 
-	// insertとupdateのメソッドを追加
+	// insertとupdateとselectのメソッドを追加
 	mockDb.insert = vi.fn();
 	mockDb.update = vi.fn();
+	mockDb.select = vi.fn();
 
 	/**
 	 * 基本的なモックチェーンを作成するヘルパー
@@ -96,6 +97,7 @@ export function setupDbMocks() {
 		const result = asResult || [];
 		return {
 			from: vi.fn().mockReturnThis(),
+			leftJoin: vi.fn().mockReturnThis(), // サブクエリ内のleftJoinに対応
 			groupBy: vi.fn().mockReturnThis(),
 			as: vi.fn().mockReturnValue(result),
 		};
