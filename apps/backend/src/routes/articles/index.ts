@@ -2,7 +2,6 @@ import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { articles, articleTranslations } from "@saneatsu/db/worker";
 import { articleListQuerySchema, type SortOrder } from "@saneatsu/schemas";
 import { and, asc, desc, eq, sql } from "drizzle-orm";
-import { createDbClient } from "../../lib/db";
 import { convertWikiLinks } from "../../utils/wiki-link";
 import { getSuggestionsRoute, handleArticleSuggestions } from "./suggestions";
 
@@ -248,8 +247,12 @@ const listArticlesRoute = createRoute({
 // @ts-ignore - OpenAPIの型推論エラーを一時的に回避
 articlesRoute.openapi(listArticlesRoute, async (c) => {
 	try {
-		// Cloudflare Workers環境でDBクライアントを作成
-		const db = createDbClient(c.env);
+		// packages/db経由でDBクライアントを作成
+		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const db = createDatabaseClient({
+			TURSO_DATABASE_URL: c.env.TURSO_DATABASE_URL,
+			TURSO_AUTH_TOKEN: c.env.TURSO_AUTH_TOKEN,
+		});
 
 		// OpenAPIスキーマでクエリパラメータを取得
 		const rawQuery = c.req.valid("query");
@@ -294,23 +297,7 @@ articlesRoute.openapi(listArticlesRoute, async (c) => {
 			);
 		}
 
-		// 合計閲覧数を計算するサブクエリ
-		// 記事テーブルを基点にして、翻訳データが存在しない記事も0として扱う
-		const totalViewCountSubquery = db
-			.select({
-				articleId: articles.id,
-				totalViewCount:
-					sql<number>`COALESCE(SUM(${articleTranslations.viewCount}), 0)`.as(
-						"totalViewCount"
-					),
-			})
-			.from(articles)
-			.leftJoin(
-				articleTranslations,
-				eq(articles.id, articleTranslations.articleId)
-			)
-			.groupBy(articles.id)
-			.as("total_views");
+		// 一時的にサブクエリを削除してシンプルなクエリでテスト
 
 		// ソート条件を設定
 		let orderByClause: ReturnType<typeof asc | typeof desc>;
@@ -322,10 +309,9 @@ articlesRoute.openapi(listArticlesRoute, async (c) => {
 						: desc(articleTranslations.title);
 				break;
 			case "viewCount":
+				// 一時的にviewCountソートは無効化
 				orderByClause =
-					order === "asc"
-						? asc(totalViewCountSubquery.totalViewCount)
-						: desc(totalViewCountSubquery.totalViewCount);
+					order === "asc" ? asc(articles.createdAt) : desc(articles.createdAt);
 				break;
 			case "publishedAt":
 				orderByClause =
@@ -343,7 +329,7 @@ articlesRoute.openapi(listArticlesRoute, async (c) => {
 				break;
 		}
 
-		// 記事一覧を取得
+		// 記事一覧を取得（JOINあり、サブクエリなし）
 		const articleList = await db
 			.select({
 				id: articles.id,
@@ -354,7 +340,7 @@ articlesRoute.openapi(listArticlesRoute, async (c) => {
 				updatedAt: articles.updatedAt,
 				title: articleTranslations.title,
 				content: articleTranslations.content,
-				viewCount: sql<number>`COALESCE(${totalViewCountSubquery.totalViewCount}, 0)`,
+				viewCount: sql<number>`0`, // 一時的に固定値（後でサブクエリを復元予定）
 			})
 			.from(articles)
 			.leftJoin(
@@ -363,10 +349,6 @@ articlesRoute.openapi(listArticlesRoute, async (c) => {
 					eq(articles.id, articleTranslations.articleId),
 					eq(articleTranslations.language, lang)
 				)
-			)
-			.leftJoin(
-				totalViewCountSubquery,
-				eq(articles.id, totalViewCountSubquery.articleId)
 			)
 			.where(and(...conditions))
 			.orderBy(orderByClause)
@@ -499,8 +481,12 @@ articlesRoute.openapi(getSuggestionsRoute, handleArticleSuggestions);
 // @ts-ignore - OpenAPIの型推論エラーを一時的に回避
 articlesRoute.openapi(checkSlugRoute, async (c) => {
 	try {
-		// Cloudflare Workers環境でDBクライアントを作成
-		const db = createDbClient(c.env);
+		// packages/db経由でDBクライアントを作成
+		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const db = createDatabaseClient({
+			TURSO_DATABASE_URL: c.env.TURSO_DATABASE_URL,
+			TURSO_AUTH_TOKEN: c.env.TURSO_AUTH_TOKEN,
+		});
 
 		const { slug } = c.req.valid("query");
 
@@ -537,8 +523,12 @@ articlesRoute.openapi(checkSlugRoute, async (c) => {
 // @ts-ignore - OpenAPIの型推論エラーを一時的に回避
 articlesRoute.openapi(getArticleRoute, async (c) => {
 	try {
-		// Cloudflare Workers環境でDBクライアントを作成
-		const db = createDbClient(c.env);
+		// packages/db経由でDBクライアントを作成
+		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const db = createDatabaseClient({
+			TURSO_DATABASE_URL: c.env.TURSO_DATABASE_URL,
+			TURSO_AUTH_TOKEN: c.env.TURSO_AUTH_TOKEN,
+		});
 
 		const { slug } = c.req.valid("param");
 		const { lang = "ja" } = c.req.valid("query");
@@ -700,11 +690,14 @@ const createArticleRoute = createRoute({
 // @ts-ignore - OpenAPIの型推論エラーを一時的に回避
 articlesRoute.openapi(createArticleRoute, async (c) => {
 	try {
-		// Cloudflare Workers環境でDBクライアントを作成
-		const db = createDbClient(c.env);
+		// packages/db経由でDBクライアントを作成
+		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const db = createDatabaseClient({
+			TURSO_DATABASE_URL: c.env.TURSO_DATABASE_URL,
+			TURSO_AUTH_TOKEN: c.env.TURSO_AUTH_TOKEN,
+		});
 
-		const { title, slug, content, status, publishedAt, tagIds } =
-			c.req.valid("json");
+		const { title, slug, content, status, publishedAt } = c.req.valid("json");
 
 		// 1. スラッグの重複チェック
 		const existingArticle = await db

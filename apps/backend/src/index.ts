@@ -99,7 +99,19 @@ export { app };
 const port = process.env.PORT ? parseInt(process.env.PORT) : 8888;
 console.log(`🚀 Server is running on http://localhost:${port}`);
 
-serve({
-	fetch: app.fetch,
-	port,
-});
+try {
+	serve({
+		fetch: (request, env) => {
+			// Node.js環境でprocess.envをc.envに渡す
+			return app.fetch(request, {
+				...process.env,
+				...env,
+			});
+		},
+		port,
+	});
+	console.log(`✅ Server successfully started on http://localhost:${port}`);
+} catch (error) {
+	console.error("サーバー起動エラー:", error);
+	process.exit(1);
+}
