@@ -88,18 +88,15 @@ export function ArticleActions({ article, onAction }: ArticleActionsProps) {
 	 * 記事編集ページへ移動
 	 */
 	const handleEdit = () => {
-		// 実際の実装では記事編集ページに遷移
-		// window.location.href = `/admin/articles/${article.id}/edit`;
-		alert("記事編集機能は実装予定です");
+		window.location.href = `/admin/articles/${article.id}/edit`;
 	};
 
 	/**
 	 * 記事プレビュー
 	 */
 	const handlePreview = () => {
-		// 実際の実装では記事詳細ページに遷移
-		// window.open(`/articles/${article.slug}`, '_blank');
-		alert("記事プレビュー機能は実装予定です");
+		// 日本語版の記事詳細ページを新しいタブで開く
+		window.open(`/ja/articles/${article.slug}`, "_blank");
 	};
 
 	return (
