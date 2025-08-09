@@ -312,11 +312,23 @@ export function ArticleMarkdownEditor({
 								);
 							},
 							// 順序なしリストのスタイリング
-							ul: ({ children, ...props }) => (
-								<ul className="list-disc list-inside space-y-1 mb-4" {...props}>
-									{children}
-								</ul>
-							),
+							ul: ({ children, ...props }) => {
+								const className = props.className;
+								const isTaskList = className?.includes("contains-task-list");
+
+								return (
+									<ul
+										className={
+											isTaskList
+												? "space-y-1 mb-4" // タスクリストはlist-discを適用しない
+												: "list-disc list-inside space-y-1 mb-4"
+										}
+										{...props}
+									>
+										{children}
+									</ul>
+								);
+							},
 							// 順序ありリストのスタイリング
 							ol: ({ children, ...props }) => (
 								<ol
@@ -327,11 +339,43 @@ export function ArticleMarkdownEditor({
 								</ol>
 							),
 							// リストアイテムのスタイリング
-							li: ({ children, ...props }) => (
-								<li className="text-sm" {...props}>
-									{children}
-								</li>
-							),
+							li: ({
+								children,
+								...props
+							}: React.HTMLAttributes<HTMLLIElement>) => {
+								// remarkGfmによってタスクリストには'task-list-item'クラスが付与される
+								const className = props.className;
+								const isTaskListItem = className?.includes("task-list-item");
+
+								return (
+									<li
+										className={
+											isTaskListItem
+												? "text-sm flex items-start gap-2 list-none pl-0"
+												: "text-sm"
+										}
+										{...props}
+									>
+										{children}
+									</li>
+								);
+							},
+							// チェックボックスのスタイリング
+							input: ({
+								type,
+								...props
+							}: React.InputHTMLAttributes<HTMLInputElement>) => {
+								if (type === "checkbox") {
+									return (
+										<input
+											type="checkbox"
+											className="mt-0.5 mr-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500 flex-shrink-0"
+											{...props}
+										/>
+									);
+								}
+								return <input type={type} {...props} />;
+							},
 						},
 					}}
 				/>
