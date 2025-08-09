@@ -13,9 +13,11 @@ vi.mock("@saneatsu/db", () => ({
 	articleTranslations: {},
 }));
 
-// createDbClient関数をモック
-vi.mock("../../lib/db", () => ({
-	createDbClient: vi.fn(),
+// createDatabaseClient関数をモック
+vi.mock("@saneatsu/db/worker", () => ({
+	createDatabaseClient: vi.fn(),
+	articles: {},
+	articleTranslations: {},
 }));
 
 describe("GET /articles", () => {
@@ -27,9 +29,9 @@ describe("GET /articles", () => {
 		// Arrange
 		const { mockDb, createSubqueryMock } = setupDbMocks();
 
-		// createDbClient関数がmockDbを返すように設定
-		const { createDbClient } = await import("../../lib/db");
-		vi.mocked(createDbClient).mockReturnValue(mockDb as any);
+		// createDatabaseClient関数がmockDbを返すように設定
+		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
 
 		const mockArticles = [
 			createMockArticleWithTranslation({
@@ -58,21 +60,19 @@ describe("GET /articles", () => {
 
 		const mockTotalCount = [{}, {}]; // 2件の記事を表す配列
 
-		const totalViewCountSubqueryMock = createSubqueryMock([
+		const _totalViewCountSubqueryMock = createSubqueryMock([
 			{ articleId: "article1", totalViewCount: 0 },
 			{ articleId: "article2", totalViewCount: 0 },
 		]);
 
-		// 記事一覧取得のモック（サブクエリも含む）
+		// 記事一覧取得のモック（正しいチェーン構造）
 		const articleListMock = {
 			from: vi.fn().mockReturnValue({
 				leftJoin: vi.fn().mockReturnValue({
-					leftJoin: vi.fn().mockReturnValue({
-						where: vi.fn().mockReturnValue({
-							orderBy: vi.fn().mockReturnValue({
-								limit: vi.fn().mockReturnValue({
-									offset: vi.fn().mockResolvedValue(mockArticles),
-								}),
+					where: vi.fn().mockReturnValue({
+						orderBy: vi.fn().mockReturnValue({
+							limit: vi.fn().mockReturnValue({
+								offset: vi.fn().mockResolvedValue(mockArticles),
 							}),
 						}),
 					}),
@@ -90,12 +90,14 @@ describe("GET /articles", () => {
 		};
 
 		mockDb.select
-			.mockReturnValueOnce(totalViewCountSubqueryMock) // サブクエリ
 			.mockReturnValueOnce(articleListMock) // 記事一覧取得
 			.mockReturnValueOnce(countMock); // 総記事数取得
 
 		// Act
-		const client = testClient(articlesRoute) as any;
+		const client = testClient(articlesRoute, {
+			TURSO_DATABASE_URL: "test://test.db",
+			TURSO_AUTH_TOKEN: "test-token",
+		}) as any;
 		const res = await client.index.$get({
 			query: {},
 		});
@@ -119,9 +121,9 @@ describe("GET /articles", () => {
 		// Arrange
 		const { mockDb, createSubqueryMock } = setupDbMocks();
 
-		// createDbClient関数がmockDbを返すように設定
-		const { createDbClient } = await import("../../lib/db");
-		vi.mocked(createDbClient).mockReturnValue(mockDb as any);
+		// createDatabaseClient関数がmockDbを返すように設定
+		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
 
 		const mockArticles = [
 			createMockArticleWithTranslation({
@@ -189,9 +191,9 @@ describe("GET /articles", () => {
 		// Arrange
 		const { mockDb, createSubqueryMock } = setupDbMocks();
 
-		// createDbClient関数がmockDbを返すように設定
-		const { createDbClient } = await import("../../lib/db");
-		vi.mocked(createDbClient).mockReturnValue(mockDb as any);
+		// createDatabaseClient関数がmockDbを返すように設定
+		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
 
 		const mockArticles = [
 			createMockArticleWithTranslation({
@@ -258,9 +260,9 @@ describe("GET /articles", () => {
 		// Arrange
 		const { mockDb, createSubqueryMock } = setupDbMocks();
 
-		// createDbClient関数がmockDbを返すように設定
-		const { createDbClient } = await import("../../lib/db");
-		vi.mocked(createDbClient).mockReturnValue(mockDb as any);
+		// createDatabaseClient関数がmockDbを返すように設定
+		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
 
 		const totalViewCountSubqueryMock = createSubqueryMock([]);
 
@@ -324,9 +326,9 @@ describe("GET /articles/:slug", () => {
 		// Arrange
 		const { mockDb } = setupDbMocks();
 
-		// createDbClient関数がmockDbを返すように設定
-		const { createDbClient } = await import("../../lib/db");
-		vi.mocked(createDbClient).mockReturnValue(mockDb as any);
+		// createDatabaseClient関数がmockDbを返すように設定
+		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
 
 		const mockArticle = createMockArticleWithTranslation({
 			article: {
@@ -388,9 +390,9 @@ describe("GET /articles/:slug", () => {
 		// Arrange
 		const { mockDb } = setupDbMocks();
 
-		// createDbClient関数がmockDbを返すように設定
-		const { createDbClient } = await import("../../lib/db");
-		vi.mocked(createDbClient).mockReturnValue(mockDb as any);
+		// createDatabaseClient関数がmockDbを返すように設定
+		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
 
 		const articleMock = {
 			from: vi.fn().mockReturnValue({
@@ -426,9 +428,9 @@ describe("GET /articles/:slug", () => {
 		// Arrange
 		const { mockDb } = setupDbMocks();
 
-		// createDbClient関数がmockDbを返すように設定
-		const { createDbClient } = await import("../../lib/db");
-		vi.mocked(createDbClient).mockReturnValue(mockDb as any);
+		// createDatabaseClient関数がmockDbを返すように設定
+		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
 
 		const mockArticle = createMockArticleWithTranslation({
 			article: {
@@ -486,9 +488,9 @@ describe("GET /articles/:slug", () => {
 		// Arrange
 		const { mockDb } = setupDbMocks();
 
-		// createDbClient関数がmockDbを返すように設定
-		const { createDbClient } = await import("../../lib/db");
-		vi.mocked(createDbClient).mockReturnValue(mockDb as any);
+		// createDatabaseClient関数がmockDbを返すように設定
+		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
 
 		const mockArticle = {
 			id: 1,
@@ -542,9 +544,9 @@ describe("GET /articles/:slug", () => {
 		// Arrange
 		const { mockDb } = setupDbMocks();
 
-		// createDbClient関数がmockDbを返すように設定
-		const { createDbClient } = await import("../../lib/db");
-		vi.mocked(createDbClient).mockReturnValue(mockDb as any);
+		// createDatabaseClient関数がmockDbを返すように設定
+		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
 
 		const mockDraftArticle = {
 			id: 1,
@@ -593,9 +595,9 @@ describe("GET /articles/:slug", () => {
 		// Arrange
 		const { mockDb } = setupDbMocks();
 
-		// createDbClient関数がmockDbを返すように設定
-		const { createDbClient } = await import("../../lib/db");
-		vi.mocked(createDbClient).mockReturnValue(mockDb as any);
+		// createDatabaseClient関数がmockDbを返すように設定
+		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
 
 		const mockArchivedArticle = {
 			id: 1,
@@ -644,9 +646,9 @@ describe("GET /articles/:slug", () => {
 		// Arrange
 		const { mockDb } = setupDbMocks();
 
-		// createDbClient関数がmockDbを返すように設定
-		const { createDbClient } = await import("../../lib/db");
-		vi.mocked(createDbClient).mockReturnValue(mockDb as any);
+		// createDatabaseClient関数がmockDbを返すように設定
+		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
 
 		const mockArticle = createMockArticleWithTranslation({
 			article: {
@@ -704,9 +706,9 @@ describe("GET /articles/:slug", () => {
 		// Arrange
 		const { mockDb, createSubqueryMock } = setupDbMocks();
 
-		// createDbClient関数がmockDbを返すように設定
-		const { createDbClient } = await import("../../lib/db");
-		vi.mocked(createDbClient).mockReturnValue(mockDb as any);
+		// createDatabaseClient関数がmockDbを返すように設定
+		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
 
 		const mockArticles = [
 			createMockArticleWithTranslation({
@@ -787,9 +789,9 @@ describe("GET /articles/:slug", () => {
 		// Arrange
 		const { mockDb, createSubqueryMock } = setupDbMocks();
 
-		// createDbClient関数がmockDbを返すように設定
-		const { createDbClient } = await import("../../lib/db");
-		vi.mocked(createDbClient).mockReturnValue(mockDb as any);
+		// createDatabaseClient関数がmockDbを返すように設定
+		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
 
 		const mockArticlesWithZeroViewCount = [
 			createMockArticleWithTranslation({
@@ -1368,9 +1370,9 @@ describe("POST /articles", () => {
 		// Arrange
 		const { mockDb } = setupDbMocks();
 
-		// createDbClient関数がmockDbを返すように設定
-		const { createDbClient } = await import("../../lib/db");
-		vi.mocked(createDbClient).mockReturnValue(mockDb as any);
+		// createDatabaseClient関数がmockDbを返すように設定
+		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
 
 		const mockNewArticle = {
 			id: 1,
@@ -1489,9 +1491,9 @@ describe("POST /articles", () => {
 		// Arrange
 		const { mockDb } = setupDbMocks();
 
-		// createDbClient関数がmockDbを返すように設定
-		const { createDbClient } = await import("../../lib/db");
-		vi.mocked(createDbClient).mockReturnValue(mockDb as any);
+		// createDatabaseClient関数がmockDbを返すように設定
+		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
 
 		// Act
 		const client = testClient(articlesRoute) as any;
@@ -1514,9 +1516,9 @@ describe("POST /articles", () => {
 		// Arrange
 		const { mockDb } = setupDbMocks();
 
-		// createDbClient関数がmockDbを返すように設定
-		const { createDbClient } = await import("../../lib/db");
-		vi.mocked(createDbClient).mockReturnValue(mockDb as any);
+		// createDatabaseClient関数がmockDbを返すように設定
+		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
 
 		// Act
 		const client = testClient(articlesRoute) as any;
@@ -1539,9 +1541,9 @@ describe("POST /articles", () => {
 		// Arrange
 		const { mockDb } = setupDbMocks();
 
-		// createDbClient関数がmockDbを返すように設定
-		const { createDbClient } = await import("../../lib/db");
-		vi.mocked(createDbClient).mockReturnValue(mockDb as any);
+		// createDatabaseClient関数がmockDbを返すように設定
+		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
 
 		// Act
 		const client = testClient(articlesRoute) as any;
@@ -1570,9 +1572,9 @@ describe("GET /articles/check-slug", () => {
 		// Arrange
 		const { mockDb } = setupDbMocks();
 
-		// createDbClient関数がmockDbを返すように設定
-		const { createDbClient } = await import("../../lib/db");
-		vi.mocked(createDbClient).mockReturnValue(mockDb as any);
+		// createDatabaseClient関数がmockDbを返すように設定
+		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
 
 		const selectMock = {
 			from: vi.fn().mockReturnValue({
@@ -1604,9 +1606,9 @@ describe("GET /articles/check-slug", () => {
 		// Arrange
 		const { mockDb } = setupDbMocks();
 
-		// createDbClient関数がmockDbを返すように設定
-		const { createDbClient } = await import("../../lib/db");
-		vi.mocked(createDbClient).mockReturnValue(mockDb as any);
+		// createDatabaseClient関数がmockDbを返すように設定
+		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
 
 		const selectMock = {
 			from: vi.fn().mockReturnValue({
@@ -1641,9 +1643,9 @@ describe("GET /articles/check-slug", () => {
 		// Arrange
 		const { mockDb } = setupDbMocks();
 
-		// createDbClient関数がmockDbを返すように設定
-		const { createDbClient } = await import("../../lib/db");
-		vi.mocked(createDbClient).mockReturnValue(mockDb as any);
+		// createDatabaseClient関数がmockDbを返すように設定
+		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
 
 		// Act
 		const client = testClient(articlesRoute) as any;

@@ -1,7 +1,12 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
-import { articles, articleTranslations } from "@saneatsu/db/worker";
+import {
+	articles,
+	articleTags,
+	articleTranslations,
+	tags,
+} from "@saneatsu/db/worker";
 import { articleListQuerySchema, type SortOrder } from "@saneatsu/schemas";
-import { and, asc, desc, eq, sql } from "drizzle-orm";
+import { and, asc, desc, eq, not, sql } from "drizzle-orm";
 import { convertWikiLinks } from "../../utils/wiki-link";
 import { getSuggestionsRoute, handleArticleSuggestions } from "./suggestions";
 
@@ -630,6 +635,166 @@ articlesRoute.openapi(getArticleRoute, async (c) => {
 });
 
 /**
+ * 管理画面用記事詳細取得のルート定義
+ */
+const getArticleByIdRoute = createRoute({
+	method: "get",
+	path: "/admin/:id",
+	request: {
+		params: z.object({
+			id: z.string().openapi({
+				example: "1",
+				description: "記事のID",
+			}),
+		}),
+		query: z.object({
+			lang: z.enum(["ja", "en"]).optional().default("ja").openapi({
+				example: "ja",
+				description: "言語",
+			}),
+		}),
+	},
+	responses: {
+		200: {
+			content: {
+				"application/json": {
+					schema: z.object({
+						data: ArticleSchema.extend({
+							tags: z.array(
+								z.object({
+									id: z.number().int(),
+									slug: z.string(),
+									name: z.string().nullable(),
+								})
+							),
+						}),
+					}),
+				},
+			},
+			description: "記事詳細の取得成功",
+		},
+		404: {
+			content: {
+				"application/json": {
+					schema: ErrorSchema,
+				},
+			},
+			description: "記事が見つからない",
+		},
+		500: {
+			content: {
+				"application/json": {
+					schema: ErrorSchema,
+				},
+			},
+			description: "サーバーエラー",
+		},
+	},
+	tags: ["Articles"],
+	summary: "管理画面用記事詳細取得",
+	description:
+		"管理画面で使用する記事詳細を取得します。ステータスに関わらず取得可能です。",
+});
+
+/**
+ * GET /api/articles/admin/:id - 管理画面用記事詳細取得
+ */
+// @ts-ignore - OpenAPIの型推論エラーを一時的に回避
+articlesRoute.openapi(getArticleByIdRoute, async (c) => {
+	try {
+		// packages/db経由でDBクライアントを作成
+		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const db = createDatabaseClient({
+			TURSO_DATABASE_URL: c.env.TURSO_DATABASE_URL,
+			TURSO_AUTH_TOKEN: c.env.TURSO_AUTH_TOKEN,
+		});
+
+		const { id } = c.req.valid("param");
+		const { lang = "ja" } = c.req.valid("query");
+
+		const articleId = parseInt(id);
+		if (Number.isNaN(articleId)) {
+			return c.json(
+				{
+					error: {
+						code: "INVALID_ID",
+						message: "Invalid article ID",
+					},
+				},
+				400
+			);
+		}
+
+		// 1. 記事詳細を取得（ステータスに関わらず）
+		const article = await db
+			.select({
+				id: articles.id,
+				slug: articles.slug,
+				cfImageId: articles.cfImageId,
+				status: articles.status,
+				publishedAt: articles.publishedAt,
+				updatedAt: articles.updatedAt,
+				title: articleTranslations.title,
+				content: articleTranslations.content,
+				viewCount: sql<number>`COALESCE(${articleTranslations.viewCount}, 0)`,
+			})
+			.from(articles)
+			.leftJoin(
+				articleTranslations,
+				and(
+					eq(articles.id, articleTranslations.articleId),
+					eq(articleTranslations.language, lang)
+				)
+			)
+			.where(eq(articles.id, articleId))
+			.limit(1);
+
+		if (article.length === 0) {
+			return c.json(
+				{
+					error: {
+						code: "NOT_FOUND",
+						message: "Article not found",
+					},
+				},
+				404
+			);
+		}
+
+		const articleData = article[0];
+
+		// 2. タグ情報を取得
+		const articleTagsData = await db
+			.select({
+				id: tags.id,
+				slug: tags.slug,
+				name: tags.slug,
+			})
+			.from(articleTags)
+			.innerJoin(tags, eq(articleTags.tagId, tags.id))
+			.where(eq(articleTags.articleId, articleId));
+
+		return c.json({
+			data: {
+				...articleData,
+				tags: articleTagsData,
+			},
+		});
+	} catch (error) {
+		console.error("Error fetching article:", error);
+		return c.json(
+			{
+				error: {
+					code: "DATABASE_ERROR",
+					message: "Failed to fetch article",
+				},
+			},
+			500
+		);
+	}
+});
+
+/**
  * 記事作成のルート定義
  */
 const createArticleRoute = createRoute({
@@ -783,6 +948,271 @@ articlesRoute.openapi(createArticleRoute, async (c) => {
 				error: {
 					code: "DATABASE_ERROR",
 					message: "Failed to create article",
+				},
+			},
+			500
+		);
+	}
+});
+
+const ArticleUpdateSchema = z.object({
+	title: z.string().min(1).max(200).openapi({
+		example: "更新された記事のタイトル",
+		description: "記事のタイトル（1-200文字）",
+	}),
+	slug: z
+		.string()
+		.min(1)
+		.max(100)
+		.regex(/^[a-z0-9-]+$/)
+		.openapi({
+			example: "updated-article-slug",
+			description: "記事のスラッグ（小文字の英数字とハイフンのみ、1-100文字）",
+		}),
+	content: z.string().min(1).openapi({
+		example: "# 更新されたタイトル\n\nこれは更新された記事の本文です...",
+		description: "記事の本文（Markdown形式）",
+	}),
+	status: z.enum(["draft", "published", "archived"]).openapi({
+		example: "published",
+		description: "記事のステータス",
+	}),
+	publishedAt: z.string().datetime().optional().openapi({
+		example: "2024-01-01T10:00:00Z",
+		description: "公開日時（ISO 8601形式、公開ステータス時のみ）",
+	}),
+	tagIds: z
+		.array(z.number().int())
+		.min(1, "少なくとも1つのタグIDが必要です")
+		.max(10, "タグIDは最大10個まで")
+		.openapi({
+			example: [1, 2, 3],
+			description: "記事に関連付けるタグのID配列（1-10個）",
+		}),
+});
+
+/**
+ * 記事更新のルート定義
+ */
+const updateArticleRoute = createRoute({
+	method: "put",
+	path: "/:id",
+	request: {
+		params: z.object({
+			id: z.string().openapi({
+				example: "1",
+				description: "記事のID",
+			}),
+		}),
+		body: {
+			content: {
+				"application/json": {
+					schema: ArticleUpdateSchema,
+				},
+			},
+		},
+	},
+	responses: {
+		200: {
+			content: {
+				"application/json": {
+					schema: z.object({
+						data: ArticleSchema,
+						message: z.string().openapi({
+							example: "記事が正常に更新されました",
+							description: "更新成功メッセージ",
+						}),
+					}),
+				},
+			},
+			description: "記事更新成功",
+		},
+		400: {
+			content: {
+				"application/json": {
+					schema: ErrorSchema,
+				},
+			},
+			description: "不正なリクエスト",
+		},
+		404: {
+			content: {
+				"application/json": {
+					schema: ErrorSchema,
+				},
+			},
+			description: "記事が見つからない",
+		},
+		409: {
+			content: {
+				"application/json": {
+					schema: ErrorSchema,
+				},
+			},
+			description: "スラッグが既に存在",
+		},
+		500: {
+			content: {
+				"application/json": {
+					schema: ErrorSchema,
+				},
+			},
+			description: "サーバーエラー",
+		},
+	},
+	tags: ["Articles"],
+	summary: "記事更新",
+	description:
+		"既存の記事を更新します。スラッグの重複チェックを行い、タグの関連付けも更新します。",
+});
+
+/**
+ * PUT /api/articles/:id - 記事更新
+ */
+// @ts-ignore - OpenAPIの型推論エラーを一時的に回避
+articlesRoute.openapi(updateArticleRoute, async (c) => {
+	try {
+		// packages/db経由でDBクライアントを作成
+		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const db = createDatabaseClient({
+			TURSO_DATABASE_URL: c.env.TURSO_DATABASE_URL,
+			TURSO_AUTH_TOKEN: c.env.TURSO_AUTH_TOKEN,
+		});
+
+		const { id } = c.req.valid("param");
+		const { title, slug, content, status, publishedAt, tagIds } =
+			c.req.valid("json");
+
+		const articleId = parseInt(id);
+		if (Number.isNaN(articleId)) {
+			return c.json(
+				{
+					error: {
+						code: "INVALID_ID",
+						message: "Invalid article ID",
+					},
+				},
+				400
+			);
+		}
+
+		// 1. 既存記事の存在確認
+		const existingArticle = await db
+			.select({ id: articles.id, slug: articles.slug })
+			.from(articles)
+			.where(eq(articles.id, articleId))
+			.limit(1);
+
+		if (existingArticle.length === 0) {
+			return c.json(
+				{
+					error: {
+						code: "NOT_FOUND",
+						message: "Article not found",
+					},
+				},
+				404
+			);
+		}
+
+		// 2. スラッグの重複チェック（自分自身は除外）
+		if (existingArticle[0].slug !== slug) {
+			const duplicateSlug = await db
+				.select({ id: articles.id })
+				.from(articles)
+				.where(and(eq(articles.slug, slug), not(eq(articles.id, articleId))))
+				.limit(1);
+
+			if (duplicateSlug.length > 0) {
+				return c.json(
+					{
+						error: {
+							code: "SLUG_ALREADY_EXISTS",
+							message: "このスラッグは既に使用されています",
+						},
+					},
+					409
+				);
+			}
+		}
+
+		// 3. 記事データを更新
+		const now = new Date().toISOString();
+		const finalPublishedAt = status === "published" ? publishedAt || now : null;
+
+		await db
+			.update(articles)
+			.set({
+				slug,
+				status,
+				publishedAt: finalPublishedAt,
+				updatedAt: now,
+			})
+			.where(eq(articles.id, articleId));
+
+		// 4. 翻訳データを更新（日本語のみ）
+		await db
+			.update(articleTranslations)
+			.set({
+				title,
+				content,
+			})
+			.where(
+				and(
+					eq(articleTranslations.articleId, articleId),
+					eq(articleTranslations.language, "ja")
+				)
+			);
+
+		// 5. タグとの関連付けを更新
+		// 既存のタグ関連を削除
+		await db.delete(articleTags).where(eq(articleTags.articleId, articleId));
+
+		// 新しいタグ関連を作成
+		if (tagIds && tagIds.length > 0) {
+			await db.insert(articleTags).values(
+				tagIds.map((tagId) => ({
+					articleId,
+					tagId,
+				}))
+			);
+		}
+
+		// 6. レスポンス用のデータを取得
+		const updatedArticle = await db
+			.select({
+				id: articles.id,
+				slug: articles.slug,
+				cfImageId: articles.cfImageId,
+				status: articles.status,
+				publishedAt: articles.publishedAt,
+				updatedAt: articles.updatedAt,
+				title: articleTranslations.title,
+				content: articleTranslations.content,
+				viewCount: sql<number>`COALESCE(${articleTranslations.viewCount}, 0)`,
+			})
+			.from(articles)
+			.leftJoin(
+				articleTranslations,
+				and(
+					eq(articles.id, articleTranslations.articleId),
+					eq(articleTranslations.language, "ja")
+				)
+			)
+			.where(eq(articles.id, articleId))
+			.limit(1);
+
+		return c.json({
+			data: updatedArticle[0],
+			message: "記事が正常に更新されました",
+		});
+	} catch (error) {
+		console.error("Error updating article:", error);
+		return c.json(
+			{
+				error: {
+					code: "DATABASE_ERROR",
+					message: "Failed to update article",
 				},
 			},
 			500
