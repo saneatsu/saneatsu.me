@@ -9,10 +9,8 @@ import { articles } from "./articles";
 export const tags = sqliteTable("tags", {
 	/** タグID（自動インクリメント） */
 	id: integer("id").primaryKey({ autoIncrement: true }),
-	/** タグ名（ユニーク制約） */
-	name: text("name").notNull().unique(),
-	/** 使用回数（キャッシュ用） */
-	usageCount: integer("usage_count").notNull().default(0),
+	/** タグスラッグ（ユニーク制約） */
+	slug: text("slug").notNull().unique(),
 	/** 作成日時 */
 	createdAt: text("created_at").notNull().default(sql`(datetime('now'))`),
 	/** 更新日時 */

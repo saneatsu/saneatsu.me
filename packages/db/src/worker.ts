@@ -34,7 +34,9 @@ export function createDatabaseClient(env: DatabaseEnv) {
 // スキーマのエクスポート（既存のindex.tsと同じ）
 export {
 	articles,
+	articleTags,
 	articleTranslations,
+	tags,
 	users,
 } from "./schema";
 
