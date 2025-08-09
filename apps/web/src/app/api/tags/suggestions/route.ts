@@ -1,6 +1,6 @@
 import { db } from "@saneatsu/db";
 import { tags } from "@saneatsu/db/src/schema";
-import { desc, like } from "drizzle-orm";
+import { like } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 
 /**
@@ -16,23 +16,21 @@ export async function GET(req: NextRequest) {
 		const searchParams = req.nextUrl.searchParams;
 		const query = searchParams.get("q") || "";
 
-		// 空のクエリの場合は、人気のタグを返す
+		// 空のクエリの場合は、全てのタグを返す
 		if (!query.trim()) {
-			const popularTags = await db
+			const allTags = await db
 				.select({
 					id: tags.id,
-					name: tags.name,
-					usageCount: tags.usageCount,
+					slug: tags.slug,
 				})
 				.from(tags)
-				.orderBy(desc(tags.usageCount))
 				.limit(10);
 
 			return NextResponse.json({
-				suggestions: popularTags.map((tag: (typeof popularTags)[0]) => ({
+				suggestions: allTags.map((tag: (typeof allTags)[0]) => ({
 					id: tag.id ?? 0,
-					name: tag.name,
-					usageCount: tag.usageCount,
+					slug: tag.slug,
+					name: tag.slug,
 					type: "tag" as const,
 				})),
 			});
@@ -42,19 +40,17 @@ export async function GET(req: NextRequest) {
 		const matchingTags = await db
 			.select({
 				id: tags.id,
-				name: tags.name,
-				usageCount: tags.usageCount,
+				slug: tags.slug,
 			})
 			.from(tags)
-			.where(like(tags.name, `%${query}%`))
-			.orderBy(desc(tags.usageCount))
+			.where(like(tags.slug, `%${query}%`))
 			.limit(10);
 
 		return NextResponse.json({
 			suggestions: matchingTags.map((tag: (typeof matchingTags)[0]) => ({
 				id: tag.id ?? 0,
-				name: tag.name,
-				usageCount: tag.usageCount,
+				slug: tag.slug,
+				name: tag.slug,
 				type: "tag" as const,
 			})),
 		});
