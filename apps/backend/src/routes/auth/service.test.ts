@@ -1,14 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { getUserByEmail, isAdminEmail, upsertUserFromGoogle } from "./service";
 
-// Vitestのvi.hoistedを使用してモックを定義
-const { mockUsers } = vi.hoisted(() => ({
-	mockUsers: Symbol("users"),
-}));
-
-vi.mock("@saneatsu/db", () => ({
-	users: mockUsers,
-}));
+// 実際のテーブル定義をインポート
+import { users } from "@saneatsu/db/worker";
 
 // DBクライアントのモック
 const mockDb = {
@@ -99,7 +93,7 @@ describe("Auth Service", () => {
 			const result = await upsertUserFromGoogle(mockDb as any, profile);
 
 			expect(mockDb.select).toHaveBeenCalled();
-			expect(mockDb.insert).toHaveBeenCalledWith(mockUsers);
+			expect(mockDb.insert).toHaveBeenCalledWith(users);
 			expect(mockInsertChain.values).toHaveBeenCalledWith({
 				email: "new@example.com",
 				name: "New User",
@@ -159,7 +153,7 @@ describe("Auth Service", () => {
 			const result = await upsertUserFromGoogle(mockDb as any, profile);
 
 			expect(mockDb.select).toHaveBeenCalled();
-			expect(mockDb.update).toHaveBeenCalledWith(mockUsers);
+			expect(mockDb.update).toHaveBeenCalledWith(users);
 			expect(mockUpdateChain.set).toHaveBeenCalledWith({
 				name: "Updated Name",
 				avatarUrl: "https://example.com/new-avatar.jpg",
@@ -245,7 +239,7 @@ describe("Auth Service", () => {
 			const result = await getUserByEmail(mockDb as any, "test@example.com");
 
 			expect(mockDb.select).toHaveBeenCalled();
-			expect(mockSelectChain.from).toHaveBeenCalledWith(mockUsers);
+			expect(mockSelectChain.from).toHaveBeenCalledWith(users);
 			expect(result).toEqual(mockUser);
 		});
 
