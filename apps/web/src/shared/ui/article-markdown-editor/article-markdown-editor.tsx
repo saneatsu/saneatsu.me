@@ -313,16 +313,13 @@ export function ArticleMarkdownEditor({
 							},
 							// 順序なしリストのスタイリング
 							ul: ({ children, ...props }) => (
-								<ul className="list-disc list-inside space-y-1 mb-4" {...props}>
+								<ul className="list-disc pl-8 space-y-1 mb-4" {...props}>
 									{children}
 								</ul>
 							),
 							// 順序ありリストのスタイリング
 							ol: ({ children, ...props }) => (
-								<ol
-									className="list-decimal list-inside space-y-1 mb-4"
-									{...props}
-								>
+								<ol className="list-decimal pl-8 space-y-1 mb-4" {...props}>
 									{children}
 								</ol>
 							),
@@ -334,15 +331,18 @@ export function ArticleMarkdownEditor({
 								const className = props.className;
 								const isTaskListItem = className?.includes("task-list-item");
 
+								if (isTaskListItem) {
+									// タスクリストの場合
+									return (
+										<li className="text-sm relative pl-6" {...props}>
+											{children}
+										</li>
+									);
+								}
+
+								// 通常のリスト（箇条書き・番号付き）
 								return (
-									<li
-										className={
-											isTaskListItem
-												? "text-sm flex items-start gap-2 pl-0" // タスクリスト
-												: "text-sm" // 通常のリスト
-										}
-										{...props}
-									>
+									<li className="text-sm" {...props}>
 										{children}
 									</li>
 								);
@@ -356,7 +356,7 @@ export function ArticleMarkdownEditor({
 									return (
 										<input
 											type="checkbox"
-											className="mt-0.5 mr-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500 flex-shrink-0"
+											className="absolute -ml-6 mt-0.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 w-4 h-4"
 											{...props}
 										/>
 									);
