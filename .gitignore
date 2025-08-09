@@ -17,6 +17,9 @@ build/
 .claude/settings.local.json
 .claude/task.md
 
+# Serena
+.serena/cache
+
 # Environment variables
 .env
 .env.local
