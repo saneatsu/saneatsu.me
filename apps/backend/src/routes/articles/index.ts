@@ -180,6 +180,14 @@ const ArticleCreateSchema = z.object({
 		example: "2024-01-01T10:00:00Z",
 		description: "公開日時（ISO 8601形式、公開ステータス時のみ）",
 	}),
+	tagIds: z
+		.array(z.number().int())
+		.min(1, "少なくとも1つのタグIDが必要です")
+		.max(10, "タグIDは最大10個まで")
+		.openapi({
+			example: [1, 2, 3],
+			description: "記事に関連付けるタグのID配列（1-10個）",
+		}),
 });
 
 const ArticleCreateResponseSchema = z.object({
@@ -287,16 +295,21 @@ articlesRoute.openapi(listArticlesRoute, async (c) => {
 		}
 
 		// 合計閲覧数を計算するサブクエリ
+		// 記事テーブルを基点にして、翻訳データが存在しない記事も0として扱う
 		const totalViewCountSubquery = db
 			.select({
-				articleId: articleTranslations.articleId,
+				articleId: articles.id,
 				totalViewCount:
 					sql<number>`COALESCE(SUM(${articleTranslations.viewCount}), 0)`.as(
 						"totalViewCount"
 					),
 			})
-			.from(articleTranslations)
-			.groupBy(articleTranslations.articleId)
+			.from(articles)
+			.leftJoin(
+				articleTranslations,
+				eq(articles.id, articleTranslations.articleId)
+			)
+			.groupBy(articles.id)
 			.as("total_views");
 
 		// ソート条件を設定
@@ -435,10 +448,88 @@ const getArticleRoute = createRoute({
 });
 
 /**
+ * スラッグ重複チェックのルート定義
+ */
+const checkSlugRoute = createRoute({
+	method: "get",
+	path: "/check-slug",
+	request: {
+		query: SlugCheckQuerySchema,
+	},
+	responses: {
+		200: {
+			content: {
+				"application/json": {
+					schema: SlugCheckResponseSchema,
+				},
+			},
+			description: "スラッグチェック成功",
+		},
+		400: {
+			content: {
+				"application/json": {
+					schema: ErrorSchema,
+				},
+			},
+			description: "不正なリクエスト",
+		},
+		500: {
+			content: {
+				"application/json": {
+					schema: ErrorSchema,
+				},
+			},
+			description: "サーバーエラー",
+		},
+	},
+	tags: ["Articles"],
+	summary: "スラッグ重複チェック",
+	description: "指定されたスラッグが既に使用されているかをチェックします。",
+});
+
+/**
  * GET /api/articles/suggestions - サジェスト取得
  */
 // @ts-ignore - OpenAPIの型推論エラーを一時的に回避
 articlesRoute.openapi(getSuggestionsRoute, handleArticleSuggestions);
+
+/**
+ * GET /api/articles/check-slug - スラッグ重複チェック
+ */
+// @ts-ignore - OpenAPIの型推論エラーを一時的に回避
+articlesRoute.openapi(checkSlugRoute, async (c) => {
+	try {
+		// Cloudflare Workers環境でDBクライアントを作成
+		const db = createDbClient(c.env);
+
+		const { slug } = c.req.valid("query");
+
+		// 指定されたスラッグが既に存在するかチェック
+		const existingArticle = await db
+			.select({ id: articles.id })
+			.from(articles)
+			.where(eq(articles.slug, slug))
+			.limit(1);
+
+		const isAvailable = existingArticle.length === 0;
+
+		return c.json({
+			available: isAvailable,
+			message: isAvailable ? undefined : "このスラッグは既に使用されています",
+		});
+	} catch (error) {
+		console.error("Error checking slug:", error);
+		return c.json(
+			{
+				error: {
+					code: "DATABASE_ERROR",
+					message: "Failed to check slug",
+				},
+			},
+			500
+		);
+	}
+});
 
 /**
  * GET /api/articles/:slug - 記事詳細取得
@@ -549,84 +640,6 @@ articlesRoute.openapi(getArticleRoute, async (c) => {
 });
 
 /**
- * スラッグ重複チェックのルート定義
- */
-const checkSlugRoute = createRoute({
-	method: "get",
-	path: "/check-slug",
-	request: {
-		query: SlugCheckQuerySchema,
-	},
-	responses: {
-		200: {
-			content: {
-				"application/json": {
-					schema: SlugCheckResponseSchema,
-				},
-			},
-			description: "スラッグチェック成功",
-		},
-		400: {
-			content: {
-				"application/json": {
-					schema: ErrorSchema,
-				},
-			},
-			description: "不正なリクエスト",
-		},
-		500: {
-			content: {
-				"application/json": {
-					schema: ErrorSchema,
-				},
-			},
-			description: "サーバーエラー",
-		},
-	},
-	tags: ["Articles"],
-	summary: "スラッグ重複チェック",
-	description: "指定されたスラッグが既に使用されているかをチェックします。",
-});
-
-/**
- * GET /api/articles/check-slug - スラッグ重複チェック
- */
-// @ts-ignore - OpenAPIの型推論エラーを一時的に回避
-articlesRoute.openapi(checkSlugRoute, async (c) => {
-	try {
-		// Cloudflare Workers環境でDBクライアントを作成
-		const db = createDbClient(c.env);
-
-		const { slug } = c.req.valid("query");
-
-		// 指定されたスラッグが既に存在するかチェック
-		const existingArticle = await db
-			.select({ id: articles.id })
-			.from(articles)
-			.where(eq(articles.slug, slug))
-			.limit(1);
-
-		const isAvailable = existingArticle.length === 0;
-
-		return c.json({
-			available: isAvailable,
-			message: isAvailable ? undefined : "このスラッグは既に使用されています",
-		});
-	} catch (error) {
-		console.error("Error checking slug:", error);
-		return c.json(
-			{
-				error: {
-					code: "DATABASE_ERROR",
-					message: "Failed to check slug",
-				},
-			},
-			500
-		);
-	}
-});
-
-/**
  * 記事作成のルート定義
  */
 const createArticleRoute = createRoute({
@@ -690,7 +703,7 @@ articlesRoute.openapi(createArticleRoute, async (c) => {
 		// Cloudflare Workers環境でDBクライアントを作成
 		const db = createDbClient(c.env);
 
-		const { title, slug, content, status, publishedAt } = c.req.valid("json");
+		const { title, slug, content, status, publishedAt, tagIds } = c.req.valid("json");
 
 		// 1. スラッグの重複チェック
 		const existingArticle = await db
