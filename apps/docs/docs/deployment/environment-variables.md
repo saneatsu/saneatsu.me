@@ -49,7 +49,7 @@ saneatsu.meプロジェクトでは、すべての環境変数をGitHub Secrets/
 
 | 変数名 | 用途 | 使用場所 | 説明 |
 |--------|------|----------|------|
-| `ADMIN_EMAILS` | 管理者メールアドレス | Backend & Web | **カンマ区切りで複数設定可能**<br>`user1@example.com,user2@example.com` |
+| `ADMIN_EMAILS` | 管理者メールアドレス | Backend & Web | **カンマ区切りで複数設定可能**<br />`user1@example.com,user2@example.com` |
 
 ### ADMIN_EMAILSの詳細
 
