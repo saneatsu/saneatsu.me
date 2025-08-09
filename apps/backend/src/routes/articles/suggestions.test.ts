@@ -18,6 +18,11 @@ vi.mock("@saneatsu/db", () => ({
 	articleTranslations: {},
 }));
 
+// createDbClientのモック設定
+vi.mock("../../lib/db", () => ({
+	createDbClient: vi.fn(),
+}));
+
 // extractHeadingsのモック
 vi.mock("../../utils/markdown", () => ({
 	extractHeadings: vi.fn(),
@@ -61,6 +66,10 @@ describe("GET /api/articles/suggestions", () => {
 			];
 
 			const { mockDb } = setupDbMocks();
+
+			// createDbClient関数がmockDbを返すように設定
+			const { createDbClient } = await import("../../lib/db");
+			vi.mocked(createDbClient).mockReturnValue(mockDb as any);
 
 			// INNER JOINクエリのモック
 			mockDb.select.mockReturnValue({
@@ -107,7 +116,9 @@ describe("GET /api/articles/suggestions", () => {
 					translation: {
 						title: "Next.js パフォーマンス最適化 3",
 						content:
-							"## 実践的な例\n\nパフォーマンス最適化の実践的な例を紹介します。",
+							`## 実践的な例
+
+パフォーマンス最適化の実践的な例を紹介します。`,
 					},
 				}),
 			];
@@ -122,6 +133,10 @@ describe("GET /api/articles/suggestions", () => {
 			]);
 
 			const { mockDb } = setupDbMocks();
+
+			// createDbClient関数がmockDbを返すように設定
+			const { createDbClient } = await import("../../lib/db");
+			vi.mocked(createDbClient).mockReturnValue(mockDb as any);
 
 			// 最初のクエリ（記事タイトル検索）は空を返す
 			mockDb.select.mockReturnValueOnce({
@@ -192,6 +207,10 @@ describe("GET /api/articles/suggestions", () => {
 
 			const { mockDb } = setupDbMocks();
 
+			// createDbClient関数がmockDbを返すように設定
+			const { createDbClient } = await import("../../lib/db");
+			vi.mocked(createDbClient).mockReturnValue(mockDb as any);
+
 			mockDb.select.mockReturnValue({
 				from: vi.fn().mockReturnValue({
 					innerJoin: vi.fn().mockReturnValue({
@@ -242,6 +261,10 @@ describe("GET /api/articles/suggestions", () => {
 
 			const { mockDb } = setupDbMocks();
 
+			// createDbClient関数がmockDbを返すように設定
+			const { createDbClient } = await import("../../lib/db");
+			vi.mocked(createDbClient).mockReturnValue(mockDb as any);
+
 			mockDb.select.mockReturnValue({
 				from: vi.fn().mockReturnValue({
 					innerJoin: vi.fn().mockReturnValue({
@@ -283,7 +306,9 @@ describe("GET /api/articles/suggestions", () => {
 					},
 					translation: {
 						title: "React Hooks Guide",
-						content: "## useEffect Hook\n\nLearn about the useEffect hook.",
+						content: `## useEffect Hook
+
+Learn about the useEffect hook.`,
 						language: "en",
 					},
 				}),
@@ -299,6 +324,10 @@ describe("GET /api/articles/suggestions", () => {
 			]);
 
 			const { mockDb } = setupDbMocks();
+
+			// createDbClient関数がmockDbを返すように設定
+			const { createDbClient } = await import("../../lib/db");
+			vi.mocked(createDbClient).mockReturnValue(mockDb as any);
 
 			// 最初のクエリ（記事タイトル検索）は空を返す
 			mockDb.select.mockReturnValueOnce({
@@ -368,6 +397,10 @@ describe("GET /api/articles/suggestions", () => {
 			];
 
 			const { mockDb } = setupDbMocks();
+
+			// createDbClient関数がmockDbを返すように設定
+			const { createDbClient } = await import("../../lib/db");
+			vi.mocked(createDbClient).mockReturnValue(mockDb as any);
 			mockDb.select.mockReturnValue({
 				from: vi.fn().mockReturnValue({
 					innerJoin: vi.fn().mockReturnValue({
@@ -418,6 +451,10 @@ describe("GET /api/articles/suggestions", () => {
 
 			const { mockDb } = setupDbMocks();
 
+			// createDbClient関数がmockDbを返すように設定
+			const { createDbClient } = await import("../../lib/db");
+			vi.mocked(createDbClient).mockReturnValue(mockDb as any);
+
 			mockDb.select.mockReturnValue({
 				from: vi.fn().mockReturnValue({
 					innerJoin: vi.fn().mockReturnValue({
@@ -467,6 +504,10 @@ describe("GET /api/articles/suggestions", () => {
 
 			const { mockDb } = setupDbMocks();
 
+			// createDbClient関数がmockDbを返すように設定
+			const { createDbClient } = await import("../../lib/db");
+			vi.mocked(createDbClient).mockReturnValue(mockDb as any);
+
 			// limitは内部で数値に変換されるため、3件のデータを返す
 			mockDb.select.mockReturnValue({
 				from: vi.fn().mockReturnValue({
@@ -501,6 +542,10 @@ describe("GET /api/articles/suggestions", () => {
 			mockExtractHeadings.mockReturnValue([]);
 
 			const { mockDb } = setupDbMocks();
+
+			// createDbClient関数がmockDbを返すように設定
+			const { createDbClient } = await import("../../lib/db");
+			vi.mocked(createDbClient).mockReturnValue(mockDb as any);
 
 			mockDb.select.mockReturnValue({
 				from: vi.fn().mockReturnValue({
