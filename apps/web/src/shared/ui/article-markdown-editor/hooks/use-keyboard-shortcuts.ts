@@ -20,7 +20,7 @@ interface KeyboardShortcutsConfig {
  * 対応する括弧のペア削除などの高度な編集機能を提供するフック。
  */
 export function useKeyboardShortcuts({
-	markdownValue,
+	markdownValue: _markdownValue,
 	setMarkdownValue,
 	setValue,
 }: KeyboardShortcutsConfig) {

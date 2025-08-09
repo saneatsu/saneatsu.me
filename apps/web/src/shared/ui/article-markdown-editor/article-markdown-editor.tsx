@@ -312,23 +312,11 @@ export function ArticleMarkdownEditor({
 								);
 							},
 							// 順序なしリストのスタイリング
-							ul: ({ children, ...props }) => {
-								const className = props.className;
-								const isTaskList = className?.includes("contains-task-list");
-
-								return (
-									<ul
-										className={
-											isTaskList
-												? "space-y-1 mb-4" // タスクリストはlist-discを適用しない
-												: "list-disc list-inside space-y-1 mb-4"
-										}
-										{...props}
-									>
-										{children}
-									</ul>
-								);
-							},
+							ul: ({ children, ...props }) => (
+								<ul className="list-disc list-inside space-y-1 mb-4" {...props}>
+									{children}
+								</ul>
+							),
 							// 順序ありリストのスタイリング
 							ol: ({ children, ...props }) => (
 								<ol
@@ -343,7 +331,6 @@ export function ArticleMarkdownEditor({
 								children,
 								...props
 							}: React.HTMLAttributes<HTMLLIElement>) => {
-								// remarkGfmによってタスクリストには'task-list-item'クラスが付与される
 								const className = props.className;
 								const isTaskListItem = className?.includes("task-list-item");
 
@@ -351,8 +338,8 @@ export function ArticleMarkdownEditor({
 									<li
 										className={
 											isTaskListItem
-												? "text-sm flex items-start gap-2 list-none pl-0"
-												: "text-sm"
+												? "text-sm flex items-start gap-2 pl-0" // タスクリスト
+												: "text-sm" // 通常のリスト
 										}
 										{...props}
 									>
