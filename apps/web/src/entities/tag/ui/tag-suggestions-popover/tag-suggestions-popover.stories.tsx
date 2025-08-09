@@ -18,11 +18,29 @@ type Story = StoryObj<typeof meta>;
 
 // モックデータ
 const mockTags: TagSuggestionItem[] = [
-	{ id: 1, name: "React", usageCount: 15, type: "tag" },
-	{ id: 2, name: "TypeScript", usageCount: 12, type: "tag" },
-	{ id: 3, name: "Next.js", usageCount: 10, type: "tag" },
-	{ id: 4, name: "プログラミング", usageCount: 8, type: "tag" },
-	{ id: 5, name: "フロントエンド", usageCount: 5, type: "tag" },
+	{ id: 1, slug: "react", name: "React", usageCount: 15, type: "tag" },
+	{
+		id: 2,
+		slug: "typescript",
+		name: "TypeScript",
+		usageCount: 12,
+		type: "tag",
+	},
+	{ id: 3, slug: "nextjs", name: "Next.js", usageCount: 10, type: "tag" },
+	{
+		id: 4,
+		slug: "programming",
+		name: "プログラミング",
+		usageCount: 8,
+		type: "tag",
+	},
+	{
+		id: 5,
+		slug: "frontend",
+		name: "フロントエンド",
+		usageCount: 5,
+		type: "tag",
+	},
 ];
 
 // 基本的なストーリー

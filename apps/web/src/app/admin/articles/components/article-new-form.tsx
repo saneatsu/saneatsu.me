@@ -6,6 +6,7 @@ import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
 import { CalendarIcon, Loader2 } from "lucide-react";
 import dynamic from "next/dynamic";
+import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import remarkGfm from "remark-gfm";
@@ -71,6 +72,7 @@ type ArticleNewForm = z.infer<typeof articleNewSchema>;
  * 自動翻訳を実行して多言語記事として保存される。
  */
 export function ArticleNewForm() {
+	const { theme } = useTheme();
 	const [markdownValue, setMarkdownValue] = useState("");
 	const [showSuggestions, setShowSuggestions] = useState(false);
 	const [suggestionQuery, setSuggestionQuery] = useState("");
@@ -2121,7 +2123,7 @@ export function ArticleNewForm() {
 						commands={customCommands}
 						preview="live"
 						visibleDragbar={true}
-						data-color-mode="light"
+						data-color-mode={theme === "dark" ? "dark" : "light"}
 						height={500}
 						previewOptions={{
 							remarkPlugins: [[remarkGfm], [remarkWikiLink], [remarkTag]],

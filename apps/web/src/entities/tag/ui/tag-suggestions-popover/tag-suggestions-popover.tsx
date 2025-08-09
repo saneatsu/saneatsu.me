@@ -14,8 +14,9 @@ import { Popover, PopoverContent } from "../../../../shared/ui/popover/popover";
  */
 export interface TagSuggestionItem {
 	id: number;
+	slug: string;
 	name: string;
-	usageCount: number;
+	usageCount?: number;
 	type: "tag";
 }
 
