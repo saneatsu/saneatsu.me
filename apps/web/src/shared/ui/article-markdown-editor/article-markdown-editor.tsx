@@ -311,6 +311,27 @@ export function ArticleMarkdownEditor({
 									</a>
 								);
 							},
+							// 順序なしリストのスタイリング
+							ul: ({ children, ...props }) => (
+								<ul className="list-disc list-inside space-y-1 mb-4" {...props}>
+									{children}
+								</ul>
+							),
+							// 順序ありリストのスタイリング
+							ol: ({ children, ...props }) => (
+								<ol
+									className="list-decimal list-inside space-y-1 mb-4"
+									{...props}
+								>
+									{children}
+								</ol>
+							),
+							// リストアイテムのスタイリング
+							li: ({ children, ...props }) => (
+								<li className="text-sm" {...props}>
+									{children}
+								</li>
+							),
 						},
 					}}
 				/>
