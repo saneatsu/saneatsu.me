@@ -1,26 +1,14 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import MDEditor, { commands, type ICommand } from "@uiw/react-md-editor";
-import "@uiw/react-md-editor/markdown-editor.css";
-import "@uiw/react-markdown-preview/markdown.css";
 import { CalendarIcon, Loader2 } from "lucide-react";
-import { useTheme } from "next-themes";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import remarkGfm from "remark-gfm";
 import { z } from "zod";
 import { useCheckSlug } from "../../../../entities/article/api/use-check-slug/use-check-slug";
-import type { SuggestionItem } from "../../../../entities/article/api/use-suggestions/use-suggestions";
 import { useUpdate } from "../../../../entities/article/api/use-update/use-update";
-import { ArticleSuggestionsPopover } from "../../../../entities/article/ui";
-import {
-	type TagSuggestionItem,
-	TagSuggestionsPopover,
-} from "../../../../entities/tag/ui";
 import { useDebounce } from "../../../../shared/hooks/use-debounce";
-import { remarkTag } from "../../../../shared/lib/remark-tag";
-import { remarkWikiLink } from "../../../../shared/lib/remark-wiki-link";
+import { ArticleMarkdownEditor } from "../../../../shared/ui/article-markdown-editor";
 import { Button } from "../../../../shared/ui/button/button";
 import { Input } from "../../../../shared/ui/input/input";
 import { Label } from "../../../../shared/ui/label/label";
@@ -77,23 +65,10 @@ interface ArticleEditFormProps {
  * 既存記事を編集するためのフォーム。
  * 初期値として既存の記事データを設定し、
  * 更新時にバックエンドAPIに送信する。
+ * 新規作成フォームと同じ高機能MarkdownEditorを使用。
  */
 export function ArticleEditForm({ article }: ArticleEditFormProps) {
-	const { theme } = useTheme();
 	const [markdownValue, setMarkdownValue] = useState(article.content || "");
-	const [showSuggestions, setShowSuggestions] = useState(false);
-	const [suggestionQuery, setSuggestionQuery] = useState("");
-	const [cursorPosition, setCursorPosition] = useState({ top: 0, left: 0 });
-	const [showTagSuggestions, setShowTagSuggestions] = useState(false);
-	const [tagQuery, setTagQuery] = useState("");
-	const [tagCursorPosition, setTagCursorPosition] = useState({
-		top: 0,
-		left: 0,
-	});
-	// 見出しサジェスト用の状態
-	const [isHeadingSuggestion, setIsHeadingSuggestion] = useState(false);
-	const [targetArticleSlug, setTargetArticleSlug] = useState("");
-	const editorRef = useRef<HTMLDivElement>(null);
 
 	const {
 		register,
@@ -155,140 +130,11 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 	};
 
 	/**
-	 * Wiki Link サジェスト処理
+	 * MDEditorの変更処理
 	 */
-	const handleWikiLinkInput = (
-		text: string,
-		position: { x: number; y: number }
-	) => {
-		const match = text.match(/\[\[([^\]#]*)(?:#([^\]]*))?\]?$/);
-		if (match) {
-			const query = match[1] || "";
-			const heading = match[2] || "";
-
-			if (heading) {
-				// 見出しサジェスト
-				setIsHeadingSuggestion(true);
-				setTargetArticleSlug(query);
-				setSuggestionQuery(heading);
-			} else {
-				// 記事サジェスト
-				setIsHeadingSuggestion(false);
-				setTargetArticleSlug("");
-				setSuggestionQuery(query);
-			}
-
-			setShowSuggestions(true);
-			setCursorPosition({ top: position.y, left: position.x });
-		} else {
-			setShowSuggestions(false);
-		}
-	};
-
-	/**
-	 * タグサジェスト処理
-	 */
-	const handleTagInput = (text: string, position: { x: number; y: number }) => {
-		const match = text.match(/#([^\s#]*)$/);
-		if (match) {
-			setTagQuery(match[1] || "");
-			setShowTagSuggestions(true);
-			setTagCursorPosition({ top: position.y, left: position.x });
-		} else {
-			setShowTagSuggestions(false);
-		}
-	};
-
-	/**
-	 * エディタの変更処理
-	 */
-	const handleEditorChange = (value?: string) => {
-		const newValue = value || "";
-		setMarkdownValue(newValue);
-
-		// カーソル位置の取得（簡易版）
-		const cursorPos = { x: 100, y: 100 }; // 実際の実装では適切に計算
-
-		// Wiki Linkとタグの入力を検知
-		handleWikiLinkInput(newValue, cursorPos);
-		handleTagInput(newValue, cursorPos);
-	};
-
-	/**
-	 * サジェスト選択処理
-	 */
-	const handleSuggestionSelect = (item: SuggestionItem) => {
-		const cursorIndex = markdownValue.lastIndexOf("[[");
-		if (cursorIndex !== -1) {
-			const beforeCursor = markdownValue.slice(0, cursorIndex);
-			const afterBrackets = markdownValue.slice(cursorIndex);
-			const closeBracketIndex = afterBrackets.indexOf("]]");
-
-			let newValue: string;
-			if (item.type === "heading" && item.slug) {
-				// 見出しの場合
-				newValue = `${beforeCursor}[[${item.slug}#${item.title}]]${
-					closeBracketIndex !== -1
-						? afterBrackets.slice(closeBracketIndex + 2)
-						: ""
-				}`;
-			} else {
-				// 記事の場合
-				newValue = `${beforeCursor}[[${item.slug}]]${
-					closeBracketIndex !== -1
-						? afterBrackets.slice(closeBracketIndex + 2)
-						: ""
-				}`;
-			}
-
-			setMarkdownValue(newValue);
-			setShowSuggestions(false);
-		}
-	};
-
-	/**
-	 * タグサジェスト選択処理
-	 */
-	const handleTagSelect = (tag: TagSuggestionItem) => {
-		const hashIndex = markdownValue.lastIndexOf("#");
-		if (hashIndex !== -1) {
-			const beforeHash = markdownValue.slice(0, hashIndex);
-			const afterHash = markdownValue.slice(hashIndex);
-			const spaceIndex = afterHash.indexOf(" ");
-			const newlineIndex = afterHash.indexOf("\n");
-
-			let endIndex = afterHash.length;
-			if (spaceIndex !== -1) endIndex = Math.min(endIndex, spaceIndex);
-			if (newlineIndex !== -1) endIndex = Math.min(endIndex, newlineIndex);
-
-			const newValue = `${beforeHash}#${tag.slug}${afterHash.slice(endIndex)}`;
-			setMarkdownValue(newValue);
-			setShowTagSuggestions(false);
-		}
-	};
-
-	// カスタムコマンド（Wiki Link挿入）
-	const wikiLinkCommand: ICommand = {
-		name: "wiki-link",
-		keyCommand: "wikiLink",
-		buttonProps: { "aria-label": "Wiki Link" },
-		icon: <span style={{ fontSize: 12, fontWeight: "bold" }}>[[]]</span>,
-		execute: (
-			state: { selection: { start: number; end: number } },
-			api: {
-				replaceSelection: (text: string) => void;
-				setSelectionRange: (range: { start: number; end: number }) => void;
-			}
-		) => {
-			const newText = "[[";
-			api.replaceSelection(newText);
-			// カーソル位置を [[ の間に移動
-			const newCursorPos = state.selection.start + 2;
-			api.setSelectionRange({
-				start: newCursorPos,
-				end: newCursorPos,
-			});
-		},
+	const handleEditorChange = (value: string) => {
+		setMarkdownValue(value);
+		setValue("content", value);
 	};
 
 	return (
@@ -401,55 +247,27 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 			{/* 本文エディタ */}
 			<div className="space-y-2">
 				<Label>本文 *</Label>
-				<div ref={editorRef} className="relative">
-					<MDEditor
+				<div
+					className={
+						errors.content ? "border border-destructive rounded-md" : ""
+					}
+				>
+					<ArticleMarkdownEditor
 						value={markdownValue}
 						onChange={handleEditorChange}
-						preview="edit"
+						setValue={setValue as (name: string, value: string) => void}
 						height={600}
-						data-color-mode={theme === "dark" ? "dark" : "light"}
-						commands={[
-							...commands
-								.getCommands()
-								.filter((cmd) => cmd.keyCommand !== "fullscreen"),
-							wikiLinkCommand,
-						]}
-						extraCommands={[
-							commands.codeEdit,
-							commands.codeLive,
-							commands.codePreview,
-						]}
-						previewOptions={{
-							remarkPlugins: [remarkGfm, remarkWikiLink, remarkTag],
-						}}
+						preview="edit"
+						language="ja"
 					/>
-					{errors.content && (
-						<p className="text-sm text-destructive mt-2">
-							{errors.content.message}
-						</p>
-					)}
 				</div>
+				{errors.content && (
+					<p className="text-sm text-destructive">{errors.content.message}</p>
+				)}
+				<p className="text-sm text-muted-foreground">
+					日本語で入力してください。[[で他の記事へのリンクを挿入できます。#でタグを挿入できます。
+				</p>
 			</div>
-
-			{/* Wiki Link サジェストポップオーバー */}
-			<ArticleSuggestionsPopover
-				open={showSuggestions}
-				onOpenChange={setShowSuggestions}
-				query={suggestionQuery}
-				position={cursorPosition}
-				onSelect={handleSuggestionSelect}
-				filterMode={isHeadingSuggestion ? "heading" : undefined}
-				targetSlug={targetArticleSlug}
-			/>
-
-			{/* タグサジェストポップオーバー */}
-			<TagSuggestionsPopover
-				open={showTagSuggestions}
-				onOpenChange={setShowTagSuggestions}
-				query={tagQuery}
-				position={tagCursorPosition}
-				onSelect={handleTagSelect}
-			/>
 
 			{/* 送信ボタン */}
 			<div className="flex gap-4">
