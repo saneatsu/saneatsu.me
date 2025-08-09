@@ -115,8 +115,7 @@ describe("GET /api/articles/suggestions", () => {
 					},
 					translation: {
 						title: "Next.js パフォーマンス最適化 3",
-						content:
-							`## 実践的な例
+						content: `## 実践的な例
 
 パフォーマンス最適化の実践的な例を紹介します。`,
 					},

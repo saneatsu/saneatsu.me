@@ -18,7 +18,6 @@ vi.mock("../../lib/db", () => ({
 	createDbClient: vi.fn(),
 }));
 
-
 describe("GET /articles", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
@@ -819,7 +818,9 @@ describe("GET /articles/:slug", () => {
 						where: vi.fn().mockReturnValue({
 							orderBy: vi.fn().mockReturnValue({
 								limit: vi.fn().mockReturnValue({
-									offset: vi.fn().mockResolvedValue(mockArticlesWithZeroViewCount),
+									offset: vi
+										.fn()
+										.mockResolvedValue(mockArticlesWithZeroViewCount),
 								}),
 							}),
 						}),

@@ -1,8 +1,7 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { getUserByEmail, isAdminEmail, upsertUserFromGoogle } from "./service";
-
 // 実際のテーブル定義をインポート
 import { users } from "@saneatsu/db/worker";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { getUserByEmail, isAdminEmail, upsertUserFromGoogle } from "./service";
 
 // DBクライアントのモック
 const mockDb = {

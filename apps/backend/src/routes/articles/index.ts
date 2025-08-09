@@ -703,7 +703,8 @@ articlesRoute.openapi(createArticleRoute, async (c) => {
 		// Cloudflare Workers環境でDBクライアントを作成
 		const db = createDbClient(c.env);
 
-		const { title, slug, content, status, publishedAt, tagIds } = c.req.valid("json");
+		const { title, slug, content, status, publishedAt, tagIds } =
+			c.req.valid("json");
 
 		// 1. スラッグの重複チェック
 		const existingArticle = await db
