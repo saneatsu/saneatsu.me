@@ -274,8 +274,10 @@ export function ArticleMarkdownEditor({
 					visibleDragbar={true}
 					data-color-mode={theme === "dark" ? "dark" : "light"}
 					height={height}
+					className="prose-editor"
 					previewOptions={{
 						remarkPlugins: [[remarkGfm], [remarkWikiLink], [remarkTag]],
+						className: "prose dark:prose-invert max-w-none",
 						components: {
 							a: ({
 								children,
@@ -310,58 +312,6 @@ export function ArticleMarkdownEditor({
 										{children}
 									</a>
 								);
-							},
-							// 順序なしリストのスタイリング
-							ul: ({ children, ...props }) => (
-								<ul className="list-disc pl-8 space-y-1 mb-4" {...props}>
-									{children}
-								</ul>
-							),
-							// 順序ありリストのスタイリング
-							ol: ({ children, ...props }) => (
-								<ol className="list-decimal pl-8 space-y-1 mb-4" {...props}>
-									{children}
-								</ol>
-							),
-							// リストアイテムのスタイリング
-							li: ({
-								children,
-								...props
-							}: React.HTMLAttributes<HTMLLIElement>) => {
-								const className = props.className;
-								const isTaskListItem = className?.includes("task-list-item");
-
-								if (isTaskListItem) {
-									// タスクリストの場合
-									return (
-										<li className="text-sm relative pl-6" {...props}>
-											{children}
-										</li>
-									);
-								}
-
-								// 通常のリスト（箇条書き・番号付き）
-								return (
-									<li className="text-sm" {...props}>
-										{children}
-									</li>
-								);
-							},
-							// チェックボックスのスタイリング
-							input: ({
-								type,
-								...props
-							}: React.InputHTMLAttributes<HTMLInputElement>) => {
-								if (type === "checkbox") {
-									return (
-										<input
-											type="checkbox"
-											className="absolute -ml-6 mt-0.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 w-4 h-4"
-											{...props}
-										/>
-									);
-								}
-								return <input type={type} {...props} />;
 							},
 						},
 					}}
