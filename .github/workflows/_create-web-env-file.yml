@@ -20,6 +20,11 @@ on:
         required: true
       GOOGLE_CLIENT_SECRET:
         required: true
+      # Basic認証関連
+      BASIC_AUTH_USER:
+        required: true
+      BASIC_AUTH_PASSWORD:
+        required: true
 
 env:
   ENV: ${{ inputs.ENV }}
@@ -38,6 +43,8 @@ jobs:
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           ADMIN_EMAILS: ${{ vars.ADMIN_EMAILS }}
+          BASIC_AUTH_USER: ${{ secrets.BASIC_AUTH_USER }}
+          BASIC_AUTH_PASSWORD: ${{ secrets.BASIC_AUTH_PASSWORD }}
         run: |
           ENV_FILE=".env"
           echo "Creating Web $ENV_FILE for ${{ env.ENV }} environment..."
@@ -56,6 +63,10 @@ jobs:
           
           # 管理者設定
           echo "ADMIN_EMAILS=$ADMIN_EMAILS" >> $ENV_FILE
+          
+          # Basic認証設定
+          echo "BASIC_AUTH_USER=$BASIC_AUTH_USER" >> $ENV_FILE
+          echo "BASIC_AUTH_PASSWORD=$BASIC_AUTH_PASSWORD" >> $ENV_FILE
           
           echo "✅ Created Web $ENV_FILE with ${{ env.ENV }} configuration"
 

@@ -55,6 +55,9 @@ jobs:
       GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
       # 管理者設定
       ADMIN_EMAILS: ${{ vars.ADMIN_EMAILS }}
+      # Basic認証設定
+      BASIC_AUTH_USER: ${{ secrets.BASIC_AUTH_USER }}
+      BASIC_AUTH_PASSWORD: ${{ secrets.BASIC_AUTH_PASSWORD }}
 
   # Webをデプロイ
   web-deploy:

@@ -84,6 +84,41 @@ function getLocaleFromPath(pathname: string): string | undefined {
 export async function middleware(request: NextRequest) {
 	const pathname = request.nextUrl.pathname;
 
+	// ログインページへのアクセスにBasic認証を適用
+	if (pathname.startsWith("/login")) {
+		const authHeader = request.headers.get("authorization");
+
+		// Basic認証のチェック
+		if (!authHeader || !authHeader.startsWith("Basic ")) {
+			return new NextResponse("Authentication required", {
+				status: 401,
+				headers: {
+					"WWW-Authenticate": 'Basic realm="Login Page"',
+				},
+			});
+		}
+
+		// 認証情報をデコード
+		const base64Credentials = authHeader.split(" ")[1];
+		const credentials = Buffer.from(base64Credentials, "base64").toString(
+			"ascii"
+		);
+		const [username, password] = credentials.split(":");
+
+		// 環境変数と照合
+		const validUsername = process.env.BASIC_AUTH_USER || "admin";
+		const validPassword = process.env.BASIC_AUTH_PASSWORD || "password";
+
+		if (username !== validUsername || password !== validPassword) {
+			return new NextResponse("Invalid credentials", {
+				status: 401,
+				headers: {
+					"WWW-Authenticate": 'Basic realm="Login Page"',
+				},
+			});
+		}
+	}
+
 	// 管理画面へのアクセスをチェック
 	if (pathname.startsWith("/admin")) {
 		const token = await getToken({
