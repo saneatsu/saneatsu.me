@@ -76,7 +76,10 @@ jobs:
             --var NEXTAUTH_SECRET:"$NEXTAUTH_SECRET" \
             --var NEXT_PUBLIC_API_URL:"$NEXT_PUBLIC_API_URL" \
             --var GOOGLE_CLIENT_ID:"$GOOGLE_CLIENT_ID" \
-            --var GOOGLE_CLIENT_SECRET:"$GOOGLE_CLIENT_SECRET"
+            --var GOOGLE_CLIENT_SECRET:"$GOOGLE_CLIENT_SECRET" \
+            --var ADMIN_EMAILS:"$ADMIN_EMAILS" \
+            --var BASIC_AUTH_USER:"$BASIC_AUTH_USER" \
+            --var BASIC_AUTH_PASSWORD:"$BASIC_AUTH_PASSWORD"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
