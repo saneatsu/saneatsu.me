@@ -38,6 +38,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build workspace packages
+        run: |
+          pnpm --filter @saneatsu/schemas build
+          pnpm --filter @saneatsu/db build
+
       - name: Download .env artifact
         uses: actions/download-artifact@v4
         with:

@@ -1,6 +1,7 @@
 name: 🚀 Deploy Backend to Cloudflare Workers
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -8,11 +9,15 @@ on:
       - 'apps/backend/**'
       - 'packages/**'
       - '.github/workflows/deploy-backend.yml'
+      - '.github/workflows/_deploy-backend.yml'
+      - '.github/workflows/_create-backend-env-file.yml'
   pull_request:
     paths:
       - 'apps/backend/**'
       - 'packages/**'
       - '.github/workflows/deploy-backend.yml'
+      - '.github/workflows/_deploy-backend.yml'
+      - '.github/workflows/_create-backend-env-file.yml'
 
 # deploy-backend で必要になる権限
 permissions:
