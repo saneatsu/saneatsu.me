@@ -121,17 +121,31 @@ export async function middleware(request: NextRequest) {
 
 	// 管理画面へのアクセスをチェック
 	if (pathname.startsWith("/admin")) {
+		console.log("🔍 Admin access attempt:", pathname);
 		const token = await getToken({
 			req: request,
 			secret: process.env.NEXTAUTH_SECRET,
 		});
 
+		console.log("🔍 Token result:", {
+			hasToken: !!token,
+			tokenContent: token ? {
+				id: token.id,
+				email: token.email,
+				name: token.name,
+				picture: token.picture
+			} : null
+		});
+
 		// 未認証の場合はログインページにリダイレクト
 		if (!token) {
+			console.log("❌ No token found - redirecting to login");
 			const url = new URL("/login", request.url);
 			url.searchParams.set("callbackUrl", pathname);
 			return NextResponse.redirect(url);
 		}
+		
+		console.log("✅ Token validated - allowing admin access");
 	}
 
 	// ログインページと管理画面以外のページで言語ルーティングを適用
