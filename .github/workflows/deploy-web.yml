@@ -1,6 +1,7 @@
 name: 🚀 Deploy Web to Cloudflare
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -8,11 +9,15 @@ on:
       - 'apps/web/**'
       - 'packages/**'
       - '.github/workflows/deploy-web.yml'
+      - '.github/workflows/_deploy-web.yml'
+      - '.github/workflows/_create-web-env-file.yml'
   pull_request:
     paths:
       - 'apps/web/**'
       - 'packages/**'
       - '.github/workflows/deploy-web.yml'
+      - '.github/workflows/_deploy-web.yml'
+      - '.github/workflows/_create-web-env-file.yml'
 
 # deploy-web で必要になる権限
 permissions:
