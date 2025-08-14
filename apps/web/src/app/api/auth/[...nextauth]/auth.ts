@@ -77,7 +77,7 @@ export const authOptions = {
 							const apiResponse = await upsertUser(userData);
 							console.log("✅ API call successful:", {
 								response: apiResponse,
-								userData: userData
+								userData: userData,
 							});
 						} catch (error) {
 							console.error("🔍 API call error details:", {
@@ -115,7 +115,9 @@ export const authOptions = {
 					);
 				}
 
-				console.log("✅ SignIn callback completed successfully - RETURNING TRUE");
+				console.log(
+					"✅ SignIn callback completed successfully - RETURNING TRUE"
+				);
 				const finalResult = true;
 				console.log("🔍 Final signIn result:", finalResult);
 				return finalResult;
@@ -128,20 +130,22 @@ export const authOptions = {
 			const { token, user } = params;
 			console.log("🔍 JWT callback called:", {
 				hasUser: !!user,
-				userInfo: user ? {
-					id: user.id,
-					email: user.email,
-					name: user.name,
-					image: user.image
-				} : null,
+				userInfo: user
+					? {
+							id: user.id,
+							email: user.email,
+							name: user.name,
+							image: user.image,
+						}
+					: null,
 				currentToken: {
 					id: token.id,
 					email: token.email,
 					name: token.name,
-					picture: token.picture
-				}
+					picture: token.picture,
+				},
 			});
-			
+
 			// 初回ログイン時にユーザー情報をトークンに追加
 			if (user) {
 				token.id = user.id || "";
@@ -152,7 +156,7 @@ export const authOptions = {
 					id: token.id,
 					email: token.email,
 					name: token.name,
-					picture: token.picture
+					picture: token.picture,
 				});
 			}
 			return token;
@@ -162,19 +166,23 @@ export const authOptions = {
 			console.log("🔍 Session callback called:", {
 				hasToken: !!token,
 				hasSession: !!session,
-				hasUser: !!(session?.user),
-				tokenInfo: token ? {
-					id: token.id,
-					email: token.email,
-					name: token.name,
-					picture: token.picture
-				} : null,
-				sessionInfo: session ? {
-					user: session.user,
-					expires: session.expires
-				} : null
+				hasUser: !!session?.user,
+				tokenInfo: token
+					? {
+							id: token.id,
+							email: token.email,
+							name: token.name,
+							picture: token.picture,
+						}
+					: null,
+				sessionInfo: session
+					? {
+							user: session.user,
+							expires: session.expires,
+						}
+					: null,
 			});
-			
+
 			// JWTトークンからセッション情報を構築
 			if (token && session.user) {
 				session.user.id = token.id as string;
@@ -185,12 +193,12 @@ export const authOptions = {
 					userId: session.user.id,
 					userEmail: session.user.email,
 					userName: session.user.name,
-					userImage: session.user.image
+					userImage: session.user.image,
 				});
 			} else {
 				console.error("❌ Session construction failed:", {
 					hasToken: !!token,
-					hasSessionUser: !!(session?.user)
+					hasSessionUser: !!session?.user,
 				});
 			}
 			return session;

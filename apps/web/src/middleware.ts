@@ -129,12 +129,14 @@ export async function middleware(request: NextRequest) {
 
 		console.log("🔍 Token result:", {
 			hasToken: !!token,
-			tokenContent: token ? {
-				id: token.id,
-				email: token.email,
-				name: token.name,
-				picture: token.picture
-			} : null
+			tokenContent: token
+				? {
+						id: token.id,
+						email: token.email,
+						name: token.name,
+						picture: token.picture,
+					}
+				: null,
 		});
 
 		// 未認証の場合はログインページにリダイレクト
@@ -144,7 +146,7 @@ export async function middleware(request: NextRequest) {
 			url.searchParams.set("callbackUrl", pathname);
 			return NextResponse.redirect(url);
 		}
-		
+
 		console.log("✅ Token validated - allowing admin access");
 	}
 

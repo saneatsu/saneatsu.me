@@ -9,6 +9,7 @@ import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 import { articlesRoute } from "./routes/articles";
+import { authRoute } from "./routes/auth/worker";
 import { dashboardRoute } from "./routes/dashboard";
 
 /**
@@ -52,6 +53,7 @@ app.get("/api/health", (c) => {
 
 // APIルートをマウント
 app.route("/api/articles", articlesRoute);
+app.route("/api/auth", authRoute);
 app.route("/api/dashboard", dashboardRoute);
 
 // ルートエンドポイント

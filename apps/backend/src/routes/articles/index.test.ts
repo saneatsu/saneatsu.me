@@ -13,11 +13,18 @@ vi.mock("@saneatsu/db", () => ({
 	articleTranslations: {},
 }));
 
-// createDatabaseClient関数をモック
+// createDbClient関数をモック
+vi.mock("../../lib/db", () => ({
+	createDbClient: vi.fn(),
+}));
+
+// dbスキーマをモック
 vi.mock("@saneatsu/db/worker", () => ({
-	createDatabaseClient: vi.fn(),
 	articles: {},
 	articleTranslations: {},
+	articleTags: {},
+	tags: {},
+	createDatabaseClient: vi.fn(),
 }));
 
 describe("GET /articles", () => {
@@ -31,7 +38,7 @@ describe("GET /articles", () => {
 
 		// createDatabaseClient関数がmockDbを返すように設定
 		const { createDatabaseClient } = await import("@saneatsu/db/worker");
-		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
+		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		const mockArticles = [
 			createMockArticleWithTranslation({
@@ -123,7 +130,7 @@ describe("GET /articles", () => {
 
 		// createDatabaseClient関数がmockDbを返すように設定
 		const { createDatabaseClient } = await import("@saneatsu/db/worker");
-		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
+		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		const mockArticles = [
 			createMockArticleWithTranslation({
@@ -133,19 +140,17 @@ describe("GET /articles", () => {
 
 		const mockTotalCount = Array(15).fill({}); // 15件の記事を表す配列
 
-		const totalViewCountSubqueryMock = createSubqueryMock([
+		const _totalViewCountSubqueryMock = createSubqueryMock([
 			{ articleId: "article3", totalViewCount: 0 },
 		]);
 
 		const articleListMock = {
 			from: vi.fn().mockReturnValue({
 				leftJoin: vi.fn().mockReturnValue({
-					leftJoin: vi.fn().mockReturnValue({
-						where: vi.fn().mockReturnValue({
-							orderBy: vi.fn().mockReturnValue({
-								limit: vi.fn().mockReturnValue({
-									offset: vi.fn().mockResolvedValue(mockArticles),
-								}),
+					where: vi.fn().mockReturnValue({
+						orderBy: vi.fn().mockReturnValue({
+							limit: vi.fn().mockReturnValue({
+								offset: vi.fn().mockResolvedValue(mockArticles),
 							}),
 						}),
 					}),
@@ -162,12 +167,14 @@ describe("GET /articles", () => {
 		};
 
 		mockDb.select
-			.mockReturnValueOnce(totalViewCountSubqueryMock) // サブクエリ
 			.mockReturnValueOnce(articleListMock) // 記事一覧取得
 			.mockReturnValueOnce(countMock); // 総記事数取得
 
 		// Act
-		const client = testClient(articlesRoute) as any;
+		const client = testClient(articlesRoute, {
+			TURSO_DATABASE_URL: "test://test.db",
+			TURSO_AUTH_TOKEN: "test-token",
+		}) as any;
 		const res = await client.index.$get({
 			query: {
 				page: "2",
@@ -193,7 +200,7 @@ describe("GET /articles", () => {
 
 		// createDatabaseClient関数がmockDbを返すように設定
 		const { createDatabaseClient } = await import("@saneatsu/db/worker");
-		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
+		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		const mockArticles = [
 			createMockArticleWithTranslation({
@@ -208,19 +215,17 @@ describe("GET /articles", () => {
 
 		const mockTotalCount = [{ count: "1" }];
 
-		const totalViewCountSubqueryMock = createSubqueryMock([
+		const _totalViewCountSubqueryMock = createSubqueryMock([
 			{ articleId: "article1", totalViewCount: 0 },
 		]);
 
 		const articleListMock = {
 			from: vi.fn().mockReturnValue({
 				leftJoin: vi.fn().mockReturnValue({
-					leftJoin: vi.fn().mockReturnValue({
-						where: vi.fn().mockReturnValue({
-							orderBy: vi.fn().mockReturnValue({
-								limit: vi.fn().mockReturnValue({
-									offset: vi.fn().mockResolvedValue(mockArticles),
-								}),
+					where: vi.fn().mockReturnValue({
+						orderBy: vi.fn().mockReturnValue({
+							limit: vi.fn().mockReturnValue({
+								offset: vi.fn().mockResolvedValue(mockArticles),
 							}),
 						}),
 					}),
@@ -237,12 +242,14 @@ describe("GET /articles", () => {
 		};
 
 		mockDb.select
-			.mockReturnValueOnce(totalViewCountSubqueryMock) // サブクエリ
 			.mockReturnValueOnce(articleListMock) // 記事一覧取得
 			.mockReturnValueOnce(countMock); // 総記事数取得
 
 		// Act
-		const client = testClient(articlesRoute) as any;
+		const client = testClient(articlesRoute, {
+			TURSO_DATABASE_URL: "test://test.db",
+			TURSO_AUTH_TOKEN: "test-token",
+		}) as any;
 		const res = await client.index.$get({
 			query: {
 				lang: "en",
@@ -262,9 +269,9 @@ describe("GET /articles", () => {
 
 		// createDatabaseClient関数がmockDbを返すように設定
 		const { createDatabaseClient } = await import("@saneatsu/db/worker");
-		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
+		(createDatabaseClient as any).mockReturnValue(mockDb);
 
-		const totalViewCountSubqueryMock = createSubqueryMock([]);
+		const _totalViewCountSubqueryMock = createSubqueryMock([]);
 
 		const articleListMock = {
 			from: vi.fn().mockReturnValue({
@@ -291,12 +298,14 @@ describe("GET /articles", () => {
 		};
 
 		mockDb.select
-			.mockReturnValueOnce(totalViewCountSubqueryMock) // サブクエリ
 			.mockReturnValueOnce(articleListMock) // 記事一覧取得
 			.mockReturnValueOnce(countMock); // 総記事数取得
 
 		// Act
-		const client = testClient(articlesRoute) as any;
+		const client = testClient(articlesRoute, {
+			TURSO_DATABASE_URL: "test://test.db",
+			TURSO_AUTH_TOKEN: "test-token",
+		}) as any;
 		const res = await client.index.$get({
 			query: {},
 		});
@@ -328,7 +337,7 @@ describe("GET /articles/:slug", () => {
 
 		// createDatabaseClient関数がmockDbを返すように設定
 		const { createDatabaseClient } = await import("@saneatsu/db/worker");
-		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
+		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		const mockArticle = createMockArticleWithTranslation({
 			article: {
@@ -369,7 +378,10 @@ describe("GET /articles/:slug", () => {
 		mockDb.select.mockReturnValueOnce(articleMock);
 
 		// Act
-		const client = testClient(articlesRoute) as any;
+		const client = testClient(articlesRoute, {
+			TURSO_DATABASE_URL: "test://test.db",
+			TURSO_AUTH_TOKEN: "test-token",
+		}) as any;
 		const res = await client["test-article"].$get({
 			query: {},
 		});
@@ -392,7 +404,7 @@ describe("GET /articles/:slug", () => {
 
 		// createDatabaseClient関数がmockDbを返すように設定
 		const { createDatabaseClient } = await import("@saneatsu/db/worker");
-		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
+		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		const articleMock = {
 			from: vi.fn().mockReturnValue({
@@ -407,7 +419,10 @@ describe("GET /articles/:slug", () => {
 		mockDb.select.mockReturnValueOnce(articleMock);
 
 		// Act
-		const client = testClient(articlesRoute) as any;
+		const client = testClient(articlesRoute, {
+			TURSO_DATABASE_URL: "test://test.db",
+			TURSO_AUTH_TOKEN: "test-token",
+		}) as any;
 		const res = await client["non-existent-article"].$get({
 			query: {},
 		});
@@ -430,7 +445,7 @@ describe("GET /articles/:slug", () => {
 
 		// createDatabaseClient関数がmockDbを返すように設定
 		const { createDatabaseClient } = await import("@saneatsu/db/worker");
-		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
+		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		const mockArticle = createMockArticleWithTranslation({
 			article: {
@@ -471,7 +486,10 @@ describe("GET /articles/:slug", () => {
 		mockDb.select.mockReturnValueOnce(articleMock);
 
 		// Act
-		const client = testClient(articlesRoute) as any;
+		const client = testClient(articlesRoute, {
+			TURSO_DATABASE_URL: "test://test.db",
+			TURSO_AUTH_TOKEN: "test-token",
+		}) as any;
 		const res = await client["test-article"].$get({
 			query: {
 				lang: "en",
@@ -490,7 +508,7 @@ describe("GET /articles/:slug", () => {
 
 		// createDatabaseClient関数がmockDbを返すように設定
 		const { createDatabaseClient } = await import("@saneatsu/db/worker");
-		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
+		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		const mockArticle = {
 			id: 1,
@@ -526,7 +544,10 @@ describe("GET /articles/:slug", () => {
 		mockDb.select.mockReturnValueOnce(articleMock); // 記事取得
 
 		// Act
-		const client = testClient(articlesRoute) as any;
+		const client = testClient(articlesRoute, {
+			TURSO_DATABASE_URL: "test://test.db",
+			TURSO_AUTH_TOKEN: "test-token",
+		}) as any;
 		const res = await client["test-article"].$get({
 			query: { lang: "ja" },
 		});
@@ -546,7 +567,7 @@ describe("GET /articles/:slug", () => {
 
 		// createDatabaseClient関数がmockDbを返すように設定
 		const { createDatabaseClient } = await import("@saneatsu/db/worker");
-		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
+		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		const mockDraftArticle = {
 			id: 1,
@@ -574,7 +595,10 @@ describe("GET /articles/:slug", () => {
 		mockDb.select.mockReturnValueOnce(articleMock);
 
 		// Act
-		const client = testClient(articlesRoute) as any;
+		const client = testClient(articlesRoute, {
+			TURSO_DATABASE_URL: "test://test.db",
+			TURSO_AUTH_TOKEN: "test-token",
+		}) as any;
 		const res = await client["draft-article"].$get({
 			query: {},
 		});
@@ -597,7 +621,7 @@ describe("GET /articles/:slug", () => {
 
 		// createDatabaseClient関数がmockDbを返すように設定
 		const { createDatabaseClient } = await import("@saneatsu/db/worker");
-		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
+		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		const mockArchivedArticle = {
 			id: 1,
@@ -625,7 +649,10 @@ describe("GET /articles/:slug", () => {
 		mockDb.select.mockReturnValueOnce(articleMock);
 
 		// Act
-		const client = testClient(articlesRoute) as any;
+		const client = testClient(articlesRoute, {
+			TURSO_DATABASE_URL: "test://test.db",
+			TURSO_AUTH_TOKEN: "test-token",
+		}) as any;
 		const res = await client["archived-article"].$get({
 			query: {},
 		});
@@ -648,7 +675,7 @@ describe("GET /articles/:slug", () => {
 
 		// createDatabaseClient関数がmockDbを返すように設定
 		const { createDatabaseClient } = await import("@saneatsu/db/worker");
-		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
+		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		const mockArticle = createMockArticleWithTranslation({
 			article: {
@@ -690,7 +717,10 @@ describe("GET /articles/:slug", () => {
 		mockDb.select.mockReturnValueOnce(articleMock); // 記事取得
 
 		// Act
-		const client = testClient(articlesRoute) as any;
+		const client = testClient(articlesRoute, {
+			TURSO_DATABASE_URL: "test://test.db",
+			TURSO_AUTH_TOKEN: "test-token",
+		}) as any;
 		const res = await client["test-article"].$get({
 			query: {},
 		});
@@ -708,7 +738,7 @@ describe("GET /articles/:slug", () => {
 
 		// createDatabaseClient関数がmockDbを返すように設定
 		const { createDatabaseClient } = await import("@saneatsu/db/worker");
-		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
+		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		const mockArticles = [
 			createMockArticleWithTranslation({
@@ -745,12 +775,10 @@ describe("GET /articles/:slug", () => {
 		const articleListMock = {
 			from: vi.fn().mockReturnValue({
 				leftJoin: vi.fn().mockReturnValue({
-					leftJoin: vi.fn().mockReturnValue({
-						where: vi.fn().mockReturnValue({
-							orderBy: vi.fn().mockReturnValue({
-								limit: vi.fn().mockReturnValue({
-									offset: vi.fn().mockResolvedValue(mockArticles),
-								}),
+					where: vi.fn().mockReturnValue({
+						orderBy: vi.fn().mockReturnValue({
+							limit: vi.fn().mockReturnValue({
+								offset: vi.fn().mockResolvedValue(mockArticles),
 							}),
 						}),
 					}),
@@ -772,7 +800,10 @@ describe("GET /articles/:slug", () => {
 			.mockReturnValueOnce(countMock); // カウント取得
 
 		// Act
-		const client = testClient(articlesRoute) as any;
+		const client = testClient(articlesRoute, {
+			TURSO_DATABASE_URL: "test://test.db",
+			TURSO_AUTH_TOKEN: "test-token",
+		}) as any;
 		const res = await client.index.$get({
 			query: {},
 		});
@@ -791,7 +822,7 @@ describe("GET /articles/:slug", () => {
 
 		// createDatabaseClient関数がmockDbを返すように設定
 		const { createDatabaseClient } = await import("@saneatsu/db/worker");
-		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
+		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		const mockArticlesWithZeroViewCount = [
 			createMockArticleWithTranslation({
@@ -845,7 +876,10 @@ describe("GET /articles/:slug", () => {
 			.mockReturnValueOnce(countMock); // カウント取得
 
 		// Act
-		const client = testClient(articlesRoute) as any;
+		const client = testClient(articlesRoute, {
+			TURSO_DATABASE_URL: "test://test.db",
+			TURSO_AUTH_TOKEN: "test-token",
+		}) as any;
 		const res = await client.index.$get({
 			query: {},
 		});
@@ -928,7 +962,10 @@ describe("GET /articles/:slug", () => {
 				.mockReturnValueOnce(countMock);
 
 			// Act
-			const client = testClient(articlesRoute) as any;
+			const client = testClient(articlesRoute, {
+				TURSO_DATABASE_URL: "test://test.db",
+				TURSO_AUTH_TOKEN: "test-token",
+			}) as any;
 			const res = await client.index.$get({
 				query: {
 					sortBy: "title",
@@ -1015,7 +1052,10 @@ describe("GET /articles/:slug", () => {
 				.mockReturnValueOnce(countMock);
 
 			// Act
-			const client = testClient(articlesRoute) as any;
+			const client = testClient(articlesRoute, {
+				TURSO_DATABASE_URL: "test://test.db",
+				TURSO_AUTH_TOKEN: "test-token",
+			}) as any;
 			const res = await client.index.$get({
 				query: {
 					sortBy: "viewCount",
@@ -1104,7 +1144,10 @@ describe("GET /articles/:slug", () => {
 				.mockReturnValueOnce(countMock);
 
 			// Act
-			const client = testClient(articlesRoute) as any;
+			const client = testClient(articlesRoute, {
+				TURSO_DATABASE_URL: "test://test.db",
+				TURSO_AUTH_TOKEN: "test-token",
+			}) as any;
 			const res = await client.index.$get({
 				query: {
 					sortBy: "publishedAt",
@@ -1189,7 +1232,10 @@ describe("GET /articles/:slug", () => {
 				.mockReturnValueOnce(countMock);
 
 			// Act
-			const client = testClient(articlesRoute) as any;
+			const client = testClient(articlesRoute, {
+				TURSO_DATABASE_URL: "test://test.db",
+				TURSO_AUTH_TOKEN: "test-token",
+			}) as any;
 			const res = await client.index.$get({
 				query: {
 					sortBy: "createdAt",
@@ -1274,7 +1320,10 @@ describe("GET /articles/:slug", () => {
 				.mockReturnValueOnce(countMock);
 
 			// Act
-			const client = testClient(articlesRoute) as any;
+			const client = testClient(articlesRoute, {
+				TURSO_DATABASE_URL: "test://test.db",
+				TURSO_AUTH_TOKEN: "test-token",
+			}) as any;
 			const res = await client.index.$get({
 				query: {
 					sortBy: "updatedAt",
@@ -1347,7 +1396,10 @@ describe("GET /articles/:slug", () => {
 				.mockReturnValueOnce(countMock);
 
 			// Act
-			const client = testClient(articlesRoute) as any;
+			const client = testClient(articlesRoute, {
+				TURSO_DATABASE_URL: "test://test.db",
+				TURSO_AUTH_TOKEN: "test-token",
+			}) as any;
 			const res = await client.index.$get({
 				query: {
 					sortBy: "invalidColumn" as unknown as "createdAt",
@@ -1372,7 +1424,7 @@ describe("POST /articles", () => {
 
 		// createDatabaseClient関数がmockDbを返すように設定
 		const { createDatabaseClient } = await import("@saneatsu/db/worker");
-		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
+		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		const mockNewArticle = {
 			id: 1,
@@ -1463,7 +1515,10 @@ describe("POST /articles", () => {
 			.mockReturnValueOnce(insertTranslationMock); // 翻訳作成
 
 		// Act
-		const client = testClient(articlesRoute) as any;
+		const client = testClient(articlesRoute, {
+			TURSO_DATABASE_URL: "test://test.db",
+			TURSO_AUTH_TOKEN: "test-token",
+		}) as any;
 		const res = await client.index.$post({
 			json: {
 				title: "新しい記事",
@@ -1493,10 +1548,13 @@ describe("POST /articles", () => {
 
 		// createDatabaseClient関数がmockDbを返すように設定
 		const { createDatabaseClient } = await import("@saneatsu/db/worker");
-		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
+		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		// Act
-		const client = testClient(articlesRoute) as any;
+		const client = testClient(articlesRoute, {
+			TURSO_DATABASE_URL: "test://test.db",
+			TURSO_AUTH_TOKEN: "test-token",
+		}) as any;
 		const res = await client.index.$post({
 			json: {
 				title: "",
@@ -1518,10 +1576,13 @@ describe("POST /articles", () => {
 
 		// createDatabaseClient関数がmockDbを返すように設定
 		const { createDatabaseClient } = await import("@saneatsu/db/worker");
-		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
+		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		// Act
-		const client = testClient(articlesRoute) as any;
+		const client = testClient(articlesRoute, {
+			TURSO_DATABASE_URL: "test://test.db",
+			TURSO_AUTH_TOKEN: "test-token",
+		}) as any;
 		const res = await client.index.$post({
 			json: {
 				title: "正常なタイトル",
@@ -1543,10 +1604,13 @@ describe("POST /articles", () => {
 
 		// createDatabaseClient関数がmockDbを返すように設定
 		const { createDatabaseClient } = await import("@saneatsu/db/worker");
-		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
+		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		// Act
-		const client = testClient(articlesRoute) as any;
+		const client = testClient(articlesRoute, {
+			TURSO_DATABASE_URL: "test://test.db",
+			TURSO_AUTH_TOKEN: "test-token",
+		}) as any;
 		const res = await client.index.$post({
 			json: {
 				title: "正常なタイトル",
@@ -1574,7 +1638,7 @@ describe("GET /articles/check-slug", () => {
 
 		// createDatabaseClient関数がmockDbを返すように設定
 		const { createDatabaseClient } = await import("@saneatsu/db/worker");
-		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
+		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		const selectMock = {
 			from: vi.fn().mockReturnValue({
@@ -1587,7 +1651,10 @@ describe("GET /articles/check-slug", () => {
 		mockDb.select.mockReturnValueOnce(selectMock);
 
 		// Act
-		const client = testClient(articlesRoute) as any;
+		const client = testClient(articlesRoute, {
+			TURSO_DATABASE_URL: "test://test.db",
+			TURSO_AUTH_TOKEN: "test-token",
+		}) as any;
 		const res = await (client as any)["check-slug"].$get({
 			query: {
 				slug: "available-slug",
@@ -1608,7 +1675,7 @@ describe("GET /articles/check-slug", () => {
 
 		// createDatabaseClient関数がmockDbを返すように設定
 		const { createDatabaseClient } = await import("@saneatsu/db/worker");
-		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
+		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		const selectMock = {
 			from: vi.fn().mockReturnValue({
@@ -1623,7 +1690,10 @@ describe("GET /articles/check-slug", () => {
 		mockDb.select.mockReturnValueOnce(selectMock);
 
 		// Act
-		const client = testClient(articlesRoute) as any;
+		const client = testClient(articlesRoute, {
+			TURSO_DATABASE_URL: "test://test.db",
+			TURSO_AUTH_TOKEN: "test-token",
+		}) as any;
 		const res = await (client as any)["check-slug"].$get({
 			query: {
 				slug: "used-slug",
@@ -1645,10 +1715,13 @@ describe("GET /articles/check-slug", () => {
 
 		// createDatabaseClient関数がmockDbを返すように設定
 		const { createDatabaseClient } = await import("@saneatsu/db/worker");
-		vi.mocked(createDatabaseClient).mockReturnValue(mockDb as any);
+		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		// Act
-		const client = testClient(articlesRoute) as any;
+		const client = testClient(articlesRoute, {
+			TURSO_DATABASE_URL: "test://test.db",
+			TURSO_AUTH_TOKEN: "test-token",
+		}) as any;
 		const res = await (client as any)["check-slug"].$get({
 			query: {
 				slug: "",
