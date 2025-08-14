@@ -20,6 +20,9 @@ on:
         required: true
       GOOGLE_CLIENT_SECRET:
         required: true
+      # 管理者設定
+      ADMIN_EMAILS:
+        required: true
       # Basic認証関連
       BASIC_AUTH_USER:
         required: true
@@ -42,7 +45,7 @@ jobs:
           AUTH_TRUST_HOST: "true"
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-          ADMIN_EMAILS: ${{ vars.ADMIN_EMAILS }}
+          ADMIN_EMAILS: ${{ secrets.ADMIN_EMAILS }}
           BASIC_AUTH_USER: ${{ secrets.BASIC_AUTH_USER }}
           BASIC_AUTH_PASSWORD: ${{ secrets.BASIC_AUTH_PASSWORD }}
         run: |

@@ -43,7 +43,7 @@ jobs:
           fi
     outputs:
       environment: ${{ steps.set-env.outputs.env }}
-      
+
   # Web用の .env ファイルを作成
   create-web-env-file:
     needs: set-environment
@@ -59,7 +59,7 @@ jobs:
       GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
       GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
       # 管理者設定
-      ADMIN_EMAILS: ${{ vars.ADMIN_EMAILS }}
+      ADMIN_EMAILS: ${{ secrets.ADMIN_EMAILS }}
       # Basic認証設定
       BASIC_AUTH_USER: ${{ secrets.BASIC_AUTH_USER }}
       BASIC_AUTH_PASSWORD: ${{ secrets.BASIC_AUTH_PASSWORD }}
@@ -85,10 +85,10 @@ jobs:
         with:
           script: |
             const environment = '${{ needs.set-environment.outputs.environment }}';
-            const deploymentUrl = environment === 'production' 
-              ? 'https://saneatsu.me' 
+            const deploymentUrl = environment === 'production'
+              ? 'https://saneatsu.me'
               : 'https://saneatsu-web-preview.w-saneatsu-e8c.workers.dev';
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
