@@ -15,8 +15,13 @@ import type { ApiError } from "../types/common";
 /**
  * APIのベースURL
  * 開発環境では相対パスを使用
+ * 本番環境では環境変数から取得、またはデフォルト値を使用
  */
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
+const API_BASE_URL =
+	process.env.NEXT_PUBLIC_API_URL ||
+	(typeof window !== "undefined" && window.location.hostname === "saneatsu.me"
+		? "https://api.saneatsu.me"
+		: "");
 
 /**
  * Hono Clientの初期化
@@ -230,13 +235,22 @@ export async function upsertUser(profile: {
 	sub: string;
 }) {
 	try {
+		console.log("🔍 Calling upsertUser API:", {
+			url: `${API_BASE_URL}/api/auth/user`,
+			profile: profile,
+		});
+
+		const controller = new AbortController();
+		const timeoutId = setTimeout(() => controller.abort(), 10000); // 10秒タイムアウト
+
 		const response = await fetch(`${API_BASE_URL}/api/auth/user`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(profile),
-		});
+			signal: controller.signal,
+		}).finally(() => clearTimeout(timeoutId));
 
 		if (!response.ok) {
 			const error = await response.json();

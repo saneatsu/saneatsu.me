@@ -63,6 +63,11 @@ export const authOptions = {
 
 					// Backend APIを呼び出してユーザー情報を保存
 					// ビルド時はAPI URLが設定されていない場合があるのでスキップ
+					console.log("🔍 API URL configuration:", {
+						NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+						hasURL: !!process.env.NEXT_PUBLIC_API_URL,
+					});
+
 					if (process.env.NEXT_PUBLIC_API_URL) {
 						console.log("🔍 Attempting API call to upsertUser...");
 						try {
