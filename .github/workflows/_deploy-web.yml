@@ -75,19 +75,16 @@ jobs:
           # .envファイルから環境変数を読み込む
           export $(cat .env | xargs)
           
-          # Wrangler secretsを設定（センシティブな情報用）
-          echo "$NEXTAUTH_SECRET" | npx wrangler secret put NEXTAUTH_SECRET --env ${{ env.ENV }}
-          echo "$GOOGLE_CLIENT_SECRET" | npx wrangler secret put GOOGLE_CLIENT_SECRET --env ${{ env.ENV }}
-          echo "$BASIC_AUTH_PASSWORD" | npx wrangler secret put BASIC_AUTH_PASSWORD --env ${{ env.ENV }}
-          
-          # 非センシティブな環境変数は[vars]セクション用に設定
-          # wrangler.tomlに[vars]セクションがない場合、--varフラグで渡す
+          # Cloudflare Workersにデプロイ（環境変数を渡す）
           npx wrangler deploy --env ${{ env.ENV }} \
             --var NEXTAUTH_URL:"$NEXTAUTH_URL" \
+            --var NEXTAUTH_SECRET:"$NEXTAUTH_SECRET" \
             --var NEXT_PUBLIC_API_URL:"$NEXT_PUBLIC_API_URL" \
             --var GOOGLE_CLIENT_ID:"$GOOGLE_CLIENT_ID" \
+            --var GOOGLE_CLIENT_SECRET:"$GOOGLE_CLIENT_SECRET" \
             --var ADMIN_EMAILS:"$ADMIN_EMAILS" \
-            --var BASIC_AUTH_USER:"$BASIC_AUTH_USER"
+            --var BASIC_AUTH_USER:"$BASIC_AUTH_USER" \
+            --var BASIC_AUTH_PASSWORD:"$BASIC_AUTH_PASSWORD"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
