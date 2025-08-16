@@ -69,8 +69,21 @@ authRoute.openapi(upsertUserRoute, async (c) => {
 		const profile = c.req.valid("json");
 		const adminEmails = c.env.ADMIN_EMAILS || "";
 
+		// デバッグログ
+		console.log("🔍 Backend auth debug:", {
+			email: profile.email,
+			adminEmails: adminEmails,
+			envKeys: Object.keys(c.env),
+			hasAdminEmails: !!c.env.ADMIN_EMAILS,
+		});
+
 		// 管理者権限チェック
 		if (!isAdminEmail(profile.email, adminEmails)) {
+			console.log("❌ Admin check failed:", {
+				email: profile.email,
+				adminEmails: adminEmails,
+				isAdmin: false,
+			});
 			return c.json(
 				{
 					error: {
