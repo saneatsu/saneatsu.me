@@ -105,9 +105,32 @@ export async function middleware(request: NextRequest) {
 		);
 		const [username, password] = credentials.split(":");
 
-		// 環境変数と照合
-		const validUsername = process.env.BASIC_AUTH_USER || "admin";
-		const validPassword = process.env.BASIC_AUTH_PASSWORD || "password";
+		// 環境変数と照合（Edge Runtime対応）
+		// biome-ignore lint/suspicious/noExplicitAny: Cloudflare Workers環境での環境変数アクセスに必要
+		const cloudflareContext = (globalThis as any)[
+			Symbol.for("__cloudflare-context__")
+		];
+
+		const validUsername =
+			process.env.BASIC_AUTH_USER ||
+			cloudflareContext?.env?.BASIC_AUTH_USER ||
+			// @ts-ignore
+			// biome-ignore lint/suspicious/noExplicitAny: Edge Runtime互換性のため
+			(globalThis as any).BASIC_AUTH_USER ||
+			// @ts-ignore
+			// biome-ignore lint/suspicious/noExplicitAny: Edge Runtime互換性のため
+			(self as any).BASIC_AUTH_USER ||
+			"admin";
+		const validPassword =
+			process.env.BASIC_AUTH_PASSWORD ||
+			cloudflareContext?.env?.BASIC_AUTH_PASSWORD ||
+			// @ts-ignore
+			// biome-ignore lint/suspicious/noExplicitAny: Edge Runtime互換性のため
+			(globalThis as any).BASIC_AUTH_PASSWORD ||
+			// @ts-ignore
+			// biome-ignore lint/suspicious/noExplicitAny: Edge Runtime互換性のため
+			(self as any).BASIC_AUTH_PASSWORD ||
+			"password";
 
 		if (username !== validUsername || password !== validPassword) {
 			return new NextResponse("Invalid credentials", {
@@ -122,9 +145,41 @@ export async function middleware(request: NextRequest) {
 	// 管理画面へのアクセスをチェック
 	if (pathname.startsWith("/admin")) {
 		console.log("🔍 Admin access attempt:", pathname);
+
+		// Edge Runtime (Cloudflare Workers) で環境変数にアクセス
+		// OpenNext CloudflareはCloudflare WorkersのBindingsを
+		// Symbol.for("__cloudflare-context__")経由でアクセス可能にする
+		// biome-ignore lint/suspicious/noExplicitAny: Cloudflare Workers環境での環境変数アクセスに必要
+		const cloudflareContext = (globalThis as any)[
+			Symbol.for("__cloudflare-context__")
+		];
+
+		const secret =
+			process.env.NEXTAUTH_SECRET ||
+			// Cloudflare WorkersのBindingsからアクセス
+			cloudflareContext?.env?.NEXTAUTH_SECRET ||
+			// @ts-ignore - 代替アクセス
+			// biome-ignore lint/suspicious/noExplicitAny: Edge Runtime互換性のため
+			(globalThis as any).NEXTAUTH_SECRET ||
+			// @ts-ignore
+			// biome-ignore lint/suspicious/noExplicitAny: Edge Runtime互換性のため
+			(self as any).NEXTAUTH_SECRET;
+
+		console.log("🔍 Secret availability:", {
+			hasProcessEnv: !!process.env.NEXTAUTH_SECRET,
+			hasCloudflareContext: !!cloudflareContext,
+			hasCloudflareEnv: !!cloudflareContext?.env,
+			hasCloudflareSecret: !!cloudflareContext?.env?.NEXTAUTH_SECRET,
+			// biome-ignore lint/suspicious/noExplicitAny: デバッグ用
+			hasGlobalThis: !!(globalThis as any).NEXTAUTH_SECRET,
+			// biome-ignore lint/suspicious/noExplicitAny: デバッグ用
+			hasSelf: !!(self as any).NEXTAUTH_SECRET,
+			secretFound: !!secret,
+		});
+
 		const token = await getToken({
 			req: request,
-			secret: process.env.NEXTAUTH_SECRET,
+			secret: secret,
 		});
 
 		console.log("🔍 Token result:", {
