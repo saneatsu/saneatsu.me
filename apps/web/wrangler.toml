@@ -20,13 +20,28 @@ binding = "ASSETS"
 [env.development]
 name = "saneatsu-web-dev"
 
+# Service binding to backend API
+[[env.development.services]]
+binding = "BACKEND_API"
+service = "saneatsu-backend-dev"
+
 # Preview/staging environment
 [env.preview]
 name = "saneatsu-web-preview"
 
+# Service binding to backend API
+[[env.preview.services]]
+binding = "BACKEND_API"
+service = "saneatsu-backend-preview"
+
 # Production environment
 [env.production]
 name = "saneatsu-web"
+
+# Service binding to backend API
+[[env.production.services]]
+binding = "BACKEND_API"
+service = "saneatsu-backend"
 
 # Custom domain configuration for production
 [[env.production.routes]]

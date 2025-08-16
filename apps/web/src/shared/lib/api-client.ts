@@ -13,6 +13,19 @@ import type {
 import type { ApiError } from "../types/common";
 
 /**
+ * Service Bindingを取得する関数
+ * Cloudflare Workers環境でのみ利用可能
+ */
+function getServiceBinding() {
+	// OpenNext Cloudflareの環境変数アクセス方法
+	// @ts-ignore
+	const cloudflareContext = (globalThis as any)[
+		Symbol.for("__cloudflare-context__")
+	];
+	return cloudflareContext?.env?.BACKEND_API;
+}
+
+/**
  * APIのベースURL
  * 開発環境では相対パスを使用
  * 本番環境では環境変数から取得、またはデフォルト値を使用
@@ -235,7 +248,37 @@ export async function upsertUser(profile: {
 	sub: string;
 }) {
 	try {
-		console.log("🔍 Calling upsertUser API:", {
+		// Service Bindingが利用可能かチェック
+		const serviceBinding = getServiceBinding();
+
+		if (serviceBinding) {
+			console.log("🔍 Using Service Binding for upsertUser API");
+
+			// Service Bindingを使用したリクエスト
+			const request = new Request("https://backend/api/auth/user", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(profile),
+			});
+
+			const response = await serviceBinding.fetch(request);
+
+			if (!response.ok) {
+				const error = await response.json();
+				throw new ApiClientError(
+					error.error?.message || "Failed to upsert user",
+					response.status,
+					error.error?.code
+				);
+			}
+
+			return await response.json();
+		}
+
+		// Service Bindingが利用できない場合は通常のfetch
+		console.log("🔍 Calling upsertUser API via HTTP:", {
 			url: `${API_BASE_URL}/api/auth/user`,
 			profile: profile,
 		});
@@ -276,6 +319,42 @@ export async function upsertUser(profile: {
  */
 export async function getUserByEmail(email: string) {
 	try {
+		// Service Bindingが利用可能かチェック
+		const serviceBinding = getServiceBinding();
+
+		if (serviceBinding) {
+			console.log("🔍 Using Service Binding for getUserByEmail API");
+
+			// Service Bindingを使用したリクエスト
+			const request = new Request(
+				`https://backend/api/auth/user/${encodeURIComponent(email)}`,
+				{
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+					},
+				}
+			);
+
+			const response = await serviceBinding.fetch(request);
+
+			if (response.status === 404) {
+				return null;
+			}
+
+			if (!response.ok) {
+				const error = await response.json();
+				throw new ApiClientError(
+					error.error?.message || "Failed to get user",
+					response.status,
+					error.error?.code
+				);
+			}
+
+			return await response.json();
+		}
+
+		// Service Bindingが利用できない場合は通常のfetch
 		const response = await fetch(
 			`${API_BASE_URL}/api/auth/user/${encodeURIComponent(email)}`,
 			{
