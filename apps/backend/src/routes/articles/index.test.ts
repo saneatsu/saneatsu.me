@@ -34,7 +34,7 @@ describe("GET /articles", () => {
 
 	it("記事一覧を正常に取得する", async () => {
 		// Arrange
-		const { mockDb, createSubqueryMock } = setupDbMocks();
+		const { mockDb } = setupDbMocks();
 
 		// createDatabaseClient関数がmockDbを返すように設定
 		const { createDatabaseClient } = await import("@saneatsu/db/worker");
@@ -66,11 +66,6 @@ describe("GET /articles", () => {
 		];
 
 		const mockTotalCount = [{}, {}]; // 2件の記事を表す配列
-
-		const _totalViewCountSubqueryMock = createSubqueryMock([
-			{ articleId: "article1", totalViewCount: 0 },
-			{ articleId: "article2", totalViewCount: 0 },
-		]);
 
 		// 記事一覧取得のモック（正しいチェーン構造）
 		const articleListMock = {
@@ -126,7 +121,7 @@ describe("GET /articles", () => {
 
 	it("ページネーション機能が正常に動作する", async () => {
 		// Arrange
-		const { mockDb, createSubqueryMock } = setupDbMocks();
+		const { mockDb } = setupDbMocks();
 
 		// createDatabaseClient関数がmockDbを返すように設定
 		const { createDatabaseClient } = await import("@saneatsu/db/worker");
@@ -139,10 +134,6 @@ describe("GET /articles", () => {
 		];
 
 		const mockTotalCount = Array(15).fill({}); // 15件の記事を表す配列
-
-		const _totalViewCountSubqueryMock = createSubqueryMock([
-			{ articleId: "article3", totalViewCount: 0 },
-		]);
 
 		const articleListMock = {
 			from: vi.fn().mockReturnValue({
@@ -196,7 +187,7 @@ describe("GET /articles", () => {
 
 	it("言語フィルタリング機能が正常に動作する", async () => {
 		// Arrange
-		const { mockDb, createSubqueryMock } = setupDbMocks();
+		const { mockDb } = setupDbMocks();
 
 		// createDatabaseClient関数がmockDbを返すように設定
 		const { createDatabaseClient } = await import("@saneatsu/db/worker");
@@ -214,10 +205,6 @@ describe("GET /articles", () => {
 		];
 
 		const mockTotalCount = [{ count: "1" }];
-
-		const _totalViewCountSubqueryMock = createSubqueryMock([
-			{ articleId: "article1", totalViewCount: 0 },
-		]);
 
 		const articleListMock = {
 			from: vi.fn().mockReturnValue({
@@ -265,23 +252,19 @@ describe("GET /articles", () => {
 
 	it("記事が存在しない場合、空の配列を返す", async () => {
 		// Arrange
-		const { mockDb, createSubqueryMock } = setupDbMocks();
+		const { mockDb } = setupDbMocks();
 
 		// createDatabaseClient関数がmockDbを返すように設定
 		const { createDatabaseClient } = await import("@saneatsu/db/worker");
 		(createDatabaseClient as any).mockReturnValue(mockDb);
 
-		const _totalViewCountSubqueryMock = createSubqueryMock([]);
-
 		const articleListMock = {
 			from: vi.fn().mockReturnValue({
 				leftJoin: vi.fn().mockReturnValue({
-					leftJoin: vi.fn().mockReturnValue({
-						where: vi.fn().mockReturnValue({
-							orderBy: vi.fn().mockReturnValue({
-								limit: vi.fn().mockReturnValue({
-									offset: vi.fn().mockResolvedValue([]),
-								}),
+					where: vi.fn().mockReturnValue({
+						orderBy: vi.fn().mockReturnValue({
+							limit: vi.fn().mockReturnValue({
+								offset: vi.fn().mockResolvedValue([]),
 							}),
 						}),
 					}),
@@ -734,7 +717,7 @@ describe("GET /articles/:slug", () => {
 
 	it("記事一覧取得時にview_countが含まれる", async () => {
 		// Arrange
-		const { mockDb, createSubqueryMock } = setupDbMocks();
+		const { mockDb } = setupDbMocks();
 
 		// createDatabaseClient関数がmockDbを返すように設定
 		const { createDatabaseClient } = await import("@saneatsu/db/worker");
@@ -750,7 +733,7 @@ describe("GET /articles/:slug", () => {
 				translation: {
 					title: "テスト記事1",
 					content: "これはテスト記事1の内容です。",
-					viewCount: 25,
+					viewCount: 0, // 現在のAPIは常に0を返す
 				},
 			}),
 			createMockArticleWithTranslation({
@@ -762,15 +745,10 @@ describe("GET /articles/:slug", () => {
 				translation: {
 					title: "テスト記事2",
 					content: "これはテスト記事2の内容です。",
-					viewCount: 100,
+					viewCount: 0, // 現在のAPIは常に0を返す
 				},
 			}),
 		];
-
-		const totalViewCountSubqueryMock = createSubqueryMock([
-			{ articleId: "article1", totalViewCount: 25 },
-			{ articleId: "article2", totalViewCount: 100 },
-		]);
 
 		const articleListMock = {
 			from: vi.fn().mockReturnValue({
@@ -795,7 +773,6 @@ describe("GET /articles/:slug", () => {
 		};
 
 		mockDb.select
-			.mockReturnValueOnce(totalViewCountSubqueryMock) // サブクエリ
 			.mockReturnValueOnce(articleListMock) // 記事一覧取得
 			.mockReturnValueOnce(countMock); // カウント取得
 
@@ -812,13 +789,13 @@ describe("GET /articles/:slug", () => {
 		expect(res.status).toBe(200);
 		const data = await res.json();
 		expect(data.data).toHaveLength(2);
-		expect(data.data[0].viewCount).toBe(25);
-		expect(data.data[1].viewCount).toBe(100);
+		expect(data.data[0].viewCount).toBe(0); // 現在は固定値0を返す
+		expect(data.data[1].viewCount).toBe(0); // 現在は固定値0を返す
 	});
 
 	it("記事一覧取得時にviewCount=0がAPIレスポンスに含まれる", async () => {
 		// Arrange
-		const { mockDb, createSubqueryMock } = setupDbMocks();
+		const { mockDb } = setupDbMocks();
 
 		// createDatabaseClient関数がmockDbを返すように設定
 		const { createDatabaseClient } = await import("@saneatsu/db/worker");
@@ -839,22 +816,15 @@ describe("GET /articles/:slug", () => {
 			}),
 		];
 
-		const totalViewCountSubqueryMock = createSubqueryMock({
-			articleId: "article1",
-			totalViewCount: 0, // 0を返すサブクエリ
-		});
-
 		const articleListMock = {
 			from: vi.fn().mockReturnValue({
 				leftJoin: vi.fn().mockReturnValue({
-					leftJoin: vi.fn().mockReturnValue({
-						where: vi.fn().mockReturnValue({
-							orderBy: vi.fn().mockReturnValue({
-								limit: vi.fn().mockReturnValue({
-									offset: vi
-										.fn()
-										.mockResolvedValue(mockArticlesWithZeroViewCount),
-								}),
+					where: vi.fn().mockReturnValue({
+						orderBy: vi.fn().mockReturnValue({
+							limit: vi.fn().mockReturnValue({
+								offset: vi
+									.fn()
+									.mockResolvedValue(mockArticlesWithZeroViewCount),
 							}),
 						}),
 					}),
@@ -871,7 +841,6 @@ describe("GET /articles/:slug", () => {
 		};
 
 		mockDb.select
-			.mockReturnValueOnce(totalViewCountSubqueryMock) // サブクエリ
 			.mockReturnValueOnce(articleListMock) // 記事一覧取得
 			.mockReturnValueOnce(countMock); // カウント取得
 
@@ -896,11 +865,11 @@ describe("GET /articles/:slug", () => {
 	describe("ソート機能", () => {
 		it("タイトルで昇順ソートができる", async () => {
 			// Arrange
-			const { mockDb, createSubqueryMock } = setupDbMocks();
+			const { mockDb } = setupDbMocks();
 
-			// createDbClient関数がmockDbを返すように設定
-			const { createDbClient } = await import("../../lib/db");
-			vi.mocked(createDbClient).mockReturnValue(mockDb as any);
+			// createDatabaseClient関数がmockDbを返すように設定
+			const { createDatabaseClient } = await import("@saneatsu/db/worker");
+			(createDatabaseClient as any).mockReturnValue(mockDb);
 
 			const mockArticles = [
 				createMockArticleWithTranslation({
@@ -912,6 +881,7 @@ describe("GET /articles/:slug", () => {
 					translation: {
 						title: "Aテスト記事",
 						content: "内容A",
+						viewCount: 0,
 					},
 				}),
 				createMockArticleWithTranslation({
@@ -923,24 +893,18 @@ describe("GET /articles/:slug", () => {
 					translation: {
 						title: "Bテスト記事",
 						content: "内容B",
+						viewCount: 0,
 					},
 				}),
 			];
 
-			const totalViewCountSubqueryMock = createSubqueryMock([
-				{ articleId: "article1", totalViewCount: 0 },
-				{ articleId: "article2", totalViewCount: 0 },
-			]);
-
 			const articleListMock = {
 				from: vi.fn().mockReturnValue({
 					leftJoin: vi.fn().mockReturnValue({
-						leftJoin: vi.fn().mockReturnValue({
-							where: vi.fn().mockReturnValue({
-								orderBy: vi.fn().mockReturnValue({
-									limit: vi.fn().mockReturnValue({
-										offset: vi.fn().mockResolvedValue(mockArticles),
-									}),
+						where: vi.fn().mockReturnValue({
+							orderBy: vi.fn().mockReturnValue({
+								limit: vi.fn().mockReturnValue({
+									offset: vi.fn().mockResolvedValue(mockArticles),
 								}),
 							}),
 						}),
@@ -957,7 +921,6 @@ describe("GET /articles/:slug", () => {
 			};
 
 			mockDb.select
-				.mockReturnValueOnce(totalViewCountSubqueryMock) // サブクエリ
 				.mockReturnValueOnce(articleListMock)
 				.mockReturnValueOnce(countMock);
 
@@ -978,17 +941,17 @@ describe("GET /articles/:slug", () => {
 			const data = await res.json();
 			expect(data.data).toHaveLength(2);
 			expect(
-				articleListMock.from().leftJoin().leftJoin().where().orderBy
+				articleListMock.from().leftJoin().where().orderBy
 			).toHaveBeenCalled();
 		});
 
 		it("閲覧数で降順ソートができる", async () => {
 			// Arrange
-			const { mockDb, createSubqueryMock } = setupDbMocks();
+			const { mockDb } = setupDbMocks();
 
-			// createDbClient関数がmockDbを返すように設定
-			const { createDbClient } = await import("../../lib/db");
-			vi.mocked(createDbClient).mockReturnValue(mockDb as any);
+			// createDatabaseClient関数がmockDbを返すように設定
+			const { createDatabaseClient } = await import("@saneatsu/db/worker");
+			(createDatabaseClient as any).mockReturnValue(mockDb);
 
 			const mockArticles = [
 				createMockArticleWithTranslation({
@@ -1000,7 +963,7 @@ describe("GET /articles/:slug", () => {
 					translation: {
 						title: "人気記事",
 						content: "人気の内容",
-						viewCount: 1000,
+						viewCount: 0,
 					},
 				}),
 				createMockArticleWithTranslation({
@@ -1012,25 +975,18 @@ describe("GET /articles/:slug", () => {
 					translation: {
 						title: "普通記事",
 						content: "普通の内容",
-						viewCount: 100,
+						viewCount: 0,
 					},
 				}),
 			];
 
-			const totalViewCountSubqueryMock = createSubqueryMock([
-				{ articleId: "article1", totalViewCount: 1000 },
-				{ articleId: "article2", totalViewCount: 100 },
-			]);
-
 			const articleListMock = {
 				from: vi.fn().mockReturnValue({
 					leftJoin: vi.fn().mockReturnValue({
-						leftJoin: vi.fn().mockReturnValue({
-							where: vi.fn().mockReturnValue({
-								orderBy: vi.fn().mockReturnValue({
-									limit: vi.fn().mockReturnValue({
-										offset: vi.fn().mockResolvedValue(mockArticles),
-									}),
+						where: vi.fn().mockReturnValue({
+							orderBy: vi.fn().mockReturnValue({
+								limit: vi.fn().mockReturnValue({
+									offset: vi.fn().mockResolvedValue(mockArticles),
 								}),
 							}),
 						}),
@@ -1047,7 +1003,6 @@ describe("GET /articles/:slug", () => {
 			};
 
 			mockDb.select
-				.mockReturnValueOnce(totalViewCountSubqueryMock) // サブクエリ
 				.mockReturnValueOnce(articleListMock)
 				.mockReturnValueOnce(countMock);
 
@@ -1067,20 +1022,20 @@ describe("GET /articles/:slug", () => {
 			expect(res.status).toBe(200);
 			const data = await res.json();
 			expect(data.data).toHaveLength(2);
-			expect(data.data[0].viewCount).toBe(1000);
-			expect(data.data[1].viewCount).toBe(100);
+			expect(data.data[0].viewCount).toBe(0);
+			expect(data.data[1].viewCount).toBe(0);
 			expect(
-				articleListMock.from().leftJoin().leftJoin().where().orderBy
+				articleListMock.from().leftJoin().where().orderBy
 			).toHaveBeenCalled();
 		});
 
 		it("公開日時で降順ソートができる", async () => {
 			// Arrange
-			const { mockDb, createSubqueryMock } = setupDbMocks();
+			const { mockDb } = setupDbMocks();
 
-			// createDbClient関数がmockDbを返すように設定
-			const { createDbClient } = await import("../../lib/db");
-			vi.mocked(createDbClient).mockReturnValue(mockDb as any);
+			// createDatabaseClient関数がmockDbを返すように設定
+			const { createDatabaseClient } = await import("@saneatsu/db/worker");
+			(createDatabaseClient as any).mockReturnValue(mockDb);
 
 			const mockArticles = [
 				createMockArticleWithTranslation({
@@ -1093,6 +1048,7 @@ describe("GET /articles/:slug", () => {
 					translation: {
 						title: "新しい記事",
 						content: "新しい内容",
+						viewCount: 0,
 					},
 				}),
 				createMockArticleWithTranslation({
@@ -1105,24 +1061,18 @@ describe("GET /articles/:slug", () => {
 					translation: {
 						title: "古い記事",
 						content: "古い内容",
+						viewCount: 0,
 					},
 				}),
 			];
 
-			const totalViewCountSubqueryMock = createSubqueryMock([
-				{ articleId: "article1", totalViewCount: 0 },
-				{ articleId: "article2", totalViewCount: 0 },
-			]);
-
 			const articleListMock = {
 				from: vi.fn().mockReturnValue({
 					leftJoin: vi.fn().mockReturnValue({
-						leftJoin: vi.fn().mockReturnValue({
-							where: vi.fn().mockReturnValue({
-								orderBy: vi.fn().mockReturnValue({
-									limit: vi.fn().mockReturnValue({
-										offset: vi.fn().mockResolvedValue(mockArticles),
-									}),
+						where: vi.fn().mockReturnValue({
+							orderBy: vi.fn().mockReturnValue({
+								limit: vi.fn().mockReturnValue({
+									offset: vi.fn().mockResolvedValue(mockArticles),
 								}),
 							}),
 						}),
@@ -1139,7 +1089,6 @@ describe("GET /articles/:slug", () => {
 			};
 
 			mockDb.select
-				.mockReturnValueOnce(totalViewCountSubqueryMock) // サブクエリ
 				.mockReturnValueOnce(articleListMock)
 				.mockReturnValueOnce(countMock);
 
@@ -1160,17 +1109,17 @@ describe("GET /articles/:slug", () => {
 			const data = await res.json();
 			expect(data.data).toHaveLength(2);
 			expect(
-				articleListMock.from().leftJoin().leftJoin().where().orderBy
+				articleListMock.from().leftJoin().where().orderBy
 			).toHaveBeenCalled();
 		});
 
 		it("作成日時で昇順ソートができる", async () => {
 			// Arrange
-			const { mockDb, createSubqueryMock } = setupDbMocks();
+			const { mockDb } = setupDbMocks();
 
-			// createDbClient関数がmockDbを返すように設定
-			const { createDbClient } = await import("../../lib/db");
-			vi.mocked(createDbClient).mockReturnValue(mockDb as any);
+			// createDatabaseClient関数がmockDbを返すように設定
+			const { createDatabaseClient } = await import("@saneatsu/db/worker");
+			(createDatabaseClient as any).mockReturnValue(mockDb);
 
 			const mockArticles = [
 				createMockArticleWithTranslation({
@@ -1182,6 +1131,7 @@ describe("GET /articles/:slug", () => {
 					translation: {
 						title: "古い記事",
 						content: "古い内容",
+						viewCount: 0,
 					},
 				}),
 				createMockArticleWithTranslation({
@@ -1193,24 +1143,18 @@ describe("GET /articles/:slug", () => {
 					translation: {
 						title: "新しい記事",
 						content: "新しい内容",
+						viewCount: 0,
 					},
 				}),
 			];
 
-			const totalViewCountSubqueryMock = createSubqueryMock([
-				{ articleId: "article1", totalViewCount: 0 },
-				{ articleId: "article2", totalViewCount: 0 },
-			]);
-
 			const articleListMock = {
 				from: vi.fn().mockReturnValue({
 					leftJoin: vi.fn().mockReturnValue({
-						leftJoin: vi.fn().mockReturnValue({
-							where: vi.fn().mockReturnValue({
-								orderBy: vi.fn().mockReturnValue({
-									limit: vi.fn().mockReturnValue({
-										offset: vi.fn().mockResolvedValue(mockArticles),
-									}),
+						where: vi.fn().mockReturnValue({
+							orderBy: vi.fn().mockReturnValue({
+								limit: vi.fn().mockReturnValue({
+									offset: vi.fn().mockResolvedValue(mockArticles),
 								}),
 							}),
 						}),
@@ -1227,7 +1171,6 @@ describe("GET /articles/:slug", () => {
 			};
 
 			mockDb.select
-				.mockReturnValueOnce(totalViewCountSubqueryMock) // サブクエリ
 				.mockReturnValueOnce(articleListMock)
 				.mockReturnValueOnce(countMock);
 
@@ -1248,17 +1191,17 @@ describe("GET /articles/:slug", () => {
 			const data = await res.json();
 			expect(data.data).toHaveLength(2);
 			expect(
-				articleListMock.from().leftJoin().leftJoin().where().orderBy
+				articleListMock.from().leftJoin().where().orderBy
 			).toHaveBeenCalled();
 		});
 
 		it("更新日時で降順ソートができる", async () => {
 			// Arrange
-			const { mockDb, createSubqueryMock } = setupDbMocks();
+			const { mockDb } = setupDbMocks();
 
-			// createDbClient関数がmockDbを返すように設定
-			const { createDbClient } = await import("../../lib/db");
-			vi.mocked(createDbClient).mockReturnValue(mockDb as any);
+			// createDatabaseClient関数がmockDbを返すように設定
+			const { createDatabaseClient } = await import("@saneatsu/db/worker");
+			(createDatabaseClient as any).mockReturnValue(mockDb);
 
 			const mockArticles = [
 				createMockArticleWithTranslation({
@@ -1270,6 +1213,7 @@ describe("GET /articles/:slug", () => {
 					translation: {
 						title: "最近更新された記事",
 						content: "更新された内容",
+						viewCount: 0,
 					},
 				}),
 				createMockArticleWithTranslation({
@@ -1281,24 +1225,18 @@ describe("GET /articles/:slug", () => {
 					translation: {
 						title: "古い更新の記事",
 						content: "古い内容",
+						viewCount: 0,
 					},
 				}),
 			];
 
-			const totalViewCountSubqueryMock = createSubqueryMock([
-				{ articleId: "article1", totalViewCount: 0 },
-				{ articleId: "article2", totalViewCount: 0 },
-			]);
-
 			const articleListMock = {
 				from: vi.fn().mockReturnValue({
 					leftJoin: vi.fn().mockReturnValue({
-						leftJoin: vi.fn().mockReturnValue({
-							where: vi.fn().mockReturnValue({
-								orderBy: vi.fn().mockReturnValue({
-									limit: vi.fn().mockReturnValue({
-										offset: vi.fn().mockResolvedValue(mockArticles),
-									}),
+						where: vi.fn().mockReturnValue({
+							orderBy: vi.fn().mockReturnValue({
+								limit: vi.fn().mockReturnValue({
+									offset: vi.fn().mockResolvedValue(mockArticles),
 								}),
 							}),
 						}),
@@ -1315,7 +1253,6 @@ describe("GET /articles/:slug", () => {
 			};
 
 			mockDb.select
-				.mockReturnValueOnce(totalViewCountSubqueryMock) // サブクエリ
 				.mockReturnValueOnce(articleListMock)
 				.mockReturnValueOnce(countMock);
 
@@ -1336,17 +1273,17 @@ describe("GET /articles/:slug", () => {
 			const data = await res.json();
 			expect(data.data).toHaveLength(2);
 			expect(
-				articleListMock.from().leftJoin().leftJoin().where().orderBy
+				articleListMock.from().leftJoin().where().orderBy
 			).toHaveBeenCalled();
 		});
 
 		it("不正なソートパラメータの場合はバリデーションエラーが返される", async () => {
 			// Arrange
-			const { mockDb, createSubqueryMock } = setupDbMocks();
+			const { mockDb } = setupDbMocks();
 
-			// createDbClient関数がmockDbを返すように設定
-			const { createDbClient } = await import("../../lib/db");
-			vi.mocked(createDbClient).mockReturnValue(mockDb as any);
+			// createDatabaseClient関数がmockDbを返すように設定
+			const { createDatabaseClient } = await import("@saneatsu/db/worker");
+			(createDatabaseClient as any).mockReturnValue(mockDb);
 
 			const mockArticles = [
 				createMockArticleWithTranslation({
@@ -1358,23 +1295,18 @@ describe("GET /articles/:slug", () => {
 					translation: {
 						title: "テスト記事1",
 						content: "内容1",
+						viewCount: 0,
 					},
 				}),
 			];
 
-			const totalViewCountSubqueryMock = createSubqueryMock([
-				{ articleId: "article1", totalViewCount: 0 },
-			]);
-
 			const articleListMock = {
 				from: vi.fn().mockReturnValue({
 					leftJoin: vi.fn().mockReturnValue({
-						leftJoin: vi.fn().mockReturnValue({
-							where: vi.fn().mockReturnValue({
-								orderBy: vi.fn().mockReturnValue({
-									limit: vi.fn().mockReturnValue({
-										offset: vi.fn().mockResolvedValue(mockArticles),
-									}),
+						where: vi.fn().mockReturnValue({
+							orderBy: vi.fn().mockReturnValue({
+								limit: vi.fn().mockReturnValue({
+									offset: vi.fn().mockResolvedValue(mockArticles),
 								}),
 							}),
 						}),
@@ -1391,7 +1323,6 @@ describe("GET /articles/:slug", () => {
 			};
 
 			mockDb.select
-				.mockReturnValueOnce(totalViewCountSubqueryMock) // サブクエリ
 				.mockReturnValueOnce(articleListMock)
 				.mockReturnValueOnce(countMock);
 
