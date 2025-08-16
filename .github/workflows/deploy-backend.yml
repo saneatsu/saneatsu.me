@@ -55,6 +55,7 @@ jobs:
       TURSO_DATABASE_URL: ${{ needs.set-environment.outputs.environment == 'production' && secrets.TURSO_DATABASE_URL_PROD || secrets.TURSO_DATABASE_URL_PREVIEW }}
       TURSO_AUTH_TOKEN: ${{ needs.set-environment.outputs.environment == 'production' && secrets.TURSO_AUTH_TOKEN_PROD || secrets.TURSO_AUTH_TOKEN_PREVIEW }}
       CORS_ORIGIN: ${{ needs.set-environment.outputs.environment == 'production' && secrets.CORS_ORIGIN_PROD || secrets.CORS_ORIGIN_PREVIEW }}
+      ADMIN_EMAILS: ${{ secrets.ADMIN_EMAILS }}
 
   # バックエンドをデプロイ
   backend-deploy:
