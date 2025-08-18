@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
+import { auth } from "./app/api/auth/[...nextauth]/auth";
 import { defaultLocale } from "./shared/config/locale-constants";
 
 const locales = ["ja", "en"] as const;
@@ -146,94 +146,39 @@ export async function middleware(request: NextRequest) {
 	if (pathname.startsWith("/admin")) {
 		console.log("🔍 Admin access attempt:", pathname);
 
-		// Edge Runtime (Cloudflare Workers) で環境変数にアクセス
-		// OpenNext CloudflareはCloudflare WorkersのBindingsを
-		// Symbol.for("__cloudflare-context__")経由でアクセス可能にする
-		// biome-ignore lint/suspicious/noExplicitAny: Cloudflare Workers環境での環境変数アクセスに必要
-		const cloudflareContext = (globalThis as any)[
-			Symbol.for("__cloudflare-context__")
-		];
-
-		const secret =
-			process.env.NEXTAUTH_SECRET ||
-			// Cloudflare WorkersのBindingsからアクセス
-			cloudflareContext?.env?.NEXTAUTH_SECRET ||
-			// @ts-ignore - 代替アクセス
-			// biome-ignore lint/suspicious/noExplicitAny: Edge Runtime互換性のため
-			(globalThis as any).NEXTAUTH_SECRET ||
-			// @ts-ignore
-			// biome-ignore lint/suspicious/noExplicitAny: Edge Runtime互換性のため
-			(self as any).NEXTAUTH_SECRET;
-
-		console.log("🔍 Secret availability:", {
-			hasProcessEnv: !!process.env.NEXTAUTH_SECRET,
-			hasCloudflareContext: !!cloudflareContext,
-			hasCloudflareEnv: !!cloudflareContext?.env,
-			hasCloudflareSecret: !!cloudflareContext?.env?.NEXTAUTH_SECRET,
-			// biome-ignore lint/suspicious/noExplicitAny: デバッグ用
-			hasGlobalThis: !!(globalThis as any).NEXTAUTH_SECRET,
-			// biome-ignore lint/suspicious/noExplicitAny: デバッグ用
-			hasSelf: !!(self as any).NEXTAUTH_SECRET,
-			secretFound: !!secret,
-		});
-
-		// Cloudflare Workers環境でのNextAuth.js JWT取得を修正
+		// NextAuth.js v5のauth関数を使用してセッション情報を取得
 		try {
-			const token = await getToken({
-				req: request,
-				secret: secret,
-				// Edge Runtime環境での設定を追加
-				secureCookie: process.env.NODE_ENV === "production",
-				salt: "authjs.session-token",
-				// Cloudflare Workers環境では cookieName を明示的に指定
-				cookieName:
-					process.env.NODE_ENV === "production"
-						? "__Secure-authjs.session-token"
-						: "authjs.session-token",
-			});
+			const session = await auth();
 
-			console.log("🔍 Token result:", {
-				hasToken: !!token,
-				tokenContent: token
+			console.log("🔍 Session result:", {
+				hasSession: !!session,
+				sessionContent: session
 					? {
-							id: token.id,
-							email: token.email,
-							name: token.name,
-							picture: token.picture,
+							user: {
+								id: session.user?.id,
+								email: session.user?.email,
+								name: session.user?.name,
+								image: session.user?.image,
+							},
+							expires: session.expires,
 						}
 					: null,
 			});
 
-			// Cookieから直接読み取りを試行（フォールバック）
-			if (!token) {
-				console.log("🔍 Trying alternative cookie reading...");
-				const cookieName =
-					process.env.NODE_ENV === "production"
-						? "__Secure-authjs.session-token"
-						: "authjs.session-token";
-				const cookieValue = request.cookies.get(cookieName)?.value;
-				console.log("🔍 Cookie inspection:", {
-					cookieName,
-					hasCookie: !!cookieValue,
-					cookieLength: cookieValue?.length || 0,
-					allCookieNames: request.cookies.getAll().map((cookie) => cookie.name),
-				});
-			}
-
 			// 未認証の場合はログインページにリダイレクト
-			if (!token) {
-				console.log("❌ No token found - redirecting to login");
+			if (!session) {
+				console.log("❌ No session found - redirecting to login");
 				const url = new URL("/login", request.url);
 				url.searchParams.set("callbackUrl", pathname);
 				return NextResponse.redirect(url);
 			}
 
-			console.log("✅ Token validated - allowing admin access");
-		} catch (tokenError) {
-			console.error("❌ Token validation error:", tokenError);
+			console.log("✅ Session validated - allowing admin access");
+		} catch (authError) {
+			console.error("❌ Auth validation error:", authError);
 			const url = new URL("/login", request.url);
 			url.searchParams.set("callbackUrl", pathname);
-			url.searchParams.set("error", "token-error");
+			url.searchParams.set("error", "auth-error");
 			return NextResponse.redirect(url);
 		}
 	}

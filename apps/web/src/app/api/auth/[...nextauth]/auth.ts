@@ -3,7 +3,7 @@ import GoogleProvider from "next-auth/providers/google";
 import { isAdminEmail } from "../../../../shared/config/admin";
 import { upsertUser } from "../../../../shared/lib/api-client";
 
-export const authOptions = {
+export const authOptions: any = {
 	providers: [
 		GoogleProvider({
 			clientId: process.env.GOOGLE_CLIENT_ID || "",
@@ -230,4 +230,9 @@ export const authOptions = {
 	secret: process.env.NEXTAUTH_SECRET,
 };
 
-export const { handlers, auth, signIn, signOut } = NextAuth(authOptions);
+const nextAuth = NextAuth(authOptions);
+
+export const handlers = nextAuth.handlers;
+export const auth = nextAuth.auth;
+export const signIn = nextAuth.signIn;
+export const signOut = nextAuth.signOut;
