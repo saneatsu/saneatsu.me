@@ -177,32 +177,65 @@ export async function middleware(request: NextRequest) {
 			secretFound: !!secret,
 		});
 
-		const token = await getToken({
-			req: request,
-			secret: secret,
-		});
+		// Cloudflare Workers環境でのNextAuth.js JWT取得を修正
+		try {
+			const token = await getToken({
+				req: request,
+				secret: secret,
+				// Edge Runtime環境での設定を追加
+				secureCookie: process.env.NODE_ENV === "production",
+				salt: "authjs.session-token",
+				// Cloudflare Workers環境では cookieName を明示的に指定
+				cookieName:
+					process.env.NODE_ENV === "production"
+						? "__Secure-authjs.session-token"
+						: "authjs.session-token",
+			});
 
-		console.log("🔍 Token result:", {
-			hasToken: !!token,
-			tokenContent: token
-				? {
-						id: token.id,
-						email: token.email,
-						name: token.name,
-						picture: token.picture,
-					}
-				: null,
-		});
+			console.log("🔍 Token result:", {
+				hasToken: !!token,
+				tokenContent: token
+					? {
+							id: token.id,
+							email: token.email,
+							name: token.name,
+							picture: token.picture,
+						}
+					: null,
+			});
 
-		// 未認証の場合はログインページにリダイレクト
-		if (!token) {
-			console.log("❌ No token found - redirecting to login");
+			// Cookieから直接読み取りを試行（フォールバック）
+			if (!token) {
+				console.log("🔍 Trying alternative cookie reading...");
+				const cookieName =
+					process.env.NODE_ENV === "production"
+						? "__Secure-authjs.session-token"
+						: "authjs.session-token";
+				const cookieValue = request.cookies.get(cookieName)?.value;
+				console.log("🔍 Cookie inspection:", {
+					cookieName,
+					hasCookie: !!cookieValue,
+					cookieLength: cookieValue?.length || 0,
+					allCookieNames: request.cookies.getAll().map((cookie) => cookie.name),
+				});
+			}
+
+			// 未認証の場合はログインページにリダイレクト
+			if (!token) {
+				console.log("❌ No token found - redirecting to login");
+				const url = new URL("/login", request.url);
+				url.searchParams.set("callbackUrl", pathname);
+				return NextResponse.redirect(url);
+			}
+
+			console.log("✅ Token validated - allowing admin access");
+		} catch (tokenError) {
+			console.error("❌ Token validation error:", tokenError);
 			const url = new URL("/login", request.url);
 			url.searchParams.set("callbackUrl", pathname);
+			url.searchParams.set("error", "token-error");
 			return NextResponse.redirect(url);
 		}
-
-		console.log("✅ Token validated - allowing admin access");
 	}
 
 	// ログインページと管理画面以外のページで言語ルーティングを適用
