@@ -1,5 +1,9 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
-import { articles, articleTranslations } from "@saneatsu/db/worker";
+import {
+	articles,
+	articleTranslations,
+	createDatabaseClient,
+} from "@saneatsu/db/worker";
 import {
 	type DashboardOverviewResponse,
 	type DashboardStatsResponse,
@@ -8,7 +12,6 @@ import {
 	viewsTrendQuerySchema,
 } from "@saneatsu/schemas";
 import { and, count, desc, eq, gte, sql } from "drizzle-orm";
-import { createDbClient } from "../../lib/db";
 
 // OpenAPI用のクエリスキーマ（packages/schemasをOpenAPI対応でラップ）
 const dashboardStatsOpenApiQuerySchema = z.object({
@@ -226,7 +229,7 @@ const getDashboardOverviewRoute = createRoute({
 app.openapi(getDashboardStatsRoute, async (c) => {
 	try {
 		// Cloudflare Workers環境でDBクライアントを作成
-		const db = createDbClient(c.env);
+		const db = createDatabaseClient(c.env);
 
 		const query = c.req.valid("query");
 		const validated = dashboardStatsQuerySchema.parse(query);
@@ -359,7 +362,7 @@ app.openapi(getDashboardStatsRoute, async (c) => {
 app.openapi(getDashboardOverviewRoute, async (c) => {
 	try {
 		// Cloudflare Workers環境でDBクライアントを作成
-		const db = createDbClient(c.env);
+		const db = createDatabaseClient(c.env);
 
 		const query = c.req.valid("query");
 		const language = query.language || "ja";
@@ -521,7 +524,7 @@ const getViewsTrendRoute = createRoute({
 app.openapi(getViewsTrendRoute, async (c) => {
 	try {
 		// Cloudflare Workers環境でDBクライアントを作成
-		const db = createDbClient(c.env);
+		const db = createDatabaseClient(c.env);
 
 		const query = c.req.valid("query");
 		const validated = viewsTrendQuerySchema.parse(query);
