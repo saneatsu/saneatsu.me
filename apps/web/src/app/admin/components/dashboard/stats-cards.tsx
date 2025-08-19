@@ -111,7 +111,7 @@ export function DetailedStatsCards({
 				</CardHeader>
 				<CardContent>
 					<div className="text-2xl font-bold text-indigo-600">
-						{loading ? "-" : articleStats.totalViews.toLocaleString()}
+						{loading ? "-" : (articleStats?.totalViews?.toLocaleString() ?? "0")}
 					</div>
 					<p className="text-xs text-muted-foreground mt-1">
 						全記事の累計閲覧数

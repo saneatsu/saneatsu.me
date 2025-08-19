@@ -188,7 +188,7 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 			className: "w-[100px]",
 			render: (article) => (
 				<div className="text-sm font-medium text-right">
-					{article.viewCount.toLocaleString()}
+					{article.viewCount?.toLocaleString() ?? "0"}
 				</div>
 			),
 		},

@@ -22,7 +22,7 @@ const ArticleResponseSchema = z.object({
 	title: z.string().nullable(),
 	description: z.string().nullable(),
 	content: z.string().nullable(),
-	viewCount: z.number().int().nullable(),
+	viewCount: z.number().int(),
 	cfImageId: z.string().nullable(),
 	status: z.enum(["draft", "published", "archived"]),
 	publishedAt: z.string().nullable(),

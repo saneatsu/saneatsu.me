@@ -177,7 +177,7 @@ export function PopularArticles({
 									<div className="flex items-center justify-end space-x-1 text-muted-foreground">
 										<Eye className="h-4 w-4" />
 										<span className="font-medium">
-											{article.viewCount.toLocaleString()}
+											{article.viewCount?.toLocaleString() ?? "0"}
 										</span>
 									</div>
 								</TableCell>
