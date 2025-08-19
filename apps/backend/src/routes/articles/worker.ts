@@ -2,18 +2,30 @@ import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import {
 	articles,
 	articleTranslations,
+	articleTags,
+	tags,
 	createDatabaseClient,
 } from "@saneatsu/db/worker";
 import { articleListQuerySchema as ImportedArticlesQuerySchema } from "@saneatsu/schemas";
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 
 // 一時的なスキーマ定義
 const ArticleParamSchema = z.object({
 	slug: z.string(),
 });
 
+const ArticleAdminParamSchema = z.object({
+	id: z.string(),
+});
+
 const ArticleDetailQuerySchema = z.object({
 	lang: z.string().optional(),
+});
+
+const TagSchema = z.object({
+	id: z.number().int(),
+	slug: z.string(),
+	name: z.string().nullable(),
 });
 
 const ArticleResponseSchema = z.object({
@@ -28,6 +40,19 @@ const ArticleResponseSchema = z.object({
 	publishedAt: z.string().nullable(),
 	language: z.enum(["ja", "en"]).nullable(),
 	tags: z.array(z.string()).optional(),
+});
+
+const ArticleAdminResponseSchema = z.object({
+	id: z.string(),
+	slug: z.string(),
+	title: z.string().nullable(),
+	content: z.string().nullable(),
+	viewCount: z.number().int(),
+	cfImageId: z.string().nullable(),
+	status: z.enum(["draft", "published", "archived"]),
+	publishedAt: z.string().nullable(),
+	updatedAt: z.string().nullable(),
+	tags: z.array(TagSchema),
 });
 
 const ArticlesResponseSchema = z.object({
@@ -255,6 +280,151 @@ articlesRoute.openapi(getArticleRoute, async (c: any) => {
 
 		return c.json({
 			data: article[0],
+		});
+	} catch (error) {
+		console.error("Error fetching article:", error);
+		return c.json(
+			{
+				error: {
+					code: "DATABASE_ERROR",
+					message: "Failed to fetch article",
+				},
+			},
+			500
+		);
+	}
+});
+
+/**
+ * 管理画面用記事詳細取得のルート定義
+ */
+const getArticleByIdRoute = createRoute({
+	method: "get",
+	path: "/admin/:id",
+	request: {
+		params: ArticleAdminParamSchema,
+		query: ArticleDetailQuerySchema,
+	},
+	responses: {
+		200: {
+			content: {
+				"application/json": {
+					schema: z.object({
+						data: ArticleAdminResponseSchema,
+					}),
+				},
+			},
+			description: "記事詳細の取得成功",
+		},
+		400: {
+			content: {
+				"application/json": {
+					schema: ErrorSchema,
+				},
+			},
+			description: "不正なリクエスト",
+		},
+		404: {
+			content: {
+				"application/json": {
+					schema: ErrorSchema,
+				},
+			},
+			description: "記事が見つからない",
+		},
+		500: {
+			content: {
+				"application/json": {
+					schema: ErrorSchema,
+				},
+			},
+			description: "サーバーエラー",
+		},
+	},
+	tags: ["Articles"],
+	summary: "管理画面用記事詳細取得",
+	description:
+		"管理画面で使用する記事詳細を取得します。ステータスに関わらず取得可能です。",
+});
+
+/**
+ * GET /api/articles/admin/:id - 管理画面用記事詳細取得
+ */
+articlesRoute.openapi(getArticleByIdRoute, async (c: any) => {
+	try {
+		// Cloudflare Workers環境でデータベースクライアントを初期化
+		const db = createDatabaseClient(c.env);
+
+		const { id } = c.req.valid("param");
+		const { lang = "ja" } = c.req.valid("query");
+
+		const articleId = parseInt(id);
+		if (Number.isNaN(articleId)) {
+			return c.json(
+				{
+					error: {
+						code: "INVALID_ID",
+						message: "Invalid article ID",
+					},
+				},
+				400
+			);
+		}
+
+		// 1. 記事詳細を取得（ステータスに関わらず）
+		const article = await db
+			.select({
+				id: articles.id,
+				slug: articles.slug,
+				cfImageId: articles.cfImageId,
+				status: articles.status,
+				publishedAt: articles.publishedAt,
+				updatedAt: articles.updatedAt,
+				title: articleTranslations.title,
+				content: articleTranslations.content,
+				viewCount: sql<number>`COALESCE(${articleTranslations.viewCount}, 0)`,
+			})
+			.from(articles)
+			.leftJoin(
+				articleTranslations,
+				and(
+					eq(articles.id, articleTranslations.articleId),
+					eq(articleTranslations.language, lang)
+				)
+			)
+			.where(eq(articles.id, articleId))
+			.limit(1);
+
+		if (article.length === 0) {
+			return c.json(
+				{
+					error: {
+						code: "NOT_FOUND",
+						message: "Article not found",
+					},
+				},
+				404
+			);
+		}
+
+		const articleData = article[0];
+
+		// 2. タグ情報を取得
+		const articleTagsData = await db
+			.select({
+				id: tags.id,
+				slug: tags.slug,
+				name: tags.slug,
+			})
+			.from(articleTags)
+			.innerJoin(tags, eq(articleTags.tagId, tags.id))
+			.where(eq(articleTags.articleId, articleId));
+
+		return c.json({
+			data: {
+				...articleData,
+				tags: articleTagsData,
+			},
 		});
 	} catch (error) {
 		console.error("Error fetching article:", error);
