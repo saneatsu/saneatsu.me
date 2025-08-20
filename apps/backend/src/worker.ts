@@ -20,6 +20,7 @@ type Env = {
 	TURSO_AUTH_TOKEN: string;
 	CORS_ORIGIN: string;
 	ADMIN_EMAILS?: string;
+	TEST_DATABASE_URL?: string;
 };
 
 // OpenAPIHono APIサーバーの初期化（環境変数型を指定）
@@ -39,14 +40,38 @@ app.use("*", prettyJSON());
 
 // ヘルスチェックエンドポイント
 app.get("/api/health", (c) => {
+	// デバッグ用: 利用可能な環境変数をログ出力
+	const databaseUrl = c.env.TURSO_DATABASE_URL as string;
+	const authToken = c.env.TURSO_AUTH_TOKEN as string;
+	const testUrl = c.env.TEST_DATABASE_URL as string;
+
+	console.log("Environment variables debug:", {
+		hasEnv: !!c.env,
+		envKeys: Object.keys(c.env || {}),
+		databaseUrl: databaseUrl ? "SET" : "NOT_SET",
+		authToken: authToken ? "SET" : "NOT_SET",
+		testUrl: testUrl ? "SET" : "NOT_SET",
+		corsOrigin: c.env.CORS_ORIGIN ? "SET" : "NOT_SET",
+		adminEmails: c.env.ADMIN_EMAILS ? "SET" : "NOT_SET",
+		databaseUrlLength: databaseUrl?.length || 0,
+		authTokenLength: authToken?.length || 0,
+		testUrlLength: testUrl?.length || 0,
+	});
+
 	return c.json({
 		status: "ok",
 		timestamp: new Date().toISOString(),
 		service: "saneatsu-blog-api",
 		runtime: "cloudflare-workers",
 		database: {
-			url: c.env.TURSO_DATABASE_URL ? "configured" : "not configured",
-			hasToken: !!c.env.TURSO_AUTH_TOKEN,
+			url: databaseUrl ? "configured" : "not configured",
+			hasToken: !!authToken,
+		},
+		debug: {
+			envKeys: Object.keys(c.env || {}),
+			databaseUrlLength: databaseUrl?.length || 0,
+			authTokenLength: authToken?.length || 0,
+			testUrlLength: testUrl?.length || 0,
 		},
 	});
 });
