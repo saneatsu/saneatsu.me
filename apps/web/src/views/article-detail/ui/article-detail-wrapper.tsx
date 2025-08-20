@@ -25,7 +25,14 @@ export async function ArticleDetailWrapper({
 	const apiUrl =
 		process.env.NODE_ENV === "development"
 			? "http://localhost:8888"
-			: process.env.NEXT_PUBLIC_API_URL || "https://api.saneatsu.me";
+			: "https://api.saneatsu.me";
+
+	// デバッグ用ログ
+	console.log("🔍 ArticleDetailWrapper Debug:", {
+		NODE_ENV: process.env.NODE_ENV,
+		apiUrl,
+		requestUrl: `${apiUrl}/api/articles/${slug}?lang=${locale}`,
+	});
 
 	try {
 		const response = await fetch(
@@ -38,11 +45,28 @@ export async function ArticleDetailWrapper({
 			}
 		);
 
+		console.log("🔍 API Response Debug:", {
+			status: response.status,
+			statusText: response.statusText,
+			ok: response.ok,
+			url: response.url,
+		});
+
 		if (!response.ok) {
+			console.error("❌ API Response Error:", {
+				status: response.status,
+				statusText: response.statusText,
+				text: await response.text().catch(() => "Could not read response text"),
+			});
 			notFound();
 		}
 
 		const articleResponse: ArticleResponse = await response.json();
+		console.log("✅ Article Data Retrieved:", {
+			hasData: !!articleResponse.data,
+			title: articleResponse.data?.title,
+			slug: articleResponse.data?.slug,
+		});
 
 		return <ArticleDetailView article={articleResponse.data} locale={locale} />;
 	} catch (error) {
