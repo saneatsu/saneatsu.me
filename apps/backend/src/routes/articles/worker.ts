@@ -8,6 +8,7 @@ import {
 } from "@saneatsu/db/worker";
 import { articleListQuerySchema as ImportedArticlesQuerySchema } from "@saneatsu/schemas";
 import { and, eq, not, sql } from "drizzle-orm";
+import { convertWikiLinks } from "../../utils/wiki-link";
 
 // 一時的なスキーマ定義
 const ArticleParamSchema = z.object({
@@ -344,7 +345,7 @@ articlesRoute.openapi(getArticleRoute, async (c: any) => {
 		const { slug } = c.req.valid("param");
 		const { lang = "ja" } = c.req.valid("query");
 
-		// 記事詳細を取得
+		// 1. 記事詳細を取得
 		const article = await db
 			.select({
 				id: articles.id,
@@ -352,8 +353,11 @@ articlesRoute.openapi(getArticleRoute, async (c: any) => {
 				cfImageId: articles.cfImageId,
 				status: articles.status,
 				publishedAt: articles.publishedAt,
+				updatedAt: articles.updatedAt,
 				title: articleTranslations.title,
 				content: articleTranslations.content,
+				viewCount: sql<number>`COALESCE(${articleTranslations.viewCount}, 0)`,
+				translationId: articleTranslations.id,
 			})
 			.from(articles)
 			.leftJoin(
@@ -377,8 +381,51 @@ articlesRoute.openapi(getArticleRoute, async (c: any) => {
 			);
 		}
 
+		const articleData = article[0];
+
+		// 2. ステータスチェック - 公開済み以外は404
+		if (articleData.status !== "published") {
+			return c.json(
+				{
+					error: {
+						code: "NOT_FOUND",
+						message: "Article not found",
+					},
+				},
+				404
+			);
+		}
+
+		// 3. 閲覧数をインクリメント（公開済み記事のみ）
+		if (articleData.translationId) {
+			await db
+				.update(articleTranslations)
+				.set({
+					viewCount: sql`${articleTranslations.viewCount} + 1`,
+				})
+				.where(eq(articleTranslations.id, articleData.translationId));
+
+			// レスポンス用に更新後の値を設定
+			articleData.viewCount = (articleData.viewCount || 0) + 1;
+		}
+
+		// 4. Wiki Linkをコンテンツ内で変換
+		const convertedContent = articleData.content
+			? await convertWikiLinks(db, articleData.content, lang)
+			: articleData.content;
+
 		return c.json({
-			data: article[0],
+			data: {
+				id: articleData.id,
+				slug: articleData.slug,
+				cfImageId: articleData.cfImageId,
+				status: articleData.status,
+				publishedAt: articleData.publishedAt,
+				updatedAt: articleData.updatedAt,
+				title: articleData.title,
+				content: convertedContent,
+				viewCount: articleData.viewCount,
+			},
 		});
 	} catch (error) {
 		console.error("Error fetching article:", error);
