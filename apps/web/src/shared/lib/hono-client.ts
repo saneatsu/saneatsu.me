@@ -5,9 +5,9 @@ import { hc } from "hono/client";
 
 /**
  * APIのベースURL
- * 環境変数から取得し、未設定の場合は空文字列をデフォルトとする
+ * 環境変数から取得し、未設定の場合は本番APIをデフォルトとする
  */
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.saneatsu.me";
 
 /**
  * 共通のHono Clientインスタンス

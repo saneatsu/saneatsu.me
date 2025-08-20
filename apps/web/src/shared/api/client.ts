@@ -67,5 +67,5 @@ class ApiClient {
 
 // Create a singleton instance
 export const apiClient = new ApiClient(
-	process.env.NEXT_PUBLIC_API_URL || "/api"
+	process.env.NEXT_PUBLIC_API_URL || "https://api.saneatsu.me"
 );
