@@ -1,6 +1,7 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { honoClient } from "../../../../shared/lib/hono-client";
 import { queryKeys } from "../../../../shared/lib/query-keys";
 
 /**
@@ -11,6 +12,12 @@ type UpdateStatusParams = {
 	id: number;
 	/** 新しいステータス */
 	status: string;
+};
+
+type ErrorResponse = {
+	error?: {
+		message?: string;
+	};
 };
 
 /**
@@ -39,9 +46,21 @@ export function useUpdateStatus() {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: async ({ id: _id, status: _status }: UpdateStatusParams) => {
-			// TODO: バックエンドにPATCH /admin/articles/:id/status エンドポイントを実装後にHono Client版に書き換え
-			throw new Error("Not implemented yet");
+		mutationFn: async ({ id, status }: UpdateStatusParams) => {
+			const response = await honoClient.api.articles[":id"].status.$patch({
+				param: { id: String(id) },
+				json: { status },
+			});
+
+			if (!response.ok) {
+				const error = await response.json();
+				throw new Error(
+					(error as ErrorResponse).error?.message ||
+						"記事ステータスの更新に失敗しました"
+				);
+			}
+
+			return response.json();
 		},
 		onSuccess: () => {
 			// 記事一覧のキャッシュを無効化
