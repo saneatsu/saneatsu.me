@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import { fetchArticle } from "../../../shared/lib/api-client";
-import type { ArticleResponse } from "../../../shared/types/article";
 import { ArticleDetailView } from "./article-detail-view";
 
 interface ArticleDetailWrapperProps {
@@ -38,7 +37,7 @@ export async function ArticleDetailWrapper({
 		Symbol.for("__cloudflare-context__")
 	];
 	const hasServiceBinding = !!cloudflareContext?.env?.BACKEND_API;
-	
+
 	console.log("🔍 Service Binding Check:", {
 		hasCloudflareContext: !!cloudflareContext,
 		hasServiceBinding,
@@ -53,7 +52,9 @@ export async function ArticleDetailWrapper({
 			locale,
 		});
 
-		const articleResponse = await fetchArticle(slug, { lang: locale as "ja" | "en" });
+		const articleResponse = await fetchArticle(slug, {
+			lang: locale as "ja" | "en",
+		});
 
 		console.log("✅ Article Data Retrieved:", {
 			hasData: !!articleResponse.data,
@@ -73,15 +74,15 @@ export async function ArticleDetailWrapper({
 			locale,
 			timestamp: new Date().toISOString(),
 		});
-		
+
 		// APIエラーの詳細を出力
-		if (error instanceof Error && 'status' in error) {
+		if (error instanceof Error && "status" in error) {
 			console.error("❌ API Error Details:", {
 				status: (error as any).status,
 				code: (error as any).code,
 			});
 		}
-		
+
 		notFound();
 	}
 }

@@ -110,7 +110,7 @@ export async function fetchArticle(
 ): Promise<ArticleResponse> {
 	// Service Bindingが利用可能かチェック
 	const serviceBinding = getServiceBinding();
-	
+
 	console.log("🔍 fetchArticle Debug:", {
 		slug,
 		query,
@@ -118,21 +118,21 @@ export async function fetchArticle(
 		API_BASE_URL,
 		timestamp: new Date().toISOString(),
 	});
-	
+
 	if (serviceBinding) {
 		console.log("🔍 Using Service Binding for article fetch");
-		
+
 		// Service Bindingを使用したリクエスト
 		const url = `https://backend/api/articles/${slug}?lang=${query.lang || "ja"}`;
 		console.log("🔍 Service Binding URL:", url);
-		
+
 		const request = new Request(url, {
 			method: "GET",
 			headers: {
 				"Content-Type": "application/json",
 			},
 		});
-		
+
 		try {
 			const response = await serviceBinding.fetch(request);
 			console.log("🔍 Service Binding Response:", {
@@ -140,26 +140,26 @@ export async function fetchArticle(
 				ok: response.ok,
 				headers: Object.fromEntries(response.headers.entries()),
 			});
-			
+
 			return handleApiResponse<ArticleResponse>(response);
 		} catch (error) {
 			console.error("❌ Service Binding Error:", error);
 			throw error;
 		}
 	}
-	
+
 	// Service Bindingが利用できない場合は通常のHTTP経由
 	console.log("🔍 Using HTTP for article fetch");
 	const fullUrl = `${API_BASE_URL}/api/articles/${slug}?lang=${query.lang || "ja"}`;
 	console.log("🔍 HTTP URL:", fullUrl);
-	
+
 	const response = await client.api.articles[":slug"].$get({
 		param: { slug },
 		query: {
 			lang: query.lang as "ja" | "en" | undefined,
 		},
 	});
-	
+
 	console.log("🔍 HTTP Response received:", {
 		status: response.status,
 		ok: response.ok,
