@@ -166,6 +166,7 @@ const viewsTrendOpenApiResponseSchema = z.object({
 type Env = {
 	TURSO_DATABASE_URL: string;
 	TURSO_AUTH_TOKEN: string;
+	ENVIRONMENT?: string; // 環境識別子（development, preview, production）
 };
 
 const app = new OpenAPIHono<{ Bindings: Env }>();
@@ -530,6 +531,10 @@ app.openapi(getViewsTrendRoute, async (c) => {
 		const validated = viewsTrendQuerySchema.parse(query);
 		const { language, days } = validated;
 
+		// 環境判定（preview, productionは本番扱い）
+		const isProduction =
+			c.env.ENVIRONMENT === "production" || c.env.ENVIRONMENT === "preview";
+
 		// 現在日時と開始日の計算
 		const now = new Date();
 		const endDate = new Date(now);
@@ -539,9 +544,10 @@ app.openapi(getViewsTrendRoute, async (c) => {
 		startDate.setDate(now.getDate() - days + 1);
 		startDate.setHours(0, 0, 0, 0);
 
-		// 公開済み記事とその閲覧数を取得
+		// 公開済み記事とその閲覧数を取得（記事IDも取得）
 		const articlesWithViews = await db
 			.select({
+				id: articles.id,
 				publishedAt: articles.publishedAt,
 				viewCount: articleTranslations.viewCount,
 			})
@@ -563,76 +569,133 @@ app.openapi(getViewsTrendRoute, async (c) => {
 		// 日別閲覧数マップを初期化
 		const dateMap = new Map<string, number>();
 
-		// 決定的なシードを使用してランダム性を制御
-		let randomSeed = 12345;
-		const seededRandom = () => {
-			randomSeed = (randomSeed * 9301 + 49297) % 233280;
-			return randomSeed / 233280;
-		};
+		if (isProduction) {
+			// 本番環境：実データモード
+			// 現在は日別閲覧数テーブルがないため、総閲覧数を期間内に均等分散（暫定対応）
 
-		// 各記事の閲覧数を公開日から現在まで分散
-		for (const article of articlesWithViews) {
-			if (!article.publishedAt || !article.viewCount) continue;
+			// 各記事の公開日を考慮した単純な分散
+			for (const article of articlesWithViews) {
+				if (!article.publishedAt || !article.viewCount) continue;
 
-			const publishedDate = new Date(article.publishedAt);
-			const viewCount = Number(article.viewCount);
+				const publishedDate = new Date(article.publishedAt);
+				const viewCount = Number(article.viewCount);
 
-			// 公開日から現在までの日数を計算
-			const daysSincePublished = Math.floor(
-				(now.getTime() - publishedDate.getTime()) / (1000 * 60 * 60 * 24)
-			);
-			if (daysSincePublished <= 0) continue;
+				// 公開日から現在までの日数
+				const daysSincePublished = Math.floor(
+					(now.getTime() - publishedDate.getTime()) / (1000 * 60 * 60 * 24)
+				);
+				if (daysSincePublished <= 0) continue;
 
-			// 閲覧数を現実的に分散（公開直後がピーク、その後徐々に減少、時々上昇）
-			const distributionDate = new Date(publishedDate);
-			const baseViewsPerDay = viewCount / Math.max(daysSincePublished, 1);
+				// 期間内の日数を計算
+				const effectiveStartDate =
+					publishedDate > startDate ? publishedDate : startDate;
+				const daysInPeriod =
+					Math.floor(
+						(endDate.getTime() - effectiveStartDate.getTime()) /
+							(1000 * 60 * 60 * 24)
+					) + 1;
 
-			for (let day = 0; day < daysSincePublished; day++) {
-				const dateStr = distributionDate.toISOString().split("T")[0];
+				if (daysInPeriod <= 0) continue;
 
-				// 指定期間内の日付のみ処理
-				if (distributionDate >= startDate && distributionDate <= endDate) {
-					// 非常に保守的で安定した閲覧パターンを模擬
-					let dailyMultiplier = 1;
+				// 閲覧数を期間内に均等分散
+				const viewsPerDay = Math.floor(viewCount / Math.max(daysInPeriod, 1));
+				const remainder = viewCount % daysInPeriod;
 
-					// 公開直後（最初の7日）は緩やかに減少
-					if (day < 7) {
-						dailyMultiplier = 1.5 - day * 0.05; // 1.5から1.15に緩やかに減少
-					}
-					// その後は非常に小さな変動のみ
-					else {
-						const weeklyPattern = Math.sin((day / 7) * Math.PI) * 0.1 + 0.9; // より緩やかな波
-						const randomVariation = 0.9 + seededRandom() * 0.2; // 0.9-1.1の狭い範囲
-						dailyMultiplier = weeklyPattern * randomVariation;
-					}
+				const distributionDate = new Date(effectiveStartDate);
+				for (let i = 0; i < daysInPeriod && distributionDate <= endDate; i++) {
+					const dateStr = distributionDate.toISOString().split("T")[0];
+					const dailyViews = viewsPerDay + (i < remainder ? 1 : 0);
 
-					// 週末効果（土日は少し減る）
-					const dayOfWeek = distributionDate.getDay();
-					if (dayOfWeek === 0 || dayOfWeek === 6) {
-						dailyMultiplier *= 0.9;
-					}
+					const currentViews = dateMap.get(dateStr) || 0;
+					dateMap.set(dateStr, currentViews + dailyViews);
 
-					// 非常に厳格な異常値防止キャップ
-					dailyMultiplier = Math.min(dailyMultiplier, 1.8);
-					dailyMultiplier = Math.max(dailyMultiplier, 0.2);
-
-					const dailyViews = Math.max(
-						1,
-						Math.floor(baseViewsPerDay * dailyMultiplier)
-					);
-
-					// 1日あたりの閲覧数に絶対的な上限を設ける（異常なスパイクを完全に防ぐ）
-					const maxDailyViews = Math.min(dailyViews, 500);
-
-					if (maxDailyViews > 0) {
-						const currentDayViews = dateMap.get(dateStr) || 0;
-						// 1日の合計閲覧数が1000を超えないように制限
-						const newDayViews = Math.min(currentDayViews + maxDailyViews, 1000);
-						dateMap.set(dateStr, newDayViews);
-					}
+					distributionDate.setDate(distributionDate.getDate() + 1);
 				}
+			}
+		} else {
+			// 開発環境：改善されたシミュレーションモード
+			for (const article of articlesWithViews) {
+				if (!article.publishedAt || !article.viewCount) continue;
 
-				distributionDate.setDate(distributionDate.getDate() + 1);
+				const articleId = article.id;
+				const publishedDate = new Date(article.publishedAt);
+				const viewCount = Number(article.viewCount);
+
+				// 公開日から現在までの日数を計算
+				const daysSincePublished = Math.floor(
+					(now.getTime() - publishedDate.getTime()) / (1000 * 60 * 60 * 24)
+				);
+				if (daysSincePublished <= 0) continue;
+
+				// 記事IDベースのシード（記事ごとに異なるパターン）
+				let randomSeed = articleId * 7919; // 記事IDで初期化
+				const seededRandom = () => {
+					randomSeed = (randomSeed * 9301 + 49297) % 233280;
+					return randomSeed / 233280;
+				};
+
+				// 閲覧数を現実的に分散
+				const distributionDate = new Date(publishedDate);
+				let remainingViews = viewCount;
+				const decayFactor = 0.95; // 日々の減衰率
+
+				for (
+					let day = 0;
+					day < daysSincePublished && remainingViews > 0;
+					day++
+				) {
+					const dateStr = distributionDate.toISOString().split("T")[0];
+
+					// 指定期間内の日付のみ処理
+					if (distributionDate >= startDate && distributionDate <= endDate) {
+						let dailyMultiplier = 1;
+
+						// 公開直後のピーク（最初の3日間）
+						if (day === 0) {
+							dailyMultiplier = 2.5 + seededRandom(); // 2.5-3.5倍
+						} else if (day === 1) {
+							dailyMultiplier = 2.0 + seededRandom() * 0.5; // 2.0-2.5倍
+						} else if (day === 2) {
+							dailyMultiplier = 1.5 + seededRandom() * 0.5; // 1.5-2.0倍
+						} else if (day < 7) {
+							// 最初の週は緩やかに減少
+							dailyMultiplier = 1.2 - (day - 3) * 0.1 + seededRandom() * 0.2;
+						} else {
+							// その後は指数関数的に減衰 + ランダム変動
+							dailyMultiplier =
+								decayFactor ** (day / 7) * (0.5 + seededRandom() * 0.5);
+						}
+
+						// 週末効果（土日は平日の70-80%）
+						const dayOfWeek = distributionDate.getDay();
+						if (dayOfWeek === 0 || dayOfWeek === 6) {
+							dailyMultiplier *= 0.7 + seededRandom() * 0.1;
+						}
+
+						// 月曜日は少し増える
+						if (dayOfWeek === 1) {
+							dailyMultiplier *= 1.1;
+						}
+
+						// 基本の1日あたり閲覧数
+						const baseViewsPerDay = viewCount / Math.max(daysSincePublished, 1);
+						const dailyViews = Math.max(
+							1,
+							Math.floor(baseViewsPerDay * dailyMultiplier)
+						);
+
+						// 残り閲覧数を超えないように調整
+						const actualDailyViews = Math.min(dailyViews, remainingViews);
+
+						if (actualDailyViews > 0) {
+							const currentDayViews = dateMap.get(dateStr) || 0;
+							dateMap.set(dateStr, currentDayViews + actualDailyViews);
+							remainingViews -= actualDailyViews;
+						}
+					}
+
+					distributionDate.setDate(distributionDate.getDate() + 1);
+				}
 			}
 		}
 
