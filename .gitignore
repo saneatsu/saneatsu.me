@@ -12,6 +12,7 @@ build/
 # Cloudflare Workers / OpenNext
 .open-next/
 .wrangler/
+.dev.vars
 
 # Claude
 .claude/settings.local.json
