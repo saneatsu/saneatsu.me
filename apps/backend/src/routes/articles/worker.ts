@@ -226,6 +226,7 @@ articlesRoute.openapi(listArticlesRoute, async (c: any) => {
 			page: pageStr = "1",
 			limit: limitStr = "10",
 			lang = "ja",
+			status,
 		} = c.req.valid("query");
 		const page = Number(pageStr);
 		const limit = Number(limitStr);
@@ -233,7 +234,19 @@ articlesRoute.openapi(listArticlesRoute, async (c: any) => {
 		// ページネーションの計算
 		const offset = (page - 1) * limit;
 
-		// 記事一覧を取得（公開済みのみ）
+		// クエリ条件を構築
+		const conditions = [];
+		
+		// ステータス条件
+		if (status) {
+			conditions.push(eq(articles.status, status));
+		}
+		// statusが指定されない場合は全記事を取得（フィルタリングなし）
+
+		// 言語条件
+		conditions.push(eq(articleTranslations.language, lang));
+
+		// 記事一覧を取得
 		const articleList = await db
 			.select({
 				id: articles.id,
@@ -241,28 +254,26 @@ articlesRoute.openapi(listArticlesRoute, async (c: any) => {
 				cfImageId: articles.cfImageId,
 				status: articles.status,
 				publishedAt: articles.publishedAt,
+				updatedAt: articles.updatedAt,
 				title: articleTranslations.title,
 				content: articleTranslations.content,
+				viewCount: articleTranslations.viewCount,
 			})
 			.from(articles)
 			.leftJoin(
 				articleTranslations,
 				eq(articles.id, articleTranslations.articleId)
 			)
-			.where(
-				and(
-					eq(articles.status, "published"),
-					eq(articleTranslations.language, lang)
-				)
-			)
+			.where(conditions.length > 0 ? and(...conditions) : undefined)
 			.limit(limit)
 			.offset(offset);
 
 		// 総記事数を取得
+		const countConditions = status ? [eq(articles.status, status)] : [];
 		const totalCount = await db
 			.select({ count: articles.id })
 			.from(articles)
-			.where(eq(articles.status, "published"));
+			.where(countConditions.length > 0 ? and(...countConditions) : undefined);
 
 		return c.json({
 			data: articleList,

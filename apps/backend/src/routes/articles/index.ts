@@ -289,10 +289,8 @@ articlesRoute.openapi(listArticlesRoute, async (c) => {
 		// ステータス条件
 		if (status) {
 			conditions.push(eq(articles.status, status));
-		} else {
-			// デフォルトは公開済み記事のみ
-			conditions.push(eq(articles.status, "published"));
 		}
+		// statusが指定されない場合は全記事を取得（フィルタリングなし）
 
 		// 検索条件
 		if (search) {
