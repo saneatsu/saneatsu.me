@@ -170,14 +170,14 @@ export function ViewsTrendChart({
 								<XAxis
 									dataKey="date"
 									tickFormatter={formatDate}
-									stroke="hsl(var(--muted-foreground))"
+									stroke={getChartColors().axisStroke}
 									fontSize={12}
 									tickLine={false}
 									axisLine={false}
 								/>
 								<YAxis
 									tickFormatter={formatNumber}
-									stroke="hsl(var(--muted-foreground))"
+									stroke={getChartColors().axisStroke}
 									fontSize={12}
 									tickLine={false}
 									axisLine={false}
@@ -185,8 +185,8 @@ export function ViewsTrendChart({
 								<Tooltip content={<CustomTooltip />} />
 								<Bar
 									dataKey="views"
-									fill="hsl(var(--primary))"
-									radius={[2, 2, 0, 0]}
+									fill={getChartColors().barFill}
+									radius={[4, 4, 0, 0]}
 								/>
 							</BarChart>
 						</ResponsiveContainer>
