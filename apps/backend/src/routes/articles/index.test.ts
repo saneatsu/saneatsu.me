@@ -1445,7 +1445,7 @@ describe("POST /articles", () => {
 		const insertTagAssociationMock = {
 			values: vi.fn().mockResolvedValue([
 				{ articleId: 1, tagId: 1 },
-				{ articleId: 1, tagId: 2 }
+				{ articleId: 1, tagId: 2 },
 			]),
 		};
 
@@ -1537,7 +1537,6 @@ describe("POST /articles", () => {
 		expect(res.status).toBe(400);
 		expect(mockDb.insert).not.toHaveBeenCalled();
 	});
-
 });
 
 describe("GET /articles/check-slug", () => {
