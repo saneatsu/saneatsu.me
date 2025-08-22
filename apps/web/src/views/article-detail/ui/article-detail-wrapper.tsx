@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { fetchArticle } from "../../../shared/lib/api-client";
 import type { ArticleResponse } from "../../../shared/types/article";
 import { ArticleDetailView } from "./article-detail-view";
 
@@ -21,56 +22,66 @@ export async function ArticleDetailWrapper({
 	slug,
 	locale,
 }: ArticleDetailWrapperProps) {
-	// 記事データの取得
-	const apiUrl =
-		process.env.NODE_ENV === "development"
-			? "http://localhost:8888"
-			: "https://api.saneatsu.me";
-
 	// デバッグ用ログ
 	console.log("🔍 ArticleDetailWrapper Debug:", {
 		NODE_ENV: process.env.NODE_ENV,
-		apiUrl,
-		requestUrl: `${apiUrl}/api/articles/${slug}?lang=${locale}`,
+		NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+		slug,
+		locale,
+		requestQuery: { lang: locale },
+		timestamp: new Date().toISOString(),
+	});
+
+	// Service Binding の存在確認
+	// @ts-ignore
+	const cloudflareContext = (globalThis as any)[
+		Symbol.for("__cloudflare-context__")
+	];
+	const hasServiceBinding = !!cloudflareContext?.env?.BACKEND_API;
+	
+	console.log("🔍 Service Binding Check:", {
+		hasCloudflareContext: !!cloudflareContext,
+		hasServiceBinding,
+		envKeys: cloudflareContext?.env ? Object.keys(cloudflareContext.env) : [],
 	});
 
 	try {
-		const response = await fetch(
-			`${apiUrl}/api/articles/${slug}?lang=${locale}`,
-			{
-				next: { revalidate: 60 },
-				headers: {
-					"Accept-Language": locale,
-				},
-			}
-		);
-
-		console.log("🔍 API Response Debug:", {
-			status: response.status,
-			statusText: response.statusText,
-			ok: response.ok,
-			url: response.url,
+		// Service Bindingを使ったAPI呼び出し
+		console.log("🔍 Calling fetchArticle...", {
+			method: hasServiceBinding ? "Service Binding" : "HTTP",
+			slug,
+			locale,
 		});
 
-		if (!response.ok) {
-			console.error("❌ API Response Error:", {
-				status: response.status,
-				statusText: response.statusText,
-				text: await response.text().catch(() => "Could not read response text"),
-			});
-			notFound();
-		}
+		const articleResponse = await fetchArticle(slug, { lang: locale as "ja" | "en" });
 
-		const articleResponse: ArticleResponse = await response.json();
 		console.log("✅ Article Data Retrieved:", {
 			hasData: !!articleResponse.data,
 			title: articleResponse.data?.title,
 			slug: articleResponse.data?.slug,
+			id: articleResponse.data?.id,
+			status: articleResponse.data?.status,
 		});
 
 		return <ArticleDetailView article={articleResponse.data} locale={locale} />;
 	} catch (error) {
-		console.error("Failed to fetch article:", error);
+		console.error("❌ Failed to fetch article:", {
+			error,
+			message: error instanceof Error ? error.message : "Unknown error",
+			stack: error instanceof Error ? error.stack : "No stack",
+			slug,
+			locale,
+			timestamp: new Date().toISOString(),
+		});
+		
+		// APIエラーの詳細を出力
+		if (error instanceof Error && 'status' in error) {
+			console.error("❌ API Error Details:", {
+				status: (error as any).status,
+				code: (error as any).code,
+			});
+		}
+		
 		notFound();
 	}
 }
