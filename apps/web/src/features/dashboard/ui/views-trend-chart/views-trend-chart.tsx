@@ -66,6 +66,18 @@ export function ViewsTrendChart({
 	};
 
 	/**
+	 * ダークモード対応のグラフカラー取得
+	 */
+	const getChartColors = () => {
+		const isDark = theme === "dark";
+		return {
+			barFill: isDark ? "#60a5fa" : "#3b82f6", // ダークモード: sky-400, ライトモード: blue-500
+			axisStroke: isDark ? "#9ca3af" : "#6b7280", // ダークモード: gray-400, ライトモード: gray-500
+			gridStroke: isDark ? "#374151" : "#e5e7eb", // ダークモード: gray-700, ライトモード: gray-200
+		};
+	};
+
+	/**
 	 * ローディング中のスケルトン表示
 	 */
 	const renderSkeleton = () => (
