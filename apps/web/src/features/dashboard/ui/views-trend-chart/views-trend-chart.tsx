@@ -129,7 +129,7 @@ export function ViewsTrendChart({
 	}) => {
 		if (active && payload && payload.length && label) {
 			return (
-				<div className="bg-background border rounded-lg shadow-lg p-3">
+				<div className="bg-popover text-popover-foreground border rounded-lg shadow-lg p-3">
 					<p className="text-sm font-medium">{formatDate(label)}</p>
 					<p className="text-sm text-muted-foreground">
 						閲覧数: {formatNumber(payload[0].value)}
