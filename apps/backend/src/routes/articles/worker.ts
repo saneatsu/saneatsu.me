@@ -762,6 +762,77 @@ const updateArticleRoute = createRoute({
 });
 
 /**
+ * ステータス更新のルート定義
+ */
+const updateStatusRoute = createRoute({
+	method: "patch",
+	path: "/:id/status",
+	request: {
+		params: z.object({
+			id: z.string().openapi({
+				example: "1",
+				description: "記事のID",
+			}),
+		}),
+		body: {
+			content: {
+				"application/json": {
+					schema: z.object({
+						status: z.enum(["draft", "published", "archived"]).openapi({
+							example: "published",
+							description: "記事のステータス",
+						}),
+					}),
+				},
+			},
+		},
+	},
+	responses: {
+		200: {
+			content: {
+				"application/json": {
+					schema: z.object({
+						data: ArticleSchema,
+						message: z.string().openapi({
+							example: "記事ステータスが正常に更新されました",
+							description: "更新成功メッセージ",
+						}),
+					}),
+				},
+			},
+			description: "ステータス更新成功",
+		},
+		400: {
+			content: {
+				"application/json": {
+					schema: ErrorSchema,
+				},
+			},
+			description: "不正なリクエスト",
+		},
+		404: {
+			content: {
+				"application/json": {
+					schema: ErrorSchema,
+				},
+			},
+			description: "記事が見つからない",
+		},
+		500: {
+			content: {
+				"application/json": {
+					schema: ErrorSchema,
+				},
+			},
+			description: "サーバーエラー",
+		},
+	},
+	tags: ["Articles"],
+	summary: "記事ステータス更新",
+	description: "記事のステータスのみを更新します。",
+});
+
+/**
  * PUT /api/articles/:id - 記事更新
  */
 articlesRoute.openapi(updateArticleRoute, async (c: any) => {
@@ -909,6 +980,121 @@ articlesRoute.openapi(updateArticleRoute, async (c: any) => {
 					code: "DATABASE_ERROR",
 					message: "Failed to update article",
 					details: error instanceof Error ? error.message : String(error),
+				},
+			},
+			500
+		);
+	}
+});
+
+/**
+ * PATCH /api/articles/:id/status - 記事ステータス更新
+ */
+articlesRoute.openapi(updateStatusRoute, async (c: any) => {
+	try {
+		// packages/db経由でDBクライアントを作成
+		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const db = createDatabaseClient({
+			TURSO_DATABASE_URL: c.env.TURSO_DATABASE_URL,
+			TURSO_AUTH_TOKEN: c.env.TURSO_AUTH_TOKEN,
+		});
+
+		const { id } = c.req.valid("param");
+		const { status } = c.req.valid("json");
+
+		const articleId = parseInt(id);
+		if (Number.isNaN(articleId)) {
+			return c.json(
+				{
+					error: {
+						code: "INVALID_ID",
+						message: "Invalid article ID",
+					},
+				},
+				400
+			);
+		}
+
+		// 1. 既存記事の存在確認
+		const existingArticle = await db
+			.select({
+				id: articles.id,
+				status: articles.status,
+				publishedAt: articles.publishedAt,
+			})
+			.from(articles)
+			.where(eq(articles.id, articleId))
+			.limit(1);
+
+		if (existingArticle.length === 0) {
+			return c.json(
+				{
+					error: {
+						code: "NOT_FOUND",
+						message: "Article not found",
+					},
+				},
+				404
+			);
+		}
+
+		// 2. ステータスを更新
+		const now = new Date().toISOString();
+		let finalPublishedAt = existingArticle[0].publishedAt;
+
+		// statusがpublishedに変更される場合、publishedAtが未設定なら現在時刻を設定
+		if (status === "published" && !existingArticle[0].publishedAt) {
+			finalPublishedAt = now;
+		}
+		// statusがdraftまたはarchivedに変更される場合、publishedAtをnullにする
+		else if (status === "draft" || status === "archived") {
+			finalPublishedAt = null;
+		}
+
+		await db
+			.update(articles)
+			.set({
+				status,
+				publishedAt: finalPublishedAt,
+				updatedAt: now,
+			})
+			.where(eq(articles.id, articleId));
+
+		// 3. 更新後の記事を取得
+		const updatedArticle = await db
+			.select({
+				id: articles.id,
+				slug: articles.slug,
+				cfImageId: articles.cfImageId,
+				status: articles.status,
+				publishedAt: articles.publishedAt,
+				updatedAt: articles.updatedAt,
+				title: articleTranslations.title,
+				content: articleTranslations.content,
+				viewCount: sql<number>`COALESCE(${articleTranslations.viewCount}, 0)`,
+			})
+			.from(articles)
+			.leftJoin(
+				articleTranslations,
+				and(
+					eq(articles.id, articleTranslations.articleId),
+					eq(articleTranslations.language, "ja")
+				)
+			)
+			.where(eq(articles.id, articleId))
+			.limit(1);
+
+		return c.json({
+			data: updatedArticle[0],
+			message: "記事ステータスが正常に更新されました",
+		});
+	} catch (error) {
+		console.error("Error updating article status:", error);
+		return c.json(
+			{
+				error: {
+					code: "DATABASE_ERROR",
+					message: "Failed to update article status",
 				},
 			},
 			500
