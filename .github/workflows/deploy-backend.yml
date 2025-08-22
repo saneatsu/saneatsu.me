@@ -56,6 +56,7 @@ jobs:
       TURSO_AUTH_TOKEN: ${{ needs.set-environment.outputs.environment == 'production' && secrets.TURSO_AUTH_TOKEN_PROD || secrets.TURSO_AUTH_TOKEN_PREVIEW }}
       CORS_ORIGIN: ${{ needs.set-environment.outputs.environment == 'production' && secrets.CORS_ORIGIN_PROD || secrets.CORS_ORIGIN_PREVIEW }}
       ADMIN_EMAILS: ${{ secrets.ADMIN_EMAILS }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}  # 共通のAPIキーを使用
 
   # バックエンドをデプロイ
   backend-deploy:

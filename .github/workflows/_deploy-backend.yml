@@ -72,11 +72,22 @@ jobs:
           export $(cat .env | xargs)
           
           # Cloudflare Workersにデプロイ（環境変数を渡す）
-          npx wrangler deploy --env ${{ env.ENV }} \
-            --var TURSO_DATABASE_URL:"$TURSO_DATABASE_URL" \
-            --var TURSO_AUTH_TOKEN:"$TURSO_AUTH_TOKEN" \
-            --var CORS_ORIGIN:"$CORS_ORIGIN" \
-            --var ADMIN_EMAILS:"$ADMIN_EMAILS"
+          if [ ! -z "$GEMINI_API_KEY" ]; then
+            # GEMINI_API_KEYが設定されている場合
+            npx wrangler deploy --env ${{ env.ENV }} \
+              --var TURSO_DATABASE_URL:"$TURSO_DATABASE_URL" \
+              --var TURSO_AUTH_TOKEN:"$TURSO_AUTH_TOKEN" \
+              --var CORS_ORIGIN:"$CORS_ORIGIN" \
+              --var ADMIN_EMAILS:"$ADMIN_EMAILS" \
+              --var GEMINI_API_KEY:"$GEMINI_API_KEY"
+          else
+            # GEMINI_API_KEYが設定されていない場合
+            npx wrangler deploy --env ${{ env.ENV }} \
+              --var TURSO_DATABASE_URL:"$TURSO_DATABASE_URL" \
+              --var TURSO_AUTH_TOKEN:"$TURSO_AUTH_TOKEN" \
+              --var CORS_ORIGIN:"$CORS_ORIGIN" \
+              --var ADMIN_EMAILS:"$ADMIN_EMAILS"
+          fi
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
