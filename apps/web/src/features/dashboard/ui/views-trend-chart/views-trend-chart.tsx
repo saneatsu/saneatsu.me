@@ -1,6 +1,7 @@
 "use client";
 
 import { Calendar, TrendingUp } from "lucide-react";
+import { useTheme } from "next-themes";
 import {
 	Bar,
 	BarChart,
@@ -40,6 +41,7 @@ export function ViewsTrendChart({
 	selectedDays,
 	hideCard = false,
 }: ViewsTrendChartProps) {
+	const { theme } = useTheme();
 	const { data, isLoading, error } = useViewsTrend({
 		language,
 		days: selectedDays,
