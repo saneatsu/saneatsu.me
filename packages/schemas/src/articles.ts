@@ -113,7 +113,7 @@ export const articleListQuerySchema = z.object({
 		.string()
 		.transform((val) => Number.parseInt(val, 10))
 		.refine(
-			(val) => !Number.isNaN(val) && val > 0 && val <= 100,
+			(val) => !Number.isNaN(val) && val > 0 && val <= 200,
 			i18nMessage("validation.custom.pagination.limitRange")
 		)
 		.default("10"),
