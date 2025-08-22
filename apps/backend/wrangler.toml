@@ -14,13 +14,22 @@ enabled = true
 [env.development]
 name = "saneatsu-backend-dev"
 
+[env.development.vars]
+ENVIRONMENT = "development"
+
 # Preview/staging environment
 [env.preview]
 name = "saneatsu-backend-preview"
 
+[env.preview.vars]
+ENVIRONMENT = "preview"
+
 # Production environment
 [env.production]
 name = "saneatsu-backend"
+
+[env.production.vars]
+ENVIRONMENT = "production"
 
 # Custom domain configuration for production
 [[env.production.routes]]
