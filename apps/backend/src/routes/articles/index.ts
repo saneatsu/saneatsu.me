@@ -186,11 +186,11 @@ const ArticleCreateSchema = z.object({
 	}),
 	tagIds: z
 		.array(z.number().int())
-		.min(1, "少なくとも1つのタグIDが必要です")
 		.max(10, "タグIDは最大10個まで")
+		.optional()
 		.openapi({
 			example: [1, 2, 3],
-			description: "記事に関連付けるタグのID配列（1-10個）",
+			description: "記事に関連付けるタグのID配列（最大10個、省略可能）",
 		}),
 });
 
@@ -862,7 +862,7 @@ articlesRoute.openapi(createArticleRoute, async (c) => {
 			TURSO_AUTH_TOKEN: c.env.TURSO_AUTH_TOKEN,
 		});
 
-		const { title, slug, content, status, publishedAt } = c.req.valid("json");
+		const { title, slug, content, status, publishedAt, tagIds } = c.req.valid("json");
 
 		// 1. スラッグの重複チェック
 		const existingArticle = await db
@@ -907,8 +907,20 @@ articlesRoute.openapi(createArticleRoute, async (c) => {
 			content,
 		});
 
-		// TODO: 4. タグとの関連付けを実装（現在はスキップ）
-		// TODO: 5. 自動翻訳処理を実装（現在はスキップ）
+		// 4. タグとの関連付けを実装（tagIdsが提供された場合）
+		if (tagIds && tagIds.length > 0) {
+			try {
+				const tagAssociations = tagIds.map((tagId) => ({
+					articleId: newArticle.id,
+					tagId: tagId,
+				}));
+				await db.insert(articleTags).values(tagAssociations);
+				console.log(`Associated ${tagIds.length} tags with article ${newArticle.id}`);
+			} catch (error) {
+				console.error(`Failed to associate tags with article ${newArticle.id}:`, error);
+				// タグの関連付けに失敗しても記事作成は成功とする
+			}
+		}
 
 		// 5. レスポンス用のデータを取得
 		const createdArticle = await db
@@ -983,11 +995,11 @@ const ArticleUpdateSchema = z.object({
 	}),
 	tagIds: z
 		.array(z.number().int())
-		.min(1, "少なくとも1つのタグIDが必要です")
 		.max(10, "タグIDは最大10個まで")
+		.optional()
 		.openapi({
 			example: [1, 2, 3],
-			description: "記事に関連付けるタグのID配列（1-10個）",
+			description: "記事に関連付けるタグのID配列（最大10個、省略可能）",
 		}),
 });
 
