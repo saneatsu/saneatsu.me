@@ -4,6 +4,8 @@ import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
 import { useState } from "react";
 import { useGetAllArticles } from "../../../../entities/article/api/use-get-all";
 import type { Article, ArticleFilters } from "../../../../shared/types/article";
+import { ARTICLE_STATUS_CONFIG } from "../../../../shared/types/article";
+import { Badge } from "../../../../shared/ui/badge/badge";
 import {
 	DataTable,
 	type DataTableColumn,
@@ -180,6 +182,16 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 				// タグ情報は現在のAPIレスポンスに含まれていないため、一時的に空にする
 				<div className="text-sm text-muted-foreground">-</div>
 			),
+		},
+		{
+			key: "status",
+			label: "ステータス",
+			sortable: true,
+			className: "w-[120px]",
+			render: (article) => {
+				const config = ARTICLE_STATUS_CONFIG[article.status];
+				return <Badge variant={config.variant}>{config.label}</Badge>;
+			},
 		},
 		{
 			key: "viewCount",
