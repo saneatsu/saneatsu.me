@@ -40,14 +40,19 @@ export function useCreate() {
 					content: data.content,
 					status: data.status,
 					publishedAt: data.publishedAt,
+					tagIds: data.tagIds || [], // 空配列をデフォルトとする
 				},
 			});
 
 			if (!response.ok) {
 				const error = await response.json();
-				throw new Error(
-					(error as { error?: string }).error || "記事の作成に失敗しました"
-				);
+				// エラーレスポンスの構造に応じて適切にメッセージを取得
+				const errorMessage =
+					(error as { error?: { message?: string } }).error?.message ||
+					(error as { error?: string }).error ||
+					(error as { message?: string }).message ||
+					"記事の作成に失敗しました";
+				throw new Error(errorMessage);
 			}
 
 			const result = await response.json();

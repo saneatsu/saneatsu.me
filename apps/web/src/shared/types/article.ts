@@ -172,6 +172,8 @@ export interface ArticleCreateRequest {
 	status: ArticleStatus;
 	/** 公開日時（オプショナル） */
 	publishedAt?: string;
+	/** タグIDの配列（オプショナル） */
+	tagIds?: number[];
 }
 
 /**
