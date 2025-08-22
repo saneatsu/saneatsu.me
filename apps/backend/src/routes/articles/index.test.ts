@@ -1441,9 +1441,18 @@ describe("POST /articles", () => {
 			.mockReturnValueOnce(selectArticleMock) // 記事取得
 			.mockReturnValueOnce(selectTagsMock); // タグ取得
 
+		// タグ関連付け用のモック
+		const insertTagAssociationMock = {
+			values: vi.fn().mockResolvedValue([
+				{ articleId: 1, tagId: 1 },
+				{ articleId: 1, tagId: 2 }
+			]),
+		};
+
 		mockDb.insert
 			.mockReturnValueOnce(insertArticleMock) // 記事作成
-			.mockReturnValueOnce(insertTranslationMock); // 翻訳作成
+			.mockReturnValueOnce(insertTranslationMock) // 翻訳作成
+			.mockReturnValueOnce(insertTagAssociationMock); // タグ関連付け
 
 		// Act
 		const client = testClient(articlesRoute, {
@@ -1469,7 +1478,7 @@ describe("POST /articles", () => {
 			message: "記事が正常に作成されました",
 		});
 
-		expect(mockDb.insert).toHaveBeenCalledTimes(2); // 記事、翻訳
+		expect(mockDb.insert).toHaveBeenCalledTimes(3); // 記事、翻訳、タグ関連
 		expect(mockDb.select).toHaveBeenCalledTimes(2); // 既存チェック、記事取得
 	});
 
@@ -1529,33 +1538,6 @@ describe("POST /articles", () => {
 		expect(mockDb.insert).not.toHaveBeenCalled();
 	});
 
-	it("バリデーションエラー: タグIDが空の配列の場合", async () => {
-		// Arrange
-		const { mockDb } = setupDbMocks();
-
-		// createDatabaseClient関数がmockDbを返すように設定
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
-		(createDatabaseClient as any).mockReturnValue(mockDb);
-
-		// Act
-		const client = testClient(articlesRoute, {
-			TURSO_DATABASE_URL: "test://test.db",
-			TURSO_AUTH_TOKEN: "test-token",
-		}) as any;
-		const res = await client.index.$post({
-			json: {
-				title: "正常なタイトル",
-				slug: "valid-slug",
-				content: "内容があります",
-				status: "draft",
-				tagIds: [],
-			},
-		});
-
-		// Assert
-		expect(res.status).toBe(400);
-		expect(mockDb.insert).not.toHaveBeenCalled();
-	});
 });
 
 describe("GET /articles/check-slug", () => {

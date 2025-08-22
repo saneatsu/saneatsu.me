@@ -32,8 +32,14 @@ export async function ArticleDetailWrapper({
 	});
 
 	// Service Binding の存在確認
-	// @ts-ignore
-	const cloudflareContext = (globalThis as any)[
+	// Cloudflare環境の型定義
+	interface CloudflareContext {
+		env?: {
+			BACKEND_API?: unknown;
+			[key: string]: unknown;
+		};
+	}
+	const cloudflareContext = (globalThis as Record<symbol, CloudflareContext>)[
 		Symbol.for("__cloudflare-context__")
 	];
 	const hasServiceBinding = !!cloudflareContext?.env?.BACKEND_API;
@@ -76,10 +82,15 @@ export async function ArticleDetailWrapper({
 		});
 
 		// APIエラーの詳細を出力
+		interface ApiError extends Error {
+			status?: number;
+			code?: string;
+		}
 		if (error instanceof Error && "status" in error) {
+			const apiError = error as ApiError;
 			console.error("❌ API Error Details:", {
-				status: (error as any).status,
-				code: (error as any).code,
+				status: apiError.status,
+				code: apiError.code,
 			});
 		}
 

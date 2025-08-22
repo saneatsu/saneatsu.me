@@ -236,7 +236,7 @@ articlesRoute.openapi(listArticlesRoute, async (c: any) => {
 
 		// クエリ条件を構築
 		const conditions = [];
-		
+
 		// ステータス条件
 		if (status) {
 			conditions.push(eq(articles.status, status));
