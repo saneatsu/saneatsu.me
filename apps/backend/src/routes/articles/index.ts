@@ -7,6 +7,7 @@ import {
 } from "@saneatsu/db/worker";
 import { articleListQuerySchema, type SortOrder } from "@saneatsu/schemas";
 import { and, asc, desc, eq, not, sql } from "drizzle-orm";
+import { createTranslationService } from "../../services/gemini-translation";
 import { convertWikiLinks } from "../../utils/wiki-link";
 import { getSuggestionsRoute, handleArticleSuggestions } from "./suggestions";
 
@@ -206,6 +207,7 @@ const ArticleCreateResponseSchema = z.object({
 type Env = {
 	TURSO_DATABASE_URL: string;
 	TURSO_AUTH_TOKEN: string;
+	GEMINI_API_KEY?: string; // Gemini API key（オプション）
 };
 
 /**
@@ -862,7 +864,8 @@ articlesRoute.openapi(createArticleRoute, async (c) => {
 			TURSO_AUTH_TOKEN: c.env.TURSO_AUTH_TOKEN,
 		});
 
-		const { title, slug, content, status, publishedAt, tagIds } = c.req.valid("json");
+		const { title, slug, content, status, publishedAt, tagIds } =
+			c.req.valid("json");
 
 		// 1. スラッグの重複チェック
 		const existingArticle = await db
@@ -907,7 +910,42 @@ articlesRoute.openapi(createArticleRoute, async (c) => {
 			content,
 		});
 
-		// 4. タグとの関連付けを実装（tagIdsが提供された場合）
+		// 4. 英語への自動翻訳を実行（非同期）
+		if (c.env.GEMINI_API_KEY) {
+			try {
+				const translationService = createTranslationService({
+					GEMINI_API_KEY: c.env.GEMINI_API_KEY,
+				});
+
+				// 翻訳を実行
+				const translatedArticle = await translationService.translateArticle(
+					title,
+					content
+				);
+
+				if (translatedArticle) {
+					// 英語版を保存
+					await db.insert(articleTranslations).values({
+						articleId: newArticle.id,
+						language: "en",
+						title: translatedArticle.title,
+						content: translatedArticle.content,
+					});
+					console.log(`Article ${newArticle.id} translated successfully`);
+				} else {
+					console.warn(
+						`Translation failed for article ${newArticle.id}, continuing without translation`
+					);
+				}
+			} catch (error) {
+				// 翻訳エラーが発生してもメインの処理は続行
+				console.error(`Translation error for article ${newArticle.id}:`, error);
+			}
+		} else {
+			console.log("GEMINI_API_KEY not configured, skipping translation");
+		}
+
+		// 5. タグとの関連付けを実装（tagIdsが提供された場合）
 		if (tagIds && tagIds.length > 0) {
 			try {
 				const tagAssociations = tagIds.map((tagId) => ({
@@ -915,9 +953,14 @@ articlesRoute.openapi(createArticleRoute, async (c) => {
 					tagId: tagId,
 				}));
 				await db.insert(articleTags).values(tagAssociations);
-				console.log(`Associated ${tagIds.length} tags with article ${newArticle.id}`);
+				console.log(
+					`Associated ${tagIds.length} tags with article ${newArticle.id}`
+				);
 			} catch (error) {
-				console.error(`Failed to associate tags with article ${newArticle.id}:`, error);
+				console.error(
+					`Failed to associate tags with article ${newArticle.id}:`,
+					error
+				);
 				// タグの関連付けに失敗しても記事作成は成功とする
 			}
 		}
@@ -1162,7 +1205,7 @@ articlesRoute.openapi(updateArticleRoute, async (c) => {
 			})
 			.where(eq(articles.id, articleId));
 
-		// 4. 翻訳データを更新（日本語のみ）
+		// 4. 翻訳データを更新（日本語）
 		await db
 			.update(articleTranslations)
 			.set({
@@ -1176,7 +1219,70 @@ articlesRoute.openapi(updateArticleRoute, async (c) => {
 				)
 			);
 
-		// 5. タグとの関連付けを更新
+		// 5. 英語への自動翻訳を実行
+		if (c.env.GEMINI_API_KEY) {
+			try {
+				const translationService = createTranslationService({
+					GEMINI_API_KEY: c.env.GEMINI_API_KEY,
+				});
+
+				// 既存の英語翻訳を確認
+				const existingEnTranslation = await db
+					.select({
+						id: articleTranslations.id,
+						title: articleTranslations.title,
+						content: articleTranslations.content,
+					})
+					.from(articleTranslations)
+					.where(
+						and(
+							eq(articleTranslations.articleId, articleId),
+							eq(articleTranslations.language, "en")
+						)
+					)
+					.limit(1);
+
+				// 翻訳を実行
+				const translatedArticle = await translationService.translateArticle(
+					title,
+					content
+				);
+
+				if (translatedArticle) {
+					if (existingEnTranslation.length > 0) {
+						// 既存の英語翻訳を更新
+						await db
+							.update(articleTranslations)
+							.set({
+								title: translatedArticle.title,
+								content: translatedArticle.content,
+							})
+							.where(eq(articleTranslations.id, existingEnTranslation[0].id));
+						console.log(`Article ${articleId} translation updated`);
+					} else {
+						// 新規に英語翻訳を作成
+						await db.insert(articleTranslations).values({
+							articleId,
+							language: "en",
+							title: translatedArticle.title,
+							content: translatedArticle.content,
+						});
+						console.log(`Article ${articleId} translated for the first time`);
+					}
+				} else {
+					console.warn(
+						`Translation failed for article ${articleId}, continuing without translation`
+					);
+				}
+			} catch (error) {
+				// 翻訳エラーが発生してもメインの処理は続行
+				console.error(`Translation error for article ${articleId}:`, error);
+			}
+		} else {
+			console.log("GEMINI_API_KEY not configured, skipping translation");
+		}
+
+		// 6. タグとの関連付けを更新
 		// 既存のタグ関連を削除
 		await db.delete(articleTags).where(eq(articleTags.articleId, articleId));
 
