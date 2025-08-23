@@ -1,7 +1,7 @@
 "use client";
 
 import { Search } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ArticleFilters } from "../../../../shared/types/article";
 import { ARTICLE_STATUS_CONFIG } from "../../../../shared/types/article";
 import { Badge } from "../../../../shared/ui/badge/badge";
@@ -31,6 +31,7 @@ export function ArticlesFilter({
 }: ArticlesFilterProps) {
 	// 検索入力のローカル状態（即座にUIを更新するため）
 	const [searchValue, setSearchValue] = useState(filters.search);
+	const timerRef = useRef<NodeJS.Timeout | null>(null);
 
 	// filtersのsearchが外部から変更された場合（リセットなど）にローカル状態を同期
 	useEffect(() => {
@@ -39,7 +40,12 @@ export function ArticlesFilter({
 
 	// 検索入力のdebounce処理
 	useEffect(() => {
-		const timer = setTimeout(() => {
+		// 既存のタイマーをクリア
+		if (timerRef.current) {
+			clearTimeout(timerRef.current);
+		}
+
+		timerRef.current = setTimeout(() => {
 			// 値が実際に変更された場合のみ通知
 			if (searchValue !== filters.search) {
 				onFiltersChange({
@@ -49,8 +55,29 @@ export function ArticlesFilter({
 			}
 		}, 500); // 500msのdebounce
 
-		return () => clearTimeout(timer);
+		return () => {
+			if (timerRef.current) {
+				clearTimeout(timerRef.current);
+			}
+		};
 	}, [searchValue, filters, onFiltersChange]);
+
+	/**
+	 * Enterキーで即座に検索を実行
+	 */
+	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		if (e.key === "Enter") {
+			// debounceタイマーをクリア
+			if (timerRef.current) {
+				clearTimeout(timerRef.current);
+			}
+			// 即座に検索を実行
+			onFiltersChange({
+				...filters,
+				search: searchValue,
+			});
+		}
+	};
 
 	/**
 	 * フィルター値更新
@@ -149,9 +176,10 @@ export function ArticlesFilter({
 						<Input
 							id="search-filter"
 							type="text"
-							placeholder="タイトル・内容で検索..."
+							placeholder="日本語記事のタイトル・内容で検索..."
 							value={searchValue}
 							onChange={(e) => setSearchValue(e.target.value)}
+							onKeyDown={handleKeyDown}
 							disabled={loading}
 							className="pl-10"
 						/>
