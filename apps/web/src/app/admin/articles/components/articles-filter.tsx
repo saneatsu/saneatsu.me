@@ -7,6 +7,13 @@ import { ARTICLE_STATUS_CONFIG } from "../../../../shared/types/article";
 import { Badge } from "../../../../shared/ui/badge/badge";
 import { Button } from "../../../../shared/ui/button/button";
 import { Input } from "../../../../shared/ui/input/input";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "../../../../shared/ui/select/select";
 
 /**
  * 記事フィルターコンポーネントのプロパティ
@@ -126,22 +133,27 @@ export function ArticlesFilter({
 					>
 						ステータス
 					</label>
-					<select
-						id="status-filter"
+					<Select
 						value={filters.status}
-						onChange={(e) => updateFilter("status", e.target.value)}
+						onValueChange={(value) => updateFilter("status", value)}
 						disabled={loading}
-						className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
 					>
-						<option value="all">全て</option>
-						<option value="draft">{ARTICLE_STATUS_CONFIG.draft.label}</option>
-						<option value="published">
-							{ARTICLE_STATUS_CONFIG.published.label}
-						</option>
-						<option value="archived">
-							{ARTICLE_STATUS_CONFIG.archived.label}
-						</option>
-					</select>
+						<SelectTrigger id="status-filter">
+							<SelectValue />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value="all">全て</SelectItem>
+							<SelectItem value="draft">
+								{ARTICLE_STATUS_CONFIG.draft.label}
+							</SelectItem>
+							<SelectItem value="published">
+								{ARTICLE_STATUS_CONFIG.published.label}
+							</SelectItem>
+							<SelectItem value="archived">
+								{ARTICLE_STATUS_CONFIG.archived.label}
+							</SelectItem>
+						</SelectContent>
+					</Select>
 				</div>
 
 				{/* 検索フィルター */}
