@@ -32,14 +32,28 @@ export function ArticlesFilter({
 	// 検索入力のローカル状態（即座にUIを更新するため）
 	const [searchValue, setSearchValue] = useState(filters.search);
 	const timerRef = useRef<NodeJS.Timeout | null>(null);
+	const inputRef = useRef<HTMLInputElement>(null);
+	const [isEnterPressed, setIsEnterPressed] = useState(false);
 
 	// filtersのsearchが外部から変更された場合（リセットなど）にローカル状態を同期
 	useEffect(() => {
 		setSearchValue(filters.search);
 	}, [filters.search]);
 
+	// 検索実行後にフォーカスを復元
+	useEffect(() => {
+		if (isEnterPressed && inputRef.current) {
+			inputRef.current.focus();
+		}
+	}, [isEnterPressed]); // Enterキーが押された時にフォーカスを復元
+
 	// 検索入力のdebounce処理
 	useEffect(() => {
+		// Enterキーが押された直後はdebounceをスキップ
+		if (isEnterPressed) {
+			return;
+		}
+
 		// 既存のタイマーをクリア
 		if (timerRef.current) {
 			clearTimeout(timerRef.current);
@@ -60,22 +74,33 @@ export function ArticlesFilter({
 				clearTimeout(timerRef.current);
 			}
 		};
-	}, [searchValue, filters, onFiltersChange]);
+	}, [searchValue, filters, onFiltersChange, isEnterPressed]);
 
 	/**
 	 * Enterキーで即座に検索を実行
 	 */
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
 		if (e.key === "Enter") {
+			e.preventDefault(); // フォームのデフォルト動作を防ぐ
+
 			// debounceタイマーをクリア
 			if (timerRef.current) {
 				clearTimeout(timerRef.current);
 			}
+
+			// Enterキーが押されたことを記録
+			setIsEnterPressed(true);
+
 			// 即座に検索を実行
 			onFiltersChange({
 				...filters,
 				search: searchValue,
 			});
+
+			// 少し後にフラグをリセット（次の入力でdebounceを再開するため）
+			setTimeout(() => {
+				setIsEnterPressed(false);
+			}, 100);
 		}
 	};
 
@@ -174,11 +199,18 @@ export function ArticlesFilter({
 					<div className="relative">
 						<Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
 						<Input
+							ref={inputRef}
 							id="search-filter"
 							type="text"
 							placeholder="日本語記事のタイトル・内容で検索..."
 							value={searchValue}
-							onChange={(e) => setSearchValue(e.target.value)}
+							onChange={(e) => {
+								setSearchValue(e.target.value);
+								// 新たな入力があったらEnterフラグをリセット
+								if (isEnterPressed) {
+									setIsEnterPressed(false);
+								}
+							}}
 							onKeyDown={handleKeyDown}
 							disabled={loading}
 							className="pl-10"
