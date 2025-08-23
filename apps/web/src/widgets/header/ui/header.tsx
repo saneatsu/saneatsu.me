@@ -62,7 +62,7 @@ export function Header() {
 								href={`/${locale}/articles`}
 								className={getNavLinkClassName(`/${locale}/articles`)}
 							>
-								{t("blog")}
+								Blog
 							</Link>
 							<Link
 								href={`/${locale}/about`}
