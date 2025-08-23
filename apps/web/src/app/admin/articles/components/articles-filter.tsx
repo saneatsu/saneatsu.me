@@ -1,6 +1,7 @@
 "use client";
 
 import { Search } from "lucide-react";
+import { useEffect, useState } from "react";
 import type { ArticleFilters } from "../../../../shared/types/article";
 import { ARTICLE_STATUS_CONFIG } from "../../../../shared/types/article";
 import { Badge } from "../../../../shared/ui/badge/badge";
@@ -28,6 +29,29 @@ export function ArticlesFilter({
 	onFiltersChange,
 	loading = false,
 }: ArticlesFilterProps) {
+	// 検索入力のローカル状態（即座にUIを更新するため）
+	const [searchValue, setSearchValue] = useState(filters.search);
+
+	// filtersのsearchが外部から変更された場合（リセットなど）にローカル状態を同期
+	useEffect(() => {
+		setSearchValue(filters.search);
+	}, [filters.search]);
+
+	// 検索入力のdebounce処理
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			// 値が実際に変更された場合のみ通知
+			if (searchValue !== filters.search) {
+				onFiltersChange({
+					...filters,
+					search: searchValue,
+				});
+			}
+		}, 500); // 500msのdebounce
+
+		return () => clearTimeout(timer);
+	}, [searchValue, filters, onFiltersChange]);
+
 	/**
 	 * フィルター値更新
 	 */
@@ -42,6 +66,7 @@ export function ArticlesFilter({
 	 * フィルターリセット
 	 */
 	const resetFilters = () => {
+		setSearchValue(""); // ローカル状態もリセット
 		onFiltersChange({
 			status: "all",
 			language: "ja", // 日本語固定
@@ -125,8 +150,8 @@ export function ArticlesFilter({
 							id="search-filter"
 							type="text"
 							placeholder="タイトル・内容で検索..."
-							value={filters.search}
-							onChange={(e) => updateFilter("search", e.target.value)}
+							value={searchValue}
+							onChange={(e) => setSearchValue(e.target.value)}
 							disabled={loading}
 							className="pl-10"
 						/>
