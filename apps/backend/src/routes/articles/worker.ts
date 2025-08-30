@@ -8,6 +8,7 @@ import {
 } from "@saneatsu/db/worker";
 import { articleListQuerySchema as ImportedArticlesQuerySchema } from "@saneatsu/schemas";
 import { and, eq, not, sql } from "drizzle-orm";
+import { createTranslationService } from "../../services/gemini-translation";
 import { convertWikiLinks } from "../../utils/wiki-link";
 
 // 一時的なスキーマ定義
@@ -158,6 +159,49 @@ const ArticleSchema = z.object({
 		description: "閲覧数",
 	}),
 });
+const ArticleCreateSchema = z.object({
+	title: z.string().min(1).max(200).openapi({
+		example: "新しい記事のタイトル",
+		description: "記事のタイトル（1-200文字）",
+	}),
+	slug: z
+		.string()
+		.min(1)
+		.max(100)
+		.regex(/^[a-z0-9-]+$/)
+		.openapi({
+			example: "new-article-slug",
+			description: "記事のスラッグ（小文字の英数字とハイフンのみ、1-100文字）",
+		}),
+	content: z.string().min(1).openapi({
+		example: "# 記事タイトル\n\nこれは記事の本文です...",
+		description: "記事の本文（Markdown形式）",
+	}),
+	status: z.enum(["draft", "published"]).openapi({
+		example: "draft",
+		description: "記事のステータス",
+	}),
+	publishedAt: z.string().datetime().optional().openapi({
+		example: "2024-01-01T10:00:00Z",
+		description: "公開日時（ISO 8601形式、公開ステータス時のみ）",
+	}),
+	tagIds: z
+		.array(z.number().int())
+		.max(10, "タグIDは最大10個まで")
+		.optional()
+		.openapi({
+			example: [1, 2, 3],
+			description: "記事に関連付けるタグのID配列（最大10個、省略可能）",
+		}),
+});
+
+const ArticleCreateResponseSchema = z.object({
+	data: ArticleSchema,
+	message: z.string().openapi({
+		example: "記事が正常に作成されました",
+		description: "作成成功メッセージ",
+	}),
+});
 
 const ErrorSchema = z.object({
 	error: z.object({
@@ -296,6 +340,89 @@ articlesRoute.openapi(listArticlesRoute, async (c: any) => {
 				error: {
 					code: "DATABASE_ERROR",
 					message: "Failed to fetch articles",
+					details: error instanceof Error ? error.message : String(error),
+				},
+			},
+			500
+		);
+	}
+});
+
+/**
+ * スラッグ重複チェックのルート定義
+ */
+const checkSlugRoute = createRoute({
+	method: "get",
+	path: "/check-slug",
+	request: {
+		query: SlugCheckQuerySchema,
+	},
+	responses: {
+		200: {
+			content: {
+				"application/json": {
+					schema: SlugCheckResponseSchema,
+				},
+			},
+			description: "スラッグチェック成功",
+		},
+		400: {
+			content: {
+				"application/json": {
+					schema: ErrorSchema,
+				},
+			},
+			description: "不正なリクエスト",
+		},
+		500: {
+			content: {
+				"application/json": {
+					schema: ErrorSchema,
+				},
+			},
+			description: "サーバーエラー",
+		},
+	},
+	tags: ["Articles"],
+	summary: "スラッグ重複チェック",
+	description: "指定されたスラッグが既に使用されているかチェックします。",
+});
+
+/**
+ * GET /api/articles/check-slug - スラッグ重複チェック
+ */
+articlesRoute.openapi(checkSlugRoute, async (c: any) => {
+	try {
+		// Cloudflare Workers環境でデータベースクライアントを初期化
+		const db = createDatabaseClient(c.env);
+
+		const { slug } = c.req.valid("query");
+
+		// 指定されたスラッグが既に存在するかチェック
+		const existingArticle = await db
+			.select({ id: articles.id })
+			.from(articles)
+			.where(eq(articles.slug, slug))
+			.limit(1);
+
+		const isAvailable = existingArticle.length === 0;
+
+		return c.json({
+			available: isAvailable,
+			message: isAvailable ? undefined : "このスラッグは既に使用されています",
+		});
+	} catch (error) {
+		console.error("Error checking slug:", error);
+		console.error("Slug check error details:", {
+			message: error instanceof Error ? error.message : String(error),
+			stack: error instanceof Error ? error.stack : undefined,
+			name: error instanceof Error ? error.name : undefined,
+		});
+		return c.json(
+			{
+				error: {
+					code: "DATABASE_ERROR",
+					message: "Failed to check slug",
 					details: error instanceof Error ? error.message : String(error),
 				},
 			},
@@ -604,89 +731,6 @@ articlesRoute.openapi(getArticleByIdRoute, async (c: any) => {
 });
 
 /**
- * スラッグ重複チェックのルート定義
- */
-const checkSlugRoute = createRoute({
-	method: "get",
-	path: "/check-slug",
-	request: {
-		query: SlugCheckQuerySchema,
-	},
-	responses: {
-		200: {
-			content: {
-				"application/json": {
-					schema: SlugCheckResponseSchema,
-				},
-			},
-			description: "スラッグチェック成功",
-		},
-		400: {
-			content: {
-				"application/json": {
-					schema: ErrorSchema,
-				},
-			},
-			description: "不正なリクエスト",
-		},
-		500: {
-			content: {
-				"application/json": {
-					schema: ErrorSchema,
-				},
-			},
-			description: "サーバーエラー",
-		},
-	},
-	tags: ["Articles"],
-	summary: "スラッグ重複チェック",
-	description: "指定されたスラッグが既に使用されているかチェックします。",
-});
-
-/**
- * GET /api/articles/check-slug - スラッグ重複チェック
- */
-articlesRoute.openapi(checkSlugRoute, async (c: any) => {
-	try {
-		// Cloudflare Workers環境でデータベースクライアントを初期化
-		const db = createDatabaseClient(c.env);
-
-		const { slug } = c.req.valid("query");
-
-		// 指定されたスラッグが既に存在するかチェック
-		const existingArticle = await db
-			.select({ id: articles.id })
-			.from(articles)
-			.where(eq(articles.slug, slug))
-			.limit(1);
-
-		const isAvailable = existingArticle.length === 0;
-
-		return c.json({
-			available: isAvailable,
-			message: isAvailable ? undefined : "このスラッグは既に使用されています",
-		});
-	} catch (error) {
-		console.error("Error checking slug:", error);
-		console.error("Slug check error details:", {
-			message: error instanceof Error ? error.message : String(error),
-			stack: error instanceof Error ? error.stack : undefined,
-			name: error instanceof Error ? error.name : undefined,
-		});
-		return c.json(
-			{
-				error: {
-					code: "DATABASE_ERROR",
-					message: "Failed to check slug",
-					details: error instanceof Error ? error.message : String(error),
-				},
-			},
-			500
-		);
-	}
-});
-
-/**
  * 記事更新のルート定義
  */
 const updateArticleRoute = createRoute({
@@ -830,6 +874,219 @@ const updateStatusRoute = createRoute({
 	tags: ["Articles"],
 	summary: "記事ステータス更新",
 	description: "記事のステータスのみを更新します。",
+});
+/**
+ * 記事作成のルート定義
+ */
+const createArticleRoute = createRoute({
+	method: "post",
+	path: "/",
+	request: {
+		body: {
+			content: {
+				"application/json": {
+					schema: ArticleCreateSchema,
+				},
+			},
+		},
+	},
+	responses: {
+		201: {
+			content: {
+				"application/json": {
+					schema: ArticleCreateResponseSchema,
+				},
+			},
+			description: "記事作成成功",
+		},
+		400: {
+			content: {
+				"application/json": {
+					schema: ErrorSchema,
+				},
+			},
+			description: "不正なリクエスト",
+		},
+		409: {
+			content: {
+				"application/json": {
+					schema: ErrorSchema,
+				},
+			},
+			description: "スラッグが既に存在",
+		},
+		500: {
+			content: {
+				"application/json": {
+					schema: ErrorSchema,
+				},
+			},
+			description: "サーバーエラー",
+		},
+	},
+	tags: ["Articles"],
+	summary: "記事作成",
+	description:
+		"新しい記事を作成します。作成時に日本語の翻訳データも同時に保存されます。",
+});
+/**
+ * POST /api/articles - 記事作成
+ */
+articlesRoute.openapi(createArticleRoute, async (c: any) => {
+	try {
+		// Cloudflare Workers環境でデータベースクライアントを初期化
+		const db = createDatabaseClient(c.env);
+
+		const { title, slug, content, status, publishedAt, tagIds } =
+			c.req.valid("json");
+
+		// 1. スラッグの重複チェック
+		const existingArticle = await db
+			.select({ id: articles.id })
+			.from(articles)
+			.where(eq(articles.slug, slug))
+			.limit(1);
+
+		if (existingArticle.length > 0) {
+			return c.json(
+				{
+					error: {
+						code: "SLUG_ALREADY_EXISTS",
+						message: "このスラッグは既に使用されています",
+					},
+				},
+				409
+			);
+		}
+
+		// 2. 記事データを作成
+		const now = new Date().toISOString();
+		const finalPublishedAt = status === "published" ? publishedAt || now : null;
+
+		const [newArticle] = await db
+			.insert(articles)
+			.values({
+				slug,
+				status,
+				publishedAt: finalPublishedAt,
+				cfImageId: null, // 現在は画像なし
+				createdAt: now,
+				updatedAt: now,
+			})
+			.returning();
+
+		// 3. 翻訳データを作成（日本語）
+		await db.insert(articleTranslations).values({
+			articleId: newArticle.id,
+			language: "ja",
+			title,
+			content,
+		});
+
+		// 4. 英語への自動翻訳を実行（非同期）
+		if (c.env.GEMINI_API_KEY) {
+			try {
+				const translationService = createTranslationService({
+					GEMINI_API_KEY: c.env.GEMINI_API_KEY,
+				});
+
+				// 翻訳を実行
+				const translatedArticle = await translationService.translateArticle(
+					title,
+					content
+				);
+
+				if (translatedArticle) {
+					// 英語版を保存
+					await db.insert(articleTranslations).values({
+						articleId: newArticle.id,
+						language: "en",
+						title: translatedArticle.title,
+						content: translatedArticle.content,
+					});
+					console.log(`Article ${newArticle.id} translated successfully`);
+				} else {
+					console.warn(
+						`Translation failed for article ${newArticle.id}, continuing without translation`
+					);
+				}
+			} catch (error) {
+				// 翻訳エラーが発生してもメインの処理は続行
+				console.error(`Translation error for article ${newArticle.id}:`, error);
+			}
+		} else {
+			console.log("GEMINI_API_KEY not configured, skipping translation");
+		}
+
+		// 5. タグとの関連付けを実装（tagIdsが提供された場合）
+		if (tagIds && tagIds.length > 0) {
+			try {
+				const tagAssociations = tagIds.map((tagId: number) => ({
+					articleId: newArticle.id,
+					tagId: tagId,
+				}));
+				await db.insert(articleTags).values(tagAssociations);
+				console.log(
+					`Associated ${tagIds.length} tags with article ${newArticle.id}`
+				);
+			} catch (error) {
+				console.error(
+					`Failed to associate tags with article ${newArticle.id}:`,
+					error
+				);
+				// タグの関連付けに失敗しても記事作成は成功とする
+			}
+		}
+
+		// 6. レスポンス用のデータを取得
+		const createdArticle = await db
+			.select({
+				id: articles.id,
+				slug: articles.slug,
+				cfImageId: articles.cfImageId,
+				status: articles.status,
+				publishedAt: articles.publishedAt,
+				updatedAt: articles.updatedAt,
+				title: articleTranslations.title,
+				content: articleTranslations.content,
+				viewCount: sql<number>`COALESCE(${articleTranslations.viewCount}, 0)`,
+			})
+			.from(articles)
+			.leftJoin(
+				articleTranslations,
+				and(
+					eq(articles.id, articleTranslations.articleId),
+					eq(articleTranslations.language, "ja")
+				)
+			)
+			.where(eq(articles.id, newArticle.id))
+			.limit(1);
+
+		return c.json(
+			{
+				data: createdArticle[0],
+				message: "記事が正常に作成されました",
+			},
+			201
+		);
+	} catch (error) {
+		console.error("Error creating article:", error);
+		console.error("Article creation error details:", {
+			message: error instanceof Error ? error.message : String(error),
+			stack: error instanceof Error ? error.stack : undefined,
+			name: error instanceof Error ? error.name : undefined,
+		});
+		return c.json(
+			{
+				error: {
+					code: "DATABASE_ERROR",
+					message: "Failed to create article",
+					details: error instanceof Error ? error.message : String(error),
+				},
+			},
+			500
+		);
+	}
 });
 
 /**
