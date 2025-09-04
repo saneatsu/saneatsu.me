@@ -314,9 +314,10 @@ articlesRoute.openapi(listArticlesRoute, async (c) => {
 						: desc(articleTranslations.title);
 				break;
 			case "viewCount":
-				// 一時的にviewCountソートは無効化
 				orderByClause =
-					order === "asc" ? asc(articles.createdAt) : desc(articles.createdAt);
+					order === "asc"
+						? asc(articleTranslations.viewCount)
+						: desc(articleTranslations.viewCount);
 				break;
 			case "publishedAt":
 				orderByClause =
@@ -345,7 +346,7 @@ articlesRoute.openapi(listArticlesRoute, async (c) => {
 				updatedAt: articles.updatedAt,
 				title: articleTranslations.title,
 				content: articleTranslations.content,
-				viewCount: sql<number>`0`, // 一時的に固定値（後でサブクエリを復元予定）
+				viewCount: sql<number>`COALESCE(${articleTranslations.viewCount}, 0)`,
 			})
 			.from(articles)
 			.leftJoin(

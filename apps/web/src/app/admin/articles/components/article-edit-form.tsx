@@ -115,15 +115,11 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 	 * フォーム送信処理
 	 */
 	const onSubmit = async (data: ArticleEditForm) => {
-		if (selectedTagIds.length === 0) {
-			alert("少なくとも1つのタグを選択してください");
-			return;
-		}
-
 		await updateMutation.mutateAsync({
 			id: article.id,
 			data: {
 				...data,
+				// 常にtagIdsを送信（空配列でも送信）
 				tagIds: selectedTagIds,
 			},
 		});

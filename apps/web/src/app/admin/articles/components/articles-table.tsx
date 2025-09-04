@@ -36,7 +36,7 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 	});
 
 	const [sort, setSort] = useState<DataTableSort>({
-		key: "createdAt",
+		key: "updatedAt",
 		direction: "desc",
 	});
 	const [filters, setFilters] = useState<ArticleFilters>({

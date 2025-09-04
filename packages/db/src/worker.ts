@@ -23,9 +23,12 @@ type DatabaseEnv = {
  * @returns Drizzle ORMインスタンス
  */
 export function createDatabaseClient(env: DatabaseEnv) {
+	// ローカルファイルの場合は認証トークンを省略
+	const isLocalFile = env.TURSO_DATABASE_URL?.startsWith("file:");
+
 	const client = createClient({
 		url: env.TURSO_DATABASE_URL,
-		authToken: env.TURSO_AUTH_TOKEN,
+		authToken: isLocalFile ? undefined : env.TURSO_AUTH_TOKEN,
 	});
 
 	return drizzle(client, { schema });

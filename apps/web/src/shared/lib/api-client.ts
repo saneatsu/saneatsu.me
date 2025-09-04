@@ -27,14 +27,13 @@ function getServiceBinding() {
 
 /**
  * APIのベースURL
- * 開発環境では相対パスを使用
- * 本番環境では環境変数から取得、またはデフォルト値を使用
+ * 環境変数から取得（必須）
  */
-const API_BASE_URL =
-	process.env.NEXT_PUBLIC_API_URL ||
-	(typeof window !== "undefined" && window.location.hostname === "saneatsu.me"
-		? "https://api.saneatsu.me"
-		: "");
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
+if (!API_BASE_URL) {
+	throw new Error("NEXT_PUBLIC_API_URL environment variable is not set");
+}
 
 /**
  * Hono Clientの初期化

@@ -33,7 +33,7 @@ export const useUpdate = () => {
 				content: string;
 				status: "draft" | "published" | "archived";
 				publishedAt?: string;
-				tagIds: number[];
+				tagIds?: number[];
 			};
 		}) => {
 			const response = await honoClient.api.articles[":id"].$put({

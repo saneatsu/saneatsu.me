@@ -2,8 +2,10 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 import { useCheckSlug, useCreate } from "../../../../entities/article/api";
 import { useDebounce } from "../../../../shared/hooks/use-debounce";
@@ -51,6 +53,7 @@ type ArticleNewForm = z.infer<typeof articleNewSchema>;
  */
 export function ArticleNewForm() {
 	const [markdownValue, setMarkdownValue] = useState("");
+	const router = useRouter();
 
 	const {
 		register,
@@ -116,15 +119,15 @@ export function ArticleNewForm() {
 			});
 
 			console.log("記事作成成功:", response);
-			alert(`記事「${response.data.title}」が作成されました！`);
+			toast.success(`記事「${response.data.title}」が作成されました！`);
 
-			// TODO: 記事一覧ページにリダイレクト
-			// router.push("/admin/articles");
+			// 記事一覧ページにリダイレクト
+			router.push("/admin/articles");
 		} catch (error) {
 			console.error("記事作成エラー:", error);
 			const errorMessage =
 				error instanceof Error ? error.message : "記事の作成に失敗しました";
-			alert(`記事の作成に失敗しました: ${errorMessage}`);
+			toast.error(`記事の作成に失敗しました: ${errorMessage}`);
 		}
 	};
 
@@ -261,7 +264,11 @@ export function ArticleNewForm() {
 
 			{/* 送信ボタン */}
 			<div className="flex justify-end space-x-4">
-				<Button type="button" variant="outline">
+				<Button
+					type="button"
+					variant="outline"
+					onClick={() => router.push("/admin/articles")}
+				>
 					キャンセル
 				</Button>
 				<Button type="submit" disabled={createArticleMutation.isPending}>

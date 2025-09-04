@@ -113,11 +113,11 @@ const ArticleUpdateSchema = z.object({
 	}),
 	tagIds: z
 		.array(z.number().int())
-		.min(1, "少なくとも1つのタグIDが必要です")
 		.max(10, "タグIDは最大10個まで")
+		.optional()
 		.openapi({
 			example: [1, 2, 3],
-			description: "記事に関連付けるタグのID配列（1-10個）",
+			description: "記事に関連付けるタグのID配列（最大10個、省略可能）",
 		}),
 });
 
