@@ -1,6 +1,7 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { honoClient } from "../../../../shared/lib/hono-client";
 import { queryKeys } from "../../../../shared/lib/query-keys";
 
@@ -62,7 +63,14 @@ export function useUpdateStatus() {
 
 			return response.json();
 		},
-		onSuccess: () => {
+		onSuccess: (_data, variables) => {
+			const statusText =
+				variables.status === "published"
+					? "公開"
+					: variables.status === "draft"
+						? "下書き"
+						: "アーカイブ";
+			toast.success(`記事のステータスを「${statusText}」に変更しました`);
 			// 記事一覧のキャッシュを無効化
 			queryClient.invalidateQueries({
 				queryKey: queryKeys.article.all(),
@@ -70,6 +78,11 @@ export function useUpdateStatus() {
 		},
 		onError: (error) => {
 			console.error("Failed to update article status:", error);
+			toast.error(
+				error instanceof Error
+					? error.message
+					: "記事ステータスの更新に失敗しました"
+			);
 		},
 	});
 }

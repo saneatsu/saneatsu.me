@@ -2,6 +2,7 @@
 
 import { Edit, Eye, FileEdit, MoreHorizontal, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { useDelete, useUpdateStatus } from "../../../../entities/article/api";
 import type { Article } from "../../../../shared/types/article";
 import {
@@ -103,6 +104,7 @@ export function ArticleActions({ article, onAction }: ArticleActionsProps) {
 	const executeDelete = async () => {
 		try {
 			await deleteArticleMutation.mutateAsync(article.id);
+			toast.success(`記事「${article.title || article.slug}」を削除しました`);
 			onAction?.();
 			setDeleteConfirmDialog(false);
 		} catch (error) {
