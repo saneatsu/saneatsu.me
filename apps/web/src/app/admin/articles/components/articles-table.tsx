@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
 import { useState } from "react";
 import { useGetAllArticles } from "../../../../entities/article/api/use-get-all";
@@ -33,11 +34,13 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 		limit: parseAsInteger.withDefault(50),
 		status: parseAsString.withDefault("all"),
 		search: parseAsString.withDefault(""),
+		sortBy: parseAsString.withDefault("updatedAt"),
+		sortOrder: parseAsString.withDefault("desc"),
 	});
 
 	const [sort, setSort] = useState<DataTableSort>({
-		key: "updatedAt",
-		direction: "desc",
+		key: urlQuery.sortBy as string,
+		direction: urlQuery.sortOrder as "asc" | "desc",
 	});
 	const [filters, setFilters] = useState<ArticleFilters>({
 		status: urlQuery.status as ArticleFilters["status"],
@@ -91,7 +94,11 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 	const handleSortChange = (newSort: DataTableSort) => {
 		setSort(newSort);
 		// ソートが変更されたら1ページ目に戻る
-		setUrlQuery({ page: 1 });
+		setUrlQuery({
+			page: 1,
+			sortBy: newSort.key,
+			sortOrder: newSort.direction,
+		});
 	};
 
 	/**
@@ -167,7 +174,12 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 			className: "min-w-[200px]",
 			render: (article) => (
 				<div className="space-y-1">
-					<div className="font-medium">{article.title || "タイトルなし"}</div>
+					<Link
+						href={`/admin/articles/${article.id}/edit`}
+						className="font-medium hover:text-blue-600 hover:underline transition-colors inline-block"
+					>
+						{article.title || "タイトルなし"}
+					</Link>
 					<div className="text-sm text-muted-foreground">
 						スラッグ: {article.slug}
 					</div>

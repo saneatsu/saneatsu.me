@@ -9,6 +9,15 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { useCheckSlug, useCreate } from "../../../../entities/article/api";
 import { useDebounce } from "../../../../shared/hooks/use-debounce";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "../../../../shared/ui/alert-dialog/alert-dialog";
 import { ArticleMarkdownEditor } from "../../../../shared/ui/article-markdown-editor";
 import { Button } from "../../../../shared/ui/button/button";
 import { Input } from "../../../../shared/ui/input/input";
@@ -53,6 +62,7 @@ type ArticleNewForm = z.infer<typeof articleNewSchema>;
  */
 export function ArticleNewForm() {
 	const [markdownValue, setMarkdownValue] = useState("");
+	const [showSlugErrorDialog, setShowSlugErrorDialog] = useState(false);
 	const router = useRouter();
 
 	const {
@@ -97,7 +107,7 @@ export function ArticleNewForm() {
 	const onSubmit = async (data: ArticleNewForm) => {
 		// スラッグエラーがある場合は送信しない
 		if (slugError) {
-			alert("スラッグにエラーがあります。修正してから送信してください。");
+			setShowSlugErrorDialog(true);
 			return;
 		}
 
@@ -140,144 +150,168 @@ export function ArticleNewForm() {
 	};
 
 	return (
-		<form onSubmit={handleSubmit(onSubmit)} className="space-y-8 max-w-4xl">
-			{/* タイトル */}
-			<div className="space-y-2">
-				<Label htmlFor="title" className="required">
-					タイトル
-				</Label>
-				<Input
-					id="title"
-					{...register("title")}
-					placeholder="記事のタイトルを入力してください"
-					className={errors.title ? "border-destructive" : ""}
-				/>
-				{errors.title && (
-					<p className="text-sm text-destructive">{errors.title.message}</p>
-				)}
-			</div>
-
-			{/* スラッグ */}
-			<div className="space-y-2">
-				<Label htmlFor="slug" className="required">
-					スラッグ
-					{slugChecking && (
-						<span className="ml-2 text-sm text-muted-foreground">
-							確認中...
-						</span>
-					)}
-				</Label>
-				<div className="relative">
+		<>
+			<form onSubmit={handleSubmit(onSubmit)} className="space-y-8 max-w-4xl">
+				{/* タイトル */}
+				<div className="space-y-2">
+					<Label htmlFor="title" className="required">
+						タイトル
+					</Label>
 					<Input
-						id="slug"
-						{...register("slug")}
-						placeholder="url-friendly-slug"
-						className={
-							errors.slug || slugError
-								? "border-destructive"
-								: slugChecking
-									? "border-blue-300"
-									: ""
-						}
+						id="title"
+						{...register("title")}
+						placeholder="記事のタイトルを入力してください"
+						className={errors.title ? "border-destructive" : ""}
 					/>
-					{slugChecking && (
-						<Loader2 className="absolute right-3 top-3 h-4 w-4 animate-spin text-muted-foreground" />
+					{errors.title && (
+						<p className="text-sm text-destructive">{errors.title.message}</p>
 					)}
 				</div>
-				{errors.slug && (
-					<p className="text-sm text-destructive">{errors.slug.message}</p>
-				)}
-				{slugError && <p className="text-sm text-destructive">{slugError}</p>}
-				{!errors.slug && !slugError && debouncedSlug && !slugChecking && (
-					<p className="text-sm text-green-600">✓ このスラッグは利用可能です</p>
-				)}
-				<p className="text-sm text-muted-foreground">
-					記事のURLに使用されます（小文字の英数字とハイフンのみ）
-				</p>
-			</div>
 
-			{/* ステータス */}
-			<div className="space-y-2">
-				<Label className="required">公開ステータス</Label>
-				<RadioGroup
-					defaultValue="draft"
-					onValueChange={(value) =>
-						setValue("status", value as "draft" | "published")
-					}
-				>
-					<div className="flex items-center space-x-2">
-						<RadioGroupItem value="draft" id="draft" />
-						<Label htmlFor="draft">下書き</Label>
-					</div>
-					<div className="flex items-center space-x-2">
-						<RadioGroupItem value="published" id="published" />
-						<Label htmlFor="published">公開</Label>
-					</div>
-				</RadioGroup>
-				{errors.status && (
-					<p className="text-sm text-destructive">{errors.status.message}</p>
-				)}
-			</div>
-
-			{/* 公開日時（公開時のみ表示） */}
-			{watch("status") === "published" && (
+				{/* スラッグ */}
 				<div className="space-y-2">
-					<Label htmlFor="publishedAt">公開日時</Label>
+					<Label htmlFor="slug" className="required">
+						スラッグ
+						{slugChecking && (
+							<span className="ml-2 text-sm text-muted-foreground">
+								確認中...
+							</span>
+						)}
+					</Label>
 					<div className="relative">
 						<Input
-							id="publishedAt"
-							type="datetime-local"
-							{...register("publishedAt")}
+							id="slug"
+							{...register("slug")}
+							placeholder="url-friendly-slug"
+							className={
+								errors.slug || slugError
+									? "border-destructive"
+									: slugChecking
+										? "border-blue-300"
+										: ""
+							}
 						/>
-						<CalendarIcon className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+						{slugChecking && (
+							<Loader2 className="absolute right-3 top-3 h-4 w-4 animate-spin text-muted-foreground" />
+						)}
 					</div>
-				</div>
-			)}
-
-			{/* 記事内容 */}
-			<div className="space-y-2">
-				<Label htmlFor="content" className="required">
-					本文（Markdown形式）
-				</Label>
-				<div
-					className={
-						errors.content ? "border border-destructive rounded-md" : ""
-					}
-				>
-					<ArticleMarkdownEditor
-						value={markdownValue}
-						onChange={handleEditorChange}
-						setValue={setValue as (name: string, value: string) => void}
-						height={500}
-						preview="live"
-						language="ja"
-					/>
-				</div>
-				{errors.content && (
-					<p className="text-sm text-destructive">{errors.content.message}</p>
-				)}
-				<p className="text-sm text-muted-foreground">
-					日本語で入力してください。保存時に自動的に他の言語に翻訳されます。Ctrl+Shift+P（Mac:
-					Cmd+Shift+P）でプレビューモードを切り替えできます。[[で他の記事へのリンクを挿入できます。
-				</p>
-			</div>
-
-			{/* 送信ボタン */}
-			<div className="flex justify-end space-x-4">
-				<Button
-					type="button"
-					variant="outline"
-					onClick={() => router.push("/admin/articles")}
-				>
-					キャンセル
-				</Button>
-				<Button type="submit" disabled={createArticleMutation.isPending}>
-					{createArticleMutation.isPending && (
-						<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+					{errors.slug && (
+						<p className="text-sm text-destructive">{errors.slug.message}</p>
 					)}
-					{createArticleMutation.isPending ? "作成中..." : "記事を作成"}
-				</Button>
-			</div>
-		</form>
+					{slugError && <p className="text-sm text-destructive">{slugError}</p>}
+					{!errors.slug && !slugError && debouncedSlug && !slugChecking && (
+						<p className="text-sm text-green-600">
+							✓ このスラッグは利用可能です
+						</p>
+					)}
+					<p className="text-sm text-muted-foreground">
+						記事のURLに使用されます（小文字の英数字とハイフンのみ）
+					</p>
+				</div>
+
+				{/* ステータス */}
+				<div className="space-y-2">
+					<Label className="required">公開ステータス</Label>
+					<RadioGroup
+						defaultValue="draft"
+						onValueChange={(value) =>
+							setValue("status", value as "draft" | "published")
+						}
+					>
+						<div className="flex items-center space-x-2">
+							<RadioGroupItem value="draft" id="draft" />
+							<Label htmlFor="draft">下書き</Label>
+						</div>
+						<div className="flex items-center space-x-2">
+							<RadioGroupItem value="published" id="published" />
+							<Label htmlFor="published">公開</Label>
+						</div>
+					</RadioGroup>
+					{errors.status && (
+						<p className="text-sm text-destructive">{errors.status.message}</p>
+					)}
+				</div>
+
+				{/* 公開日時（公開時のみ表示） */}
+				{watch("status") === "published" && (
+					<div className="space-y-2">
+						<Label htmlFor="publishedAt">公開日時</Label>
+						<div className="relative">
+							<Input
+								id="publishedAt"
+								type="datetime-local"
+								{...register("publishedAt")}
+							/>
+							<CalendarIcon className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+						</div>
+					</div>
+				)}
+
+				{/* 記事内容 */}
+				<div className="space-y-2">
+					<Label htmlFor="content" className="required">
+						本文（Markdown形式）
+					</Label>
+					<div
+						className={
+							errors.content ? "border border-destructive rounded-md" : ""
+						}
+					>
+						<ArticleMarkdownEditor
+							value={markdownValue}
+							onChange={handleEditorChange}
+							setValue={setValue as (name: string, value: string) => void}
+							height={500}
+							preview="live"
+							language="ja"
+						/>
+					</div>
+					{errors.content && (
+						<p className="text-sm text-destructive">{errors.content.message}</p>
+					)}
+					<p className="text-sm text-muted-foreground">
+						日本語で入力してください。保存時に自動的に他の言語に翻訳されます。Ctrl+Shift+P（Mac:
+						Cmd+Shift+P）でプレビューモードを切り替えできます。[[で他の記事へのリンクを挿入できます。
+					</p>
+				</div>
+
+				{/* 送信ボタン */}
+				<div className="flex justify-end space-x-4">
+					<Button
+						type="button"
+						variant="outline"
+						onClick={() => router.push("/admin/articles")}
+					>
+						キャンセル
+					</Button>
+					<Button type="submit" disabled={createArticleMutation.isPending}>
+						{createArticleMutation.isPending && (
+							<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+						)}
+						{createArticleMutation.isPending ? "作成中..." : "記事を作成"}
+					</Button>
+				</div>
+			</form>
+
+			{/* スラッグエラーダイアログ */}
+			<AlertDialog
+				open={showSlugErrorDialog}
+				onOpenChange={setShowSlugErrorDialog}
+			>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>スラッグエラー</AlertDialogTitle>
+						<AlertDialogDescription>
+							スラッグにエラーがあります。修正してから送信してください。
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogAction onClick={() => setShowSlugErrorDialog(false)}>
+							OK
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
+		</>
 	);
 }
