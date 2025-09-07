@@ -30,6 +30,4 @@ export const articleTags = sqliteTable("article_tags", {
 	tagId: integer("tag_id")
 		.notNull()
 		.references(() => tags.id, { onDelete: "cascade" }),
-	/** 作成日時 */
-	createdAt: text("created_at").notNull().default(sql`(datetime('now'))`),
 });
