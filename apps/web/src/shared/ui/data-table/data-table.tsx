@@ -110,8 +110,15 @@ export function DataTable<T>({
 	const handleSort = (columnKey: string) => {
 		if (!onSortChange) return;
 
-		const newDirection =
-			sort?.key === columnKey && sort.direction === "asc" ? "desc" : "asc";
+		let newDirection: "asc" | "desc";
+
+		if (sort?.key === columnKey) {
+			// 同じカラムをクリックした場合：現在の逆順にする
+			newDirection = sort.direction === "asc" ? "desc" : "asc";
+		} else {
+			// 別のカラムをクリックした場合：降順から始める
+			newDirection = "desc";
+		}
 
 		onSortChange({
 			key: columnKey,
