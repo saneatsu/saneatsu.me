@@ -391,8 +391,14 @@ export function useKeyboardShortcuts({
 			}
 
 			// 括弧の自動補完処理
-			// 開き括弧が入力された場合
-			if (bracketPairs[e.key] && !e.ctrlKey && !e.metaKey && !e.altKey) {
+			// 開き括弧が入力された場合（Shiftキーが押されている場合は除外）
+			if (
+				bracketPairs[e.key] &&
+				!e.ctrlKey &&
+				!e.metaKey &&
+				!e.altKey &&
+				!e.shiftKey
+			) {
 				e.preventDefault();
 
 				const start = textarea.selectionStart;

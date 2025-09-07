@@ -28,6 +28,8 @@ export function ArticlesList({ limit }: ArticlesListProps) {
 		language: locale as "ja" | "en",
 		limit: limit || 10,
 		status: "published",
+		sortBy: "updatedAt",
+		sortOrder: "desc",
 	});
 
 	const articles = articlesResponse?.data || [];

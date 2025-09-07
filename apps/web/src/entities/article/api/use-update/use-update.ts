@@ -9,6 +9,13 @@ type ErrorResponse = {
 	};
 };
 
+type ValidationError = {
+	code: string;
+	format?: string;
+	path: string[];
+	message: string;
+};
+
 /**
  * 記事更新用フック
  *
@@ -42,9 +49,25 @@ export const useUpdate = () => {
 			});
 
 			if (!response.ok) {
-				const error = await response.json();
+				const errorData = await response.json();
+
+				// Zodバリデーションエラーの配列形式をチェック
+				if (Array.isArray(errorData)) {
+					const validationErrors = errorData as ValidationError[];
+					const errorMessages = validationErrors.map((err) => {
+						const fieldName = err.path.join(".");
+						if (fieldName === "publishedAt") {
+							return "公開日時の形式が正しくありません";
+						}
+						return `${fieldName}: ${err.message}`;
+					});
+					throw new Error(errorMessages.join(", "));
+				}
+
+				// 従来のエラー形式
+				const errorResponse = errorData as ErrorResponse;
 				throw new Error(
-					(error as ErrorResponse).error?.message || "記事の更新に失敗しました"
+					errorResponse.error?.message || "記事の更新に失敗しました"
 				);
 			}
 

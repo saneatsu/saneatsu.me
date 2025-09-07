@@ -69,6 +69,7 @@ interface ArticleEditFormProps {
  */
 export function ArticleEditForm({ article }: ArticleEditFormProps) {
 	const [markdownValue, setMarkdownValue] = useState(article.content || "");
+	const [formError, setFormError] = useState<string>("");
 
 	const {
 		register,
@@ -115,14 +116,33 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 	 * フォーム送信処理
 	 */
 	const onSubmit = async (data: ArticleEditForm) => {
-		await updateMutation.mutateAsync({
-			id: article.id,
-			data: {
-				...data,
-				// 常にtagIdsを送信（空配列でも送信）
-				tagIds: selectedTagIds,
-			},
-		});
+		try {
+			setFormError(""); // エラーメッセージをクリア
+
+			// publishedAtがある場合、ISO 8601形式に変換
+			let publishedAtISO: string | undefined = data.publishedAt;
+			if (data.publishedAt && data.status === "published") {
+				// datetime-local形式(YYYY-MM-DDTHH:mm)をISO形式に変換
+				publishedAtISO = new Date(data.publishedAt).toISOString();
+			}
+
+			await updateMutation.mutateAsync({
+				id: article.id,
+				data: {
+					...data,
+					publishedAt: publishedAtISO,
+					// 常にtagIdsを送信（空配列でも送信）
+					tagIds: selectedTagIds,
+				},
+			});
+		} catch (error) {
+			// エラーメッセージをフォーム上部に表示
+			if (error instanceof Error) {
+				setFormError(error.message);
+			} else {
+				setFormError("記事の更新中にエラーが発生しました");
+			}
+		}
 	};
 
 	/**
@@ -135,6 +155,16 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 
 	return (
 		<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+			{/* エラーメッセージ */}
+			{formError && (
+				<div className="p-4 border border-destructive/50 bg-destructive/10 rounded-md">
+					<p className="text-sm text-destructive font-medium">
+						エラーが発生しました
+					</p>
+					<p className="text-sm text-destructive mt-1">{formError}</p>
+				</div>
+			)}
+
 			{/* タイトル */}
 			<div className="space-y-2">
 				<Label htmlFor="title">タイトル *</Label>
