@@ -1,4 +1,4 @@
-import { ArticleDetailWrapper } from "../../../../views/article-detail/ui/article-detail-wrapper";
+import { ArticleDetailWrapper } from "../../../../views";
 
 interface ArticlePageProps {
 	params: Promise<{
