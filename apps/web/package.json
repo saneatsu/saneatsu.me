@@ -6,7 +6,7 @@
 	"scripts": {
 		"build": "next build",
 		"build:cloudflare": "npx @opennextjs/cloudflare build",
-		"dev": "next dev -p 3333",
+		"dev": "CHOKIDAR_USEPOLLING=true WATCHPACK_POLLING=true next dev -p 3333",
 		"start": "next start -p 3333",
 		"deploy": "wrangler deploy",
 		"deploy:dev": "wrangler deploy --env development",
@@ -50,6 +50,7 @@
 		"@saneatsu/schemas": "workspace:*",
 		"@tanstack/react-query": "^5.83.0",
 		"@tanstack/react-query-devtools": "^5.83.0",
+		"@tanstack/react-table": "^8.21.3",
 		"@types/unist": "^3.0.3",
 		"@uiw/react-md-editor": "^4.0.8",
 		"class-variance-authority": "^0.7.1",

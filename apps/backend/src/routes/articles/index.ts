@@ -545,6 +545,7 @@ articlesRoute.openapi(getArticleRoute, async (c) => {
 				id: articles.id,
 				slug: articles.slug,
 				cfImageId: articles.cfImageId,
+				authorId: articles.authorId,
 				status: articles.status,
 				publishedAt: articles.publishedAt,
 				updatedAt: articles.updatedAt,
@@ -590,8 +591,16 @@ articlesRoute.openapi(getArticleRoute, async (c) => {
 			);
 		}
 
-		// 3. 閲覧数をインクリメント（公開済み記事のみ）
-		if (articleData.translationId) {
+		// 3. 現在のログインユーザーを取得（将来的には認証から取得）
+		// TODO: 認証システムが実装されたら、認証情報からユーザーIDを取得する
+		const currentUserEmail = "nito.tech.official@gmail.com"; // 仮のログインユーザー
+		const { getUserByEmail } = await import("../auth/service");
+		const currentUser = await getUserByEmail(db, currentUserEmail);
+
+		// 4. 閲覧数をインクリメント（公開済み記事かつ作者以外の場合のみ）
+		const isAuthor = currentUser && articleData.authorId === currentUser.id;
+
+		if (articleData.translationId && !isAuthor) {
 			await db
 				.update(articleTranslations)
 				.set({
@@ -603,7 +612,7 @@ articlesRoute.openapi(getArticleRoute, async (c) => {
 			articleData.viewCount = (articleData.viewCount || 0) + 1;
 		}
 
-		// 4. Wiki Linkをコンテンツ内で変換
+		// 5. Wiki Linkをコンテンツ内で変換
 		const convertedContent = articleData.content
 			? await convertWikiLinks(db, articleData.content, lang)
 			: articleData.content;
@@ -889,6 +898,12 @@ articlesRoute.openapi(createArticleRoute, async (c) => {
 		const now = new Date().toISOString();
 		const finalPublishedAt = status === "published" ? publishedAt || now : null;
 
+		// 作者IDを取得（現在はハードコードされた管理者メール、将来的には認証から取得）
+		// TODO: 認証システムが実装されたら、認証情報から作者IDを取得する
+		const authorEmail = "nito.tech.official@gmail.com";
+		const { getUserByEmail } = await import("../auth/service");
+		const author = await getUserByEmail(db, authorEmail);
+
 		const [newArticle] = await db
 			.insert(articles)
 			.values({
@@ -896,6 +911,7 @@ articlesRoute.openapi(createArticleRoute, async (c) => {
 				status,
 				publishedAt: finalPublishedAt,
 				cfImageId: null, // 現在は画像なし
+				authorId: author?.id || null, // 作者IDを設定
 				createdAt: now,
 				updatedAt: now,
 			})

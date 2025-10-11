@@ -24,7 +24,17 @@ vi.mock("@saneatsu/db/worker", () => ({
 	articleTranslations: {},
 	articleTags: {},
 	tags: {},
+	users: {},
 	createDatabaseClient: vi.fn(),
+}));
+
+// getUserByEmail関数をモック
+vi.mock("../auth/service", () => ({
+	getUserByEmail: vi.fn().mockResolvedValue({
+		id: "user123",
+		email: "nito.tech.official@gmail.com",
+		name: "Test User",
+	}),
 }));
 
 describe("GET /articles", () => {
