@@ -125,7 +125,7 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 	return (
 		<div className="space-y-4">
 			{/* フィルター */}
-			<div className="flex items-center gap-2">
+			<div className="flex items-center gap-2 py-4">
 				<Input
 					placeholder="タイトルで検索..."
 					value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
@@ -139,6 +139,7 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 						column={table.getColumn("status")}
 						title="ステータス"
 						options={articleStatusOptions}
+						multiple={true}
 					/>
 				)}
 			</div>

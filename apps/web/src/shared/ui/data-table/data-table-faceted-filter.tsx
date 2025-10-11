@@ -1,8 +1,9 @@
 "use client";
 
 import type { Column } from "@tanstack/react-table";
-import { Check, PlusCircle } from "lucide-react";
+import { Check, PlusCircle, XCircle } from "lucide-react";
 import type * as React from "react";
+import { useCallback, useState } from "react";
 import { cn } from "../../lib/utils";
 import { Badge } from "../badge/badge";
 import { Button } from "../button/button";
@@ -28,6 +29,10 @@ export interface DataTableFacetedFilterOption {
 	value: string;
 	/** アイコン（オプショナル） */
 	icon?: React.ComponentType<{ className?: string }>;
+	/** 件数表示（オプショナル） */
+	count?: number;
+	/** バッジのvariant（オプショナル） */
+	variant?: "default" | "secondary" | "destructive" | "outline";
 }
 
 /**
@@ -40,6 +45,8 @@ interface DataTableFacetedFilterProps<TData, TValue> {
 	title?: string;
 	/** フィルターオプションリスト */
 	options: DataTableFacetedFilterOption[];
+	/** 複数選択を許可するか（デフォルト: true） */
+	multiple?: boolean;
 }
 
 /**
@@ -72,15 +79,79 @@ export function DataTableFacetedFilter<TData, TValue>({
 	column,
 	title,
 	options,
+	multiple = true,
 }: DataTableFacetedFilterProps<TData, TValue>) {
-	const facets = column?.getFacetedUniqueValues();
-	const selectedValues = new Set(column?.getFilterValue() as string[]);
+	const [open, setOpen] = useState(false);
+
+	const columnFilterValue = column?.getFilterValue();
+	const selectedValues = new Set(
+		Array.isArray(columnFilterValue) ? columnFilterValue : []
+	);
+
+	/**
+	 * アイテム選択時のコールバック
+	 *
+	 * 1. 複数選択モード: 選択状態をトグル
+	 * 2. 単一選択モード: 選択してPopoverを閉じる
+	 */
+	const onItemSelect = useCallback(
+		(option: DataTableFacetedFilterOption, isSelected: boolean) => {
+			if (!column) return;
+
+			if (multiple) {
+				const newSelectedValues = new Set(selectedValues);
+				if (isSelected) {
+					newSelectedValues.delete(option.value);
+				} else {
+					newSelectedValues.add(option.value);
+				}
+				const filterValues = Array.from(newSelectedValues);
+				column.setFilterValue(filterValues.length ? filterValues : undefined);
+			} else {
+				column.setFilterValue(isSelected ? undefined : [option.value]);
+				setOpen(false);
+			}
+		},
+		[column, multiple, selectedValues]
+	);
+
+	/**
+	 * フィルターリセット時のコールバック
+	 *
+	 * イベント伝播を停止して、親要素のクリックイベントを防ぐ
+	 */
+	const onReset = useCallback(
+		(event?: React.MouseEvent) => {
+			event?.stopPropagation();
+			column?.setFilterValue(undefined);
+		},
+		[column]
+	);
 
 	return (
-		<Popover>
+		<Popover open={open} onOpenChange={setOpen}>
 			<PopoverTrigger asChild>
 				<Button variant="outline" size="sm" className="h-8 border-dashed">
-					<PlusCircle className="mr-2 h-4 w-4" />
+					{selectedValues?.size > 0 ? (
+						// biome-ignore lint/a11y/useSemanticElements: PopoverTrigger内のカスタムクリアボタンコンポーネント
+						<div
+							role="button"
+							aria-label={`Clear ${title} filter`}
+							tabIndex={0}
+							onClick={onReset}
+							onKeyDown={(e) => {
+								if (e.key === "Enter" || e.key === " ") {
+									e.preventDefault();
+									onReset();
+								}
+							}}
+							className="mr-2 h-4 w-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+						>
+							<XCircle className="h-4 w-4" />
+						</div>
+					) : (
+						<PlusCircle className="mr-2 h-4 w-4" />
+					)}
 					{title}
 					{selectedValues?.size > 0 && (
 						<>
@@ -128,17 +199,8 @@ export function DataTableFacetedFilter<TData, TValue>({
 								return (
 									<CommandItem
 										key={option.value}
-										onSelect={() => {
-											if (isSelected) {
-												selectedValues.delete(option.value);
-											} else {
-												selectedValues.add(option.value);
-											}
-											const filterValues = Array.from(selectedValues);
-											column?.setFilterValue(
-												filterValues.length ? filterValues : undefined
-											);
-										}}
+										onSelect={() => onItemSelect(option, isSelected)}
+										className="cursor-pointer"
 									>
 										<div
 											className={cn(
@@ -153,10 +215,16 @@ export function DataTableFacetedFilter<TData, TValue>({
 										{option.icon && (
 											<option.icon className="mr-2 h-4 w-4 text-muted-foreground" />
 										)}
-										<span>{option.label}</span>
-										{facets?.get(option.value) && (
-											<span className="ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs">
-												{facets.get(option.value)}
+										{option.variant ? (
+											<Badge variant={option.variant} className="truncate">
+												{option.label}
+											</Badge>
+										) : (
+											<span className="truncate">{option.label}</span>
+										)}
+										{option.count !== undefined && (
+											<span className="ml-auto font-mono text-xs">
+												{option.count}
 											</span>
 										)}
 									</CommandItem>
@@ -168,8 +236,8 @@ export function DataTableFacetedFilter<TData, TValue>({
 								<CommandSeparator />
 								<CommandGroup>
 									<CommandItem
-										onSelect={() => column?.setFilterValue(undefined)}
-										className="justify-center text-center"
+										onSelect={() => onReset()}
+										className="cursor-pointer justify-center text-center"
 									>
 										クリア
 									</CommandItem>
