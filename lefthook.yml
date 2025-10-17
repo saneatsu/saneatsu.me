@@ -9,17 +9,17 @@ pre-commit:
     - name: biome
       run: pnpm exec biome check --write --no-errors-on-unmatched {staged_files}
       glob: "*.{js,jsx,ts,tsx,mjs,cjs,json,md,yml,yaml}"
-      
+
     # TypeScriptの型チェック
     - name: type-check
       run: pnpm type-check
       # 型チェックは全体を対象にするため、staged_filesは使わない
-    
+
     # apps/backendのVitestを実行
     - name: backend-test
       run: cd apps/backend && pnpm test run
       # test runでwatchモードを無効化
-    
+
     # apps/webのVitestを実行
     - name: web-test
       run: cd apps/web && pnpm test run
