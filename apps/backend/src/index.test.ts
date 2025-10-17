@@ -73,7 +73,7 @@ describe("Unit Test", () => {
 
 			expect(data).toMatchObject({
 				status: "ok",
-				service: "saneatsu-blog-api",
+				service: "saneatsu-me-api",
 				database: {
 					url: "file:./test.db",
 					hasToken: true,
@@ -164,7 +164,7 @@ describe("Integration Test", () => {
 			const data = await res.json();
 			// ヘルスチェックのレスポンスが正しい形式であることを確認
 			expect(data).toHaveProperty("status", "ok");
-			expect(data).toHaveProperty("service", "saneatsu-blog-api");
+			expect(data).toHaveProperty("service", "saneatsu-me-api");
 			expect(data).toHaveProperty("timestamp");
 			expect(data).toHaveProperty("database");
 		});

@@ -25,12 +25,7 @@ app.use("*", logger());
 app.use(
 	"*",
 	cors({
-		origin: [
-			"http://localhost:3000",
-			"http://localhost:3210",
-			"http://localhost:3333",
-			"https://saneatsu.me",
-		],
+		origin: ["http://localhost:3333", "https://saneatsu.me"],
 		credentials: true,
 		allowMethods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
 		allowHeaders: ["Content-Type", "Authorization"],
@@ -43,7 +38,7 @@ app.get("/api/health", (c) => {
 	return c.json({
 		status: "ok",
 		timestamp: new Date().toISOString(),
-		service: "saneatsu-blog-api",
+		service: "saneatsu-me-api",
 		database: {
 			url: process.env.TURSO_DATABASE_URL,
 			hasToken: !!process.env.TURSO_AUTH_TOKEN,
