@@ -1,0 +1,226 @@
+import { testClient } from "hono/testing";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { articlesRoute } from "@/routes/articles";
+import { createMockArticleWithTranslation } from "@/utils/vitest";
+import { setupDbMocks } from "@/utils/drizzle-test";
+
+// モック設定
+vi.mock("@saneatsu/db/worker", () => ({
+	articles: {},
+	articleTranslations: {},
+	articleTags: {},
+	tags: {},
+	users: {},
+	createDatabaseClient: vi.fn(),
+}));
+
+describe("GET /articles/admin/:id - 管理画面用記事詳細取得", () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
+
+	it("記事詳細を正常に取得する（タグ情報も含む）", async () => {
+		// Arrange
+		const { mockDb } = setupDbMocks();
+
+		// createDatabaseClient関数がmockDbを返すように設定
+		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		(createDatabaseClient as any).mockReturnValue(mockDb);
+
+		const mockArticle = createMockArticleWithTranslation({
+			article: {
+				id: "1",
+				slug: "test-article",
+				status: "published",
+			},
+			translation: {
+				title: "テスト記事",
+				content: "これはテスト記事の内容です。",
+			},
+		});
+
+		const mockTags = [
+			{ id: 1, slug: "javascript", name: "javascript" },
+			{ id: 2, slug: "typescript", name: "typescript" },
+		];
+
+		// 記事取得のモック
+		const articleMock = {
+			from: vi.fn().mockReturnValue({
+				leftJoin: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([mockArticle]),
+					}),
+				}),
+			}),
+		};
+
+		// タグ取得のモック
+		const tagsMock = {
+			from: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue(mockTags),
+				}),
+			}),
+		};
+
+		mockDb.select
+			.mockReturnValueOnce(articleMock) // 記事取得
+			.mockReturnValueOnce(tagsMock); // タグ取得
+
+		// Act
+		const client = testClient(articlesRoute, {
+			TURSO_DATABASE_URL: "test://test.db",
+			TURSO_AUTH_TOKEN: "test-token",
+		}) as any;
+		const res = await client.admin[":id"].$get({
+			param: { id: "1" },
+			query: {},
+		});
+
+		// Assert
+		expect(res.status).toBe(200);
+		const data = await res.json();
+
+		expect(data).toEqual({
+			data: {
+				...mockArticle,
+				tags: mockTags,
+			},
+		});
+	});
+
+	it("存在しないIDの場合、404エラーを返す", async () => {
+		// Arrange
+		const { mockDb } = setupDbMocks();
+
+		// createDatabaseClient関数がmockDbを返すように設定
+		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		(createDatabaseClient as any).mockReturnValue(mockDb);
+
+		const articleMock = {
+			from: vi.fn().mockReturnValue({
+				leftJoin: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([]),
+					}),
+				}),
+			}),
+		};
+
+		mockDb.select.mockReturnValueOnce(articleMock);
+
+		// Act
+		const client = testClient(articlesRoute, {
+			TURSO_DATABASE_URL: "test://test.db",
+			TURSO_AUTH_TOKEN: "test-token",
+		}) as any;
+		const res = await client.admin[":id"].$get({
+			param: { id: "9999" },
+			query: {},
+		});
+
+		// Assert
+		expect(res.status).toBe(404);
+		const data = await res.json();
+
+		expect(data).toEqual({
+			error: {
+				code: "NOT_FOUND",
+				message: "Article not found",
+			},
+		});
+	});
+
+	it("無効なIDフォーマットの場合、400エラーを返す", async () => {
+		// Arrange
+		const { mockDb } = setupDbMocks();
+
+		// createDatabaseClient関数がmockDbを返すように設定
+		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		(createDatabaseClient as any).mockReturnValue(mockDb);
+
+		// Act
+		const client = testClient(articlesRoute, {
+			TURSO_DATABASE_URL: "test://test.db",
+			TURSO_AUTH_TOKEN: "test-token",
+		}) as any;
+		const res = await client.admin[":id"].$get({
+			param: { id: "invalid" },
+			query: {},
+		});
+
+		// Assert
+		expect(res.status).toBe(400);
+		const data = await res.json();
+
+		expect(data).toEqual({
+			error: {
+				code: "INVALID_ID",
+				message: "Invalid article ID",
+			},
+		});
+	});
+
+	it("下書きステータスの記事も取得できる（管理画面用）", async () => {
+		// Arrange
+		const { mockDb } = setupDbMocks();
+
+		// createDatabaseClient関数がmockDbを返すように設定
+		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		(createDatabaseClient as any).mockReturnValue(mockDb);
+
+		const mockDraftArticle = createMockArticleWithTranslation({
+			article: {
+				id: "1",
+				slug: "draft-article",
+				status: "draft",
+			},
+			translation: {
+				title: "下書き記事",
+				content: "これは下書きの内容です。",
+			},
+		});
+
+		// 記事取得のモック
+		const articleMock = {
+			from: vi.fn().mockReturnValue({
+				leftJoin: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([mockDraftArticle]),
+					}),
+				}),
+			}),
+		};
+
+		// タグ取得のモック（タグなし）
+		const tagsMock = {
+			from: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue([]),
+				}),
+			}),
+		};
+
+		mockDb.select
+			.mockReturnValueOnce(articleMock) // 記事取得
+			.mockReturnValueOnce(tagsMock); // タグ取得
+
+		// Act
+		const client = testClient(articlesRoute, {
+			TURSO_DATABASE_URL: "test://test.db",
+			TURSO_AUTH_TOKEN: "test-token",
+		}) as any;
+		const res = await client.admin[":id"].$get({
+			param: { id: "1" },
+			query: {},
+		});
+
+		// Assert
+		expect(res.status).toBe(200);
+		const data = await res.json();
+
+		expect(data.data.status).toBe("draft");
+		expect(data.data.title).toBe("下書き記事");
+	});
+});
