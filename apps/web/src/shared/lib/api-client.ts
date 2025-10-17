@@ -9,8 +9,8 @@ import type {
 	ArticlesResponse,
 	SlugCheckQuery,
 	SlugCheckResponse,
-} from "../types/article";
-import type { ApiError } from "../types/common";
+} from "../model/article";
+import type { ApiError } from "../model/common";
 
 /**
  * Service Bindingを取得する関数

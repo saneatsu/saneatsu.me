@@ -2,7 +2,7 @@
 
 import { ExternalLink, Eye, TrendingUp } from "lucide-react";
 import Link from "next/link";
-import type { PopularArticle } from "../../../../shared/types/dashboard";
+import type { PopularArticle } from "../../../../shared/model/dashboard";
 import { Badge } from "../../../../shared/ui/badge/badge";
 import {
 	Card,

@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { honoClient } from "../../../../shared/lib/hono-client";
 import { queryKeys } from "../../../../shared/lib/query-keys";
 import type { QueryConfig } from "../../../../shared/lib/react-query";
-import type { SlugCheckResponse } from "../../../../shared/types/article";
+import type { SlugCheckResponse } from "../../../../shared/model/article";
 
 /**
  * スラッグの重複チェックオプション

@@ -2,8 +2,8 @@
 
 import { Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type { ArticleFilters } from "../../../../shared/types/article";
-import { ARTICLE_STATUS_CONFIG } from "../../../../shared/types/article";
+import type { ArticleFilters } from "../../../../shared/model/article";
+import { ARTICLE_STATUS_CONFIG } from "../../../../shared/model/article";
 import { Badge } from "../../../../shared/ui/badge/badge";
 import { Button } from "../../../../shared/ui/button/button";
 import { Input } from "../../../../shared/ui/input/input";

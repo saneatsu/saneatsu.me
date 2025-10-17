@@ -7,7 +7,7 @@ import type { QueryConfig } from "../../../../shared/lib/react-query";
 import type {
 	ArticleStatus,
 	ArticlesResponse,
-} from "../../../../shared/types/article";
+} from "../../../../shared/model/article";
 
 /**
  * 記事一覧取得のオプション

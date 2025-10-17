@@ -2,6 +2,6 @@
 
 export { apiClient } from "./api/client";
 export * from "./lib/utils";
-export * from "./types/article";
-export * from "./types/common";
+export * from "./model/article";
+export * from "./model/common";
 export { ThemeProvider } from "./ui/theme-provider";

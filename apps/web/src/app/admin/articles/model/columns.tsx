@@ -3,8 +3,8 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import Link from "next/link";
-import type { Article } from "../../../../shared/types/article";
-import { ARTICLE_STATUS_CONFIG } from "../../../../shared/types/article";
+import type { Article } from "../../../../shared/model/article";
+import { ARTICLE_STATUS_CONFIG } from "../../../../shared/model/article";
 import { Badge } from "../../../../shared/ui/badge/badge";
 import { Button } from "../../../../shared/ui/button/button";
 import { ArticleActions } from "../components/article-actions";

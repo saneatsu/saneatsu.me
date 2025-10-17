@@ -6,7 +6,7 @@ import { queryKeys } from "../../../../shared/lib/query-keys";
 import type {
 	ArticleCreateRequest,
 	ArticleCreateResponse,
-} from "../../../../shared/types/article";
+} from "../../../../shared/model/article";
 
 /**
  * 記事を作成するカスタムフック

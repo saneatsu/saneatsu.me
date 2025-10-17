@@ -2,7 +2,7 @@
 
 import { Activity, FileText, Plus, TrendingUp } from "lucide-react";
 import Link from "next/link";
-import type { RecentActivityItem } from "../../../../shared/types/dashboard";
+import type { RecentActivityItem } from "../../../../shared/model/dashboard";
 import {
 	Card,
 	CardContent,

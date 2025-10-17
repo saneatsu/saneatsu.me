@@ -1,7 +1,7 @@
 "use client";
 
 import { BarChart3, Eye, FileText, TrendingUp } from "lucide-react";
-import type { ArticleStats } from "../../../../shared/types/dashboard";
+import type { ArticleStats } from "../../../../shared/model/dashboard";
 import {
 	Card,
 	CardContent,
