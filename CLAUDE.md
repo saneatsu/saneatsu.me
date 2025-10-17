@@ -110,7 +110,20 @@
 ### 1. ディレクトリ構造
 
 [Feature-Sliced Designの公式ドキュメントを元に各層ごとの説明や具体的なディレクトリの作成方法をまとめる](https://zenn.dev/saneatsu/scraps/85d7e6db77e3d8) を踏襲する
-だし、第2層は Pages Layer という名前ではなく Views Layer という名前を利用している
+だし、第2層は Pages Layer という名前ではなく Views Layer という名前を利用している。
+
+app, views, widgets, features, entities, sharedというLayerからなり、左側のものが上の階層。
+上の階層から下の階層を参照することはできるが逆はできない。
+また同一階層同士でもimportすることはできない。
+
+例外的に entities layerだけは[クロスインポート](https://feature-sliced.github.io/documentation/ja/docs/reference/public-api#public-api-for-cross-imports)を利用することで可能。
+
+index.ts は layer直下だけが持つ。
+例えば entities/hoge/index.ts だけOK。
+entities/hoge/api/index.ts や entities/hoge/api/fuga/index.ts はだめ。
+importするときは from "entities/hoge" とすること。
+
+また entities/hoge/index.ts という [Public API](https://feature-sliced.github.io/documentation/ja/docs/reference/public-api#%E8%89%AF%E3%81%84%E5%85%AC%E9%96%8Bapi%E3%81%A8%E3%81%AF) ではそのSlice外で使用されているファイルのみをexportし、 `*` の使用は禁止する。
 
 ### 2. コンポーネントの実装
 
