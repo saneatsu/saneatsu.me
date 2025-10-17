@@ -15,6 +15,7 @@
 		"preview": "wrangler dev",
 		"lint": "biome check .",
 		"lint:fix": "biome check --write .",
+		"type-check": "tsc --noEmit",
 		"test": "vitest",
 		"test:coverage": "vitest run --coverage",
 		"test:middleware": "vitest run --config vitest.config.middleware.ts",

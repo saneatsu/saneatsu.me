@@ -22,7 +22,7 @@
 		"lint": "turbo lint",
 		"test": "turbo test",
 		"clean": "turbo clean",
-		"type-check": "tsc --noEmit",
+		"type-check": "turbo run type-check",
 		"check": "biome check .",
 		"prepare": "lefthook install",
 		"seed": "cd packages/db && pnpm db:seed"

@@ -4,9 +4,10 @@
 	"private": true,
 	"type": "module",
 	"description": "Hono API server",
+	"types": "./dist/index.d.ts",
 	"exports": {
 		".": {
-			"types": "./src/index.ts",
+			"types": "./dist/index.d.ts",
 			"default": "./src/index.ts"
 		}
 	},
@@ -21,6 +22,7 @@
 		"deploy:prod": "wrangler deploy --env production",
 		"lint": "biome check .",
 		"lint:fix": "biome check --write .",
+		"type-check": "tsc --noEmit",
 		"test": "vitest",
 		"test:coverage": "vitest run --coverage",
 		"test:ui": "vitest --ui"

@@ -38,25 +38,30 @@
 pnpm install
 
 # 環境変数の設定
-cp apps/web/.env.example apps/web/.env
 cp apps/backend/.env.example apps/backend/.env
 ```
 
+**重要**: `apps/backend/.env` を作成後、以下の環境変数を必ず設定してください：
+
+- `TURSO_DATABASE_URL`: Tursoデータベースのurl
+- `TURSO_AUTH_TOKEN`: Turso認証トークン
+- `ADMIN_EMAILS`: 管理者のメールアドレス（カンマ区切りで複数指定可能）
+
 ### 環境変数
 
-以下の環境変数を設定してください：
+`apps/backend/.env` に以下の環境変数を設定してください：
 
 ```bash
 # Turso Database
 TURSO_DATABASE_URL=libsql://your-database.turso.io
 TURSO_AUTH_TOKEN=your-auth-token
 
-# Google Gemini API
+# Google Gemini API（記事翻訳機能を使用する場合）
 GEMINI_API_KEY=your-gemini-api-key
 
-# Basic Auth (管理画面用)
-BASIC_AUTH_USER=admin
-BASIC_AUTH_PASSWORD=your-password
+# Admin Emails（Google Auth認証用）
+# 複数の管理者を設定する場合はカンマ区切り
+ADMIN_EMAILS=your-admin-email@example.com
 ```
 
 ## 🗄️ Drizzle Studio（データベース管理ツール）

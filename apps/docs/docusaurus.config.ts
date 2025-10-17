@@ -123,6 +123,31 @@ const config: Config = {
 			additionalLanguages: ["bash", "json", "typescript", "tsx", "jsx"],
 		},
 	} satisfies Preset.ThemeConfig,
+
+	plugins: [
+		function customWebpackConfig() {
+			return {
+				name: "custom-webpack-config",
+				configureWebpack() {
+					return {
+						watchOptions: {
+							ignored: [
+								"**/node_modules/**",
+								"**/.git/**",
+								"**/.docusaurus/**",
+								"**/dist/**",
+								"**/build/**",
+								"**/.turbo/**",
+								"**/coverage/**",
+							],
+							// ポーリング方式を使用してファイルウォッチャーの問題を回避
+							poll: 1000,
+						},
+					};
+				},
+			};
+		},
+	],
 };
 
 export default config;
