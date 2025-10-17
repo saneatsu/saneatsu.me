@@ -557,11 +557,12 @@ articlesRoute.openapi(getArticleRoute, async (c) => {
 			.from(articles)
 			.leftJoin(
 				articleTranslations,
-				eq(articles.id, articleTranslations.articleId)
+				and(
+					eq(articles.id, articleTranslations.articleId),
+					eq(articleTranslations.language, lang)
+				)
 			)
-			.where(
-				and(eq(articles.slug, slug), eq(articleTranslations.language, lang))
-			)
+			.where(eq(articles.slug, slug))
 			.limit(1);
 
 		if (article.length === 0) {
