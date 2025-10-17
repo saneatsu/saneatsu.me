@@ -3,13 +3,13 @@
 import { AlertCircle, BarChart3 } from "lucide-react";
 import { useState } from "react";
 
-import { useDashboardOverview } from "@/features/dashboard/api/use-dashboard-overview";
-import { PopularArticles } from "@/features/dashboard/ui/popular-articles";
 import {
 	DetailedStatsCards,
+	PopularArticles,
 	StatsCards,
-} from "@/features/dashboard/ui/stats-cards";
-import { ViewsTrendChart } from "@/features/dashboard/ui/views-trend-chart";
+	useDashboardOverview,
+	ViewsTrendChart,
+} from "@/features/dashboard";
 import { Alert, AlertDescription } from "@/shared/ui/alert/alert";
 import {
 	Card,

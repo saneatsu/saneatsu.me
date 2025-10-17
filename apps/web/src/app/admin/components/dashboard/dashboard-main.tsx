@@ -2,7 +2,7 @@
 
 import { AlertCircle, RefreshCw } from "lucide-react";
 
-import { useDashboardOverview } from "@/features/dashboard/api/use-dashboard-overview";
+import { useDashboardOverview } from "@/features/dashboard";
 import { Alert, AlertDescription } from "@/shared/ui/alert/alert";
 import { Button } from "@/shared/ui/button/button";
 import {

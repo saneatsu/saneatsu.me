@@ -1,1 +1,0 @@
-export { ViewsTrendChart } from "./views-trend-chart";

@@ -1,4 +1,4 @@
-import { DashboardMain } from "@/features/dashboard/ui/main";
+import { DashboardMain } from "@/features/dashboard";
 import { auth } from "@/shared/lib/auth";
 
 /**

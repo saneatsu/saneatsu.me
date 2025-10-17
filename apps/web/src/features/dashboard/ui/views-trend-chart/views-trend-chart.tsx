@@ -11,7 +11,7 @@ import {
 	YAxis,
 } from "recharts";
 
-import { useViewsTrend } from "@/features/dashboard/api/use-views-trend/use-views-trend";
+import { useViewsTrend } from "@/features/dashboard";
 import {
 	Card,
 	CardContent,

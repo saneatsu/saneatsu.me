@@ -1,1 +1,0 @@
-export { RecentActivities } from "./recent-activities";
