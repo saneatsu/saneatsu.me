@@ -12,10 +12,7 @@ import {
 	ArticleSuggestionsPopover,
 	type SuggestionItem,
 } from "@/entities/article";
-import {
-	type TagSuggestionItem,
-	TagSuggestionsPopover,
-} from "@/entities/tag/ui";
+import { type TagSuggestionItem, TagSuggestionsPopover } from "@/entities/tag";
 
 import { remarkTag } from "@/shared/lib/remark-tag";
 import { remarkWikiLink } from "@/shared/lib/remark-wiki-link";
