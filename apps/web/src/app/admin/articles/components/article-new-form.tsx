@@ -18,15 +18,13 @@ import {
 	AlertDialogFooter,
 	AlertDialogHeader,
 	AlertDialogTitle,
-} from "@/shared/ui/alert-dialog/alert-dialog";
-import { ArticleMarkdownEditor } from "@/shared/ui/article-markdown-editor";
-import { Button } from "@/shared/ui/button/button";
-import { Input } from "@/shared/ui/input/input";
-import { Label } from "@/shared/ui/label/label";
-import {
+	ArticleMarkdownEditor,
+	Button,
+	Input,
+	Label,
 	RadioGroup,
 	RadioGroupItem,
-} from "@/shared/ui/radio-group/radio-group";
+} from "@/shared/ui";
 
 /**
  * 記事作成フォームのスキーマ

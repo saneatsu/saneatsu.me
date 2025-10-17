@@ -3,18 +3,17 @@
 import { Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-import type { ArticleFilters } from "@/shared/model/article";
-import { ARTICLE_STATUS_CONFIG } from "@/shared/model/article";
-import { Badge } from "@/shared/ui/badge/badge";
-import { Button } from "@/shared/ui/button/button";
-import { Input } from "@/shared/ui/input/input";
+import { ARTICLE_STATUS_CONFIG, type ArticleFilters } from "@/shared/model";
 import {
+	Badge,
+	Button,
+	Input,
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@/shared/ui/select/select";
+} from "@/shared/ui";
 
 /**
  * 記事フィルターコンポーネントのプロパティ

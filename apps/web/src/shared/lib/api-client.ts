@@ -1,6 +1,7 @@
 import type { AppType } from "@saneatsu/backend";
 import { hc } from "hono/client";
 import type {
+	ApiError,
 	ArticleCreateRequest,
 	ArticleCreateResponse,
 	ArticleDetailQuery,
@@ -9,8 +10,7 @@ import type {
 	ArticlesResponse,
 	SlugCheckQuery,
 	SlugCheckResponse,
-} from "@/shared/model/article";
-import type { ApiError } from "@/shared/model/common";
+} from "@/shared/model";
 
 /**
  * Service Bindingを取得する関数

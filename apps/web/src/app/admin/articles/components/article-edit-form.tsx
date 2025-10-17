@@ -8,14 +8,14 @@ import { z } from "zod";
 
 import { useCheckSlug, useUpdate } from "@/entities/article";
 import { useDebounce } from "@/shared/hooks/use-debounce";
-import { ArticleMarkdownEditor } from "@/shared/ui/article-markdown-editor";
-import { Button } from "@/shared/ui/button/button";
-import { Input } from "@/shared/ui/input/input";
-import { Label } from "@/shared/ui/label/label";
 import {
+	ArticleMarkdownEditor,
+	Button,
+	Input,
+	Label,
 	RadioGroup,
 	RadioGroupItem,
-} from "@/shared/ui/radio-group/radio-group";
+} from "@/shared/ui";
 
 /**
  * 記事編集フォームのスキーマ

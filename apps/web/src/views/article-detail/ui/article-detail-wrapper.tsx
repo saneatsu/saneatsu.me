@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { fetchArticle } from "@/shared/lib/api-client";
+import { fetchArticle } from "@/shared/lib";
 import { ArticleDetailView } from "./article-detail-view";
 
 interface ArticleDetailWrapperProps {

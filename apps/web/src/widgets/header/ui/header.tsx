@@ -5,14 +5,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { LanguageSwitcher } from "@/features/lang";
-import { cn } from "@/shared/lib/utils";
-import { Button } from "@/shared/ui/button/button";
-import { ThemeSelector } from "@/shared/ui/theme-selector/theme-selector";
+import { cn } from "@/shared/lib";
 import {
+	Button,
+	ThemeSelector,
 	Tooltip,
 	TooltipContent,
 	TooltipTrigger,
-} from "@/shared/ui/tooltip/tooltip";
+} from "@/shared/ui";
 
 export function Header() {
 	const t = useTranslations("navigation");

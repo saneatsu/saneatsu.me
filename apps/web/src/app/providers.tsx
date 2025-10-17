@@ -6,8 +6,8 @@ import { SessionProvider } from "next-auth/react";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { useState } from "react";
 
-import { queryConfig } from "@/shared/lib/react-query";
-import { ThemeProvider } from "@/shared/ui/theme-provider";
+import { queryConfig } from "@/shared/lib";
+import { ThemeProvider } from "@/shared/ui";
 
 export function Providers({ children }: { children: React.ReactNode }) {
 	// QueryClientをuseStateで管理（SSR対応）

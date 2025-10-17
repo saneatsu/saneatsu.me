@@ -7,14 +7,14 @@ import { localeItems as getLocaleItems } from "@/shared/config/locale";
 import type { Locale } from "@/shared/config/locale-constants";
 import { setUserLocale } from "@/shared/lib/locale";
 import { cn } from "@/shared/lib/utils";
-import { Button } from "@/shared/ui/button/button";
 import {
+	Button,
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuRadioGroup,
 	DropdownMenuRadioItem,
 	DropdownMenuTrigger,
-} from "@/shared/ui/dropdown-menu/dropdown-menu";
+} from "@/shared/ui";
 
 export function LocaleSwitcher() {
 	const locale = useLocale();

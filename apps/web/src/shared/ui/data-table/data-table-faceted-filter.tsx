@@ -6,9 +6,9 @@ import type * as React from "react";
 import { useCallback, useState } from "react";
 
 import { cn } from "@/shared/lib/utils";
-import { Badge } from "@/shared/ui/badge/badge";
-import { Button } from "@/shared/ui/button/button";
 import {
+	Badge,
+	Button,
 	Command,
 	CommandEmpty,
 	CommandGroup,
@@ -16,13 +16,11 @@ import {
 	CommandItem,
 	CommandList,
 	CommandSeparator,
-} from "@/shared/ui/command/command";
-import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
-} from "@/shared/ui/popover/popover";
-import { Separator } from "@/shared/ui/separator/separator";
+	Separator,
+} from "@/shared/ui";
 
 /**
  * フィルターオプションの定義

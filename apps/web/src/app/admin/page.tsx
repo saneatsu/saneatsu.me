@@ -1,5 +1,5 @@
 import { DashboardMain } from "@/features/dashboard";
-import { auth } from "@/shared/lib/auth";
+import { auth } from "@/shared/lib";
 
 /**
  * 管理者ダッシュボードページ

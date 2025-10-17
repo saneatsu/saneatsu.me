@@ -19,11 +19,13 @@ import {
 	columns,
 } from "@/app/admin/articles/model/columns";
 import { useGetAllArticles } from "@/entities/article";
-import type { ArticleFilters } from "@/shared/model/article";
-import { DataTableFacetedFilter } from "@/shared/ui/data-table/data-table-faceted-filter";
-import { DataTableSkeleton } from "@/shared/ui/data-table/data-table-skeleton";
-import { DataTable } from "@/shared/ui/data-table/data-table-tanstack";
-import { Input } from "@/shared/ui/input/input";
+import type { ArticleFilters } from "@/shared/model";
+import {
+	DataTable,
+	DataTableFacetedFilter,
+	DataTableSkeleton,
+	Input,
+} from "@/shared/ui";
 
 /**
  * 記事一覧テーブルコンポーネントのプロパティ

@@ -5,10 +5,8 @@ import { ArrowUpDown } from "lucide-react";
 import Link from "next/link";
 
 import { ArticleActions } from "@/app/admin/articles/components/article-actions";
-import type { Article } from "@/shared/model/article";
-import { ARTICLE_STATUS_CONFIG } from "@/shared/model/article";
-import { Badge } from "@/shared/ui/badge/badge";
-import { Button } from "@/shared/ui/button/button";
+import { ARTICLE_STATUS_CONFIG, type Article } from "@/shared/model";
+import { Badge, Button } from "@/shared/ui";
 
 /**
  * 記事ステータスフィルター用のオプション定義

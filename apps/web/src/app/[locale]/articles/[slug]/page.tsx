@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 
-import { fetchArticle } from "@/shared/lib/api-client";
-import { getOgImageUrl } from "@/shared/lib/cloudflare-images";
-import { extractDescription } from "@/shared/lib/markdown-to-text";
+import { extractDescription, fetchArticle, getOgImageUrl } from "@/shared/lib";
 import { ArticleDetailWrapper } from "@/views";
 
 interface ArticlePageProps {
