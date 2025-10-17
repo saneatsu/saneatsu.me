@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { useCheckSlug, useCreate } from "@/entities/article";
-import { useDebounce } from "@/shared/hooks/use-debounce";
+import { useDebounce } from "@/shared/lib";
 import {
 	AlertDialog,
 	AlertDialogAction,

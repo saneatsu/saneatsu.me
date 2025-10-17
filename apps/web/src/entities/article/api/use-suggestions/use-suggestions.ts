@@ -2,8 +2,12 @@
 
 import { useQuery } from "@tanstack/react-query";
 
-import { useDebounce } from "@/shared/hooks/use-debounce";
-import { honoClient, type QueryConfig, queryKeys } from "@/shared/lib";
+import {
+	honoClient,
+	type QueryConfig,
+	queryKeys,
+	useDebounce,
+} from "@/shared/lib";
 
 /**
  * サジェストアイテムの型

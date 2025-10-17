@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { useCheckSlug, useUpdate } from "@/entities/article";
-import { useDebounce } from "@/shared/hooks/use-debounce";
+import { useDebounce } from "@/shared/lib";
 import {
 	ArticleMarkdownEditor,
 	Button,
