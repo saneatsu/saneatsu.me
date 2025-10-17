@@ -3,8 +3,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/shared/lib";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/shared/ui";
 
-import { AppSidebar } from "./components/app-sidebar";
-import { BreadcrumbWrapper } from "./components/breadcrumb-wrapper";
+import { AppSidebar, BreadcrumbWrapper } from "@/widgets/admin-layout";
 
 export default async function AdminLayout({
 	children,
