@@ -24,10 +24,19 @@ export default defineConfig({
 			"**/*.middleware.test.{js,ts,mjs,mts}",
 			"**/*.bak/**",
 		],
+		css: true,
 	},
 	resolve: {
 		alias: {
 			"@": path.resolve(__dirname, "./src"),
+			"@uiw/react-md-editor/markdown-editor.css": path.resolve(
+				__dirname,
+				"./vitest-mocks/empty.css"
+			),
+			"@uiw/react-markdown-preview/markdown.css": path.resolve(
+				__dirname,
+				"./vitest-mocks/empty.css"
+			),
 		},
 	},
 });
