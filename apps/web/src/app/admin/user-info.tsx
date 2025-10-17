@@ -3,12 +3,9 @@
 import { LogOut, Moon, Palette, Sun, SunMoon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import {
-	Avatar,
-	AvatarFallback,
-	AvatarImage,
-} from "../../shared/ui/avatar/avatar";
-import { Button } from "../../shared/ui/button/button";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar/avatar";
+import { Button } from "@/shared/ui/button/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -22,8 +19,8 @@ import {
 	DropdownMenuSubContent,
 	DropdownMenuSubTrigger,
 	DropdownMenuTrigger,
-} from "../../shared/ui/dropdown-menu/dropdown-menu";
-import { useSidebar } from "../../shared/ui/sidebar/sidebar";
+} from "@/shared/ui/dropdown-menu/dropdown-menu";
+import { useSidebar } from "@/shared/ui/sidebar/sidebar";
 
 interface UserInfoProps {
 	user:

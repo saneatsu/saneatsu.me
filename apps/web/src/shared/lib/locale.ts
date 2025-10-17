@@ -5,7 +5,7 @@ import {
 	defaultLocale,
 	LOCALE_COOKIE_NAME,
 	type Locale,
-} from "../config/locale-constants";
+} from "@/shared/config/locale-constants";
 
 /**
  * ロケール（言語設定）はCookieから読み取られます。

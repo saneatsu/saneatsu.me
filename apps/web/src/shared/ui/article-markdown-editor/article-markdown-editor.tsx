@@ -7,14 +7,16 @@ import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
 import { useRef, useState } from "react";
 import remarkGfm from "remark-gfm";
-import type { SuggestionItem } from "../../../entities/article/api/use-suggestions/use-suggestions";
-import { ArticleSuggestionsPopover } from "../../../entities/article/ui";
+
+import type { SuggestionItem } from "@/entities/article/api/use-suggestions/use-suggestions";
+import { ArticleSuggestionsPopover } from "@/entities/article/ui";
 import {
 	type TagSuggestionItem,
 	TagSuggestionsPopover,
-} from "../../../entities/tag/ui";
-import { remarkTag } from "../../lib/remark-tag";
-import { remarkWikiLink } from "../../lib/remark-wiki-link";
+} from "@/entities/tag/ui";
+
+import { remarkTag } from "@/shared/lib/remark-tag";
+import { remarkWikiLink } from "@/shared/lib/remark-wiki-link";
 import { useClickExpansion } from "./hooks/use-click-expansion";
 import { useKeyboardShortcuts } from "./hooks/use-keyboard-shortcuts";
 import { useTagDetection } from "./hooks/use-tag-detection";

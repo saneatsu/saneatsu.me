@@ -1,13 +1,14 @@
 "use client";
 
 import { BarChart3, Eye, FileText, TrendingUp } from "lucide-react";
-import type { ArticleStats } from "../../../../shared/model/dashboard";
+
+import type { ArticleStats } from "@/shared/model/dashboard";
 import {
 	Card,
 	CardContent,
 	CardHeader,
 	CardTitle,
-} from "../../../../shared/ui/card/card";
+} from "@/shared/ui/card/card";
 
 /**
  * 統計カードコンポーネントのプロパティ

@@ -3,8 +3,9 @@
 import { Edit, Eye, FileEdit, MoreHorizontal, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useDelete, useUpdateStatus } from "../../../../entities/article/api";
-import type { Article } from "../../../../shared/model/article";
+
+import { useDelete, useUpdateStatus } from "@/entities/article/api";
+import type { Article } from "@/shared/model/article";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -14,15 +15,15 @@ import {
 	AlertDialogFooter,
 	AlertDialogHeader,
 	AlertDialogTitle,
-} from "../../../../shared/ui/alert-dialog/alert-dialog";
-import { Button } from "../../../../shared/ui/button/button";
+} from "@/shared/ui/alert-dialog/alert-dialog";
+import { Button } from "@/shared/ui/button/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
-} from "../../../../shared/ui/dropdown-menu/dropdown-menu";
+} from "@/shared/ui/dropdown-menu/dropdown-menu";
 
 /**
  * 記事アクションコンポーネントのプロパティ

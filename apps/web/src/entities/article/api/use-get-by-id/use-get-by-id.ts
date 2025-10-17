@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { honoClient } from "../../../../shared/lib/hono-client";
+
+import { honoClient } from "@/shared/lib/hono-client";
 
 type ErrorResponse = {
 	error?: {

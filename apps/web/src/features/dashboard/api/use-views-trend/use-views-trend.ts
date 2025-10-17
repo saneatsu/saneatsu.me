@@ -2,9 +2,10 @@
 
 import type { ViewsTrendResponse } from "@saneatsu/schemas";
 import { useQuery } from "@tanstack/react-query";
-import { honoClient } from "../../../../shared/lib/hono-client";
-import { queryKeys } from "../../../../shared/lib/query-keys";
-import type { QueryConfig } from "../../../../shared/lib/react-query";
+
+import { honoClient } from "@/shared/lib/hono-client";
+import { queryKeys } from "@/shared/lib/query-keys";
+import type { QueryConfig } from "@/shared/lib/react-query";
 
 /**
  * 閲覧数推移データ取得のオプション

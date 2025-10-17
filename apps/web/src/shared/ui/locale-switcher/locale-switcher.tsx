@@ -3,18 +3,18 @@
 import { Languages } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useTransition } from "react";
-import { localeItems as getLocaleItems } from "../../config/locale";
-import type { Locale } from "../../config/locale-constants";
-import { setUserLocale } from "../../lib/locale";
-import { cn } from "../../lib/utils";
-import { Button } from "../button/button";
+import { localeItems as getLocaleItems } from "@/shared/config/locale";
+import type { Locale } from "@/shared/config/locale-constants";
+import { setUserLocale } from "@/shared/lib/locale";
+import { cn } from "@/shared/lib/utils";
+import { Button } from "@/shared/ui/button/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuRadioGroup,
 	DropdownMenuRadioItem,
 	DropdownMenuTrigger,
-} from "../dropdown-menu/dropdown-menu";
+} from "@/shared/ui/dropdown-menu/dropdown-menu";
 
 export function LocaleSwitcher() {
 	const locale = useLocale();

@@ -2,7 +2,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { SuggestionItem } from "../../api/use-suggestions";
+
+import type { SuggestionItem } from "@/entities/article/api/use-suggestions";
+
 import { ArticleSuggestionsPopover } from "./article-suggestions-popover";
 
 // モックデータ

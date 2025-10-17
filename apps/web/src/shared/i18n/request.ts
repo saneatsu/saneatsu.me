@@ -1,5 +1,5 @@
 import { getRequestConfig } from "next-intl/server";
-import { defaultLocale } from "../config/locale-constants";
+import { defaultLocale } from "@/shared/config/locale-constants";
 
 const locales = ["ja", "en"] as const;
 type Locale = (typeof locales)[number];

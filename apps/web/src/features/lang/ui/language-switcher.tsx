@@ -2,14 +2,15 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
-import { Button } from "../../../shared/ui/button/button";
+
+import { Button } from "@/shared/ui/button/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuRadioGroup,
 	DropdownMenuRadioItem,
 	DropdownMenuTrigger,
-} from "../../../shared/ui/dropdown-menu/dropdown-menu";
+} from "@/shared/ui/dropdown-menu/dropdown-menu";
 
 const languages = [
 	{ code: "ja", label: "日本語", flag: "🇯🇵" },

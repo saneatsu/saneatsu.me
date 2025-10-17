@@ -10,15 +10,16 @@ import {
 	XAxis,
 	YAxis,
 } from "recharts";
+
+import { useViewsTrend } from "@/features/dashboard/api/use-views-trend/use-views-trend";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "../../../../shared/ui/card/card";
-import { Skeleton } from "../../../../shared/ui/skeleton/skeleton";
-import { useViewsTrend } from "../../api/use-views-trend/use-views-trend";
+} from "@/shared/ui/card/card";
+import { Skeleton } from "@/shared/ui/skeleton/skeleton";
 
 /**
  * 閲覧数推移グラフコンポーネントのプロパティ

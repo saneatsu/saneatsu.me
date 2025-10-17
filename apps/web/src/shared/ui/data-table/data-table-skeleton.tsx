@@ -7,7 +7,7 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "../table/table";
+} from "@/shared/ui/table/table";
 
 /**
  * DataTableSkeletonのプロパティ

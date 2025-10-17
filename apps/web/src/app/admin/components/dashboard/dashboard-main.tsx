@@ -1,16 +1,18 @@
 "use client";
 
 import { AlertCircle, RefreshCw } from "lucide-react";
-import { useDashboardOverview } from "../../../../features/dashboard/api/use-dashboard-overview";
-import { Alert, AlertDescription } from "../../../../shared/ui/alert/alert";
-import { Button } from "../../../../shared/ui/button/button";
+
+import { useDashboardOverview } from "@/features/dashboard/api/use-dashboard-overview";
+import { Alert, AlertDescription } from "@/shared/ui/alert/alert";
+import { Button } from "@/shared/ui/button/button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "../../../../shared/ui/card/card";
+} from "@/shared/ui/card/card";
+
 import { PopularArticles } from "./popular-articles";
 import { RecentActivities } from "./recent-activities";
 import { DetailedStatsCards, StatsCards } from "./stats-cards";

@@ -1,1 +1,1 @@
-export { auth } from "../../app/api/auth/[...nextauth]/auth";
+export { auth } from "@/app/api/auth/[...nextauth]/auth";

@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import type { ComponentPropsWithoutRef } from "react";
-import { useArticle } from "../../../entities/article/api";
-import { cn } from "../../lib/utils";
+import { useArticle } from "@/entities/article/api";
+import { cn } from "@/shared/lib/utils";
 
 /**
  * Wiki Linkコンポーネントのプロパティ

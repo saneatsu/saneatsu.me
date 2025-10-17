@@ -3,11 +3,12 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import Link from "next/link";
-import type { Article } from "../../../../shared/model/article";
-import { ARTICLE_STATUS_CONFIG } from "../../../../shared/model/article";
-import { Badge } from "../../../../shared/ui/badge/badge";
-import { Button } from "../../../../shared/ui/button/button";
-import { ArticleActions } from "../components/article-actions";
+
+import { ArticleActions } from "@/app/admin/articles/components/article-actions";
+import type { Article } from "@/shared/model/article";
+import { ARTICLE_STATUS_CONFIG } from "@/shared/model/article";
+import { Badge } from "@/shared/ui/badge/badge";
+import { Button } from "@/shared/ui/button/button";
 
 /**
  * 記事ステータスフィルター用のオプション定義

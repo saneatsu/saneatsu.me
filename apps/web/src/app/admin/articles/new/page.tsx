@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { ArticleNewForm } from "../components/article-new-form";
+
+import { ArticleNewForm } from "@/app/admin/articles/components/article-new-form";
 
 /**
  * 記事新規作成ページのメタデータ

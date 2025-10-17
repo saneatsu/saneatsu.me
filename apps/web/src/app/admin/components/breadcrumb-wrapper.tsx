@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
+
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -10,7 +11,7 @@ import {
 	BreadcrumbList,
 	BreadcrumbPage,
 	BreadcrumbSeparator,
-} from "../../../shared/ui/breadcrumb/breadcrumb";
+} from "@/shared/ui/breadcrumb/breadcrumb";
 
 /**
  * パンくずリストのマッピング定義

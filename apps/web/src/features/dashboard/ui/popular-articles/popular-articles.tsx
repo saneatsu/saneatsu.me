@@ -2,16 +2,17 @@
 
 import { ExternalLink, Eye, TrendingUp } from "lucide-react";
 import Link from "next/link";
-import type { PopularArticle } from "../../../../shared/model/dashboard";
-import { Badge } from "../../../../shared/ui/badge/badge";
+
+import type { PopularArticle } from "@/shared/model/dashboard";
+import { Badge } from "@/shared/ui/badge/badge";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "../../../../shared/ui/card/card";
-import { Skeleton } from "../../../../shared/ui/skeleton/skeleton";
+} from "@/shared/ui/card/card";
+import { Skeleton } from "@/shared/ui/skeleton/skeleton";
 import {
 	Table,
 	TableBody,
@@ -19,7 +20,7 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "../../../../shared/ui/table/table";
+} from "@/shared/ui/table/table";
 
 /**
  * 人気記事一覧コンポーネントのプロパティ

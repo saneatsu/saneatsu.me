@@ -3,17 +3,18 @@
 import { FileText, Hash } from "lucide-react";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
+
+import {
+	type SuggestionItem,
+	useArticleSuggestions,
+} from "@/entities/article/api/use-suggestions";
 import {
 	Command,
 	CommandEmpty,
 	CommandGroup,
 	CommandItem,
 	CommandList,
-} from "../../../../shared/ui/command/command";
-import {
-	type SuggestionItem,
-	useArticleSuggestions,
-} from "../../api/use-suggestions";
+} from "@/shared/ui/command/command";
 
 /**
  * サジェストポップアップのプロパティ

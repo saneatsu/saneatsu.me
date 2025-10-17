@@ -5,17 +5,18 @@ import { CalendarIcon, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useCheckSlug } from "../../../../entities/article/api/use-check-slug/use-check-slug";
-import { useUpdate } from "../../../../entities/article/api/use-update/use-update";
-import { useDebounce } from "../../../../shared/hooks/use-debounce";
-import { ArticleMarkdownEditor } from "../../../../shared/ui/article-markdown-editor";
-import { Button } from "../../../../shared/ui/button/button";
-import { Input } from "../../../../shared/ui/input/input";
-import { Label } from "../../../../shared/ui/label/label";
+
+import { useCheckSlug } from "@/entities/article/api/use-check-slug/use-check-slug";
+import { useUpdate } from "@/entities/article/api/use-update/use-update";
+import { useDebounce } from "@/shared/hooks/use-debounce";
+import { ArticleMarkdownEditor } from "@/shared/ui/article-markdown-editor";
+import { Button } from "@/shared/ui/button/button";
+import { Input } from "@/shared/ui/input/input";
+import { Label } from "@/shared/ui/label/label";
 import {
 	RadioGroup,
 	RadioGroupItem,
-} from "../../../../shared/ui/radio-group/radio-group";
+} from "@/shared/ui/radio-group/radio-group";
 
 /**
  * 記事編集フォームのスキーマ

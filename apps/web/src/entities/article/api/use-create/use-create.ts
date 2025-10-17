@@ -1,12 +1,13 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { honoClient } from "../../../../shared/lib/hono-client";
-import { queryKeys } from "../../../../shared/lib/query-keys";
+
+import { honoClient } from "@/shared/lib/hono-client";
+import { queryKeys } from "@/shared/lib/query-keys";
 import type {
 	ArticleCreateRequest,
 	ArticleCreateResponse,
-} from "../../../../shared/model/article";
+} from "@/shared/model/article";
 
 /**
  * 記事を作成するカスタムフック

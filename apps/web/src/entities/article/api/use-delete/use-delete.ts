@@ -1,7 +1,8 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { queryKeys } from "../../../../shared/lib/query-keys";
+
+import { queryKeys } from "@/shared/lib/query-keys";
 
 /**
  * 記事を削除するカスタムフック

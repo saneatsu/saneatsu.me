@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { expect, within } from "@storybook/test";
-import type { Article } from "../../../shared";
+
+import type { Article } from "@/shared";
+
 import { ArticleDetailView } from "./article-detail-view";
 
 const meta: Meta<typeof ArticleDetailView> = {

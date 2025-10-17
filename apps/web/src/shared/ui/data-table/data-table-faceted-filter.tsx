@@ -4,9 +4,10 @@ import type { Column } from "@tanstack/react-table";
 import { Check, PlusCircle, XCircle } from "lucide-react";
 import type * as React from "react";
 import { useCallback, useState } from "react";
-import { cn } from "../../lib/utils";
-import { Badge } from "../badge/badge";
-import { Button } from "../button/button";
+
+import { cn } from "@/shared/lib/utils";
+import { Badge } from "@/shared/ui/badge/badge";
+import { Button } from "@/shared/ui/button/button";
 import {
 	Command,
 	CommandEmpty,
@@ -15,9 +16,13 @@ import {
 	CommandItem,
 	CommandList,
 	CommandSeparator,
-} from "../command/command";
-import { Popover, PopoverContent, PopoverTrigger } from "../popover/popover";
-import { Separator } from "../separator/separator";
+} from "@/shared/ui/command/command";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/shared/ui/popover/popover";
+import { Separator } from "@/shared/ui/separator/separator";
 
 /**
  * フィルターオプションの定義

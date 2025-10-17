@@ -2,7 +2,7 @@ import { useTranslations } from "next-intl";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
-import type { Article } from "../../../shared";
+import type { Article } from "@/shared";
 
 export interface ArticleDetailViewProps {
 	/** 表示する記事データ */

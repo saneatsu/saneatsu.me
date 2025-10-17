@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { AboutView } from "../../../views";
+
+import { AboutView } from "@/views";
 
 type Props = {
 	params: Promise<{ locale: string }>;

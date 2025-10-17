@@ -1,14 +1,15 @@
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
-import type { Article } from "../../../shared";
-import { Button } from "../../../shared/ui/button/button";
+
+import type { Article } from "@/shared";
+import { Button } from "@/shared/ui/button/button";
 import {
 	Card,
 	CardContent,
 	CardFooter,
 	CardHeader,
 	CardTitle,
-} from "../../../shared/ui/card/card";
+} from "@/shared/ui/card/card";
 
 interface ArticleCardProps {
 	article: Article;

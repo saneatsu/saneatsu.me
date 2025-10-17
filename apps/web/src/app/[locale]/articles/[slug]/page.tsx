@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import { fetchArticle } from "../../../../shared/lib/api-client";
-import { getOgImageUrl } from "../../../../shared/lib/cloudflare-images";
-import { extractDescription } from "../../../../shared/lib/markdown-to-text";
-import { ArticleDetailWrapper } from "../../../../views";
+
+import { fetchArticle } from "@/shared/lib/api-client";
+import { getOgImageUrl } from "@/shared/lib/cloudflare-images";
+import { extractDescription } from "@/shared/lib/markdown-to-text";
+import { ArticleDetailWrapper } from "@/views";
 
 interface ArticlePageProps {
 	params: Promise<{

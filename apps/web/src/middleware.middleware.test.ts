@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { middleware } from "./middleware";
 import {
 	createMockNextRequest,
 	expectNext,
 	expectRedirect,
 } from "@/shared/lib/testing/middleware-test-utils";
+import { middleware } from "./middleware";
 
 // NextAuth.jsのgetTokenをモック
 vi.mock("next-auth/jwt", () => ({

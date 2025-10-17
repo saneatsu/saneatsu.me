@@ -1,13 +1,11 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { honoClient } from "../../../../shared/lib/hono-client";
-import { queryKeys } from "../../../../shared/lib/query-keys";
-import type { QueryConfig } from "../../../../shared/lib/react-query";
-import type {
-	ArticleStatus,
-	ArticlesResponse,
-} from "../../../../shared/model/article";
+
+import { honoClient } from "@/shared/lib/hono-client";
+import { queryKeys } from "@/shared/lib/query-keys";
+import type { QueryConfig } from "@/shared/lib/react-query";
+import type { ArticleStatus, ArticlesResponse } from "@/shared/model/article";
 
 /**
  * 記事一覧取得のオプション

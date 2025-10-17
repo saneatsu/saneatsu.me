@@ -2,8 +2,9 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { honoClient } from "../../../../shared/lib/hono-client";
-import { queryKeys } from "../../../../shared/lib/query-keys";
+
+import { honoClient } from "@/shared/lib/hono-client";
+import { queryKeys } from "@/shared/lib/query-keys";
 
 /**
  * 記事のステータス更新パラメータ

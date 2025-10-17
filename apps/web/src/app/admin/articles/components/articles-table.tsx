@@ -13,13 +13,17 @@ import {
 	useReactTable,
 } from "@tanstack/react-table";
 import { useState } from "react";
-import { useGetAllArticles } from "../../../../entities/article/api/use-get-all";
-import type { ArticleFilters } from "../../../../shared/model/article";
-import { DataTableFacetedFilter } from "../../../../shared/ui/data-table/data-table-faceted-filter";
-import { DataTableSkeleton } from "../../../../shared/ui/data-table/data-table-skeleton";
-import { DataTable } from "../../../../shared/ui/data-table/data-table-tanstack";
-import { Input } from "../../../../shared/ui/input/input";
-import { articleStatusOptions, columns } from "../model/columns";
+
+import {
+	articleStatusOptions,
+	columns,
+} from "@/app/admin/articles/model/columns";
+import { useGetAllArticles } from "@/entities/article/api/use-get-all";
+import type { ArticleFilters } from "@/shared/model/article";
+import { DataTableFacetedFilter } from "@/shared/ui/data-table/data-table-faceted-filter";
+import { DataTableSkeleton } from "@/shared/ui/data-table/data-table-skeleton";
+import { DataTable } from "@/shared/ui/data-table/data-table-tanstack";
+import { Input } from "@/shared/ui/input/input";
 
 /**
  * 記事一覧テーブルコンポーネントのプロパティ

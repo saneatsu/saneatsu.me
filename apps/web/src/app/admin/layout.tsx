@@ -1,10 +1,12 @@
 import { redirect } from "next/navigation";
-import { auth } from "../../shared/lib/auth";
+
+import { auth } from "@/shared/lib/auth";
 import {
 	SidebarInset,
 	SidebarProvider,
 	SidebarTrigger,
-} from "../../shared/ui/sidebar/sidebar";
+} from "@/shared/ui/sidebar/sidebar";
+
 import { AppSidebar } from "./components/app-sidebar";
 import { BreadcrumbWrapper } from "./components/breadcrumb-wrapper";
 

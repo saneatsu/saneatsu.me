@@ -2,12 +2,9 @@
 
 import { Tag } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import {
-	Command,
-	CommandItem,
-	CommandList,
-} from "../../../../shared/ui/command/command";
-import { Popover, PopoverContent } from "../../../../shared/ui/popover/popover";
+
+import { Command, CommandItem, CommandList } from "@/shared/ui/command/command";
+import { Popover, PopoverContent } from "@/shared/ui/popover/popover";
 
 /**
  * タグサジェストアイテムの型定義

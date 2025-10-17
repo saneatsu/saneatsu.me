@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { HeadingItem, NestedHeading } from "../../lib/extract-headings";
-import { cn } from "../../lib/utils";
+import type { HeadingItem, NestedHeading } from "@/shared/lib/extract-headings";
+import { cn } from "@/shared/lib/utils";
 
 /**
  * ヘッダーレベルに応じたインデントクラスを返す

@@ -4,13 +4,13 @@ import { useTranslations } from "next-intl";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
-import type { Article } from "../../../shared";
-import { extractHeadings } from "../../../shared/lib/extract-headings";
-import { remarkTag } from "../../../shared/lib/remark-tag";
-import { remarkWikiLink } from "../../../shared/lib/remark-wiki-link";
-import { cn } from "../../../shared/lib/utils";
-import { TableOfContents } from "../../../shared/ui/table-of-contents";
-import { WikiLink } from "../../../shared/ui/wiki-link";
+import type { Article } from "@/shared";
+import { extractHeadings } from "@/shared/lib/extract-headings";
+import { remarkTag } from "@/shared/lib/remark-tag";
+import { remarkWikiLink } from "@/shared/lib/remark-wiki-link";
+import { cn } from "@/shared/lib/utils";
+import { TableOfContents } from "@/shared/ui/table-of-contents";
+import { WikiLink } from "@/shared/ui/wiki-link";
 
 export interface ArticleDetailViewProps {
 	/** 表示する記事データ */

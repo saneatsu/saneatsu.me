@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import { ArticlesList } from "../../../widgets";
+import { ArticlesList } from "@/widgets";
 
 /**
  * ホームページのメインビューコンポーネント

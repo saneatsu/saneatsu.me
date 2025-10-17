@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
-import { Footer } from "../../widgets/footer";
-import { Header } from "../../widgets/header";
+
+import { Footer } from "@/widgets/footer";
+import { Header } from "@/widgets/header";
 
 // サポートされているロケール
 const locales = ["ja", "en"] as const;

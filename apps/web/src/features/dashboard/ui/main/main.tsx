@@ -2,25 +2,29 @@
 
 import { AlertCircle, BarChart3 } from "lucide-react";
 import { useState } from "react";
-import { Alert, AlertDescription } from "../../../../shared/ui/alert/alert";
+
+import { useDashboardOverview } from "@/features/dashboard/api/use-dashboard-overview";
+import { PopularArticles } from "@/features/dashboard/ui/popular-articles";
+import {
+	DetailedStatsCards,
+	StatsCards,
+} from "@/features/dashboard/ui/stats-cards";
+import { ViewsTrendChart } from "@/features/dashboard/ui/views-trend-chart";
+import { Alert, AlertDescription } from "@/shared/ui/alert/alert";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "../../../../shared/ui/card/card";
+} from "@/shared/ui/card/card";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "../../../../shared/ui/select/select";
-import { useDashboardOverview } from "../../api/use-dashboard-overview";
-import { PopularArticles } from "../popular-articles";
-import { DetailedStatsCards, StatsCards } from "../stats-cards";
-import { ViewsTrendChart } from "../views-trend-chart";
+} from "@/shared/ui/select/select";
 
 /**
  * ダッシュボードメインコンポーネントのプロパティ

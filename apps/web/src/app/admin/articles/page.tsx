@@ -3,7 +3,9 @@
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { Button } from "../../../shared/ui/button/button";
+
+import { Button } from "@/shared/ui/button/button";
+
 import { ArticlesTable } from "./components/articles-table";
 
 /**

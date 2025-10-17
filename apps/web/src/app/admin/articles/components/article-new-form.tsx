@@ -7,8 +7,9 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { useCheckSlug, useCreate } from "../../../../entities/article/api";
-import { useDebounce } from "../../../../shared/hooks/use-debounce";
+
+import { useCheckSlug, useCreate } from "@/entities/article/api";
+import { useDebounce } from "@/shared/hooks/use-debounce";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -17,15 +18,15 @@ import {
 	AlertDialogFooter,
 	AlertDialogHeader,
 	AlertDialogTitle,
-} from "../../../../shared/ui/alert-dialog/alert-dialog";
-import { ArticleMarkdownEditor } from "../../../../shared/ui/article-markdown-editor";
-import { Button } from "../../../../shared/ui/button/button";
-import { Input } from "../../../../shared/ui/input/input";
-import { Label } from "../../../../shared/ui/label/label";
+} from "@/shared/ui/alert-dialog/alert-dialog";
+import { ArticleMarkdownEditor } from "@/shared/ui/article-markdown-editor";
+import { Button } from "@/shared/ui/button/button";
+import { Input } from "@/shared/ui/input/input";
+import { Label } from "@/shared/ui/label/label";
 import {
 	RadioGroup,
 	RadioGroupItem,
-} from "../../../../shared/ui/radio-group/radio-group";
+} from "@/shared/ui/radio-group/radio-group";
 
 /**
  * 記事作成フォームのスキーマ

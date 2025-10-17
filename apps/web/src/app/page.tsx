@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
-import { defaultLocale } from "../shared/config/locale-constants";
+
+import { defaultLocale } from "@/shared/config/locale-constants";
 
 /**
  * ルートページ

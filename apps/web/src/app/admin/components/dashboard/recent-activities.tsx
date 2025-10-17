@@ -2,15 +2,16 @@
 
 import { Activity, FileText, Plus, TrendingUp } from "lucide-react";
 import Link from "next/link";
-import type { RecentActivityItem } from "../../../../shared/model/dashboard";
+
+import type { RecentActivityItem } from "@/shared/model/dashboard";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "../../../../shared/ui/card/card";
-import { Skeleton } from "../../../../shared/ui/skeleton/skeleton";
+} from "@/shared/ui/card/card";
+import { Skeleton } from "@/shared/ui/skeleton/skeleton";
 
 /**
  * 最近の活動コンポーネントのプロパティ

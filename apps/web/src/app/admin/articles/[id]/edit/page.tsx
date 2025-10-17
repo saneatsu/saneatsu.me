@@ -2,8 +2,8 @@
 
 import { Loader2 } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useGetById } from "../../../../../entities/article/api";
-import { ArticleEditForm } from "../../components/article-edit-form";
+import { ArticleEditForm } from "@/app/admin/articles/components/article-edit-form";
+import { useGetById } from "@/entities/article/api";
 
 /**
  * 記事編集ページ

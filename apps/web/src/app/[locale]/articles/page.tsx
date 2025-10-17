@@ -1,5 +1,6 @@
 import { useTranslations } from "next-intl";
-import { ArticlesList } from "../../../widgets";
+
+import { ArticlesList } from "@/widgets";
 
 /**
  * 記事一覧ページ
