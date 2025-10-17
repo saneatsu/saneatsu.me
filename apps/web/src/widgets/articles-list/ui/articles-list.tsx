@@ -1,8 +1,7 @@
 "use client";
 
 import { useLocale } from "next-intl";
-import { useGetAllArticles } from "@/entities/article/api/use-get-all";
-import { ArticleCard } from "@/entities/article/ui/article-card";
+import { ArticleCard, useGetAllArticles } from "@/entities/article";
 
 interface ArticlesListProps {
 	/** 表示する記事の数（省略時は全て表示） */

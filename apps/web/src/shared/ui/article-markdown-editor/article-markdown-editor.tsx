@@ -8,8 +8,10 @@ import { useTheme } from "next-themes";
 import { useRef, useState } from "react";
 import remarkGfm from "remark-gfm";
 
-import type { SuggestionItem } from "@/entities/article/api/use-suggestions/use-suggestions";
-import { ArticleSuggestionsPopover } from "@/entities/article/ui";
+import {
+	ArticleSuggestionsPopover,
+	type SuggestionItem,
+} from "@/entities/article";
 import {
 	type TagSuggestionItem,
 	TagSuggestionsPopover,

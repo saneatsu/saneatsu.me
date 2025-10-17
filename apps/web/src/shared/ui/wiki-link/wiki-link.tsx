@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { ComponentPropsWithoutRef } from "react";
-import { useArticle } from "@/entities/article/api";
+import { useArticle } from "@/entities/article";
 import { cn } from "@/shared/lib/utils";
 
 /**

@@ -6,8 +6,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { useCheckSlug } from "@/entities/article/api/use-check-slug/use-check-slug";
-import { useUpdate } from "@/entities/article/api/use-update/use-update";
+import { useCheckSlug, useUpdate } from "@/entities/article";
 import { useDebounce } from "@/shared/hooks/use-debounce";
 import { ArticleMarkdownEditor } from "@/shared/ui/article-markdown-editor";
 import { Button } from "@/shared/ui/button/button";

@@ -4,7 +4,7 @@ import { Edit, Eye, FileEdit, MoreHorizontal, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { useDelete, useUpdateStatus } from "@/entities/article/api";
+import { useDelete, useUpdateStatus } from "@/entities/article";
 import type { Article } from "@/shared/model/article";
 import {
 	AlertDialog,

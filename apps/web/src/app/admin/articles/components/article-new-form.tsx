@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { useCheckSlug, useCreate } from "@/entities/article/api";
+import { useCheckSlug, useCreate } from "@/entities/article";
 import { useDebounce } from "@/shared/hooks/use-debounce";
 import {
 	AlertDialog,
