@@ -19,7 +19,7 @@ build/
 .claude/task.md
 
 # Serena
-.serena/cache
+.serena
 
 # Environment variables
 .env
