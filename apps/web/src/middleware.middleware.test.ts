@@ -4,7 +4,7 @@ import {
 	createMockNextRequest,
 	expectNext,
 	expectRedirect,
-} from "./test-utils/middleware-test-utils";
+} from "@/shared/lib/testing/middleware-test-utils";
 
 // NextAuth.jsのgetTokenをモック
 vi.mock("next-auth/jwt", () => ({
