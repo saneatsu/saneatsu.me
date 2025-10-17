@@ -3,10 +3,8 @@
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-
+import { ArticlesTable } from "@/features/article-management";
 import { Button } from "@/shared/ui/button/button";
-
-import { ArticlesTable } from "./components/articles-table";
 
 /**
  * 管理画面の記事一覧ページ
