@@ -167,6 +167,26 @@
   - 数行の変更だけしかしていなくても構わない
 - バグを修正した場合必ず対応するテストをVitest, Storybook, Playwrightのいずれか、またはいくつかで書くこと
 
+## import 順
+
+以下の3つに区切ってそれぞれ間に1行の改行を入れてください。
+
+1. 外部ライブラリ
+2. 同一app, package内
+3. 相対パス（同一Selice内）
+
+```ts
+// 外部ライブラリ
+import type { Meta, StoryObj } from "@storybook/nextjs";
+import { expect, within } from "@storybook/test";
+
+// 同一app, package内
+import type { Article } from "@/shared";
+
+// 相対パス（同一Selice内）
+import { ArticleDetailView } from "./article-detail-view";
+```
+
 ## E2Eテスト
 
 ### 実行方法
