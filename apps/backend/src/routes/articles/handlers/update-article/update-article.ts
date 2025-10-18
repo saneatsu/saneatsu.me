@@ -129,59 +129,37 @@ export const updateArticle: Handler = async (c) => {
 				)
 			);
 
-		// 7. 英語への自動翻訳を実行
+		// 7. 英語への自動翻訳を実行（非同期）
 		if (c.env.GEMINI_API_KEY) {
 			try {
 				const translationService = createTranslationService({
 					GEMINI_API_KEY: c.env.GEMINI_API_KEY,
 				});
 
-				// 既存の英語翻訳を確認
-				const existingEnTranslation = await db
-					.select({
-						id: articleTranslations.id,
-						title: articleTranslations.title,
-						content: articleTranslations.content,
-					})
-					.from(articleTranslations)
-					.where(
-						and(
-							eq(articleTranslations.articleId, articleId),
-							eq(articleTranslations.language, "en")
-						)
-					)
-					.limit(1);
-
-				// 翻訳を実行
+				// 記事を翻訳
 				const translatedArticle = await translationService.translateArticle(
 					title,
 					content
 				);
 
 				if (translatedArticle) {
-					if (existingEnTranslation.length > 0) {
-						// 既存の英語翻訳を更新
-						await db
-							.update(articleTranslations)
-							.set({
-								title: translatedArticle.title,
-								content: translatedArticle.content,
-							})
-							.where(eq(articleTranslations.id, existingEnTranslation[0].id));
-						console.log(`Article ${articleId} translation updated`);
-					} else {
-						// 新規に英語翻訳を作成
-						await db.insert(articleTranslations).values({
-							articleId,
-							language: "en",
+					// 英語版を更新
+					await db
+						.update(articleTranslations)
+						.set({
 							title: translatedArticle.title,
 							content: translatedArticle.content,
-						});
-						console.log(`Article ${articleId} translated for the first time`);
-					}
+						})
+						.where(
+							and(
+								eq(articleTranslations.articleId, articleId),
+								eq(articleTranslations.language, "en")
+							)
+						);
+					console.log(`Article ${articleId} translated successfully`);
 				} else {
 					console.warn(
-						`Translation failed for article ${articleId}, continuing without translation`
+						`Translation failed for article ${articleId}, continuing without English translation update`
 					);
 				}
 			} catch (error) {
