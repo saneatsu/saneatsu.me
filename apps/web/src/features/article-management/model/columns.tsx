@@ -145,16 +145,7 @@ export const columns: ColumnDef<Article>[] = [
 	},
 	{
 		accessorKey: "status",
-		header: ({ column }) => (
-			<Button
-				variant="ghost"
-				onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-				className="font-medium"
-			>
-				ステータス
-				<ArrowUpDown className="ml-2 h-4 w-4" />
-			</Button>
-		),
+		header: "ステータス",
 		cell: ({ row }) => {
 			const article = row.original;
 			const config = ARTICLE_STATUS_CONFIG[article.status];
@@ -164,7 +155,7 @@ export const columns: ColumnDef<Article>[] = [
 				</div>
 			);
 		},
-		enableSorting: true,
+		enableSorting: false,
 		filterFn: (row, id, value) => {
 			return value.includes(row.getValue(id));
 		},
