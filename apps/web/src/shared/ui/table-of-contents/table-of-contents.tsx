@@ -78,6 +78,8 @@ export function TableOfContents({
 				behavior: "smooth",
 				block: "start",
 			});
+			// URLにアンカーを追加
+			window.location.hash = id;
 		}
 	};
 
@@ -135,7 +137,7 @@ export function TableOfContents({
 							type="button"
 							onClick={() => handleClick(heading.id)}
 							className={cn(
-								"block w-full text-left text-sm transition-colors hover:text-foreground",
+								"block w-full text-left text-sm transition-colors hover:text-foreground cursor-pointer",
 								// インデントをレベルに応じて調整
 								getIndentClass(heading.level),
 								// アクティブな項目をハイライト
