@@ -1,6 +1,6 @@
 import type { RouteHandler } from "@hono/zod-openapi";
 import { articleTags, tags } from "@saneatsu/db/worker";
-import { eq, sql } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 
 import type { getAllTagsRoute } from "./get-all-tags.openapi";
 
@@ -33,6 +33,7 @@ export const getAllTags: Handler = async (c) => {
 		});
 
 		// 2. タグ一覧を取得（記事数も含める）
+		// 更新日の降順でソート（最新のものが上に来る）
 		const tagList = await db
 			.select({
 				id: tags.id,
@@ -44,7 +45,7 @@ export const getAllTags: Handler = async (c) => {
 			.from(tags)
 			.leftJoin(articleTags, eq(tags.id, articleTags.tagId))
 			.groupBy(tags.id)
-			.orderBy(tags.createdAt);
+			.orderBy(desc(tags.updatedAt));
 
 		// 3. レスポンスを返す
 		return c.json(

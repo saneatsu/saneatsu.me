@@ -204,7 +204,7 @@ describe("GET /tags - タグ一覧取得", () => {
 			});
 		});
 
-		it("タグが作成日時順でソートされる", async () => {
+		it("タグが更新日時の降順でソートされる（最新のものが上）", async () => {
 			// Arrange
 			const { mockDb } = setupDbMocks();
 
@@ -212,20 +212,21 @@ describe("GET /tags - タグ一覧取得", () => {
 			const { createDatabaseClient } = await import("@saneatsu/db/worker");
 			(createDatabaseClient as any).mockReturnValue(mockDb);
 
+			// 更新日の降順でソート（最新のものが先）
 			const mockTags = [
-				{
-					id: 1,
-					slug: "古いタグ",
-					createdAt: "2024-01-01T00:00:00.000Z",
-					updatedAt: "2024-01-02T00:00:00.000Z",
-					articleCount: 5,
-				},
 				{
 					id: 2,
 					slug: "新しいタグ",
-					createdAt: "2024-01-10T00:00:00.000Z",
+					createdAt: "2024-01-01T00:00:00.000Z",
 					updatedAt: "2024-01-11T00:00:00.000Z",
 					articleCount: 3,
+				},
+				{
+					id: 1,
+					slug: "古いタグ",
+					createdAt: "2024-01-10T00:00:00.000Z",
+					updatedAt: "2024-01-02T00:00:00.000Z",
+					articleCount: 5,
 				},
 			];
 
