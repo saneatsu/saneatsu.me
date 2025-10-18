@@ -22,14 +22,8 @@ export default function ArticlesPage() {
 
 	return (
 		<div className="space-y-6">
-			{/* ヘッダー */}
-			<div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
-				<div>
-					<h2 className="text-2xl font-bold text-foreground">記事管理</h2>
-					<p className="text-muted-foreground">
-						記事の作成・編集・削除・公開状態の管理ができます
-					</p>
-				</div>
+			{/* 新規作成ボタン */}
+			<div className="flex justify-end">
 				<Link href="/admin/articles/new">
 					<Button className="w-fit">
 						<Plus className="mr-2 h-4 w-4" />

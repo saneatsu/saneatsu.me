@@ -27,18 +27,10 @@ import {
 } from "@/shared/ui/select/select";
 
 /**
- * ダッシュボードメインコンポーネントのプロパティ
- */
-interface DashboardMainProps {
-	/** ユーザー名（表示用） */
-	userName?: string;
-}
-
-/**
  * ダッシュボードのメインコンポーネント
  * 各種統計データを取得し、サブコンポーネントに渡して表示
  */
-export function DashboardMain({ userName = "管理者" }: DashboardMainProps) {
+export function DashboardMain() {
 	/**
 	 * 選択された日数の状態管理
 	 */
@@ -73,13 +65,6 @@ export function DashboardMain({ userName = "管理者" }: DashboardMainProps) {
 	if (error) {
 		return (
 			<div className="space-y-6">
-				<div>
-					<h1 className="text-3xl font-bold text-foreground mb-2">
-						ダッシュボード
-					</h1>
-					<p className="text-muted-foreground">ようこそ、{userName}さん</p>
-				</div>
-
 				<Alert variant="destructive">
 					<AlertCircle className="h-4 w-4" />
 					<AlertDescription>
@@ -92,16 +77,6 @@ export function DashboardMain({ userName = "管理者" }: DashboardMainProps) {
 
 	return (
 		<div className="space-y-6">
-			{/* ヘッダー */}
-			<div>
-				<h1 className="text-3xl font-bold text-foreground mb-2">
-					ダッシュボード
-				</h1>
-				<p className="text-muted-foreground">
-					ようこそ、{userName}さん。ここから記事の管理ができます。
-				</p>
-			</div>
-
 			{/* 最終更新時刻 */}
 			{dashboardData && !isLoading && (
 				<div className="text-sm text-muted-foreground">
