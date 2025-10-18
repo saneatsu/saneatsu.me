@@ -412,7 +412,9 @@ const MultipleSelector = React.forwardRef<
 							return (
 								<Badge
 									key={option.value}
+									variant="outline"
 									className={cn(
+										"text-xs",
 										"data-[disabled]:bg-muted-foreground data-[disabled]:text-muted data-[disabled]:hover:bg-muted-foreground",
 										"data-[fixed]:bg-muted-foreground data-[fixed]:text-muted data-[fixed]:hover:bg-muted-foreground",
 										badgeClassName
@@ -424,7 +426,7 @@ const MultipleSelector = React.forwardRef<
 									<button
 										type="button"
 										className={cn(
-											"ml-1 rounded-full outline-none ring-offset-background",
+											"ml-1 rounded-full outline-none ring-offset-background cursor-pointer",
 											"focus:ring-2 focus:ring-ring focus:ring-offset-2",
 											(disabled || option.fixed) && "hidden"
 										)}
