@@ -16,10 +16,10 @@ import { type TagSuggestionItem, TagSuggestionsPopover } from "@/entities/tag";
 
 import { remarkTag } from "@/shared/lib/remark-tag";
 import { remarkWikiLink } from "@/shared/lib/remark-wiki-link";
-import { useClickExpansion } from "./hooks/use-click-expansion";
 import { useKeyboardShortcuts } from "./hooks/use-keyboard-shortcuts";
 import { useTagDetection } from "./hooks/use-tag-detection";
 import { useWikiLinkDetection } from "./hooks/use-wiki-link-detection";
+import { useClickExpansion } from "./lib/use-click-expansion";
 import type { CursorPosition } from "./types";
 
 // Wiki Linkコンポーネントを動的インポート（クライアントサイドのみ）
