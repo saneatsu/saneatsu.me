@@ -2,6 +2,7 @@
 
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
+import Link from "next/link";
 
 import type { Tag } from "@/shared/model";
 import { Button } from "@/shared/ui";
@@ -57,9 +58,12 @@ export const columns: ColumnDef<Tag>[] = [
 		cell: ({ row }) => {
 			const tag = row.original;
 			return (
-				<div className="font-medium min-w-[200px]">
+				<Link
+					href={`/admin/tags/${tag.id}/edit`}
+					className="font-medium min-w-[200px] hover:underline"
+				>
 					{tag.slug || "タグ名なし"}
-				</div>
+				</Link>
 			);
 		},
 		enableSorting: true,
