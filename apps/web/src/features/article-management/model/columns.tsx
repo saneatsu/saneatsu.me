@@ -117,7 +117,7 @@ export const columns: ColumnDef<Article>[] = [
 						{article.title || "タイトルなし"}
 					</Link>
 					<div className="text-sm text-muted-foreground">
-						スラッグ: {article.slug}
+						{article.slug}
 					</div>
 				</div>
 			);
