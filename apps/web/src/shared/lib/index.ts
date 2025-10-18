@@ -16,9 +16,6 @@ export {
 	upsertUser,
 } from "./api-client";
 
-// Auth
-export { auth } from "./auth";
-
 // Cloudflare Images
 export { getCloudflareImageUrl, getOgImageUrl } from "./cloudflare-images";
 

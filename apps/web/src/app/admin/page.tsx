@@ -1,5 +1,5 @@
+import { auth } from "@/app/api/auth/[...nextauth]/auth";
 import { DashboardMain } from "@/features/dashboard";
-import { auth } from "@/shared/lib";
 
 /**
  * 管理者ダッシュボードページ

@@ -1,8 +1,7 @@
 import { redirect } from "next/navigation";
 
-import { auth } from "@/shared/lib";
+import { auth } from "@/app/api/auth/[...nextauth]/auth";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/shared/ui";
-
 import { AppSidebar, BreadcrumbWrapper } from "@/widgets/admin-layout";
 
 export default async function AdminLayout({
