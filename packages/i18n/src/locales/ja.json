@@ -33,11 +33,14 @@
 		"title": "About",
 		"tech": {
 			"title": "技術スタック",
-			"frontend": {
-				"title": "フロントエンド"
+			"languages": {
+				"title": "言語"
 			},
-			"backend": {
-				"title": "バックエンド"
+			"frameworks": {
+				"title": "フレームワーク"
+			},
+			"databases": {
+				"title": "データベース"
 			},
 			"tools": {
 				"title": "開発ツール"

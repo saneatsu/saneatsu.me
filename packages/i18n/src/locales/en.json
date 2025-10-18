@@ -33,11 +33,14 @@
 		"title": "About",
 		"tech": {
 			"title": "Tech Stack",
-			"frontend": {
-				"title": "Frontend"
+			"languages": {
+				"title": "Languages"
 			},
-			"backend": {
-				"title": "Backend"
+			"frameworks": {
+				"title": "Frameworks"
+			},
+			"databases": {
+				"title": "Databases"
 			},
 			"tools": {
 				"title": "Development Tools"

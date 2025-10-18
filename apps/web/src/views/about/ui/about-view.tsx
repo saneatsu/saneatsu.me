@@ -4,20 +4,36 @@ import { useTranslations } from "next-intl";
 import type { SimpleIcon } from "simple-icons";
 import {
 	siCloudflare,
+	siDart,
 	siDocker,
 	siDrizzle,
+	siFlask,
+	siFlutter,
 	siGit,
 	siGithub,
+	siGithubactions,
+	siGooglebigquery,
 	siHono,
+	siJavascript,
+	siMui,
 	siNextdotjs,
 	siNodedotjs,
+	siNotion,
+	siNuxt,
+	siPinia,
 	siPostgresql,
+	siPrisma,
+	siPython,
 	siReact,
+	siRemix,
+	siSlack,
 	siSqlite,
+	siStorybook,
 	siTailwindcss,
 	siTypescript,
 	siVercel,
 	siVite,
+	siVuedotjs,
 } from "simple-icons";
 
 import { BadgeWithIcon } from "@/shared/ui";
@@ -42,30 +58,49 @@ export function AboutView() {
 
 	// 技術スタックの定義（アイコン付き）
 	const techStack: {
-		frontend: TechItem[];
-		backend: TechItem[];
+		languages: TechItem[];
+		frameworks: TechItem[];
+		databases: TechItem[];
 		tools: TechItem[];
 	} = {
-		frontend: [
+		languages: [
+			{ name: "TypeScript", icon: siTypescript },
+			{ name: "JavaScript", icon: siJavascript },
+			{ name: "Python", icon: siPython },
+			{ name: "Dart", icon: siDart },
+		],
+		frameworks: [
 			{ name: "React", icon: siReact },
 			{ name: "Next.js", icon: siNextdotjs },
-			{ name: "TypeScript", icon: siTypescript },
+			{ name: "Vue.js", icon: siVuedotjs },
+			{ name: "Nuxt", icon: siNuxt },
+			{ name: "Remix", icon: siRemix },
+			{ name: "Flutter", icon: siFlutter },
 			{ name: "Tailwind CSS", icon: siTailwindcss },
-			{ name: "Vite", icon: siVite },
-		],
-		backend: [
+			{ name: "MUI", icon: siMui },
+			{ name: "Pinia", icon: siPinia },
 			{ name: "Node.js", icon: siNodedotjs },
 			{ name: "Hono", icon: siHono },
+			{ name: "Flask", icon: siFlask },
+			{ name: "Vite", icon: siVite },
+			{ name: "Storybook", icon: siStorybook },
 			{ name: "Drizzle ORM", icon: siDrizzle },
+			{ name: "Prisma", icon: siPrisma },
+		],
+		databases: [
 			{ name: "PostgreSQL", icon: siPostgresql },
 			{ name: "SQLite", icon: siSqlite },
+			{ name: "BigQuery", icon: siGooglebigquery },
 		],
 		tools: [
 			{ name: "Git", icon: siGit },
 			{ name: "GitHub", icon: siGithub },
+			{ name: "GitHub Actions", icon: siGithubactions },
 			{ name: "Vercel", icon: siVercel },
 			{ name: "Cloudflare", icon: siCloudflare },
 			{ name: "Docker", icon: siDocker },
+			{ name: "Notion", icon: siNotion },
+			{ name: "Slack", icon: siSlack },
 		],
 	};
 
@@ -85,10 +120,10 @@ export function AboutView() {
 						<div className="space-y-6">
 							<div>
 								<h3 className="text-lg font-semibold mb-3">
-									{t("tech.frontend.title")}
+									{t("tech.languages.title")}
 								</h3>
 								<div className="flex flex-wrap gap-2">
-									{techStack.frontend.map((tech) => (
+									{techStack.languages.map((tech) => (
 										<BadgeWithIcon
 											key={tech.name}
 											icon={tech.icon}
@@ -99,10 +134,24 @@ export function AboutView() {
 							</div>
 							<div>
 								<h3 className="text-lg font-semibold mb-3">
-									{t("tech.backend.title")}
+									{t("tech.frameworks.title")}
 								</h3>
 								<div className="flex flex-wrap gap-2">
-									{techStack.backend.map((tech) => (
+									{techStack.frameworks.map((tech) => (
+										<BadgeWithIcon
+											key={tech.name}
+											icon={tech.icon}
+											text={tech.name}
+										/>
+									))}
+								</div>
+							</div>
+							<div>
+								<h3 className="text-lg font-semibold mb-3">
+									{t("tech.databases.title")}
+								</h3>
+								<div className="flex flex-wrap gap-2">
+									{techStack.databases.map((tech) => (
 										<BadgeWithIcon
 											key={tech.name}
 											icon={tech.icon}
