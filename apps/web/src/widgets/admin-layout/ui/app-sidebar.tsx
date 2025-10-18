@@ -27,7 +27,7 @@ const menuItems = [
 		icon: LayoutDashboard,
 	},
 	{
-		title: "記事管理",
+		title: "記事",
 		url: "/admin/articles",
 		icon: FileText,
 	},

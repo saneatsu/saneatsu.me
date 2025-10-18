@@ -18,7 +18,7 @@ import {
  */
 const breadcrumbMap: Record<string, string> = {
 	"/admin": "ダッシュボード",
-	"/admin/articles": "記事管理",
+	"/admin/articles": "記事",
 	"/admin/articles/new": "記事作成",
 };
 
