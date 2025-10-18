@@ -37,4 +37,6 @@ export type {
 	TagCreateRequest,
 	TagCreateResponse,
 	TagsResponse,
+	TagUpdateRequest,
+	TagUpdateResponse,
 } from "./tag";
