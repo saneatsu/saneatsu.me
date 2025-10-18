@@ -1,4 +1,4 @@
-// Tag Entity Public API
+export { useGetAllTags } from "./api/use-get-all-tags/use-get-all-tags";
 
 // UI Components
 export {

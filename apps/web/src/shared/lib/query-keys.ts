@@ -40,6 +40,14 @@ export const queryKeys = {
 	},
 
 	/**
+	 * タグ関連のクエリキー
+	 */
+	tag: {
+		// すべてのタグ
+		all: () => ["tags"] as const,
+	},
+
+	/**
 	 * ダッシュボード関連のクエリキー
 	 */
 	dashboard: {
@@ -56,4 +64,5 @@ export const queryKeys = {
 
 // エクスポートエイリアス
 export const ARTICLE_QUERY_KEYS = queryKeys.article;
+export const TAG_QUERY_KEYS = queryKeys.tag;
 export const DASHBOARD_QUERY_KEYS = queryKeys.dashboard;
