@@ -29,12 +29,17 @@ function generateBreadcrumbs(pathname: string) {
 	const paths = pathname.split("/").filter(Boolean);
 	const breadcrumbs = [];
 
+	// /admin/articles の場合はダッシュボードを表示しない
+	const shouldShowDashboard = pathname !== "/admin/articles";
+
 	// ルートパス（ダッシュボード）
-	breadcrumbs.push({
-		title: breadcrumbMap["/admin"] || "ダッシュボード",
-		href: "/admin",
-		isCurrentPage: pathname === "/admin",
-	});
+	if (shouldShowDashboard) {
+		breadcrumbs.push({
+			title: breadcrumbMap["/admin"] || "ダッシュボード",
+			href: "/admin",
+			isCurrentPage: pathname === "/admin",
+		});
+	}
 
 	// パスを段階的に構築してパンくずリストを生成
 	let currentPath = "";
