@@ -4,6 +4,7 @@ import { Menu } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
+
 import { LanguageSwitcher } from "@/features/lang";
 import { cn } from "@/shared/lib";
 import {

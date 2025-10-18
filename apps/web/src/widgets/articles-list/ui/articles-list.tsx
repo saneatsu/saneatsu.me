@@ -1,6 +1,7 @@
 "use client";
 
 import { useLocale } from "next-intl";
+
 import { ArticleCard, useGetAllArticles } from "@/entities/article";
 
 interface ArticlesListProps {

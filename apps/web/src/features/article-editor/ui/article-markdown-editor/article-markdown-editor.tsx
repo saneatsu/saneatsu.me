@@ -13,9 +13,9 @@ import {
 	type SuggestionItem,
 } from "@/entities/article";
 import { type TagSuggestionItem, TagSuggestionsPopover } from "@/entities/tag";
-
 import { remarkTag } from "@/shared/lib/remark-tag";
 import { remarkWikiLink } from "@/shared/lib/remark-wiki-link";
+
 import { useClickExpansion } from "../../lib/use-click-expansion";
 import { useKeyboardShortcuts } from "../../lib/use-keyboard-shortcuts";
 import { useTagDetection } from "../../model/use-tag-detection";

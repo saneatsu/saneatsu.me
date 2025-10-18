@@ -21,6 +21,7 @@ import {
 	DataTableSkeleton,
 	Input,
 } from "@/shared/ui";
+
 import { articleStatusOptions, columns } from "../model/columns";
 
 /**
