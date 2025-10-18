@@ -35,7 +35,7 @@ export interface DataTableFacetedFilterOption {
 	/** 件数表示（オプショナル） */
 	count?: number;
 	/** バッジのvariant（オプショナル） */
-	variant?: "default" | "secondary" | "destructive" | "outline";
+	variant?: "default" | "secondary" | "destructive" | "outline" | "success";
 }
 
 /**
