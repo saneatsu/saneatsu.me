@@ -38,6 +38,20 @@ const articlesOpenApiQuerySchema = z.object({
 });
 
 /**
+ * タグスキーマ
+ */
+const TagSchema = z.object({
+	id: z.number().int().openapi({
+		example: 1,
+		description: "タグID",
+	}),
+	slug: z.string().openapi({
+		example: "typescript",
+		description: "タグスラッグ",
+	}),
+});
+
+/**
  * 記事スキーマ
  */
 const ArticleSchema = z.object({
@@ -76,6 +90,13 @@ const ArticleSchema = z.object({
 	viewCount: z.number().int().openapi({
 		example: 127,
 		description: "記事の閲覧数（言語ごと）",
+	}),
+	tags: z.array(TagSchema).openapi({
+		example: [
+			{ id: 1, slug: "typescript" },
+			{ id: 2, slug: "react" },
+		],
+		description: "記事に関連付けられたタグ",
 	}),
 });
 

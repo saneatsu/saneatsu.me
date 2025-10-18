@@ -127,9 +127,21 @@ export const columns: ColumnDef<Article>[] = [
 	{
 		id: "tags",
 		header: "タグ",
-		cell: () => {
-			// タグ情報は現在のAPIレスポンスに含まれていないため、一時的に空にする
-			return <div className="text-sm text-muted-foreground w-[200px]">-</div>;
+		cell: ({ row }) => {
+			const article = row.original;
+			return (
+				<div className="flex flex-wrap gap-1 w-[200px]">
+					{article.tags.length > 0 ? (
+						article.tags.map((tag) => (
+							<Badge key={tag.id} variant="outline" className="text-xs">
+								{tag.slug}
+							</Badge>
+						))
+					) : (
+						<span className="text-sm text-muted-foreground">-</span>
+					)}
+				</div>
+			);
 		},
 		enableSorting: false,
 	},

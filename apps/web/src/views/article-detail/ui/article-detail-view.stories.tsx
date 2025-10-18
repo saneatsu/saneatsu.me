@@ -61,6 +61,7 @@ useEffect(() => {
 
 React Hooksを使って、より良いReactアプリケーションを構築しましょう！`,
 	viewCount: 127,
+	tags: [],
 };
 
 const draftArticle: Article = {

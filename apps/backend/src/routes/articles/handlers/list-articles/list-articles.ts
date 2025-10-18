@@ -1,7 +1,12 @@
 import type { RouteHandler } from "@hono/zod-openapi";
-import { articles, articleTranslations } from "@saneatsu/db/worker";
+import {
+	articles,
+	articleTags,
+	articleTranslations,
+	tags,
+} from "@saneatsu/db/worker";
 import { articleListQuerySchema, type SortOrder } from "@saneatsu/schemas";
-import { and, asc, desc, eq, sql } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
 
 import type { listArticlesRoute } from "./list-articles.openapi";
 
@@ -132,7 +137,38 @@ export const listArticles: Handler = async (c) => {
 			.limit(limit)
 			.offset(offset);
 
-		// 7. 総記事数を取得
+		// 7. タグ情報を取得
+		const articleIds = articleList.map((article) => article.id);
+		let articleTagsData: Array<{
+			articleId: number;
+			tagId: number;
+			tagSlug: string;
+		}> = [];
+
+		if (articleIds.length > 0) {
+			articleTagsData = await db
+				.select({
+					articleId: articleTags.articleId,
+					tagId: tags.id,
+					tagSlug: tags.slug,
+				})
+				.from(articleTags)
+				.innerJoin(tags, eq(articleTags.tagId, tags.id))
+				.where(inArray(articleTags.articleId, articleIds));
+		}
+
+		// 8. 記事ごとにタグをグループ化
+		const articleWithTags = articleList.map((article) => ({
+			...article,
+			tags: articleTagsData
+				.filter((tag) => tag.articleId === article.id)
+				.map((tag) => ({
+					id: tag.tagId,
+					slug: tag.tagSlug,
+				})),
+		}));
+
+		// 9. 総記事数を取得
 		const totalCount = await db
 			.select({ count: articles.id })
 			.from(articles)
@@ -142,10 +178,10 @@ export const listArticles: Handler = async (c) => {
 			)
 			.where(and(...conditions));
 
-		// 8. レスポンスを返す
+		// 10. レスポンスを返す
 		return c.json(
 			{
-				data: articleList,
+				data: articleWithTags,
 				pagination: {
 					page,
 					limit,

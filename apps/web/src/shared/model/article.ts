@@ -11,6 +11,16 @@ export type ArticleStatus = "published" | "draft" | "archived";
 export type LanguageCode = "ja" | "en";
 
 /**
+ * タグオブジェクト
+ */
+export interface Tag {
+	/** タグID */
+	id: number;
+	/** タグスラッグ */
+	slug: string;
+}
+
+/**
  * 記事オブジェクト（API レスポンス用）
  * バックエンドの ArticleSchema に対応
  */
@@ -33,6 +43,8 @@ export interface Article {
 	content: string | null;
 	/** 記事の閲覧数（言語ごと） */
 	viewCount: number;
+	/** 記事に関連付けられたタグ */
+	tags: Tag[];
 }
 
 /**
