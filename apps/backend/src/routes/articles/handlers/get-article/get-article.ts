@@ -1,5 +1,10 @@
 import type { RouteHandler } from "@hono/zod-openapi";
-import { articles, articleTranslations } from "@saneatsu/db/worker";
+import {
+	articles,
+	articleTags,
+	articleTranslations,
+	tags,
+} from "@saneatsu/db/worker";
 import { and, eq, sql } from "drizzle-orm";
 
 import { convertWikiLinks } from "@/utils/wiki-link";
@@ -28,8 +33,9 @@ type Handler = RouteHandler<typeof getArticleRoute, { Bindings: Env }>;
  * 5. 公開済み以外は404
  * 6. 現在のログインユーザーを取得
  * 7. 閲覧数をインクリメント（公開済み記事かつ作者以外の場合のみ）
- * 8. Wiki Linkをコンテンツ内で変換
- * 9. レスポンスを返す
+ * 8. タグ情報を取得
+ * 9. Wiki Linkをコンテンツ内で変換
+ * 10. レスポンスを返す
  */
 export const getArticle: Handler = async (c) => {
 	try {
@@ -119,12 +125,22 @@ export const getArticle: Handler = async (c) => {
 			articleData.viewCount = (articleData.viewCount || 0) + 1;
 		}
 
-		// 8. Wiki Linkをコンテンツ内で変換
+		// 8. タグ情報を取得
+		const articleTagsData = await db
+			.select({
+				tagId: tags.id,
+				tagSlug: tags.slug,
+			})
+			.from(articleTags)
+			.innerJoin(tags, eq(articleTags.tagId, tags.id))
+			.where(eq(articleTags.articleId, articleData.id));
+
+		// 9. Wiki Linkをコンテンツ内で変換
 		const convertedContent = articleData.content
 			? await convertWikiLinks(db, articleData.content, lang)
 			: articleData.content;
 
-		// 9. レスポンスを返す
+		// 10. レスポンスを返す
 		return c.json(
 			{
 				data: {
@@ -137,6 +153,10 @@ export const getArticle: Handler = async (c) => {
 					title: articleData.title,
 					content: convertedContent,
 					viewCount: articleData.viewCount,
+					tags: articleTagsData.map((tag) => ({
+						id: tag.tagId,
+						slug: tag.tagSlug,
+					})),
 				},
 			},
 			200

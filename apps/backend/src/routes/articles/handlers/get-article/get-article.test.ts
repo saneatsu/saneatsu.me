@@ -65,6 +65,18 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 			}),
 		};
 
+		// タグ情報取得のモック
+		const tagsMock = {
+			from: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue([
+						{ tagId: 1, tagSlug: "typescript" },
+						{ tagId: 2, tagSlug: "nextjs" },
+					]),
+				}),
+			}),
+		};
+
 		// ビューカウント更新のモック
 		mockDb.update = vi.fn().mockReturnValue({
 			set: vi.fn().mockReturnValue({
@@ -72,7 +84,9 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 			}),
 		});
 
-		mockDb.select.mockReturnValueOnce(articleMock);
+		mockDb.select
+			.mockReturnValueOnce(articleMock) // 記事取得
+			.mockReturnValueOnce(tagsMock); // タグ情報取得
 
 		// Act
 		const client = testClient(articlesRoute, {
@@ -91,6 +105,10 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 			data: {
 				...mockArticle,
 				viewCount: 6, // インクリメント後の値（5→6）
+				tags: [
+					{ id: 1, slug: "typescript" },
+					{ id: 2, slug: "nextjs" },
+				],
 			},
 		});
 	});
@@ -173,6 +191,17 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 			}),
 		};
 
+		// タグ情報取得のモック
+		const tagsMock = {
+			from: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
+					where: vi
+						.fn()
+						.mockResolvedValue([{ tagId: 1, tagSlug: "typescript" }]),
+				}),
+			}),
+		};
+
 		// ビューカウント更新のモック
 		mockDb.update = vi.fn().mockReturnValue({
 			set: vi.fn().mockReturnValue({
@@ -180,7 +209,9 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 			}),
 		});
 
-		mockDb.select.mockReturnValueOnce(articleMock);
+		mockDb.select
+			.mockReturnValueOnce(articleMock) // 記事取得
+			.mockReturnValueOnce(tagsMock); // タグ情報取得
 
 		// Act
 		const client = testClient(articlesRoute, {
@@ -197,6 +228,7 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 		expect(res.status).toBe(200);
 		const data = await res.json();
 		expect(data.data.title).toBe("Test Article");
+		expect(data.data.tags).toEqual([{ id: 1, slug: "typescript" }]);
 	});
 
 	it("下書きステータスの記事の場合、404エラーを返す", async () => {
@@ -342,6 +374,18 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 			}),
 		};
 
+		// タグ情報取得のモック
+		const tagsMock = {
+			from: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue([
+						{ tagId: 1, tagSlug: "typescript" },
+						{ tagId: 2, tagSlug: "nextjs" },
+					]),
+				}),
+			}),
+		};
+
 		// Update関数のモック（view_countインクリメント用）
 		const updateMock = {
 			set: vi.fn().mockReturnValue({
@@ -350,7 +394,9 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 		};
 		mockDb.update = vi.fn().mockReturnValue(updateMock);
 
-		mockDb.select.mockReturnValueOnce(articleMock); // 記事取得
+		mockDb.select
+			.mockReturnValueOnce(articleMock) // 記事取得
+			.mockReturnValueOnce(tagsMock); // タグ情報取得
 
 		// Act
 		const client = testClient(articlesRoute, {
@@ -365,6 +411,10 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 		expect(res.status).toBe(200);
 		const data = await res.json();
 		expect(data.data.viewCount).toBe(43); // 42 + 1（インクリメント後）
+		expect(data.data.tags).toEqual([
+			{ id: 1, slug: "typescript" },
+			{ id: 2, slug: "nextjs" },
+		]);
 		expect(mockDb.update).toHaveBeenCalled(); // updateが呼ばれたことを確認
 	});
 });

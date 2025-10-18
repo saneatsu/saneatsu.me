@@ -4,10 +4,11 @@ import { useTranslations } from "next-intl";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
+
 import { WikiLink } from "@/entities/article";
 import type { Article } from "@/shared";
 import { cn, extractHeadings, remarkTag, remarkWikiLink } from "@/shared/lib";
-import { TableOfContents } from "@/shared/ui";
+import { Badge, TableOfContents } from "@/shared/ui";
 
 export interface ArticleDetailViewProps {
 	/** 表示する記事データ */
@@ -49,6 +50,21 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 				{/* Article Header */}
 				<header className="mb-12 space-y-6">
 					<div className="space-y-4">
+						<h1 className="text-4xl font-bold tracking-tight">
+							{article.title}
+						</h1>
+
+						{/* タグ表示 */}
+						{article.tags && article.tags.length > 0 && (
+							<div className="flex flex-wrap gap-2">
+								{article.tags.map((tag) => (
+									<Badge key={tag.id} variant="outline">
+										{tag.slug}
+									</Badge>
+								))}
+							</div>
+						)}
+
 						<div className="flex items-center space-x-4 text-sm text-muted-foreground">
 							{publishedDate && (
 								<time dateTime={article.publishedAt || undefined}>
@@ -81,10 +97,6 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 								<span>{t("viewCount", { count: article.viewCount })}</span>
 							</span>
 						</div>
-
-						<h1 className="text-4xl font-bold tracking-tight">
-							{article.title}
-						</h1>
 					</div>
 				</header>
 

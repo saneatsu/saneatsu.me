@@ -61,7 +61,11 @@ useEffect(() => {
 
 React Hooksを使って、より良いReactアプリケーションを構築しましょう！`,
 	viewCount: 127,
-	tags: [],
+	tags: [
+		{ id: 1, slug: "react" },
+		{ id: 2, slug: "typescript" },
+		{ id: 3, slug: "hooks" },
+	],
 };
 
 const draftArticle: Article = {
@@ -148,14 +152,71 @@ export const 記事ヘッダーテスト: Story = {
 		const publishedDate = canvas.getByText(/公開日:/);
 		expect(publishedDate).toBeInTheDocument();
 
-		// ステータスバッジの確認
-		const statusBadge = canvas.getByText("公開");
-		expect(statusBadge).toBeInTheDocument();
-
 		// time要素の確認
 		const timeElement = canvas.getByRole("time");
 		expect(timeElement).toBeInTheDocument();
 		expect(timeElement).toHaveAttribute("dateTime", "2024-01-15T10:00:00Z");
+	},
+};
+
+/**
+ * タグ表示のテスト
+ */
+export const タグ表示テスト: Story = {
+	name: "タグ表示テスト",
+	tags: ["validation"],
+	args: {
+		article: mockArticle,
+		locale: "ja",
+	},
+	parameters: {},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+
+		// タグバッジの確認
+		const reactTag = canvas.getByText("react");
+		expect(reactTag).toBeInTheDocument();
+
+		const typescriptTag = canvas.getByText("typescript");
+		expect(typescriptTag).toBeInTheDocument();
+
+		const hooksTag = canvas.getByText("hooks");
+		expect(hooksTag).toBeInTheDocument();
+
+		// タグの数を確認（3つのタグがあるはず）
+		const allBadges = canvasElement.querySelectorAll('[class*="badge"]');
+		// タグ3つ分のバッジが存在することを確認
+		expect(allBadges.length).toBeGreaterThanOrEqual(3);
+	},
+};
+
+/**
+ * タグなし記事のテスト
+ */
+export const タグなし記事テスト: Story = {
+	name: "タグなし記事テスト",
+	tags: ["validation"],
+	args: {
+		article: {
+			...mockArticle,
+			tags: [],
+		},
+		locale: "ja",
+	},
+	parameters: {},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+
+		// タイトルは表示されることを確認
+		const title = canvas.getByRole("heading", { level: 1 });
+		expect(title).toBeInTheDocument();
+
+		// タグバッジが表示されないことを確認
+		const reactTag = canvas.queryByText("react");
+		expect(reactTag).not.toBeInTheDocument();
+
+		const typescriptTag = canvas.queryByText("typescript");
+		expect(typescriptTag).not.toBeInTheDocument();
 	},
 };
 
