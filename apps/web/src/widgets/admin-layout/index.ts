@@ -1,2 +1,1 @@
-export { AppSidebar } from "./ui/app-sidebar";
-export { BreadcrumbWrapper } from "./ui/breadcrumb-wrapper";
+export { AdminLayout } from "./ui/admin-layout";

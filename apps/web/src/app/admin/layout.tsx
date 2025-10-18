@@ -1,31 +1,28 @@
 import { redirect } from "next/navigation";
 
 import { auth } from "@/app/api/auth/[...nextauth]/auth";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/shared/ui";
-import { AppSidebar, BreadcrumbWrapper } from "@/widgets/admin-layout";
+import { AdminLayout } from "@/widgets/admin-layout";
 
-export default async function AdminLayout({
+/**
+ * 管理画面共通レイアウト
+ *
+ * @description
+ * AdminLayoutウィジェットを使用した管理画面専用のレイアウトコンポーネント。
+ * 認証チェックを行い、未認証の場合はログインページにリダイレクトする。
+ *
+ * @remarks
+ * Route Groups機能により、adminグループ内の全ページに自動適用される。
+ */
+export default async function AdminPagesLayout({
 	children,
-}: {
+}: Readonly<{
 	children: React.ReactNode;
-}) {
+}>) {
 	const session = await auth();
 
 	if (!session) {
 		redirect("/login");
 	}
 
-	return (
-		<SidebarProvider>
-			<AppSidebar user={session?.user} />
-			<SidebarInset>
-				<header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-					<SidebarTrigger className="-ml-1" />
-					<div className="h-4 w-px bg-border mx-2" />
-					<BreadcrumbWrapper />
-				</header>
-				<div className="flex flex-1 flex-col gap-4 p-4">{children}</div>
-			</SidebarInset>
-		</SidebarProvider>
-	);
+	return <AdminLayout user={session?.user}>{children}</AdminLayout>;
 }
