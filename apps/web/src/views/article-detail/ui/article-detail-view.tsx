@@ -203,15 +203,19 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 										const isInline = !className;
 										if (isInline) {
 											return (
-												<code className="bg-muted px-1 py-0.5 rounded text-sm font-mono">
+												<code className="bg-muted text-foreground px-1 py-0.5 rounded text-sm font-mono">
 													{children}
 												</code>
 											);
 										}
-										return <code className={className}>{children}</code>;
+										return (
+											<code className={cn(className, "text-foreground")}>
+												{children}
+											</code>
+										);
 									},
 									pre: ({ children }) => (
-										<pre className="bg-muted p-4 rounded-lg overflow-x-auto mb-4">
+										<pre className="bg-muted text-foreground p-4 rounded-lg overflow-x-auto mb-4">
 											{children}
 										</pre>
 									),
