@@ -53,6 +53,8 @@
 
 ### 起動と接続
 
+#### リモートDB（Turso）の確認
+
 ```bash
 # このディレクトリから起動
 pnpm db:studio
@@ -62,6 +64,25 @@ TURSO_DATABASE_URL=libsql://production.turso.io \
 TURSO_AUTH_TOKEN=your-prod-token \
 pnpm db:studio
 ```
+
+#### ローカルDB（local.db）の確認
+
+開発中、ローカルのSQLiteファイル（`local.db`）の中身を確認したい場合：
+
+```bash
+# このディレクトリから起動
+pnpm drizzle-kit studio --config=drizzle.config.local.ts
+
+# または、プロジェクトルートから
+pnpm --filter @saneatsu/db drizzle-kit studio --config=drizzle.config.local.ts
+```
+
+起動後、ブラウザで `https://local.drizzle.studio` にアクセスすると、ローカルデータベースの中身を確認できます。
+
+**確認すべき項目：**
+- `articles` テーブル：総記事数
+- `article_translations` テーブル：言語別の翻訳数（`language` カラムでフィルタ）
+- 各記事が複数の翻訳を持っているかどうか
 
 ### GUI操作ガイド
 
