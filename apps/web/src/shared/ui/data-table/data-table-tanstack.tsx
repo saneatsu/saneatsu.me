@@ -38,6 +38,14 @@ interface DataTableProps<TData> {
 	 * テーブルが空の場合の表示メッセージ
 	 */
 	emptyMessage?: string;
+	/**
+	 * サーバーサイドページネーション用の情報（オプショナル）
+	 * 指定された場合、サーバー側の総件数を表示
+	 */
+	pagination?: {
+		total: number;
+		totalPages: number;
+	};
 }
 
 /**
@@ -70,6 +78,7 @@ export function DataTable<TData>({
 	table,
 	onRowClick,
 	emptyMessage = "データがありません",
+	pagination,
 }: DataTableProps<TData>) {
 	return (
 		<div className="space-y-4">
@@ -128,22 +137,38 @@ export function DataTable<TData>({
 			<div className="flex items-center justify-between px-2">
 				<div className="flex items-center space-x-6 text-sm text-muted-foreground">
 					<div>
-						{table.getFilteredRowModel().rows.length > 0 ? (
-							<>
-								{table.getState().pagination.pageIndex *
-									table.getState().pagination.pageSize +
-									1}
-								-
-								{Math.min(
-									(table.getState().pagination.pageIndex + 1) *
-										table.getState().pagination.pageSize,
-									table.getFilteredRowModel().rows.length
-								)}{" "}
-								の {table.getFilteredRowModel().rows.length} 件
-							</>
-						) : (
-							"0 件"
-						)}
+						{(() => {
+							// サーバーサイドページネーションの場合
+							if (pagination) {
+								if (pagination.total === 0) return "0 件";
+								const pageIndex = table.getState().pagination.pageIndex;
+								const pageSize = table.getState().pagination.pageSize;
+								const start = pageIndex * pageSize + 1;
+								const end = Math.min(
+									(pageIndex + 1) * pageSize,
+									pagination.total
+								);
+								return (
+									<>
+										{start}-{end} の {pagination.total} 件
+									</>
+								);
+							}
+							// クライアントサイドページネーションの場合（従来通り）
+							if (table.getFilteredRowModel().rows.length === 0) return "0 件";
+							const pageIndex = table.getState().pagination.pageIndex;
+							const pageSize = table.getState().pagination.pageSize;
+							const start = pageIndex * pageSize + 1;
+							const end = Math.min(
+								(pageIndex + 1) * pageSize,
+								table.getFilteredRowModel().rows.length
+							);
+							return (
+								<>
+									{start}-{end} の {table.getFilteredRowModel().rows.length} 件
+								</>
+							);
+						})()}
 					</div>
 					<div className="flex items-center space-x-2">
 						<span className="text-sm">表示件数:</span>
@@ -180,7 +205,7 @@ export function DataTable<TData>({
 					</Button>
 					<div className="text-sm font-medium">
 						ページ {table.getState().pagination.pageIndex + 1} /{" "}
-						{table.getPageCount()}
+						{pagination?.totalPages ?? table.getPageCount()}
 					</div>
 					<Button
 						variant="outline"

@@ -8,7 +8,6 @@ import type {
 import {
 	getCoreRowModel,
 	getFilteredRowModel,
-	getPaginationRowModel,
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
@@ -56,6 +55,10 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 	const [rowSelection, setRowSelection] = useState({});
 
+	// サーバーサイドページネーション用の状態管理
+	const [page, setPage] = useState(1);
+	const [pageSize, setPageSize] = useState(10);
+
 	const [filters, _setFilters] = useState<ArticleFilters>({
 		status: "all",
 		language: "ja",
@@ -63,11 +66,11 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 	});
 
 	/**
-	 * 記事一覧を取得
+	 * 記事一覧を取得（サーバーサイドページネーション）
 	 */
 	const { data, isLoading, error, refetch } = useGetAllArticles({
-		page: 1,
-		limit: 100,
+		page,
+		limit: pageSize,
 		language: "ja",
 		status: filters.status === "all" ? undefined : filters.status,
 		search: filters.search.trim() || undefined,
@@ -91,23 +94,39 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 		onRefresh?.();
 	};
 
-	// テーブルインスタンスを作成
+	// テーブルインスタンスを作成（サーバーサイドページネーション対応）
 	const table = useReactTable({
 		data: articles,
 		columns,
 		onSortingChange: setSorting,
 		onColumnFiltersChange: setColumnFilters,
 		getCoreRowModel: getCoreRowModel(),
-		getPaginationRowModel: getPaginationRowModel(),
+		// クライアントサイドページネーションを無効化
+		// getPaginationRowModel: getPaginationRowModel(),
 		getSortedRowModel: getSortedRowModel(),
 		getFilteredRowModel: getFilteredRowModel(),
 		onColumnVisibilityChange: setColumnVisibility,
 		onRowSelectionChange: setRowSelection,
+		// サーバーサイドページネーション設定
+		manualPagination: true,
+		pageCount: data?.pagination?.totalPages ?? 0,
+		onPaginationChange: (updater) => {
+			const newPagination =
+				typeof updater === "function"
+					? updater({ pageIndex: page - 1, pageSize })
+					: updater;
+			setPage(newPagination.pageIndex + 1);
+			setPageSize(newPagination.pageSize);
+		},
 		state: {
 			sorting,
 			columnFilters,
 			columnVisibility,
 			rowSelection,
+			pagination: {
+				pageIndex: page - 1, // TanStack Tableは0ベース、APIは1ベース
+				pageSize,
+			},
 		},
 		meta: {
 			onAction: handleArticleAction,
@@ -164,7 +183,18 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 					withPagination
 				/>
 			) : (
-				<DataTable table={table} emptyMessage="記事が見つかりません" />
+				<DataTable
+					table={table}
+					emptyMessage="記事が見つかりません"
+					pagination={
+						data?.pagination
+							? {
+									total: data.pagination.total,
+									totalPages: data.pagination.totalPages,
+								}
+							: undefined
+					}
+				/>
 			)}
 		</div>
 	);
