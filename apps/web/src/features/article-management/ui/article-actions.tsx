@@ -1,6 +1,13 @@
 "use client";
 
-import { Edit, Eye, FileEdit, MoreHorizontal, Trash2 } from "lucide-react";
+import {
+	Archive,
+	Edit,
+	Eye,
+	FileEdit,
+	MoreHorizontal,
+	Trash2,
+} from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -180,7 +187,7 @@ export function ArticleActions({ article, onAction }: ArticleActionsProps) {
 							onClick={() => handleStatusUpdateClick("archived")}
 							className="text-gray-600"
 						>
-							<FileEdit className="mr-2 h-4 w-4" />
+							<Archive className="mr-2 h-4 w-4" />
 							アーカイブ
 						</DropdownMenuItem>
 					)}

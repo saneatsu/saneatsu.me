@@ -31,8 +31,8 @@ type Handler = RouteHandler<typeof getArticleRoute, { Bindings: Env }>;
  * 3. 記事詳細を取得
  * 4. 記事が見つからない場合は404
  * 5. 公開済み以外は404
- * 6. 現在のログインユーザーを取得
- * 7. 閲覧数をインクリメント（公開済み記事かつ作者以外の場合のみ）
+ * 6. ログイン中のユーザーかチェック（X-User-Emailヘッダー）
+ * 7. 閲覧数をインクリメント（未ログインの場合のみ）
  * 8. タグ情報を取得
  * 9. Wiki Linkをコンテンツ内で変換
  * 10. レスポンスを返す
@@ -104,16 +104,12 @@ export const getArticle: Handler = async (c) => {
 			);
 		}
 
-		// 6. 現在のログインユーザーを取得（将来的には認証から取得）
-		// TODO: 認証システムが実装されたら、認証情報からユーザーIDを取得する
-		const currentUserEmail = "nito.tech.official@gmail.com"; // 仮のログインユーザー
-		const { getUserByEmail } = await import("../../../auth/service");
-		const currentUser = await getUserByEmail(db, currentUserEmail);
+		// 6. ログイン中のユーザーかチェック
+		const userEmail = c.req.header("X-User-Email");
+		const isLoggedIn = !!userEmail; // ヘッダーがあればログイン中
 
-		// 7. 閲覧数をインクリメント（公開済み記事かつ作者以外の場合のみ）
-		const isAuthor = currentUser && articleData.authorId === currentUser.id;
-
-		if (articleData.translationId && !isAuthor) {
+		// 7. 閲覧数をインクリメント（未ログインの場合のみ）
+		if (articleData.translationId && !isLoggedIn) {
 			await db
 				.update(articleTranslations)
 				.set({

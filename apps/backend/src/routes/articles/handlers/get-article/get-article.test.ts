@@ -417,4 +417,85 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 		]);
 		expect(mockDb.update).toHaveBeenCalled(); // updateが呼ばれたことを確認
 	});
+
+	it("ログイン中のユーザー（作者以外）が記事を閲覧した場合、閲覧数が増えない", async () => {
+		// Arrange
+		const { mockDb } = setupDbMocks();
+
+		// createDatabaseClient関数がmockDbを返すように設定
+		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		(createDatabaseClient as any).mockReturnValue(mockDb);
+
+		const mockArticle = createMockArticleWithTranslation({
+			article: {
+				id: "article1",
+				slug: "test-article",
+				status: "published",
+			},
+			translation: {
+				id: "translation1",
+				title: "テスト記事",
+				content: "これはテスト記事の内容です。",
+				viewCount: 10,
+			},
+		});
+
+		const articleMock = {
+			from: vi.fn().mockReturnValue({
+				leftJoin: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([
+							{
+								...mockArticle,
+								translationId: "translation1",
+							},
+						]),
+					}),
+				}),
+			}),
+		};
+
+		// タグ情報取得のモック
+		const tagsMock = {
+			from: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue([]),
+				}),
+			}),
+		};
+
+		// Update関数のモック（view_countインクリメント用）
+		const updateMock = {
+			set: vi.fn().mockReturnValue({
+				where: vi.fn().mockResolvedValue({}),
+			}),
+		};
+		mockDb.update = vi.fn().mockReturnValue(updateMock);
+
+		mockDb.select
+			.mockReturnValueOnce(articleMock) // 記事取得
+			.mockReturnValueOnce(tagsMock); // タグ情報取得
+
+		// Act
+		const client = testClient(articlesRoute, {
+			TURSO_DATABASE_URL: "test://test.db",
+			TURSO_AUTH_TOKEN: "test-token",
+		}) as any;
+		const res = await client["test-article"].$get(
+			{
+				query: {},
+			},
+			{
+				headers: {
+					"X-User-Email": "test@example.com", // ログイン中のユーザー
+				},
+			}
+		);
+
+		// Assert
+		expect(res.status).toBe(200);
+		const data = await res.json();
+		expect(data.data.viewCount).toBe(10); // インクリメントされない（10のまま）
+		expect(mockDb.update).not.toHaveBeenCalled(); // updateが呼ばれないことを確認
+	});
 });

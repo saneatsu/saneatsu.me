@@ -1,6 +1,7 @@
 import type { AppType } from "@saneatsu/backend";
 import { hc } from "hono/client";
 
+import { auth } from "@/app/api/auth/[...nextauth]/auth";
 import type {
 	ApiError,
 	ArticleCreateRequest,
@@ -103,17 +104,27 @@ export async function fetchArticles(
 
 /**
  * 記事詳細を取得
+ *
+ * @description
+ * Server Componentから呼ばれるため、NextAuthのauth()でセッション情報を取得し、
+ * ログイン中のユーザーの場合は`X-User-Email`ヘッダーを送信する。
+ * これにより、バックエンドでログイン中のユーザーを識別し、閲覧数カウントから除外できる。
  */
 export async function fetchArticle(
 	slug: string,
 	query: ArticleDetailQuery = {}
 ): Promise<ArticleResponse> {
+	// NextAuthのセッション情報を取得（Server Component用）
+	const session = await auth();
+
 	// Service Bindingが利用可能かチェック
 	const serviceBinding = getServiceBinding();
 
 	console.log("🔍 fetchArticle Debug:", {
 		slug,
 		query,
+		hasSession: !!session,
+		userEmail: session?.user?.email,
 		hasServiceBinding: !!serviceBinding,
 		API_BASE_URL,
 		timestamp: new Date().toISOString(),
@@ -130,6 +141,8 @@ export async function fetchArticle(
 			method: "GET",
 			headers: {
 				"Content-Type": "application/json",
+				// ログイン中のユーザーの場合、X-User-Emailヘッダーを追加
+				...(session?.user?.email && { "X-User-Email": session.user.email }),
 			},
 		});
 
@@ -153,10 +166,13 @@ export async function fetchArticle(
 	const fullUrl = `${API_BASE_URL}/api/articles/${slug}?lang=${query.lang || "ja"}`;
 	console.log("🔍 HTTP URL:", fullUrl);
 
-	const response = await client.api.articles[":slug"].$get({
-		param: { slug },
-		query: {
-			lang: query.lang as "ja" | "en" | undefined,
+	// Hono Clientの$getに直接headersを渡せないため、fetchを使用
+	const response = await fetch(fullUrl, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+			// ログイン中のユーザーの場合、X-User-Emailヘッダーを追加
+			...(session?.user?.email && { "X-User-Email": session.user.email }),
 		},
 	});
 

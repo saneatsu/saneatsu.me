@@ -39,13 +39,12 @@ export function useHonoClient() {
 			const headers = new Headers(init?.headers);
 			headers.set("Accept-Language", locale);
 
-			// NextAuthのセッションからアクセストークンを取得
+			// NextAuthのセッションからユーザー情報を取得
 			const session = await getSession();
 			if (session?.user?.email) {
-				// 現在のアーキテクチャではNext.js APIルートを経由するため、
-				// 認証情報はNext.jsのセッションで管理される
-				// 将来的にバックエンドで直接認証を実装する場合は、
-				// ここでトークンをヘッダーに追加する
+				// ログイン中のユーザーのメールアドレスをヘッダーに設定
+				// バックエンドでログイン中のユーザーを識別し、閲覧数カウントから除外するために使用
+				headers.set("X-User-Email", session.user.email);
 			}
 
 			return fetch(input, {
