@@ -16,9 +16,9 @@ import {
 	Label,
 	MultipleSelector,
 	type Option,
-	RadioGroup,
-	RadioGroupItem,
 } from "@/shared/ui";
+
+import { ArticleStatusSelector } from "./article-status-selector";
 
 /**
  * 記事編集フォームのスキーマ
@@ -224,31 +224,16 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 			</div>
 
 			{/* ステータス */}
-			<div className="space-y-2">
-				<Label>ステータス *</Label>
-				<RadioGroup
-					value={watchStatus}
-					onValueChange={(value) =>
-						setValue("status", value as "draft" | "published" | "archived")
-					}
-				>
-					<div className="flex items-center space-x-2">
-						<RadioGroupItem value="draft" id="draft" />
-						<Label htmlFor="draft">下書き</Label>
-					</div>
-					<div className="flex items-center space-x-2">
-						<RadioGroupItem value="published" id="published" />
-						<Label htmlFor="published">公開</Label>
-					</div>
-					<div className="flex items-center space-x-2">
-						<RadioGroupItem value="archived" id="archived" />
-						<Label htmlFor="archived">アーカイブ</Label>
-					</div>
-				</RadioGroup>
-				{errors.status && (
-					<p className="text-sm text-destructive">{errors.status.message}</p>
-				)}
-			</div>
+			<ArticleStatusSelector
+				value={watchStatus}
+				onValueChange={(value) =>
+					setValue("status", value as "draft" | "published" | "archived")
+				}
+				statuses={["draft", "published", "archived"]}
+				label="ステータス"
+				required
+				error={errors.status?.message}
+			/>
 
 			{/* 公開日時 */}
 			{watchStatus === "published" && (

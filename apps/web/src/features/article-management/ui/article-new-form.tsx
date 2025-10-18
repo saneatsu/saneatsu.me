@@ -25,9 +25,9 @@ import {
 	Label,
 	MultipleSelector,
 	type Option,
-	RadioGroup,
-	RadioGroupItem,
 } from "@/shared/ui";
+
+import { ArticleStatusSelector } from "./article-status-selector";
 
 /**
  * 記事作成フォームのスキーマ
@@ -107,6 +107,9 @@ export function ArticleNewForm() {
 		slugCheckData && !slugCheckData.available
 			? slugCheckData.message || "このスラッグは既に使用されています"
 			: null;
+
+	// ステータスの監視
+	const watchStatus = watch("status");
 
 	/**
 	 * フォーム送信処理
@@ -221,27 +224,16 @@ export function ArticleNewForm() {
 				</div>
 
 				{/* ステータス */}
-				<div className="space-y-2">
-					<Label className="required">公開ステータス</Label>
-					<RadioGroup
-						defaultValue="draft"
-						onValueChange={(value) =>
-							setValue("status", value as "draft" | "published")
-						}
-					>
-						<div className="flex items-center space-x-2">
-							<RadioGroupItem value="draft" id="draft" />
-							<Label htmlFor="draft">下書き</Label>
-						</div>
-						<div className="flex items-center space-x-2">
-							<RadioGroupItem value="published" id="published" />
-							<Label htmlFor="published">公開</Label>
-						</div>
-					</RadioGroup>
-					{errors.status && (
-						<p className="text-sm text-destructive">{errors.status.message}</p>
-					)}
-				</div>
+				<ArticleStatusSelector
+					value={watchStatus}
+					onValueChange={(value) =>
+						setValue("status", value as "draft" | "published")
+					}
+					statuses={["draft", "published"]}
+					label="公開ステータス"
+					required
+					error={errors.status?.message}
+				/>
 
 				{/* タグ選択 */}
 				<div className="space-y-2">
