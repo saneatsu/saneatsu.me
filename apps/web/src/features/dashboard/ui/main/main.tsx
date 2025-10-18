@@ -4,7 +4,6 @@ import { AlertCircle, BarChart3 } from "lucide-react";
 import { useState } from "react";
 
 import {
-	DetailedStatsCards,
 	PopularArticles,
 	StatsCards,
 	useDashboardOverview,
@@ -86,22 +85,6 @@ export function DashboardMain() {
 
 			{/* メイン統計カード */}
 			<StatsCards
-				articleStats={
-					dashboardData?.articleStats || {
-						totalArticles: 0,
-						publishedArticles: 0,
-						draftArticles: 0,
-						archivedArticles: 0,
-						thisMonthArticles: 0,
-						totalViews: 0,
-						thisMonthViews: 0,
-					}
-				}
-				loading={isLoading}
-			/>
-
-			{/* 詳細統計カード */}
-			<DetailedStatsCards
 				articleStats={
 					dashboardData?.articleStats || {
 						totalArticles: 0,
