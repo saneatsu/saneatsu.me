@@ -49,13 +49,6 @@ export default function ArticleEditPage() {
 
 	return (
 		<div className="container mx-auto py-6">
-			<div className="mb-8">
-				<h1 className="text-3xl font-bold">記事の編集</h1>
-				<p className="text-muted-foreground mt-2">
-					記事の内容を編集します。日本語版のみ編集可能です。
-				</p>
-			</div>
-
 			<ArticleEditForm article={article} />
 		</div>
 	);
