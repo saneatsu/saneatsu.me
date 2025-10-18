@@ -55,13 +55,6 @@ export {
 export { remarkTag } from "./remark-tag";
 // Remark Wiki Link
 export { remarkWikiLink } from "./remark-wiki-link";
-// Testing Utilities
-export {
-	createGetTokenMock,
-	createMockNextRequest,
-	expectNext,
-	expectRedirect,
-} from "./testing/middleware-test-utils";
 // React Hooks
 export { useDebounce } from "./use-debounce";
 export { useIsMobile } from "./use-mobile";

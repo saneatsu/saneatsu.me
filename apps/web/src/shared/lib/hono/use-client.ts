@@ -1,10 +1,10 @@
 "use client";
 
+import type { AppType } from "@saneatsu/backend";
 import { hc } from "hono/client";
 import { getSession } from "next-auth/react";
 import { useLocale } from "next-intl";
 import { useMemo } from "react";
-import type { AppType } from "../../../../../backend/src/index";
 
 /**
  * Honoクライアントのラッパーフック
