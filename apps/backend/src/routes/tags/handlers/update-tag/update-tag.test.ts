@@ -3,9 +3,18 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { tagsRoute } from "@/routes/tags";
 import { setupDbMocks } from "@/utils/drizzle-test";
 
+// 翻訳サービスのモック
+const mockTranslateTag = vi.fn();
+vi.mock("@/services/gemini-translation", () => ({
+	createTranslationService: vi.fn(() => ({
+		translateTag: mockTranslateTag,
+	})),
+}));
+
 // モック設定
 vi.mock("@saneatsu/db/worker", () => ({
 	tags: {},
+	tagTranslations: {},
 	createDatabaseClient: vi.fn(),
 }));
 
@@ -56,7 +65,7 @@ describe("PUT /tags/:id - タグ更新", () => {
 			};
 
 			// 更新のモック
-			const updateMock = {
+			const updateTagMock = {
 				set: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						returning: vi.fn().mockResolvedValue([mockUpdatedTag]),
@@ -64,11 +73,20 @@ describe("PUT /tags/:id - タグ更新", () => {
 				}),
 			};
 
+			// tag_translations更新のモック
+			const updateTranslationMock = {
+				set: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue(undefined),
+				}),
+			};
+
 			mockDb.select
 				.mockReturnValueOnce(existingTagMock) // 既存タグ確認
 				.mockReturnValueOnce(duplicateMock); // 重複チェック
 
-			mockDb.update.mockReturnValueOnce(updateMock);
+			mockDb.update
+				.mockReturnValueOnce(updateTagMock) // タグ更新
+				.mockReturnValueOnce(updateTranslationMock); // 日本語翻訳更新（GEMINI_API_KEYがないので英語はスキップ）
 
 			// Act
 			const client = testClient(tagsRoute, {
@@ -77,7 +95,7 @@ describe("PUT /tags/:id - タグ更新", () => {
 			}) as any;
 			const res = await client[":id"].$put({
 				param: { id: "1" },
-				json: { slug: "typescript" },
+				json: { name: "タイプスクリプト", slug: "typescript" },
 			});
 
 			// Assert
@@ -115,7 +133,7 @@ describe("PUT /tags/:id - タグ更新", () => {
 			}) as any;
 			const res = await client[":id"].$put({
 				param: { id: "999" },
-				json: { slug: "typescript" },
+				json: { name: "タイプスクリプト", slug: "typescript" },
 			});
 
 			// Assert
@@ -144,7 +162,7 @@ describe("PUT /tags/:id - タグ更新", () => {
 			}) as any;
 			const res = await client[":id"].$put({
 				param: { id: "invalid" },
-				json: { slug: "typescript" },
+				json: { name: "タイプスクリプト", slug: "typescript" },
 			});
 
 			// Assert
@@ -202,7 +220,7 @@ describe("PUT /tags/:id - タグ更新", () => {
 			}) as any;
 			const res = await client[":id"].$put({
 				param: { id: "1" },
-				json: { slug: "typescript" },
+				json: { name: "タイプスクリプト", slug: "typescript" },
 			});
 
 			// Assert
@@ -242,7 +260,7 @@ describe("PUT /tags/:id - タグ更新", () => {
 			}) as any;
 			const res = await client[":id"].$put({
 				param: { id: "1" },
-				json: { slug: "typescript" },
+				json: { name: "タイプスクリプト", slug: "typescript" },
 			});
 
 			// Assert
@@ -255,6 +273,251 @@ describe("PUT /tags/:id - タグ更新", () => {
 					message: "Failed to update tag",
 				},
 			});
+		});
+
+		it("翻訳機能: GEMINI_API_KEYが設定されている場合、日本語と英語の翻訳を更新する", async () => {
+			// Arrange
+			const { mockDb } = setupDbMocks();
+
+			const { createDatabaseClient } = await import("@saneatsu/db/worker");
+			(createDatabaseClient as any).mockReturnValue(mockDb);
+
+			// 翻訳が成功する場合のモック
+			mockTranslateTag.mockResolvedValue("typescript");
+
+			const mockExistingTag = [
+				{
+					id: 1,
+					slug: "javascript",
+				},
+			];
+
+			const mockUpdatedTag = {
+				id: 1,
+				slug: "typescript",
+				createdAt: "2024-01-01T00:00:00.000Z",
+				updatedAt: "2024-01-02T00:00:00.000Z",
+			};
+
+			// 既存タグ取得のモック
+			const existingTagMock = {
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue(mockExistingTag),
+					}),
+				}),
+			};
+
+			// 重複チェックのモック（重複なし）
+			const duplicateMock = {
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([]),
+					}),
+				}),
+			};
+
+			// タグ更新のモック
+			const updateTagMock = {
+				set: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						returning: vi.fn().mockResolvedValue([mockUpdatedTag]),
+					}),
+				}),
+			};
+
+			// tag_translations更新のモック（2回呼ばれる: 日本語と英語）
+			const updateTranslationMock = {
+				set: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue(undefined),
+				}),
+			};
+
+			mockDb.select
+				.mockReturnValueOnce(existingTagMock) // 既存タグ確認
+				.mockReturnValueOnce(duplicateMock); // 重複チェック
+
+			mockDb.update
+				.mockReturnValueOnce(updateTagMock) // タグ更新
+				.mockReturnValueOnce(updateTranslationMock) // 日本語翻訳更新
+				.mockReturnValueOnce(updateTranslationMock); // 英語翻訳更新
+
+			// Act
+			const client = testClient(tagsRoute, {
+				TURSO_DATABASE_URL: "test://test.db",
+				TURSO_AUTH_TOKEN: "test-token",
+				GEMINI_API_KEY: "test-gemini-key",
+			}) as any;
+			const res = await client[":id"].$put({
+				param: { id: "1" },
+				json: { name: "タイプスクリプト", slug: "typescript" },
+			});
+
+			// Assert
+			expect(res.status).toBe(200);
+			const data = await res.json();
+
+			expect(data.message).toBe("タグが正常に更新されました");
+
+			// タグ更新とtag_translations更新が呼ばれたことを確認
+			expect(mockDb.update).toHaveBeenCalledTimes(3); // tag + ja translation + en translation
+		});
+
+		it("翻訳機能: GEMINI_API_KEYが設定されていない場合、日本語の翻訳のみ更新する", async () => {
+			// Arrange
+			const { mockDb } = setupDbMocks();
+
+			const { createDatabaseClient } = await import("@saneatsu/db/worker");
+			(createDatabaseClient as any).mockReturnValue(mockDb);
+
+			const mockExistingTag = [
+				{
+					id: 1,
+					slug: "javascript",
+				},
+			];
+
+			const mockUpdatedTag = {
+				id: 1,
+				slug: "typescript",
+				createdAt: "2024-01-01T00:00:00.000Z",
+				updatedAt: "2024-01-02T00:00:00.000Z",
+			};
+
+			const existingTagMock = {
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue(mockExistingTag),
+					}),
+				}),
+			};
+
+			const duplicateMock = {
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([]),
+					}),
+				}),
+			};
+
+			const updateTagMock = {
+				set: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						returning: vi.fn().mockResolvedValue([mockUpdatedTag]),
+					}),
+				}),
+			};
+
+			const updateTranslationMock = {
+				set: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue(undefined),
+				}),
+			};
+
+			mockDb.select
+				.mockReturnValueOnce(existingTagMock)
+				.mockReturnValueOnce(duplicateMock);
+
+			mockDb.update
+				.mockReturnValueOnce(updateTagMock) // タグ更新
+				.mockReturnValueOnce(updateTranslationMock); // 日本語翻訳のみ
+
+			// Act
+			const client = testClient(tagsRoute, {
+				TURSO_DATABASE_URL: "test://test.db",
+				TURSO_AUTH_TOKEN: "test-token",
+				// GEMINI_API_KEY未設定
+			}) as any;
+			const res = await client[":id"].$put({
+				param: { id: "1" },
+				json: { name: "タイプスクリプト", slug: "typescript" },
+			});
+
+			// Assert
+			expect(res.status).toBe(200);
+
+			// タグ更新と日本語翻訳のみ
+			expect(mockDb.update).toHaveBeenCalledTimes(2); // tag + ja translation only
+		});
+
+		it("翻訳機能: 翻訳が失敗しても日本語の翻訳は更新され、処理は続行される", async () => {
+			// Arrange
+			const { mockDb } = setupDbMocks();
+
+			const { createDatabaseClient } = await import("@saneatsu/db/worker");
+			(createDatabaseClient as any).mockReturnValue(mockDb);
+
+			// 翻訳が失敗する場合のモック
+			mockTranslateTag.mockResolvedValue(null);
+
+			const mockExistingTag = [
+				{
+					id: 1,
+					slug: "javascript",
+				},
+			];
+
+			const mockUpdatedTag = {
+				id: 1,
+				slug: "typescript",
+				createdAt: "2024-01-01T00:00:00.000Z",
+				updatedAt: "2024-01-02T00:00:00.000Z",
+			};
+
+			const existingTagMock = {
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue(mockExistingTag),
+					}),
+				}),
+			};
+
+			const duplicateMock = {
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([]),
+					}),
+				}),
+			};
+
+			const updateTagMock = {
+				set: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						returning: vi.fn().mockResolvedValue([mockUpdatedTag]),
+					}),
+				}),
+			};
+
+			const updateTranslationMock = {
+				set: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue(undefined),
+				}),
+			};
+
+			mockDb.select
+				.mockReturnValueOnce(existingTagMock)
+				.mockReturnValueOnce(duplicateMock);
+
+			mockDb.update
+				.mockReturnValueOnce(updateTagMock) // タグ更新
+				.mockReturnValueOnce(updateTranslationMock); // 日本語翻訳
+
+			// Act
+			const client = testClient(tagsRoute, {
+				TURSO_DATABASE_URL: "test://test.db",
+				TURSO_AUTH_TOKEN: "test-token",
+				GEMINI_API_KEY: "test-gemini-key",
+			}) as any;
+			const res = await client[":id"].$put({
+				param: { id: "1" },
+				json: { name: "タイプスクリプト", slug: "typescript" },
+			});
+
+			// Assert
+			expect(res.status).toBe(200);
+
+			// 翻訳が失敗しても、タグ更新と日本語翻訳は成功
+			expect(mockDb.update).toHaveBeenCalled();
 		});
 	});
 });

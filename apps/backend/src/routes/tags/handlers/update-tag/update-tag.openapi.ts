@@ -18,6 +18,14 @@ const ParamsSchema = z.object({
  * リクエストボディスキーマ
  */
 const TagUpdateSchema = z.object({
+	name: z
+		.string()
+		.min(1, "タグ名は必須です")
+		.max(100, "タグ名は100文字以内で入力してください")
+		.openapi({
+			example: "タイプスクリプト",
+			description: "タグの表示名（日本語）",
+		}),
 	slug: z
 		.string()
 		.min(1, "スラッグは必須です")
