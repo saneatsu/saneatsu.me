@@ -69,6 +69,15 @@ describe("GET /articles - 記事一覧取得", () => {
 			}),
 		};
 
+		// タグ情報取得のモック
+		const tagsMock = {
+			from: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue([]),
+				}),
+			}),
+		};
+
 		// 総記事数取得のモック
 		const countMock = {
 			from: vi.fn().mockReturnValue({
@@ -80,6 +89,7 @@ describe("GET /articles - 記事一覧取得", () => {
 
 		mockDb.select
 			.mockReturnValueOnce(articleListMock) // 記事一覧取得
+			.mockReturnValueOnce(tagsMock) // タグ情報取得
 			.mockReturnValueOnce(countMock); // 総記事数取得
 
 		// Act
@@ -96,7 +106,7 @@ describe("GET /articles - 記事一覧取得", () => {
 		const data = await res.json();
 
 		expect(data).toEqual({
-			data: mockArticles,
+			data: mockArticles.map((article) => ({ ...article, tags: [] })),
 			pagination: {
 				page: 1,
 				limit: 10,
@@ -136,6 +146,15 @@ describe("GET /articles - 記事一覧取得", () => {
 			}),
 		};
 
+		// タグ情報取得のモック
+		const tagsMock = {
+			from: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue([]),
+				}),
+			}),
+		};
+
 		const countMock = {
 			from: vi.fn().mockReturnValue({
 				leftJoin: vi.fn().mockReturnValue({
@@ -146,6 +165,7 @@ describe("GET /articles - 記事一覧取得", () => {
 
 		mockDb.select
 			.mockReturnValueOnce(articleListMock) // 記事一覧取得
+			.mockReturnValueOnce(tagsMock) // タグ情報取得
 			.mockReturnValueOnce(countMock); // 総記事数取得
 
 		// Act
@@ -207,6 +227,15 @@ describe("GET /articles - 記事一覧取得", () => {
 			}),
 		};
 
+		// タグ情報取得のモック
+		const tagsMock = {
+			from: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue([]),
+				}),
+			}),
+		};
+
 		const countMock = {
 			from: vi.fn().mockReturnValue({
 				leftJoin: vi.fn().mockReturnValue({
@@ -217,6 +246,7 @@ describe("GET /articles - 記事一覧取得", () => {
 
 		mockDb.select
 			.mockReturnValueOnce(articleListMock) // 記事一覧取得
+			.mockReturnValueOnce(tagsMock) // タグ情報取得
 			.mockReturnValueOnce(countMock); // 総記事数取得
 
 		// Act
@@ -345,6 +375,15 @@ describe("GET /articles - 記事一覧取得", () => {
 				}),
 			};
 
+			// タグ情報取得のモック
+			const tagsMock = {
+				from: vi.fn().mockReturnValue({
+					innerJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockResolvedValue([]),
+					}),
+				}),
+			};
+
 			const countMock = {
 				from: vi.fn().mockReturnValue({
 					leftJoin: vi.fn().mockReturnValue({
@@ -354,8 +393,9 @@ describe("GET /articles - 記事一覧取得", () => {
 			};
 
 			mockDb.select
-				.mockReturnValueOnce(articleListMock)
-				.mockReturnValueOnce(countMock);
+				.mockReturnValueOnce(articleListMock) // 記事一覧取得
+				.mockReturnValueOnce(tagsMock) // タグ情報取得
+				.mockReturnValueOnce(countMock); // 総記事数取得
 
 			// Act
 			const client = testClient(articlesRoute, {
@@ -427,6 +467,15 @@ describe("GET /articles - 記事一覧取得", () => {
 				}),
 			};
 
+			// タグ情報取得のモック
+			const tagsMock = {
+				from: vi.fn().mockReturnValue({
+					innerJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockResolvedValue([]),
+					}),
+				}),
+			};
+
 			const countMock = {
 				from: vi.fn().mockReturnValue({
 					leftJoin: vi.fn().mockReturnValue({
@@ -436,8 +485,9 @@ describe("GET /articles - 記事一覧取得", () => {
 			};
 
 			mockDb.select
-				.mockReturnValueOnce(articleListMock)
-				.mockReturnValueOnce(countMock);
+				.mockReturnValueOnce(articleListMock) // 記事一覧取得
+				.mockReturnValueOnce(tagsMock) // タグ情報取得
+				.mockReturnValueOnce(countMock); // 総記事数取得
 
 			// Act
 			const client = testClient(articlesRoute, {
@@ -513,6 +563,15 @@ describe("GET /articles - 記事一覧取得", () => {
 				}),
 			};
 
+			// タグ情報取得のモック
+			const tagsMock = {
+				from: vi.fn().mockReturnValue({
+					innerJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockResolvedValue([]),
+					}),
+				}),
+			};
+
 			const countMock = {
 				from: vi.fn().mockReturnValue({
 					leftJoin: vi.fn().mockReturnValue({
@@ -522,8 +581,9 @@ describe("GET /articles - 記事一覧取得", () => {
 			};
 
 			mockDb.select
-				.mockReturnValueOnce(articleListMock)
-				.mockReturnValueOnce(countMock);
+				.mockReturnValueOnce(articleListMock) // 記事一覧取得
+				.mockReturnValueOnce(tagsMock) // タグ情報取得
+				.mockReturnValueOnce(countMock); // 総記事数取得
 
 			// Act
 			const client = testClient(articlesRoute, {
@@ -595,6 +655,15 @@ describe("GET /articles - 記事一覧取得", () => {
 				}),
 			};
 
+			// タグ情報取得のモック
+			const tagsMock = {
+				from: vi.fn().mockReturnValue({
+					innerJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockResolvedValue([]),
+					}),
+				}),
+			};
+
 			const countMock = {
 				from: vi.fn().mockReturnValue({
 					leftJoin: vi.fn().mockReturnValue({
@@ -604,8 +673,9 @@ describe("GET /articles - 記事一覧取得", () => {
 			};
 
 			mockDb.select
-				.mockReturnValueOnce(articleListMock)
-				.mockReturnValueOnce(countMock);
+				.mockReturnValueOnce(articleListMock) // 記事一覧取得
+				.mockReturnValueOnce(tagsMock) // タグ情報取得
+				.mockReturnValueOnce(countMock); // 総記事数取得
 
 			// Act
 			const client = testClient(articlesRoute, {
@@ -677,6 +747,15 @@ describe("GET /articles - 記事一覧取得", () => {
 				}),
 			};
 
+			// タグ情報取得のモック
+			const tagsMock = {
+				from: vi.fn().mockReturnValue({
+					innerJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockResolvedValue([]),
+					}),
+				}),
+			};
+
 			const countMock = {
 				from: vi.fn().mockReturnValue({
 					leftJoin: vi.fn().mockReturnValue({
@@ -686,8 +765,9 @@ describe("GET /articles - 記事一覧取得", () => {
 			};
 
 			mockDb.select
-				.mockReturnValueOnce(articleListMock)
-				.mockReturnValueOnce(countMock);
+				.mockReturnValueOnce(articleListMock) // 記事一覧取得
+				.mockReturnValueOnce(tagsMock) // タグ情報取得
+				.mockReturnValueOnce(countMock); // 総記事数取得
 
 			// Act
 			const client = testClient(articlesRoute, {
@@ -747,6 +827,15 @@ describe("GET /articles - 記事一覧取得", () => {
 				}),
 			};
 
+			// タグ情報取得のモック
+			const tagsMock = {
+				from: vi.fn().mockReturnValue({
+					innerJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockResolvedValue([]),
+					}),
+				}),
+			};
+
 			const countMock = {
 				from: vi.fn().mockReturnValue({
 					leftJoin: vi.fn().mockReturnValue({
@@ -756,8 +845,9 @@ describe("GET /articles - 記事一覧取得", () => {
 			};
 
 			mockDb.select
-				.mockReturnValueOnce(articleListMock)
-				.mockReturnValueOnce(countMock);
+				.mockReturnValueOnce(articleListMock) // 記事一覧取得
+				.mockReturnValueOnce(tagsMock) // タグ情報取得
+				.mockReturnValueOnce(countMock); // 総記事数取得
 
 			// Act
 			const client = testClient(articlesRoute, {
