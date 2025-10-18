@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText, LayoutDashboard } from "lucide-react";
+import { FileText, LayoutDashboard, Tag } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -30,6 +30,11 @@ const menuItems = [
 		title: "記事",
 		url: "/admin/articles",
 		icon: FileText,
+	},
+	{
+		title: "タグ",
+		url: "/admin/tags",
+		icon: Tag,
 	},
 ];
 
@@ -70,6 +75,10 @@ export function AppSidebar({ user }: AppSidebarProps) {
 		// 記事管理メニューの場合は /admin/articles/ で始まるパスもアクティブにする
 		if (itemUrl === "/admin/articles") {
 			return pathname === itemUrl || pathname.startsWith("/admin/articles/");
+		}
+		// タグ管理メニューの場合は /admin/tags/ で始まるパスもアクティブにする
+		if (itemUrl === "/admin/tags") {
+			return pathname === itemUrl || pathname.startsWith("/admin/tags/");
 		}
 		// その他のメニューは完全一致
 		return pathname === itemUrl;

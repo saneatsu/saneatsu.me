@@ -21,6 +21,7 @@ const breadcrumbMap: Record<string, string> = {
 	"/admin": "ダッシュボード",
 	"/admin/articles": "記事",
 	"/admin/articles/new": "記事作成",
+	"/admin/tags": "タグ",
 };
 
 /**
@@ -38,8 +39,10 @@ function generateBreadcrumbs(pathname: string, articleTitle?: string | null) {
 	const paths = pathname.split("/").filter(Boolean);
 	const breadcrumbs = [];
 
-	// /admin/articles/* の場合はダッシュボードを表示しない
-	const shouldShowDashboard = !pathname.startsWith("/admin/articles");
+	// /admin/articles/* と /admin/tags/* の場合はダッシュボードを表示しない
+	const shouldShowDashboard =
+		!pathname.startsWith("/admin/articles") &&
+		!pathname.startsWith("/admin/tags");
 
 	// ルートパス（ダッシュボード）
 	if (shouldShowDashboard) {
