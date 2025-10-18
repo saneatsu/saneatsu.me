@@ -36,6 +36,7 @@ export type {
 	Tag,
 	TagCreateRequest,
 	TagCreateResponse,
+	TagDeleteResponse,
 	TagsResponse,
 	TagUpdateRequest,
 	TagUpdateResponse,

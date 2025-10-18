@@ -76,3 +76,11 @@ export interface TagUpdateResponse {
 	/** 成功メッセージ */
 	message: string;
 }
+
+/**
+ * タグ削除APIのレスポンス
+ */
+export interface TagDeleteResponse {
+	/** 成功メッセージ */
+	message: string;
+}
