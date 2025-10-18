@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import type { SimpleIcon } from "simple-icons";
 import {
 	siCloudflare,
+	siCss,
 	siDart,
 	siDocker,
 	siDrizzle,
@@ -15,6 +16,7 @@ import {
 	siGooglebigquery,
 	siHono,
 	siJavascript,
+	siMantine,
 	siMui,
 	siNextdotjs,
 	siNodedotjs,
@@ -24,16 +26,21 @@ import {
 	siPostgresql,
 	siPrisma,
 	siPython,
+	siRadixui,
 	siReact,
 	siRemix,
+	siSass,
 	siSlack,
 	siSqlite,
 	siStorybook,
+	siStripe,
 	siTailwindcss,
 	siTypescript,
 	siVercel,
 	siVite,
 	siVuedotjs,
+	siX,
+	siZenn,
 } from "simple-icons";
 
 import { BadgeWithIcon } from "@/shared/ui";
@@ -44,6 +51,16 @@ import { BadgeWithIcon } from "@/shared/ui";
 type TechItem = {
 	name: string;
 	icon: SimpleIcon;
+};
+
+/**
+ * SNS・Webサイトアイテムの型定義
+ */
+type SocialItem = {
+	name: string;
+	icon: SimpleIcon;
+	url: string;
+	username: string;
 };
 
 /**
@@ -76,8 +93,12 @@ export function AboutView() {
 			{ name: "Nuxt", icon: siNuxt },
 			{ name: "Remix", icon: siRemix },
 			{ name: "Flutter", icon: siFlutter },
+			{ name: "CSS", icon: siCss },
+			{ name: "Sass", icon: siSass },
 			{ name: "Tailwind CSS", icon: siTailwindcss },
 			{ name: "MUI", icon: siMui },
+			{ name: "Radix UI", icon: siRadixui },
+			{ name: "Mantine", icon: siMantine },
 			{ name: "Pinia", icon: siPinia },
 			{ name: "Node.js", icon: siNodedotjs },
 			{ name: "Hono", icon: siHono },
@@ -101,8 +122,31 @@ export function AboutView() {
 			{ name: "Docker", icon: siDocker },
 			{ name: "Notion", icon: siNotion },
 			{ name: "Slack", icon: siSlack },
+			{ name: "Stripe", icon: siStripe },
 		],
 	};
+
+	// SNS・Webサイトの定義（アイコン付き）
+	const socialLinks: SocialItem[] = [
+		{
+			name: "GitHub",
+			icon: siGithub,
+			url: "https://github.com/saneatsu",
+			username: "@saneatsu",
+		},
+		{
+			name: "X (Twitter)",
+			icon: siX,
+			url: "https://twitter.com/saneatsu_wakana",
+			username: "@saneatsu_wakana",
+		},
+		{
+			name: "Zenn",
+			icon: siZenn,
+			url: "https://zenn.dev/saneatsu",
+			username: "@saneatsu",
+		},
+	];
 
 	return (
 		<main className="container mx-auto px-4 py-8">
@@ -207,32 +251,23 @@ export function AboutView() {
 						</div>
 					</section>
 
-					{/* 連絡先セクション */}
+					{/* SNS・Webサイトセクション */}
 					<section className="space-y-4">
 						<h2 className="text-2xl font-bold">{t("contact.title")}</h2>
-						<div className="space-y-2 text-muted-foreground">
-							<p>
-								GitHub:{" "}
+						<div className="flex flex-wrap gap-2">
+							{socialLinks.map((social) => (
 								<a
-									href="https://github.com/saneatsu"
+									key={social.name}
+									href={social.url}
 									target="_blank"
 									rel="noopener noreferrer"
-									className="text-foreground hover:underline"
+									className="inline-block transition-opacity hover:opacity-80"
 								>
-									@saneatsu
+									<BadgeWithIcon icon={social.icon} text={social.username} />
 								</a>
-							</p>
-							<p>
-								X (Twitter):{" "}
-								<a
-									href="https://twitter.com/saneatsu_wakana"
-									target="_blank"
-									rel="noopener noreferrer"
-									className="text-foreground hover:underline"
-								>
-									@saneatsu_wakana
-								</a>
-							</p>
+							))}
+						</div>
+						<div className="text-muted-foreground">
 							<p>
 								Email:{" "}
 								<a
