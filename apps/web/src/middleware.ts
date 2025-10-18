@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
+
 import { auth } from "./app/api/auth/[...nextauth]/auth";
 import { defaultLocale } from "./shared/config/locale-constants";
 

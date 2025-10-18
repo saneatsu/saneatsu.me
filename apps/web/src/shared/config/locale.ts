@@ -1,4 +1,5 @@
 import type { useTranslations } from "next-intl";
+
 import type { Locale } from "./locale-constants";
 
 export const locales: Locale[] = ["ja", "en"];
