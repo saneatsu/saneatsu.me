@@ -36,8 +36,8 @@ import { columns } from "../model/columns";
 export function TagsTable() {
 	const [sorting, setSorting] = useState<SortingState>([
 		{
-			id: "createdAt",
-			desc: false, // 作成日の昇順でデフォルトソート
+			id: "updatedAt",
+			desc: true, // 更新日の降順でデフォルトソート（最新のものが上）
 		},
 	]);
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
