@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import React from "react";
 
 import { useGetById } from "@/entities/article";
+import { useGetAllTags } from "@/entities/tag";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -34,9 +35,21 @@ function extractArticleId(pathname: string): number | null {
 }
 
 /**
+ * パスからタグIDを抽出する
+ */
+function extractTagId(pathname: string): number | null {
+	const match = pathname.match(/^\/admin\/tags\/(\d+)\/edit$/);
+	return match ? Number.parseInt(match[1], 10) : null;
+}
+
+/**
  * パスからパンくずリストのデータを生成する
  */
-function generateBreadcrumbs(pathname: string, articleTitle?: string | null) {
+function generateBreadcrumbs(
+	pathname: string,
+	articleTitle?: string | null,
+	tagSlug?: string | null
+) {
 	const paths = pathname.split("/").filter(Boolean);
 	const breadcrumbs = [];
 
@@ -74,6 +87,26 @@ function generateBreadcrumbs(pathname: string, articleTitle?: string | null) {
 		return breadcrumbs;
 	}
 
+	// /admin/tags/{id}/edit の場合は特別処理
+	const tagId = extractTagId(pathname);
+	if (tagId) {
+		// 「タグ」を追加
+		breadcrumbs.push({
+			title: "タグ",
+			href: "/admin/tags",
+			isCurrentPage: false,
+		});
+
+		// タグスラッグを追加
+		breadcrumbs.push({
+			title: tagSlug || "読み込み中...",
+			href: pathname,
+			isCurrentPage: true,
+		});
+
+		return breadcrumbs;
+	}
+
 	// パスを段階的に構築してパンくずリストを生成
 	let currentPath = "";
 	for (let i = 0; i < paths.length; i++) {
@@ -101,6 +134,7 @@ function generateBreadcrumbs(pathname: string, articleTitle?: string | null) {
 export function BreadcrumbWrapper() {
 	const pathname = usePathname();
 	const articleId = extractArticleId(pathname);
+	const tagId = extractTagId(pathname);
 
 	// 記事編集ページの場合、記事データを取得
 	const { data: articleData } = useGetById(articleId || 0, {
@@ -108,7 +142,20 @@ export function BreadcrumbWrapper() {
 		language: "ja",
 	});
 
-	const breadcrumbs = generateBreadcrumbs(pathname, articleData?.title);
+	// タグ編集ページの場合、タグデータを取得
+	const { data: tagsData } = useGetAllTags({
+		queryConfig: {
+			enabled: !!tagId,
+		},
+	});
+
+	const tag = tagsData?.data.find((t) => t.id === tagId);
+
+	const breadcrumbs = generateBreadcrumbs(
+		pathname,
+		articleData?.title,
+		tag?.slug
+	);
 
 	return (
 		<Breadcrumb>

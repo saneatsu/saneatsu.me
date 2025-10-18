@@ -6,6 +6,8 @@ import { ArrowUpDown } from "lucide-react";
 import type { Tag } from "@/shared/model";
 import { Button } from "@/shared/ui";
 
+import { TagActions } from "../ui/tag-actions";
+
 /**
  * 日付フォーマット関数
  *
@@ -123,5 +125,18 @@ export const columns: ColumnDef<Tag>[] = [
 			);
 		},
 		enableSorting: true,
+	},
+	{
+		id: "actions",
+		header: "アクション",
+		cell: ({ row }) => {
+			const tag = row.original;
+			return (
+				<div className="w-[120px]">
+					<TagActions tag={tag} />
+				</div>
+			);
+		},
+		enableSorting: false,
 	},
 ];
