@@ -22,7 +22,7 @@ export function Footer() {
 							{t("terms")}
 						</Link>
 						<Link
-							href="https://github.com/saneatsu"
+							href="https://github.com/saneatsu/saneatsu.me"
 							target="_blank"
 							rel="noopener noreferrer"
 							className="hover:underline"
