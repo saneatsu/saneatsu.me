@@ -168,15 +168,20 @@ export const listArticles: Handler = async (c) => {
 				})),
 		}));
 
-		// 9. 総記事数を取得
-		const totalCount = await db
-			.select({ count: articles.id })
+		// 9. 総記事数を取得（DISTINCT countで重複を除いて正しくカウント）
+		const totalCountResult = await db
+			.select({ count: sql<number>`COUNT(DISTINCT ${articles.id})` })
 			.from(articles)
 			.leftJoin(
 				articleTranslations,
-				eq(articles.id, articleTranslations.articleId)
+				and(
+					eq(articles.id, articleTranslations.articleId),
+					eq(articleTranslations.language, lang)
+				)
 			)
 			.where(and(...conditions));
+
+		const totalArticles = Number(totalCountResult[0]?.count) || 0;
 
 		// 10. レスポンスを返す
 		return c.json(
@@ -185,8 +190,8 @@ export const listArticles: Handler = async (c) => {
 				pagination: {
 					page,
 					limit,
-					total: totalCount.length,
-					totalPages: Math.ceil(totalCount.length / limit),
+					total: totalArticles,
+					totalPages: Math.ceil(totalArticles / limit),
 				},
 			},
 			200

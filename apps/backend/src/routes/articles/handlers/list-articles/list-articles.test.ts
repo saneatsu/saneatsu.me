@@ -52,7 +52,7 @@ describe("GET /articles - 記事一覧取得", () => {
 			}),
 		];
 
-		const mockTotalCount = [{}, {}]; // 2件の記事を表す配列
+		const mockTotalCount = [{ count: 2 }]; // 2件の記事
 
 		// 記事一覧取得のモック（正しいチェーン構造）
 		const articleListMock = {
@@ -130,7 +130,7 @@ describe("GET /articles - 記事一覧取得", () => {
 			}),
 		];
 
-		const mockTotalCount = Array(15).fill({}); // 15件の記事を表す配列
+		const mockTotalCount = [{ count: 15 }]; // 15件の記事
 
 		const articleListMock = {
 			from: vi.fn().mockReturnValue({
@@ -322,6 +322,93 @@ describe("GET /articles - 記事一覧取得", () => {
 				total: 0,
 				totalPages: 0,
 			},
+		});
+	});
+
+	describe("総記事数のカウント", () => {
+		it("言語条件があっても全記事数が正しくカウントされる", async () => {
+			// Arrange
+			const { mockDb } = setupDbMocks();
+
+			// createDatabaseClient関数がmockDbを返すように設定
+			const { createDatabaseClient } = await import("@saneatsu/db/worker");
+			(createDatabaseClient as any).mockReturnValue(mockDb);
+
+			// 実際のDBの状況を再現:
+			// - 200件の記事がある
+			// - 日本語翻訳があるのは100件（ID 1-100）
+			// - 英語翻訳があるのは別の100件（ID 101-200）
+			// - 言語指定で検索すると、その言語の翻訳がある記事だけが返る
+
+			// 日本語で検索した場合、日本語翻訳がある10件を返す（ページネーション）
+			const mockArticles = Array.from({ length: 10 }, (_, i) =>
+				createMockArticleWithTranslation({
+					article: { id: `article${i + 1}`, slug: `test-${i + 1}` },
+					translation: { language: "ja", title: `記事${i + 1}` },
+				})
+			);
+
+			// 修正後: COUNT(DISTINCT articles.id)を使うことで、
+			// 全記事200件を正しくカウント
+			const mockTotalCountResult = [{ count: 200 }];
+
+			const articleListMock = {
+				from: vi.fn().mockReturnValue({
+					leftJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockReturnValue({
+							orderBy: vi.fn().mockReturnValue({
+								limit: vi.fn().mockReturnValue({
+									offset: vi.fn().mockResolvedValue(mockArticles),
+								}),
+							}),
+						}),
+					}),
+				}),
+			};
+
+			// タグ情報取得のモック
+			const tagsMock = {
+				from: vi.fn().mockReturnValue({
+					innerJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockResolvedValue([]),
+					}),
+				}),
+			};
+
+			// 総記事数取得のモック（修正後：count()を使用）
+			const countMock = {
+				from: vi.fn().mockReturnValue({
+					leftJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockResolvedValue(mockTotalCountResult),
+					}),
+				}),
+			};
+
+			mockDb.select
+				.mockReturnValueOnce(articleListMock) // 記事一覧取得
+				.mockReturnValueOnce(tagsMock) // タグ情報取得
+				.mockReturnValueOnce(countMock); // 総記事数取得
+
+			// Act
+			const client = testClient(articlesRoute, {
+				TURSO_DATABASE_URL: "test://test.db",
+				TURSO_AUTH_TOKEN: "test-token",
+			}) as any;
+			const res = await client.index.$get({
+				query: {
+					language: "ja",
+				},
+			});
+
+			// Assert
+			expect(res.status).toBe(200);
+			const data = await res.json();
+
+			// 期待値: 全記事数は200件
+			// 現在のバグ: 日本語翻訳がある100件しかカウントされない
+			// このテストは現在のバグで失敗する
+			expect(data.pagination.total).toBe(200); // 期待値: 200、実際: 100
+			expect(data.pagination.totalPages).toBe(20); // 200件 ÷ 10件/ページ = 20ページ
 		});
 	});
 
