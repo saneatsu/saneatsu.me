@@ -221,6 +221,48 @@ Content 3 translated`,
 			vi.useRealTimers();
 		});
 	});
+
+	describe("translateTag", () => {
+		it("タグ名を日本語から英語に翻訳する", async () => {
+			// モックレスポンスを設定
+			mockGenerateContent.mockResolvedValue({
+				response: {
+					text: () => "typescript",
+				},
+			});
+
+			const result = await service.translateTag("タイプスクリプト");
+
+			expect(result).toBe("typescript");
+
+			// プロンプトが正しく生成されていることを確認
+			expect(mockGenerateContent).toHaveBeenCalledTimes(1);
+			const prompt = mockGenerateContent.mock.calls[0][0];
+			expect(prompt).toContain("タイプスクリプト");
+		});
+
+		it("翻訳が失敗した場合はnullを返す", async () => {
+			// エラーをスローするモック
+			mockGenerateContent.mockRejectedValue(new Error("API Error"));
+
+			const result = await service.translateTag("エラーテスト");
+
+			expect(result).toBeNull();
+		});
+
+		it("レスポンスが空の場合はnullを返す", async () => {
+			// 空のレスポンス
+			mockGenerateContent.mockResolvedValue({
+				response: {
+					text: () => "",
+				},
+			});
+
+			const result = await service.translateTag("空レスポンステスト");
+
+			expect(result).toBeNull();
+		});
+	});
 });
 
 describe("createTranslationService", () => {
