@@ -116,9 +116,7 @@ export const columns: ColumnDef<Article>[] = [
 					>
 						{article.title || "タイトルなし"}
 					</Link>
-					<div className="text-sm text-muted-foreground">
-						{article.slug}
-					</div>
+					<div className="text-sm text-muted-foreground">{article.slug}</div>
 				</div>
 			);
 		},
