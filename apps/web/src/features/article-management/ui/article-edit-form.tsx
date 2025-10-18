@@ -7,13 +7,15 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { useCheckSlug, useUpdate } from "@/entities/article";
+import { useGetAllTags } from "@/entities/tag";
 import { ArticleMarkdownEditor } from "@/features/article-editor";
 import { useDebounce } from "@/shared/lib";
 import {
-	Badge,
 	Button,
 	Input,
 	Label,
+	MultipleSelector,
+	type Option,
 	RadioGroup,
 	RadioGroupItem,
 } from "@/shared/ui";
@@ -71,6 +73,12 @@ interface ArticleEditFormProps {
 export function ArticleEditForm({ article }: ArticleEditFormProps) {
 	const [markdownValue, setMarkdownValue] = useState(article.content || "");
 	const [formError, setFormError] = useState<string>("");
+	const [selectedTags, setSelectedTags] = useState<Option[]>(
+		article.tags.map((tag) => ({
+			value: String(tag.id),
+			label: tag.slug,
+		}))
+	);
 
 	const {
 		register,
@@ -92,6 +100,9 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 	// 記事更新フック
 	const updateMutation = useUpdate();
 
+	// タグ一覧取得フック
+	const { data: tagsData, isLoading: tagsLoading } = useGetAllTags();
+
 	// スラッグ重複チェックフック
 	const watchSlug = watch("slug");
 	const debouncedSlug = useDebounce(watchSlug, 500);
@@ -99,11 +110,6 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 		slug: debouncedSlug || "",
 		queryConfig: { enabled: !!debouncedSlug && debouncedSlug !== article.slug },
 	});
-
-	// タグIDの状態管理
-	const [selectedTagIds] = useState<number[]>(
-		article.tags.map((tag) => tag.id)
-	);
 
 	// ステータスの監視
 	const watchStatus = watch("status");
@@ -127,13 +133,16 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 				publishedAtISO = new Date(data.publishedAt).toISOString();
 			}
 
+			// タグIDを抽出
+			const tagIds = selectedTags.map((tag) => Number.parseInt(tag.value));
+
 			await updateMutation.mutateAsync({
 				id: article.id,
 				data: {
 					...data,
 					publishedAt: publishedAtISO,
 					// 常にtagIdsを送信（空配列でも送信）
-					tagIds: selectedTagIds,
+					tagIds,
 				},
 			});
 		} catch (error) {
@@ -261,22 +270,26 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 
 			{/* タグ選択 */}
 			<div className="space-y-2">
-				<Label>タグ * (最低1つ、最大10個)</Label>
-				<div className="flex flex-wrap gap-2">
-					{article.tags.length > 0 ? (
-						article.tags.map((tag) => (
-							<Badge key={tag.id} variant="secondary">
-								{tag.slug}
-							</Badge>
-						))
-					) : (
-						<p className="text-sm text-muted-foreground">
-							タグが選択されていません
+				<Label>タグ</Label>
+				<MultipleSelector
+					value={selectedTags}
+					onChange={setSelectedTags}
+					options={
+						tagsData?.data.map((tag) => ({
+							value: String(tag.id),
+							label: tag.slug,
+						})) || []
+					}
+					placeholder="タグを選択してください"
+					emptyIndicator={
+						<p className="text-center text-sm text-muted-foreground">
+							{tagsLoading ? "読み込み中..." : "タグが見つかりません"}
 						</p>
-					)}
-				</div>
+					}
+					disabled={tagsLoading}
+				/>
 				<p className="text-sm text-muted-foreground">
-					※ タグ編集機能は現在開発中です。本文内で#タグを使用してください。
+					記事に関連するタグを選択してください
 				</p>
 			</div>
 

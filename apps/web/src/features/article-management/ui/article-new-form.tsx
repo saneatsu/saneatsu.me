@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { useCheckSlug, useCreate } from "@/entities/article";
+import { useGetAllTags } from "@/entities/tag";
 import { ArticleMarkdownEditor } from "@/features/article-editor";
 import { useDebounce } from "@/shared/lib";
 import {
@@ -22,6 +23,8 @@ import {
 	Button,
 	Input,
 	Label,
+	MultipleSelector,
+	type Option,
 	RadioGroup,
 	RadioGroupItem,
 } from "@/shared/ui";
@@ -47,6 +50,7 @@ const articleNewSchema = z.object({
 		message: "ステータスを選択してください",
 	}),
 	publishedAt: z.string().optional(),
+	tagIds: z.array(z.number()).optional(),
 });
 
 type ArticleNewForm = z.infer<typeof articleNewSchema>;
@@ -62,6 +66,7 @@ type ArticleNewForm = z.infer<typeof articleNewSchema>;
 export function ArticleNewForm() {
 	const [markdownValue, setMarkdownValue] = useState("");
 	const [showSlugErrorDialog, setShowSlugErrorDialog] = useState(false);
+	const [selectedTags, setSelectedTags] = useState<Option[]>([]);
 	const router = useRouter();
 
 	const {
@@ -85,6 +90,9 @@ export function ArticleNewForm() {
 
 	// 記事作成フック
 	const createArticleMutation = useCreate();
+
+	// タグ一覧取得フック
+	const { data: tagsData, isLoading: tagsLoading } = useGetAllTags();
 
 	// スラッグ重複チェックフック
 	const { data: slugCheckData, isLoading: slugChecking } = useCheckSlug({
@@ -118,6 +126,9 @@ export function ArticleNewForm() {
 				publishedAt = new Date(data.publishedAt).toISOString();
 			}
 
+			// タグIDを抽出
+			const tagIds = selectedTags.map((tag) => Number.parseInt(tag.value));
+
 			// APIに送信
 			const response = await createArticleMutation.mutateAsync({
 				title: data.title,
@@ -125,6 +136,7 @@ export function ArticleNewForm() {
 				content: data.content,
 				status: data.status,
 				publishedAt,
+				tagIds: tagIds.length > 0 ? tagIds : undefined,
 			});
 
 			console.log("記事作成成功:", response);
@@ -229,6 +241,31 @@ export function ArticleNewForm() {
 					{errors.status && (
 						<p className="text-sm text-destructive">{errors.status.message}</p>
 					)}
+				</div>
+
+				{/* タグ選択 */}
+				<div className="space-y-2">
+					<Label htmlFor="tags">タグ</Label>
+					<MultipleSelector
+						value={selectedTags}
+						onChange={setSelectedTags}
+						options={
+							tagsData?.data.map((tag) => ({
+								value: String(tag.id),
+								label: tag.slug,
+							})) || []
+						}
+						placeholder="タグを選択してください"
+						emptyIndicator={
+							<p className="text-center text-sm text-muted-foreground">
+								{tagsLoading ? "読み込み中..." : "タグが見つかりません"}
+							</p>
+						}
+						disabled={tagsLoading}
+					/>
+					<p className="text-sm text-muted-foreground">
+						記事に関連するタグを選択してください
+					</p>
 				</div>
 
 				{/* 公開日時（公開時のみ表示） */}

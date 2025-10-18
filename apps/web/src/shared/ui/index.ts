@@ -150,6 +150,13 @@ export { Label } from "./label/label";
 // Locale Switcher
 export { LocaleSwitcher } from "./locale-switcher/locale-switcher";
 
+// Multiple Selector
+export {
+	MultipleSelector,
+	type MultipleSelectorProps,
+	type Option,
+} from "./multiple-selector";
+
 // Popover
 export {
 	Popover,

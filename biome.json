@@ -50,6 +50,16 @@
 					}
 				}
 			}
+		},
+		{
+			"includes": ["**/multiple-selector/**"],
+			"linter": {
+				"rules": {
+					"a11y": {
+						"useSemanticElements": "off"
+					}
+				}
+			}
 		}
 	],
 	"javascript": {
