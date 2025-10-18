@@ -59,32 +59,6 @@ describe("Unit Test", () => {
 			expect(screen.getByText("公開日: January 15, 2024")).toBeInTheDocument();
 		});
 
-		it("should render published status badge in Japanese when locale is ja", () => {
-			render(<ArticleDetailView article={mockArticle} locale="ja" />);
-
-			expect(screen.getByText("公開")).toBeInTheDocument();
-		});
-
-		it("should render published status badge in English when locale is en", () => {
-			render(<ArticleDetailView article={mockArticle} locale="en" />);
-
-			expect(screen.getByText("Published")).toBeInTheDocument();
-		});
-
-		it("should render draft status badge in Japanese when article is draft and locale is ja", () => {
-			const draftArticle = { ...mockArticle, status: "draft" as const };
-			render(<ArticleDetailView article={draftArticle} locale="ja" />);
-
-			expect(screen.getByText("下書き")).toBeInTheDocument();
-		});
-
-		it("should render draft status badge in English when article is draft and locale is en", () => {
-			const draftArticle = { ...mockArticle, status: "draft" as const };
-			render(<ArticleDetailView article={draftArticle} locale="en" />);
-
-			expect(screen.getByText("Draft")).toBeInTheDocument();
-		});
-
 		it("should render article content through ReactMarkdown", () => {
 			render(<ArticleDetailView article={mockArticle} locale="ja" />);
 
@@ -160,7 +134,6 @@ describe("Integration Test", () => {
 			expect(tagLinks.length).toBeGreaterThan(0);
 
 			// 日本語ロケール固有の表示確認
-			expect(screen.getByText("公開")).toBeInTheDocument();
 			expect(screen.getByText(/2024年1月15日/)).toBeInTheDocument();
 		});
 
@@ -178,7 +151,6 @@ describe("Integration Test", () => {
 			expect(tagLinks.length).toBeGreaterThan(0);
 
 			// 英語ロケール固有の表示確認
-			expect(screen.getByText("Published")).toBeInTheDocument();
 			expect(screen.getByText(/January 15, 2024/)).toBeInTheDocument();
 		});
 	});

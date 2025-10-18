@@ -80,15 +80,6 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 								</svg>
 								<span>{t("viewCount", { count: article.viewCount })}</span>
 							</span>
-							<span className="inline-flex items-center rounded-md bg-secondary px-2 py-1 text-xs font-medium text-secondary-foreground">
-								{article.status === "published"
-									? locale === "ja"
-										? "公開"
-										: "Published"
-									: locale === "ja"
-										? "下書き"
-										: "Draft"}
-							</span>
 						</div>
 
 						<h1 className="text-4xl font-bold tracking-tight">
