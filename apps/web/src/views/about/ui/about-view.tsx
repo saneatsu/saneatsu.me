@@ -20,7 +20,7 @@ import {
 	siVite,
 } from "simple-icons";
 
-import { BadgeWithIcon } from "@/shared/ui/badge-with-icon";
+import { BadgeWithIcon } from "@/shared/ui";
 
 /**
  * 技術アイテムの型定義

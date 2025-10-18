@@ -29,6 +29,9 @@ export { Avatar, AvatarFallback, AvatarImage } from "./avatar/avatar";
 // Badge
 export { Badge, badgeVariants } from "./badge/badge";
 
+// Badge With Icon
+export { BadgeWithIcon } from "./badge-with-icon/badge-with-icon";
+
 // Breadcrumb
 export {
 	Breadcrumb,

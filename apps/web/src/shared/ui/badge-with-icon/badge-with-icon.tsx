@@ -36,13 +36,13 @@ export function BadgeWithIcon({ icon, text, className }: BadgeWithIconProps) {
 		<div className={cn("inline-flex items-center overflow-hidden", className)}>
 			{/* アイコン部分：円形背景 */}
 			<div
-				className="flex h-8 w-8 shrink-0 items-center justify-center rounded-l-full"
+				className="flex h-7 w-7 shrink-0 items-center justify-center rounded-l-full"
 				style={{ backgroundColor: `#${icon.hex}` }}
 			>
 				<svg
 					role="img"
 					viewBox="0 0 24 24"
-					className="h-4 w-4"
+					className="h-3.5 w-3.5"
 					fill="white"
 					aria-label={icon.title}
 				>
@@ -52,7 +52,7 @@ export function BadgeWithIcon({ icon, text, className }: BadgeWithIconProps) {
 			</div>
 
 			{/* テキスト部分：Badgeスタイル */}
-			<span className="bg-secondary text-secondary-foreground rounded-r-full px-2.5 py-1.5 text-sm font-medium">
+			<span className="bg-secondary text-secondary-foreground rounded-r-full px-2 py-1 text-sm font-medium">
 				{text}
 			</span>
 		</div>
