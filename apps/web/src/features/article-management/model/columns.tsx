@@ -16,14 +16,17 @@ export const articleStatusOptions = [
 	{
 		label: "公開済み",
 		value: "published",
+		variant: "success" as const,
 	},
 	{
 		label: "下書き",
 		value: "draft",
+		variant: "secondary" as const,
 	},
 	{
 		label: "アーカイブ",
 		value: "archived",
+		variant: "destructive" as const,
 	},
 ];
 

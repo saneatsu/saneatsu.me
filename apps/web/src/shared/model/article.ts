@@ -114,7 +114,12 @@ export interface ArticleDisplayData {
 	/** 表示用の公開日時 */
 	displayPublishedAt: string;
 	/** ステータスのバッジ色 */
-	statusBadgeVariant: "default" | "secondary" | "destructive" | "outline";
+	statusBadgeVariant:
+		| "default"
+		| "secondary"
+		| "destructive"
+		| "outline"
+		| "success";
 }
 
 /**
@@ -124,12 +129,12 @@ export const ARTICLE_STATUS_CONFIG: Record<
 	ArticleStatus,
 	{
 		label: string;
-		variant: "default" | "secondary" | "destructive" | "outline";
+		variant: "default" | "secondary" | "destructive" | "outline" | "success";
 	}
 > = {
-	published: { label: "公開済み", variant: "default" },
+	published: { label: "公開済み", variant: "success" },
 	draft: { label: "下書き", variant: "secondary" },
-	archived: { label: "アーカイブ", variant: "outline" },
+	archived: { label: "アーカイブ", variant: "destructive" },
 };
 
 /**
