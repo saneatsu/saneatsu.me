@@ -22,3 +22,30 @@ export interface TagsResponse {
 	/** タグデータの配列 */
 	data: Tag[];
 }
+
+/**
+ * タグ作成リクエストボディ
+ */
+export interface TagCreateRequest {
+	/** タグのスラッグ（小文字の英数字とハイフンのみ、1-100文字） */
+	slug: string;
+}
+
+/**
+ * タグ作成APIのレスポンス
+ */
+export interface TagCreateResponse {
+	/** 作成されたタグデータ */
+	data: {
+		/** タグのユニークID */
+		id: number;
+		/** タグのスラッグ */
+		slug: string;
+		/** 作成日時 */
+		createdAt: string;
+		/** 更新日時 */
+		updatedAt: string;
+	};
+	/** 成功メッセージ */
+	message: string;
+}

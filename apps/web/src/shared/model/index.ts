@@ -32,4 +32,9 @@ export type {
 	RecentActivityItem,
 } from "./dashboard";
 // Tag
-export type { Tag, TagsResponse } from "./tag";
+export type {
+	Tag,
+	TagCreateRequest,
+	TagCreateResponse,
+	TagsResponse,
+} from "./tag";
