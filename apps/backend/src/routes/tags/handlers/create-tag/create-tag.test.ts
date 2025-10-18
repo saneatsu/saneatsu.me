@@ -4,9 +4,18 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { tagsRoute } from "@/routes/tags";
 import { setupDbMocks } from "@/utils/drizzle-test";
 
+// 翻訳サービスのモック
+const mockTranslateTag = vi.fn();
+vi.mock("@/services/gemini-translation", () => ({
+	createTranslationService: vi.fn(() => ({
+		translateTag: mockTranslateTag,
+	})),
+}));
+
 // モック設定
 vi.mock("@saneatsu/db/worker", () => ({
 	tags: {},
+	tagTranslations: {},
 	createDatabaseClient: vi.fn(),
 }));
 
@@ -37,6 +46,11 @@ describe("POST /tags - タグ作成", () => {
 			}),
 		};
 
+		// Insert tag_translation のモック
+		const insertTranslationMock = {
+			values: vi.fn().mockResolvedValue(undefined),
+		};
+
 		// 既存タグチェック用のモック
 		const checkExistingMock = {
 			from: vi.fn().mockReturnValue({
@@ -47,7 +61,9 @@ describe("POST /tags - タグ作成", () => {
 		};
 
 		mockDb.select.mockReturnValueOnce(checkExistingMock); // 既存タグチェック
-		mockDb.insert.mockReturnValueOnce(insertTagMock); // タグ作成
+		mockDb.insert
+			.mockReturnValueOnce(insertTagMock) // タグ作成
+			.mockReturnValueOnce(insertTranslationMock); // 日本語翻訳（GEMINI_API_KEYがないので英語翻訳はスキップ）
 
 		// Act
 		const client = testClient(tagsRoute, {
@@ -70,7 +86,7 @@ describe("POST /tags - タグ作成", () => {
 			message: "タグが正常に作成されました",
 		});
 
-		expect(mockDb.insert).toHaveBeenCalledTimes(1);
+		expect(mockDb.insert).toHaveBeenCalledTimes(2); // tag + ja translation
 		expect(mockDb.select).toHaveBeenCalledTimes(1);
 	});
 
@@ -252,6 +268,9 @@ describe("POST /tags - タグ作成", () => {
 		const { createDatabaseClient } = await import("@saneatsu/db/worker");
 		(createDatabaseClient as any).mockReturnValue(mockDb);
 
+		// 翻訳が成功する場合のモック
+		mockTranslateTag.mockResolvedValue("typescript");
+
 		const mockNewTag = {
 			id: 1,
 			slug: "typescript",
@@ -372,6 +391,9 @@ describe("POST /tags - タグ作成", () => {
 
 		const { createDatabaseClient } = await import("@saneatsu/db/worker");
 		(createDatabaseClient as any).mockReturnValue(mockDb);
+
+		// 翻訳が失敗する場合のモック
+		mockTranslateTag.mockResolvedValue(null);
 
 		const mockNewTag = {
 			id: 1,

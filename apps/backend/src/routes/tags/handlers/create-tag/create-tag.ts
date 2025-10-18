@@ -1,7 +1,8 @@
 import type { RouteHandler } from "@hono/zod-openapi";
-import { tags } from "@saneatsu/db/worker";
+import { tags, tagTranslations } from "@saneatsu/db/worker";
 import { eq } from "drizzle-orm";
 
+import { createTranslationService } from "@/services/gemini-translation";
 import type { createTagRoute } from "./create-tag.openapi";
 
 /**
@@ -10,6 +11,7 @@ import type { createTagRoute } from "./create-tag.openapi";
 type Env = {
 	TURSO_DATABASE_URL: string;
 	TURSO_AUTH_TOKEN: string;
+	GEMINI_API_KEY?: string;
 };
 
 type Handler = RouteHandler<typeof createTagRoute, { Bindings: Env }>;
@@ -22,7 +24,9 @@ type Handler = RouteHandler<typeof createTagRoute, { Bindings: Env }>;
  * 2. リクエストボディを取得
  * 3. スラッグの重複チェック
  * 4. タグデータを作成
- * 5. レスポンスを返す
+ * 5. タグ翻訳データを作成（日本語）
+ * 6. 英語への自動翻訳を実行（非同期）
+ * 7. レスポンスを返す
  */
 export const createTag: Handler = async (c) => {
 	try {
@@ -34,7 +38,7 @@ export const createTag: Handler = async (c) => {
 		});
 
 		// 2. リクエストボディを取得
-		const { slug } = c.req.valid("json");
+		const { name, slug } = c.req.valid("json");
 
 		// 3. スラッグの重複チェック
 		const existingTag = await db
@@ -67,7 +71,45 @@ export const createTag: Handler = async (c) => {
 			})
 			.returning();
 
-		// 5. レスポンスを返す
+		// 5. タグ翻訳データを作成（日本語）
+		await db.insert(tagTranslations).values({
+			tagId: newTag.id,
+			language: "ja",
+			name,
+		});
+
+		// 6. 英語への自動翻訳を実行（非同期）
+		if (c.env.GEMINI_API_KEY) {
+			try {
+				const translationService = createTranslationService({
+					GEMINI_API_KEY: c.env.GEMINI_API_KEY,
+				});
+
+				// タグ名を翻訳
+				const translatedName = await translationService.translateTag(name);
+
+				if (translatedName) {
+					// 英語版を保存
+					await db.insert(tagTranslations).values({
+						tagId: newTag.id,
+						language: "en",
+						name: translatedName,
+					});
+					console.log(`Tag ${newTag.id} translated successfully`);
+				} else {
+					console.warn(
+						`Translation failed for tag ${newTag.id}, continuing without English translation`
+					);
+				}
+			} catch (error) {
+				// 翻訳エラーが発生してもメインの処理は続行
+				console.error(`Translation error for tag ${newTag.id}:`, error);
+			}
+		} else {
+			console.log("GEMINI_API_KEY not configured, skipping translation");
+		}
+
+		// 7. レスポンスを返す
 		return c.json(
 			{
 				data: newTag,

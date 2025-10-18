@@ -40,6 +40,7 @@ export {
 	articleTags,
 	articleTranslations,
 	tags,
+	tagTranslations,
 	users,
 } from "./schema";
 
