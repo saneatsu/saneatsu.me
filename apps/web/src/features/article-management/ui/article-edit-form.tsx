@@ -9,7 +9,14 @@ import { z } from "zod";
 import { useCheckSlug, useUpdate } from "@/entities/article";
 import { ArticleMarkdownEditor } from "@/features/article-editor";
 import { useDebounce } from "@/shared/lib";
-import { Button, Input, Label, RadioGroup, RadioGroupItem } from "@/shared/ui";
+import {
+	Badge,
+	Button,
+	Input,
+	Label,
+	RadioGroup,
+	RadioGroupItem,
+} from "@/shared/ui";
 
 /**
  * 記事編集フォームのスキーマ
@@ -255,10 +262,19 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 			{/* タグ選択 */}
 			<div className="space-y-2">
 				<Label>タグ * (最低1つ、最大10個)</Label>
-				<p className="text-sm text-muted-foreground">
-					現在選択されているタグ:{" "}
-					{article.tags.map((tag) => tag.slug).join(", ") || "なし"}
-				</p>
+				<div className="flex flex-wrap gap-2">
+					{article.tags.length > 0 ? (
+						article.tags.map((tag) => (
+							<Badge key={tag.id} variant="secondary">
+								{tag.slug}
+							</Badge>
+						))
+					) : (
+						<p className="text-sm text-muted-foreground">
+							タグが選択されていません
+						</p>
+					)}
+				</div>
 				<p className="text-sm text-muted-foreground">
 					※ タグ編集機能は現在開発中です。本文内で#タグを使用してください。
 				</p>
