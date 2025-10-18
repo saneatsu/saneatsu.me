@@ -29,9 +29,9 @@ function generateBreadcrumbs(pathname: string) {
 	const paths = pathname.split("/").filter(Boolean);
 	const breadcrumbs = [];
 
-	// ルートパス（管理画面）
+	// ルートパス（ダッシュボード）
 	breadcrumbs.push({
-		title: "管理画面",
+		title: breadcrumbMap["/admin"] || "ダッシュボード",
 		href: "/admin",
 		isCurrentPage: pathname === "/admin",
 	});
