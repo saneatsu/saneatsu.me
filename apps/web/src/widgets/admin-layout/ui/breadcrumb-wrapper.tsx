@@ -29,8 +29,8 @@ function generateBreadcrumbs(pathname: string) {
 	const paths = pathname.split("/").filter(Boolean);
 	const breadcrumbs = [];
 
-	// /admin/articles の場合はダッシュボードを表示しない
-	const shouldShowDashboard = pathname !== "/admin/articles";
+	// /admin/articles/* の場合はダッシュボードを表示しない
+	const shouldShowDashboard = !pathname.startsWith("/admin/articles");
 
 	// ルートパス（ダッシュボード）
 	if (shouldShowDashboard) {
