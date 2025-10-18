@@ -4,24 +4,24 @@
 # pre-commit フック設定
 pre-commit:
   parallel: false  # テストが順番に実行されるようにする
-  jobs:
+  commands:
     # Biomeでコードフォーマットとlintを実行
-    - name: biome
+    biome:
       run: pnpm exec biome check --write --no-errors-on-unmatched {staged_files}
       glob: "*.{js,jsx,ts,tsx,mjs,cjs,json,md,yml,yaml}"
 
     # TypeScriptの型チェック
-    - name: type-check
+    type-check:
       run: pnpm type-check
       # 型チェックは全体を対象にするため、staged_filesは使わない
 
     # apps/backendのVitestを実行
-    - name: backend-test
+    backend-test:
       run: cd apps/backend && pnpm test run
       # test runでwatchモードを無効化
 
     # apps/webのVitestを実行
-    - name: web-test
+    web-test:
       run: cd apps/web && pnpm test run
       # test runでwatchモードを無効化
 
