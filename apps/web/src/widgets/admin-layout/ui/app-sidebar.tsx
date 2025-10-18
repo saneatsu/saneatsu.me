@@ -3,8 +3,6 @@
 import { FileText, Home } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-import { UserInfo } from "@/app/admin/user-info";
 import {
 	Sidebar,
 	SidebarContent,
@@ -16,6 +14,7 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/shared/ui/sidebar/sidebar";
+import { UserInfo } from "@/widgets/user-info";
 
 /**
  * 管理画面用のメニュー項目定義
