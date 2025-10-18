@@ -18,10 +18,8 @@ export type {
 	SlugCheckResponse,
 } from "./article";
 export { ARTICLE_STATUS_CONFIG, LANGUAGE_CONFIG } from "./article";
-
 // Common
 export type { ApiError, PaginatedResponse, PaginationInfo } from "./common";
-
 // Dashboard
 export type {
 	ArticleStats,
@@ -33,3 +31,5 @@ export type {
 	PopularArticle,
 	RecentActivityItem,
 } from "./dashboard";
+// Tag
+export type { Tag, TagsResponse } from "./tag";
