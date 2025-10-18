@@ -1,5 +1,7 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 
+import { createTag } from "./handlers/create-tag/create-tag";
+import { createTagRoute } from "./handlers/create-tag/create-tag.openapi";
 import { getAllTags } from "./handlers/get-all-tags/get-all-tags";
 import { getAllTagsRoute } from "./handlers/get-all-tags/get-all-tags.openapi";
 
@@ -17,3 +19,4 @@ type Env = {
 export const tagsRoute = new OpenAPIHono<{ Bindings: Env }>();
 
 tagsRoute.openapi(getAllTagsRoute, getAllTags);
+tagsRoute.openapi(createTagRoute, createTag);
