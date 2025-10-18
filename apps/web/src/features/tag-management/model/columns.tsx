@@ -49,7 +49,7 @@ export const columns: ColumnDef<Tag>[] = [
 			<Button
 				variant="ghost"
 				onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-				className="h-auto p-0 font-medium"
+				className="font-medium"
 			>
 				タグ名
 				<ArrowUpDown className="ml-2 h-4 w-4" />
@@ -74,7 +74,7 @@ export const columns: ColumnDef<Tag>[] = [
 			<Button
 				variant="ghost"
 				onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-				className="h-auto p-0 font-medium"
+				className="font-medium"
 			>
 				記事数
 				<ArrowUpDown className="ml-2 h-4 w-4" />
@@ -96,7 +96,7 @@ export const columns: ColumnDef<Tag>[] = [
 			<Button
 				variant="ghost"
 				onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-				className="h-auto p-0 font-medium"
+				className="font-medium"
 			>
 				作成日
 				<ArrowUpDown className="ml-2 h-4 w-4" />
@@ -116,7 +116,7 @@ export const columns: ColumnDef<Tag>[] = [
 			<Button
 				variant="ghost"
 				onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-				className="h-auto p-0 font-medium"
+				className="font-medium"
 			>
 				更新日
 				<ArrowUpDown className="ml-2 h-4 w-4" />

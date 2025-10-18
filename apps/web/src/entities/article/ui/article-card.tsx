@@ -90,7 +90,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
 					<Button
 						variant="ghost"
 						size="sm"
-						className="p-0 h-auto font-medium text-primary hover:text-primary/80"
+						className="font-medium text-primary hover:text-primary/80"
 					>
 						{`${t("readMore")} →`}
 					</Button>
