@@ -19,13 +19,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 	const metadata = {
 		ja: {
 			title: "About - saneatsu.me",
-			description:
-				"フルスタック開発者Saneatsuの自己紹介ページ。技術スタック、経歴、趣味・関心事、連絡先情報を掲載しています。",
 		},
 		en: {
 			title: "About - saneatsu.me",
-			description:
-				"About page of Saneatsu, a full-stack developer. Learn about tech stack, experience, interests, and contact information.",
 		},
 	};
 
@@ -34,7 +30,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 	return {
 		title: currentMetadata.title,
-		description: currentMetadata.description,
 		alternates: {
 			languages: {
 				ja: "/ja/about",
@@ -48,8 +43,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  * Aboutページ
  *
  * @description
- * Saneatsuの自己紹介、技術スキル、経歴、趣味・関心事、
- * 連絡先情報を表示するページ。
+ * Saneatsuの技術スタック、経歴、連絡先情報を表示するページ。
  */
 export default function AboutPage() {
 	return <AboutView />;
