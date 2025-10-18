@@ -11,6 +11,7 @@ import { prettyJSON } from "hono/pretty-json";
 import { articlesRoute } from "./routes/articles";
 import { authRoute } from "./routes/auth/worker";
 import { dashboardRoute } from "./routes/dashboard";
+import { tagsRoute } from "./routes/tags";
 
 /**
  * OpenAPIHono APIサーバーの初期化
@@ -50,6 +51,7 @@ app.get("/api/health", (c) => {
 app.route("/api/articles", articlesRoute);
 app.route("/api/auth", authRoute);
 app.route("/api/dashboard", dashboardRoute);
+app.route("/api/tags", tagsRoute);
 
 // ルートエンドポイント
 app.get("/", (c) => {
