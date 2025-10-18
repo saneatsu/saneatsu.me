@@ -12,10 +12,12 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
+import { Plus } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 
 import { useGetAllTags } from "@/entities/tag";
-import { DataTable, DataTableSkeleton, Input } from "@/shared/ui";
+import { Button, DataTable, DataTableSkeleton, Input } from "@/shared/ui";
 
 import { columns } from "../model/columns";
 
@@ -83,7 +85,7 @@ export function TagsTable() {
 	return (
 		<div className="space-y-4">
 			{/* フィルター */}
-			<div className="flex items-center gap-2 py-4">
+			<div className="flex items-center justify-between gap-2 py-4">
 				<Input
 					placeholder="タグ名で検索..."
 					value={(table.getColumn("slug")?.getFilterValue() as string) ?? ""}
@@ -92,6 +94,12 @@ export function TagsTable() {
 					}
 					className="max-w-sm"
 				/>
+				<Button asChild>
+					<Link href="/admin/tags/new">
+						<Plus className="mr-2 h-4 w-4" />
+						タグを作成
+					</Link>
+				</Button>
 			</div>
 
 			{/* データテーブル */}
