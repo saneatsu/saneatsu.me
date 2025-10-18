@@ -84,6 +84,54 @@ CONTENT:
 	}
 
 	/**
+	 * タグ名の翻訳プロンプトを生成
+	 * @param tagName - タグ名
+	 * @returns 翻訳用プロンプト
+	 */
+	private createTagTranslationPrompt(tagName: string): string {
+		return `以下の日本語のタグ名を英語に翻訳してください。
+
+重要な条件：
+1. タグ名として適切な英語表現を使用してください
+2. スペースは使用せず、ケバブケースまたはキャメルケースにしてください
+3. 1単語または複数単語を繋げた形式で出力してください
+4. 記号や特殊文字は使用しないでください
+
+翻訳するタグ名: ${tagName}
+
+英語のタグ名のみを出力してください（説明や追加テキストは不要）:`;
+	}
+
+	/**
+	 * タグ名を日本語から英語に翻訳
+	 * @param tagName - 日本語のタグ名
+	 * @returns 翻訳された英語タグ名（失敗時はnull）
+	 */
+	async translateTag(tagName: string): Promise<string | null> {
+		try {
+			// 翻訳プロンプトを生成
+			const prompt = this.createTagTranslationPrompt(tagName);
+
+			// Gemini APIを呼び出し
+			const result = await this.model.generateContent(prompt);
+			const response = await result.response;
+			const text = response.text().trim();
+
+			// レスポンスが空の場合はnullを返す
+			if (!text) {
+				console.error("Translation response is empty");
+				return null;
+			}
+
+			return text;
+		} catch (error) {
+			console.error("Tag translation failed:", error);
+			// エラーが発生しても処理を続行（翻訳なしで保存）
+			return null;
+		}
+	}
+
+	/**
 	 * 翻訳が必要かどうかを判定
 	 * @param originalContent - オリジナルコンテンツ
 	 * @param existingTranslation - 既存の翻訳
