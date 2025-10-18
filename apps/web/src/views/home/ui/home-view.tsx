@@ -17,10 +17,7 @@ export function HomeView() {
 			<div className="max-w-7xl mx-auto space-y-12">
 				{/* Hero Section */}
 				<section className="text-center space-y-4">
-					<h1 className="text-4xl font-bold">{t("hero.title")}</h1>
-					<p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-						{t("hero.description")}
-					</p>
+					<h1 className="text-3xl font-bold">{t("hero.title")}</h1>
 				</section>
 
 				{/* Articles Section */}
