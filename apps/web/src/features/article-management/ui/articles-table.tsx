@@ -11,8 +11,9 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useGetAllArticles } from "@/entities/article";
+import { useDashboardOverview } from "@/features/dashboard";
 import type { ArticleFilters } from "@/shared/model";
 import {
 	DataTable,
@@ -66,6 +67,11 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 	});
 
 	/**
+	 * ダッシュボード統計を取得（ステータスフィルターの件数表示用）
+	 */
+	const { data: dashboardData } = useDashboardOverview({ language: "ja" });
+
+	/**
 	 * 記事一覧を取得（サーバーサイドページネーション）
 	 */
 	const { data, isLoading, error, refetch } = useGetAllArticles({
@@ -85,6 +91,31 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 	});
 
 	const articles = data?.data || [];
+
+	/**
+	 * ステータスフィルターオプション（件数付き）
+	 *
+	 * @description
+	 * ダッシュボードAPIから取得した統計データを使用して、
+	 * 各ステータスの件数を表示する。
+	 */
+	const statusOptionsWithCount = useMemo(() => {
+		if (!dashboardData?.articleStats) {
+			return articleStatusOptions;
+		}
+
+		return articleStatusOptions.map((option) => ({
+			...option,
+			count:
+				option.value === "published"
+					? dashboardData.articleStats.publishedArticles
+					: option.value === "draft"
+						? dashboardData.articleStats.draftArticles
+						: option.value === "archived"
+							? dashboardData.articleStats.archivedArticles
+							: undefined,
+		}));
+	}, [dashboardData]);
 
 	/**
 	 * 記事アクション実行後の処理
@@ -160,7 +191,7 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 					<DataTableFacetedFilter
 						column={table.getColumn("status")}
 						title="ステータス"
-						options={articleStatusOptions}
+						options={statusOptionsWithCount}
 						multiple={true}
 					/>
 				)}
