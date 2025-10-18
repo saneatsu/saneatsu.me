@@ -4,9 +4,10 @@ import { useTranslations } from "next-intl";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
+import { WikiLink } from "@/entities/article";
 import type { Article } from "@/shared";
 import { cn, extractHeadings, remarkTag, remarkWikiLink } from "@/shared/lib";
-import { TableOfContents, WikiLink } from "@/shared/ui";
+import { TableOfContents } from "@/shared/ui";
 
 export interface ArticleDetailViewProps {
 	/** 表示する記事データ */

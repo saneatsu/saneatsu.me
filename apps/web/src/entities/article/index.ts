@@ -17,3 +17,4 @@ export {
 	ArticleSuggestionsPopover,
 	type ArticleSuggestionsPopoverProps,
 } from "./ui/article-suggestions-popover/article-suggestions-popover";
+export { WikiLink } from "./ui/wiki-link/wiki-link";
