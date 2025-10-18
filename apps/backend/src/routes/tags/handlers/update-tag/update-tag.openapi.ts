@@ -38,25 +38,19 @@ const TagUpdateResponseSchema = z.object({
 		slug: z
 			.string()
 			.openapi({ example: "typescript", description: "タグのスラッグ" }),
-		createdAt: z
-			.string()
-			.openapi({
-				example: "2024-01-01T00:00:00.000Z",
-				description: "作成日時",
-			}),
-		updatedAt: z
-			.string()
-			.openapi({
-				example: "2024-01-02T00:00:00.000Z",
-				description: "更新日時",
-			}),
-	}),
-	message: z
-		.string()
-		.openapi({
-			example: "タグが正常に更新されました",
-			description: "成功メッセージ",
+		createdAt: z.string().openapi({
+			example: "2024-01-01T00:00:00.000Z",
+			description: "作成日時",
 		}),
+		updatedAt: z.string().openapi({
+			example: "2024-01-02T00:00:00.000Z",
+			description: "更新日時",
+		}),
+	}),
+	message: z.string().openapi({
+		example: "タグが正常に更新されました",
+		description: "成功メッセージ",
+	}),
 });
 
 /**
