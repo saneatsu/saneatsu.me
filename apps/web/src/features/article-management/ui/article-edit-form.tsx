@@ -7,15 +7,9 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { useCheckSlug, useUpdate } from "@/entities/article";
+import { ArticleMarkdownEditor } from "@/features/article-editor";
 import { useDebounce } from "@/shared/lib";
-import {
-	ArticleMarkdownEditor,
-	Button,
-	Input,
-	Label,
-	RadioGroup,
-	RadioGroupItem,
-} from "@/shared/ui";
+import { Button, Input, Label, RadioGroup, RadioGroupItem } from "@/shared/ui";
 
 /**
  * 記事編集フォームのスキーマ

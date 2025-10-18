@@ -24,7 +24,7 @@ import type { CursorPosition } from "./types";
 
 // Wiki Linkコンポーネントを動的インポート（クライアントサイドのみ）
 const WikiLink = dynamic(
-	() => import("@/shared/ui").then((mod) => mod.WikiLink),
+	() => import("@/entities/article").then((mod) => mod.WikiLink),
 	{
 		ssr: false,
 	}

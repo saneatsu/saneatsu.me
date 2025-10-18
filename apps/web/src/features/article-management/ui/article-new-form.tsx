@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { useCheckSlug, useCreate } from "@/entities/article";
+import { ArticleMarkdownEditor } from "@/features/article-editor";
 import { useDebounce } from "@/shared/lib";
 import {
 	AlertDialog,
@@ -18,7 +19,6 @@ import {
 	AlertDialogFooter,
 	AlertDialogHeader,
 	AlertDialogTitle,
-	ArticleMarkdownEditor,
 	Button,
 	Input,
 	Label,
