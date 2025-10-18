@@ -2,8 +2,11 @@ import type { GenerativeModel } from "@google/generative-ai";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 /**
- * Gemini APIを使った記事翻訳サービス
- * 日本語から英語へMarkdown形式を保持した翻訳を実行
+ * Gemini APIを使った翻訳サービス
+ *
+ * @description
+ * - 記事（タイトル・本文）の翻訳: Markdown形式を保持した日英翻訳
+ * - タグ名の翻訳: 適切な英語表現への変換
  */
 export class GeminiTranslationService {
 	private genAI: GoogleGenerativeAI;
