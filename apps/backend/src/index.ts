@@ -1,7 +1,9 @@
 import dotenv from "dotenv";
 
-// 環境変数をロード
-dotenv.config();
+// 環境変数をロード（Node.js環境のみ）
+if (typeof process !== "undefined") {
+	dotenv.config();
+}
 
 import { serve } from "@hono/node-server";
 import { OpenAPIHono } from "@hono/zod-openapi";
@@ -14,35 +16,55 @@ import { dashboardRoute } from "./routes/dashboard";
 import { tagsRoute } from "./routes/tags";
 
 /**
+ * Cloudflare Workers環境の型定義
+ */
+type Env = {
+	TURSO_DATABASE_URL: string;
+	TURSO_AUTH_TOKEN: string;
+	CORS_ORIGIN: string;
+	ADMIN_EMAILS?: string;
+	TEST_DATABASE_URL?: string;
+};
+
+/**
  * OpenAPIHono APIサーバーの初期化
  *
- * Nitoプロジェクトの構造を参考に、型安全なAPIクライアントを提供するため
- * OpenAPIHonoを使用してAPIの型定義を自動生成する
+ * @description
+ * Node.js環境とCloudflare Workers環境の両方で動作する統合APIサーバー。
+ * 環境変数はc.envからアクセスし、両環境で統一されたAPIを提供する。
  */
-const app = new OpenAPIHono();
+const app = new OpenAPIHono<{ Bindings: Env }>();
 
 // ミドルウェアの設定
 app.use("*", logger());
-app.use(
-	"*",
-	cors({
-		origin: ["http://localhost:3333", "https://saneatsu.me"],
+app.use("*", async (c, next) => {
+	const corsOrigin =
+		c.env.CORS_ORIGIN || "http://localhost:3333,https://saneatsu.me";
+	const origins = corsOrigin.split(",").map((o) => o.trim());
+
+	const corsMiddleware = cors({
+		origin: origins,
 		credentials: true,
 		allowMethods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-		allowHeaders: ["Content-Type", "Authorization"],
-	})
-);
+		allowHeaders: ["Content-Type", "Authorization", "X-User-Email"],
+	});
+	return corsMiddleware(c, next);
+});
 app.use("*", prettyJSON());
 
 // ヘルスチェックエンドポイント
 app.get("/api/health", (c) => {
+	const databaseUrl = c.env.TURSO_DATABASE_URL;
+	const authToken = c.env.TURSO_AUTH_TOKEN;
+
 	return c.json({
 		status: "ok",
 		timestamp: new Date().toISOString(),
-		service: "saneatsu-me-api",
+		service: "saneatsu-blog-api",
+		runtime: typeof process !== "undefined" ? "node.js" : "cloudflare-workers",
 		database: {
-			url: process.env.TURSO_DATABASE_URL,
-			hasToken: !!process.env.TURSO_AUTH_TOKEN,
+			url: databaseUrl ? "configured" : "not configured",
+			hasToken: !!authToken,
 		},
 	});
 });
@@ -88,29 +110,34 @@ app.onError((err, c) => {
 	);
 });
 
-// 型定義のエクスポート（Nitoプロジェクトと同様の構造）
-// フロントエンドのHonoクライアントで使用される
+// 型定義のエクスポート（フロントエンドのHonoクライアントで使用）
 export type AppType = typeof app;
 
 // テスト用にappもエクスポート
 export { app };
 
-const port = process.env.PORT ? parseInt(process.env.PORT) : 8888;
-console.log(`🚀 Server is running on http://localhost:${port}`);
+// Cloudflare Workers標準エクスポート
+export default app;
 
-try {
-	serve({
-		fetch: (request, env) => {
-			// Node.js環境でprocess.envをc.envに渡す
-			return app.fetch(request, {
-				...process.env,
-				...env,
-			});
-		},
-		port,
-	});
-	console.log(`✅ Server successfully started on http://localhost:${port}`);
-} catch (error) {
-	console.error("サーバー起動エラー:", error);
-	process.exit(1);
+// Node.js環境の場合のみサーバーを起動
+if (typeof process !== "undefined") {
+	const port = process.env.PORT ? parseInt(process.env.PORT) : 8888;
+	console.log(`🚀 Server is running on http://localhost:${port}`);
+
+	try {
+		serve({
+			fetch: (request, env) => {
+				// Node.js環境でprocess.envをc.envに渡す
+				return app.fetch(request, {
+					...process.env,
+					...env,
+				});
+			},
+			port,
+		});
+		console.log(`✅ Server successfully started on http://localhost:${port}`);
+	} catch (error) {
+		console.error("サーバー起動エラー:", error);
+		process.exit(1);
+	}
 }

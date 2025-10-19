@@ -31,6 +31,11 @@ vi.mock("./routes/tags", () => {
 
 describe("Unit Test", () => {
 	let app: AppType;
+	const testEnv = {
+		TURSO_DATABASE_URL: "file:./test.db",
+		TURSO_AUTH_TOKEN: "test-token",
+		CORS_ORIGIN: "http://localhost:3333,https://saneatsu.me",
+	};
 
 	beforeEach(async () => {
 		// 環境変数を設定
@@ -49,7 +54,7 @@ describe("Unit Test", () => {
 		it("ルートエンドポイントが正しいレスポンスを返す", async () => {
 			// Act
 			// @ts-expect-error testClientの型推論の問題
-			const res = await testClient(app).$get({});
+			const res = await testClient(app, testEnv).$get({});
 
 			// Assert
 			expect(res.status).toBe(200);
@@ -65,7 +70,7 @@ describe("Unit Test", () => {
 		it("ヘルスチェックエンドポイントが正しいレスポンスを返す", async () => {
 			// Act
 			// @ts-expect-error testClientの型推論の問題
-			const res = await testClient(app).api.health.$get({});
+			const res = await testClient(app, testEnv).api.health.$get({});
 
 			// Assert
 			expect(res.status).toBe(200);
@@ -73,9 +78,10 @@ describe("Unit Test", () => {
 
 			expect(data).toMatchObject({
 				status: "ok",
-				service: "saneatsu-me-api",
+				service: "saneatsu-blog-api",
+				runtime: "node.js",
 				database: {
-					url: "file:./test.db",
+					url: "configured",
 					hasToken: true,
 				},
 			});
@@ -88,7 +94,9 @@ describe("Unit Test", () => {
 		it("存在しないルートへのアクセスで404エラーを返す", async () => {
 			// Act
 			// @ts-expect-error testClientの型推論の問題
-			const res = await testClient(app).api["non-existent-route"].$get({});
+			const res = await testClient(app, testEnv).api["non-existent-route"].$get(
+				{}
+			);
 
 			// Assert
 			expect(res.status).toBe(404);
@@ -112,7 +120,7 @@ describe("Unit Test", () => {
 
 			// Act
 			// @ts-expect-error testClientの型推論の問題
-			const res = await testClient(app).api["error-test"].$get({});
+			const res = await testClient(app, testEnv).api["error-test"].$get({});
 
 			// Assert
 			expect(res.status).toBe(500);
@@ -129,6 +137,11 @@ describe("Unit Test", () => {
 
 describe("Integration Test", () => {
 	let app: AppType;
+	const testEnv = {
+		TURSO_DATABASE_URL: "file:./test.db",
+		TURSO_AUTH_TOKEN: "test-token",
+		CORS_ORIGIN: "http://localhost:3333,https://saneatsu.me",
+	};
 
 	beforeEach(async () => {
 		// 環境変数を設定
@@ -148,7 +161,7 @@ describe("Integration Test", () => {
 		it("CORSヘッダーが正しく設定される", async () => {
 			// Act
 			// @ts-expect-error testClientの型推論の問題
-			const res = await testClient(app).$get({});
+			const res = await testClient(app, testEnv).$get({});
 
 			// Assert
 			expect(res.headers.get("access-control-allow-origin")).toBeDefined();
@@ -157,14 +170,15 @@ describe("Integration Test", () => {
 		it("JSON形式のレスポンスがpretty printされる", async () => {
 			// Act
 			// @ts-expect-error testClientの型推論の問題
-			const res = await testClient(app).api.health.$get({});
+			const res = await testClient(app, testEnv).api.health.$get({});
 
 			// Assert
 			expect(res.status).toBe(200);
 			const data = await res.json();
 			// ヘルスチェックのレスポンスが正しい形式であることを確認
 			expect(data).toHaveProperty("status", "ok");
-			expect(data).toHaveProperty("service", "saneatsu-me-api");
+			expect(data).toHaveProperty("service", "saneatsu-blog-api");
+			expect(data).toHaveProperty("runtime", "node.js");
 			expect(data).toHaveProperty("timestamp");
 			expect(data).toHaveProperty("database");
 		});
