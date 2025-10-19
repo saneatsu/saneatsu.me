@@ -16,6 +16,7 @@ name = "saneatsu-backend-dev"
 
 [env.development.vars]
 ENVIRONMENT = "development"
+CORS_ORIGIN = "http://localhost:3333"
 
 # Preview/staging environment
 [env.preview]
@@ -23,6 +24,7 @@ name = "saneatsu-backend-preview"
 
 [env.preview.vars]
 ENVIRONMENT = "preview"
+CORS_ORIGIN = "https://saneatsu.me"
 
 # Production environment
 [env.production]
@@ -30,6 +32,7 @@ name = "saneatsu-backend"
 
 [env.production.vars]
 ENVIRONMENT = "production"
+CORS_ORIGIN = "https://saneatsu.me"
 
 # Custom domain configuration for production
 [[env.production.routes]]
