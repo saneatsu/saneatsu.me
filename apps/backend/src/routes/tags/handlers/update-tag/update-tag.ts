@@ -1,7 +1,7 @@
 import type { RouteHandler } from "@hono/zod-openapi";
-import { tags, tagTranslations } from "@saneatsu/db/worker";
 import { and, eq, not } from "drizzle-orm";
 
+import { getDatabase } from "@/lib/database";
 import { createTranslationService } from "@/services/gemini-translation/gemini-translation";
 import type { updateTagRoute } from "./update-tag.openapi";
 
@@ -33,7 +33,7 @@ type Handler = RouteHandler<typeof updateTagRoute, { Bindings: Env }>;
 export const updateTag: Handler = async (c) => {
 	try {
 		// 1. DBクライアントを作成
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const { createDatabaseClient, tags, tagTranslations } = await getDatabase();
 		const db = createDatabaseClient({
 			TURSO_DATABASE_URL: c.env.TURSO_DATABASE_URL,
 			TURSO_AUTH_TOKEN: c.env.TURSO_AUTH_TOKEN,

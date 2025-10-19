@@ -1,10 +1,5 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import {
-	articles,
-	articleTranslations,
-	createDatabaseClient,
-} from "@saneatsu/db/worker";
-import {
 	type DashboardOverviewResponse,
 	type DashboardStatsResponse,
 	dashboardStatsQuerySchema,
@@ -12,6 +7,8 @@ import {
 	viewsTrendQuerySchema,
 } from "@saneatsu/schemas";
 import { and, count, desc, eq, gte, sql } from "drizzle-orm";
+
+import { getDatabase } from "@/lib/database";
 
 // OpenAPI用のクエリスキーマ（packages/schemasをOpenAPI対応でラップ）
 const dashboardStatsOpenApiQuerySchema = z.object({
@@ -229,7 +226,9 @@ const getDashboardOverviewRoute = createRoute({
 // @ts-ignore - OpenAPIの型推論エラーを一時的に回避
 app.openapi(getDashboardStatsRoute, async (c) => {
 	try {
-		// Cloudflare Workers環境でDBクライアントを作成
+		// DBクライアントを作成（環境に応じて適切なクライアントを使用）
+		const { createDatabaseClient, articles, articleTranslations } =
+			await getDatabase();
 		const db = createDatabaseClient(c.env);
 
 		const query = c.req.valid("query");
@@ -362,7 +361,9 @@ app.openapi(getDashboardStatsRoute, async (c) => {
 // @ts-ignore - OpenAPIの型推論エラーを一時的に回避
 app.openapi(getDashboardOverviewRoute, async (c) => {
 	try {
-		// Cloudflare Workers環境でDBクライアントを作成
+		// DBクライアントを作成（環境に応じて適切なクライアントを使用）
+		const { createDatabaseClient, articles, articleTranslations } =
+			await getDatabase();
 		const db = createDatabaseClient(c.env);
 
 		const query = c.req.valid("query");
@@ -524,7 +525,9 @@ const getViewsTrendRoute = createRoute({
 // @ts-ignore - OpenAPIの型推論エラーを一時的に回避
 app.openapi(getViewsTrendRoute, async (c) => {
 	try {
-		// Cloudflare Workers環境でDBクライアントを作成
+		// DBクライアントを作成（環境に応じて適切なクライアントを使用）
+		const { createDatabaseClient, articles, articleTranslations } =
+			await getDatabase();
 		const db = createDatabaseClient(c.env);
 
 		const query = c.req.valid("query");

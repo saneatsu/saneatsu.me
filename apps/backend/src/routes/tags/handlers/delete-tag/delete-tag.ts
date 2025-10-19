@@ -1,7 +1,7 @@
 import type { RouteHandler } from "@hono/zod-openapi";
-import { tags } from "@saneatsu/db/worker";
 import { eq } from "drizzle-orm";
 
+import { getDatabase } from "@/lib/database";
 import type { deleteTagRoute } from "./delete-tag.openapi";
 
 /**
@@ -28,7 +28,7 @@ type Handler = RouteHandler<typeof deleteTagRoute, { Bindings: Env }>;
 export const deleteTag: Handler = async (c) => {
 	try {
 		// 1. DBクライアントを作成
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const { createDatabaseClient, tags } = await getDatabase();
 		const db = createDatabaseClient({
 			TURSO_DATABASE_URL: c.env.TURSO_DATABASE_URL,
 			TURSO_AUTH_TOKEN: c.env.TURSO_AUTH_TOKEN,

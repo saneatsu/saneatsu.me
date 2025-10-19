@@ -1,11 +1,7 @@
 import type { RouteHandler } from "@hono/zod-openapi";
-import {
-	articles,
-	articleTags,
-	articleTranslations,
-} from "@saneatsu/db/worker";
 import { and, eq, sql } from "drizzle-orm";
 
+import { getDatabase } from "@/lib/database";
 import { createTranslationService } from "@/services/gemini-translation/gemini-translation";
 import type { createArticleRoute } from "./create-article.openapi";
 
@@ -37,7 +33,8 @@ type Handler = RouteHandler<typeof createArticleRoute, { Bindings: Env }>;
 export const createArticle: Handler = async (c) => {
 	try {
 		// 1. DBクライアントを作成
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const { createDatabaseClient, articles, articleTags, articleTranslations } =
+			await getDatabase();
 		const db = createDatabaseClient({
 			TURSO_DATABASE_URL: c.env.TURSO_DATABASE_URL,
 			TURSO_AUTH_TOKEN: c.env.TURSO_AUTH_TOKEN,

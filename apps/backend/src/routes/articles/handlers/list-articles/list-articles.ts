@@ -1,13 +1,8 @@
 import type { RouteHandler } from "@hono/zod-openapi";
-import {
-	articles,
-	articleTags,
-	articleTranslations,
-	tags,
-} from "@saneatsu/db/worker";
 import { articleListQuerySchema, type SortOrder } from "@saneatsu/schemas";
 import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
 
+import { getDatabase } from "@/lib/database";
 import type { listArticlesRoute } from "./list-articles.openapi";
 
 /**
@@ -37,7 +32,13 @@ type Handler = RouteHandler<typeof listArticlesRoute, { Bindings: Env }>;
 export const listArticles: Handler = async (c) => {
 	try {
 		// 1. DBクライアントを作成
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const {
+			createDatabaseClient,
+			articles,
+			articleTags,
+			articleTranslations,
+			tags,
+		} = await getDatabase();
 		const db = createDatabaseClient({
 			TURSO_DATABASE_URL: c.env.TURSO_DATABASE_URL,
 			TURSO_AUTH_TOKEN: c.env.TURSO_AUTH_TOKEN,
