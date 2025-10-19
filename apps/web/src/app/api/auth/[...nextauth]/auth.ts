@@ -148,23 +148,6 @@ export const authOptions: any = {
 		},
 		async jwt(params: any) {
 			const { token, user } = params;
-			console.log("🔍 JWT callback called:", {
-				hasUser: !!user,
-				userInfo: user
-					? {
-							id: user.id,
-							email: user.email,
-							name: user.name,
-							image: user.image,
-						}
-					: null,
-				currentToken: {
-					id: token.id,
-					email: token.email,
-					name: token.name,
-					picture: token.picture,
-				},
-			});
 
 			// 初回ログイン時にユーザー情報をトークンに追加
 			if (user) {
@@ -183,25 +166,6 @@ export const authOptions: any = {
 		},
 		async session(params: any) {
 			const { session, token } = params;
-			console.log("🔍 Session callback called:", {
-				hasToken: !!token,
-				hasSession: !!session,
-				hasUser: !!session?.user,
-				tokenInfo: token
-					? {
-							id: token.id,
-							email: token.email,
-							name: token.name,
-							picture: token.picture,
-						}
-					: null,
-				sessionInfo: session
-					? {
-							user: session.user,
-							expires: session.expires,
-						}
-					: null,
-			});
 
 			// JWTトークンからセッション情報を構築
 			if (token && session.user) {
@@ -209,12 +173,6 @@ export const authOptions: any = {
 				session.user.email = token.email as string;
 				session.user.name = token.name as string;
 				session.user.image = token.picture as string;
-				console.log("✅ Session constructed:", {
-					userId: session.user.id,
-					userEmail: session.user.email,
-					userName: session.user.name,
-					userImage: session.user.image,
-				});
 			} else {
 				console.error("❌ Session construction failed:", {
 					hasToken: !!token,

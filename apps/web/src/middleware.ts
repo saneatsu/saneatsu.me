@@ -145,26 +145,9 @@ export async function middleware(request: NextRequest) {
 
 	// 管理画面へのアクセスをチェック
 	if (pathname.startsWith("/admin")) {
-		console.log("🔍 Admin access attempt:", pathname);
-
 		// NextAuth.js v5のauth関数を使用してセッション情報を取得
 		try {
 			const session = await auth();
-
-			console.log("🔍 Session result:", {
-				hasSession: !!session,
-				sessionContent: session
-					? {
-							user: {
-								id: session.user?.id,
-								email: session.user?.email,
-								name: session.user?.name,
-								image: session.user?.image,
-							},
-							expires: session.expires,
-						}
-					: null,
-			});
 
 			// 未認証の場合はログインページにリダイレクト
 			if (!session) {
@@ -173,8 +156,6 @@ export async function middleware(request: NextRequest) {
 				url.searchParams.set("callbackUrl", pathname);
 				return NextResponse.redirect(url);
 			}
-
-			console.log("✅ Session validated - allowing admin access");
 		} catch (authError) {
 			console.error("❌ Auth validation error:", authError);
 			const url = new URL("/login", request.url);
