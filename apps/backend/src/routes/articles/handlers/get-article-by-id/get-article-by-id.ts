@@ -34,6 +34,7 @@ export const getArticleById: Handler = async (c) => {
 			articles,
 			articleTags,
 			articleTranslations,
+			tagTranslations,
 			tags,
 		} = await getDatabase();
 		const db = createDatabaseClient({
@@ -100,20 +101,58 @@ export const getArticleById: Handler = async (c) => {
 		// 5. タグ情報を取得
 		const articleTagsData = await db
 			.select({
-				id: tags.id,
-				slug: tags.slug,
-				name: tags.slug,
+				tagId: tags.id,
+				tagSlug: tags.slug,
+				tagCreatedAt: tags.createdAt,
+				tagUpdatedAt: tags.updatedAt,
+				tagName: tagTranslations.name,
+				tagLanguage: tagTranslations.language,
 			})
 			.from(articleTags)
 			.innerJoin(tags, eq(articleTags.tagId, tags.id))
+			.innerJoin(tagTranslations, eq(tags.id, tagTranslations.tagId))
 			.where(eq(articleTags.articleId, articleId));
 
-		// 6. レスポンスを返す
+		// 6. タグの翻訳情報をグループ化
+		const tagsMap = new Map<
+			number,
+			{
+				id: number;
+				slug: string;
+				createdAt: string;
+				updatedAt: string;
+				articleCount: number;
+				translations: { ja: string; en: string };
+			}
+		>();
+
+		for (const tagData of articleTagsData) {
+			if (!tagsMap.has(tagData.tagId)) {
+				tagsMap.set(tagData.tagId, {
+					id: tagData.tagId,
+					slug: tagData.tagSlug,
+					createdAt: tagData.tagCreatedAt,
+					updatedAt: tagData.tagUpdatedAt,
+					articleCount: 0,
+					translations: { ja: "", en: "" },
+				});
+			}
+
+			const tag = tagsMap.get(tagData.tagId);
+			if (!tag) continue;
+			if (tagData.tagLanguage === "ja") {
+				tag.translations.ja = tagData.tagName;
+			} else if (tagData.tagLanguage === "en") {
+				tag.translations.en = tagData.tagName;
+			}
+		}
+
+		// 7. レスポンスを返す
 		return c.json(
 			{
 				data: {
 					...articleData,
-					tags: articleTagsData,
+					tags: Array.from(tagsMap.values()),
 				},
 			},
 			200

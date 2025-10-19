@@ -42,9 +42,36 @@ const ArticleWithTagsSchema = z.object({
 	}),
 	tags: z.array(
 		z.object({
-			id: z.number().int(),
-			slug: z.string(),
-			name: z.string().nullable(),
+			id: z.number().int().openapi({
+				example: 1,
+				description: "タグID",
+			}),
+			slug: z.string().openapi({
+				example: "typescript",
+				description: "タグスラッグ",
+			}),
+			createdAt: z.string().openapi({
+				example: "2024-01-01T00:00:00.000Z",
+				description: "作成日時",
+			}),
+			updatedAt: z.string().openapi({
+				example: "2024-01-01T00:00:00.000Z",
+				description: "更新日時",
+			}),
+			articleCount: z.number().int().openapi({
+				example: 0,
+				description: "このタグが付けられた記事の数",
+			}),
+			translations: z.object({
+				ja: z.string().openapi({
+					example: "TypeScript",
+					description: "日本語のタグ名",
+				}),
+				en: z.string().openapi({
+					example: "TypeScript",
+					description: "英語のタグ名",
+				}),
+			}),
 		})
 	),
 });

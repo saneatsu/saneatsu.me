@@ -37,6 +37,7 @@ export const listArticles: Handler = async (c) => {
 			articles,
 			articleTags,
 			articleTranslations,
+			tagTranslations,
 			tags,
 		} = await getDatabase();
 		const db = createDatabaseClient({
@@ -144,6 +145,10 @@ export const listArticles: Handler = async (c) => {
 			articleId: number;
 			tagId: number;
 			tagSlug: string;
+			tagCreatedAt: string;
+			tagUpdatedAt: string;
+			tagName: string;
+			tagLanguage: string;
 		}> = [];
 
 		if (articleIds.length > 0) {
@@ -152,22 +157,63 @@ export const listArticles: Handler = async (c) => {
 					articleId: articleTags.articleId,
 					tagId: tags.id,
 					tagSlug: tags.slug,
+					tagCreatedAt: tags.createdAt,
+					tagUpdatedAt: tags.updatedAt,
+					tagName: tagTranslations.name,
+					tagLanguage: tagTranslations.language,
 				})
 				.from(articleTags)
 				.innerJoin(tags, eq(articleTags.tagId, tags.id))
+				.innerJoin(tagTranslations, eq(tags.id, tagTranslations.tagId))
 				.where(inArray(articleTags.articleId, articleIds));
 		}
 
 		// 8. 記事ごとにタグをグループ化
-		const articleWithTags = articleList.map((article) => ({
-			...article,
-			tags: articleTagsData
-				.filter((tag) => tag.articleId === article.id)
-				.map((tag) => ({
-					id: tag.tagId,
-					slug: tag.tagSlug,
-				})),
-		}));
+		const articleWithTags = articleList.map((article) => {
+			// この記事のタグデータを取得
+			const articleTags = articleTagsData.filter(
+				(tag) => tag.articleId === article.id
+			);
+
+			// タグIDごとにグループ化して翻訳情報をまとめる
+			const tagsMap = new Map<
+				number,
+				{
+					id: number;
+					slug: string;
+					createdAt: string;
+					updatedAt: string;
+					articleCount: number;
+					translations: { ja: string; en: string };
+				}
+			>();
+
+			for (const tagData of articleTags) {
+				if (!tagsMap.has(tagData.tagId)) {
+					tagsMap.set(tagData.tagId, {
+						id: tagData.tagId,
+						slug: tagData.tagSlug,
+						createdAt: tagData.tagCreatedAt,
+						updatedAt: tagData.tagUpdatedAt,
+						articleCount: 0,
+						translations: { ja: "", en: "" },
+					});
+				}
+
+				const tag = tagsMap.get(tagData.tagId);
+				if (!tag) continue;
+				if (tagData.tagLanguage === "ja") {
+					tag.translations.ja = tagData.tagName;
+				} else if (tagData.tagLanguage === "en") {
+					tag.translations.en = tagData.tagName;
+				}
+			}
+
+			return {
+				...article,
+				tags: Array.from(tagsMap.values()),
+			};
+		});
 
 		// 9. 総記事数を取得（DISTINCT countで重複を除いて正しくカウント）
 		const totalCountResult = await db
