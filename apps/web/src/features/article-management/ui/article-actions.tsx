@@ -154,8 +154,6 @@ export function ArticleActions({ article, onAction }: ArticleActionsProps) {
 						</DropdownMenuItem>
 					)}
 
-					<DropdownMenuSeparator />
-
 					{/* 削除アクション */}
 					<DropdownMenuItem
 						onClick={handleDeleteClick}
