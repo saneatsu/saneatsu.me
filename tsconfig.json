@@ -29,6 +29,7 @@
 		"**/*.bak/**",
 		"**/stories.bak/**",
 		"**/article-detail.bak/**",
-		"src/"
+		"src/",
+		"apps/backend/**"
 	]
 }
