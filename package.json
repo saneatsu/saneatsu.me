@@ -8,7 +8,8 @@
 	"scripts": {
 		"build": "turbo build",
 		"build:cloudflare": "turbo build:cloudflare",
-		"dev": "turbo dev",
+		"dev": "concurrently -n Web,Backend -c cyan,green \"pnpm --filter @saneatsu/web dev\" \"pnpm --filter @saneatsu/backend dev\"",
+		"dev:turbo": "turbo dev",
 		"dev:worker": "turbo dev:worker",
 		"deploy": "turbo deploy",
 		"deploy:dev": "turbo deploy:dev",
