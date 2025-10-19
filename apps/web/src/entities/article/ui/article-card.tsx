@@ -2,11 +2,9 @@ import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 
 import type { Article } from "@/shared";
-import { Button } from "@/shared/ui/button/button";
 import {
 	Card,
 	CardContent,
-	CardFooter,
 	CardHeader,
 	CardTitle,
 } from "@/shared/ui/card/card";
@@ -39,63 +37,50 @@ export function ArticleCard({ article }: ArticleCardProps) {
 		.slice(0, 150);
 
 	return (
-		<Card className="group hover:shadow-md transition-shadow">
-			<CardHeader>
-				<div className="flex items-center justify-between mb-2 text-sm text-muted-foreground">
-					{publishedDate && <time>{publishedDate}</time>}
-					<div className="flex items-center space-x-1">
-						<svg
-							className="h-3 w-3"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-							xmlns="http://www.w3.org/2000/svg"
-							aria-label="閲覧数"
-						>
-							<title>閲覧数</title>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth={2}
-								d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-							/>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth={2}
-								d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-							/>
-						</svg>
-						<span>{t("viewCount", { count: article.viewCount })}</span>
+		<Link href={`/articles/${article.slug}`}>
+			<Card className="group hover:shadow-md transition-shadow cursor-pointer">
+				<CardHeader>
+					<div className="flex items-center justify-between mb-2 text-sm text-muted-foreground">
+						{publishedDate && <time>{publishedDate}</time>}
+						<div className="flex items-center space-x-1">
+							<svg
+								className="h-3 w-3"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+								xmlns="http://www.w3.org/2000/svg"
+								aria-label="閲覧数"
+							>
+								<title>閲覧数</title>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+								/>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+								/>
+							</svg>
+							<span>{t("viewCount", { count: article.viewCount })}</span>
+						</div>
 					</div>
-				</div>
-				<CardTitle className="line-clamp-2">
-					<Link
-						href={`/articles/${article.slug}`}
-						className="hover:text-primary transition-colors"
-					>
-						{article.title}
-					</Link>
-				</CardTitle>
-			</CardHeader>
+					<CardTitle className="line-clamp-2">
+						<span className="group-hover:underline transition-all">
+							{article.title}
+						</span>
+					</CardTitle>
+				</CardHeader>
 
-			<CardContent>
-				<p className="text-sm text-muted-foreground line-clamp-3">
-					{excerpt}...
-				</p>
-			</CardContent>
-
-			<CardFooter>
-				<Link href={`/articles/${article.slug}`}>
-					<Button
-						variant="ghost"
-						size="sm"
-						className="font-medium text-primary hover:text-primary/80"
-					>
-						{`${t("readMore")} →`}
-					</Button>
-				</Link>
-			</CardFooter>
-		</Card>
+				<CardContent>
+					<p className="text-sm text-muted-foreground line-clamp-3">
+						{excerpt}...
+					</p>
+				</CardContent>
+			</Card>
+		</Link>
 	);
 }
