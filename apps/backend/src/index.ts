@@ -1,11 +1,3 @@
-import dotenv from "dotenv";
-
-// 環境変数をロード（Node.js環境のみ）
-if (typeof process !== "undefined") {
-	dotenv.config();
-}
-
-import { serve } from "@hono/node-server";
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
@@ -118,26 +110,3 @@ export { app };
 
 // Cloudflare Workers標準エクスポート
 export default app;
-
-// Node.js環境の場合のみサーバーを起動
-if (typeof process !== "undefined") {
-	const port = process.env.PORT ? parseInt(process.env.PORT) : 8888;
-	console.log(`🚀 Server is running on http://localhost:${port}`);
-
-	try {
-		serve({
-			fetch: (request, env) => {
-				// Node.js環境でprocess.envをc.envに渡す
-				return app.fetch(request, {
-					...process.env,
-					...env,
-				});
-			},
-			port,
-		});
-		console.log(`✅ Server successfully started on http://localhost:${port}`);
-	} catch (error) {
-		console.error("サーバー起動エラー:", error);
-		process.exit(1);
-	}
-}
