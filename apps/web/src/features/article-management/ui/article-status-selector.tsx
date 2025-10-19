@@ -65,6 +65,8 @@ export function ArticleStatusSelector({
 					{statuses.map((status) => {
 						const config = ARTICLE_STATUS_CONFIG[status];
 						const isSelected = value === status;
+						// 選択されていない場合、または値が空の場合に点線ボーダーを表示
+						const shouldShowDashed = !value || !isSelected;
 						return (
 							<div key={status} className="relative">
 								<RadioGroupItem
@@ -76,7 +78,7 @@ export function ArticleStatusSelector({
 									<Badge
 										variant={config.variant}
 										className={
-											!isSelected
+											shouldShowDashed
 												? "border-2 border-dashed opacity-60 hover:opacity-80 transition-opacity"
 												: ""
 										}
