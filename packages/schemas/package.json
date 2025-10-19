@@ -22,8 +22,8 @@
 		"test:coverage": "vitest run --coverage"
 	},
 	"dependencies": {
-		"zod": "^3.22.0",
-		"@saneatsu/i18n": "workspace:*"
+		"@saneatsu/i18n": "workspace:*",
+		"zod": "^4.0.10"
 	},
 	"devDependencies": {
 		"typescript": "^5.8.3"
