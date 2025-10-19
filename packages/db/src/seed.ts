@@ -9,7 +9,14 @@ dotenv.config();
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
 import * as schema from "./schema";
-import { articles, articleTranslations, users } from "./schema";
+import {
+	articles,
+	articleTags,
+	articleTranslations,
+	tags,
+	tagTranslations,
+	users,
+} from "./schema";
 
 // シード用のデータベース接続（ローカルSQLite）
 const client = createClient({
@@ -26,6 +33,9 @@ async function clearAllTables() {
 
 	try {
 		// 外部キー制約を考慮して削除順序を設定
+		await db.delete(articleTags);
+		await db.delete(tagTranslations);
+		await db.delete(tags);
 		await db.delete(articleTranslations);
 		await db.delete(articles);
 		await db.delete(users);
@@ -368,6 +378,151 @@ async function seed() {
 		await db.insert(articleTranslations).values(articleTranslationData);
 		console.log("✅ 400件の翻訳を作成しました");
 
+		// タグを生成
+		console.log("🏷️  タグを生成中...");
+
+		const tagDefinitions = [
+			{ slug: "typescript", ja: "TypeScript", en: "TypeScript" },
+			{ slug: "react", ja: "React", en: "React" },
+			{ slug: "nextjs", ja: "Next.js", en: "Next.js" },
+			{ slug: "javascript", ja: "JavaScript", en: "JavaScript" },
+			{ slug: "css", ja: "CSS", en: "CSS" },
+			{ slug: "graphql", ja: "GraphQL", en: "GraphQL" },
+			{ slug: "docker", ja: "Docker", en: "Docker" },
+			{ slug: "aws", ja: "AWS", en: "AWS" },
+			{ slug: "database", ja: "データベース", en: "Database" },
+			{ slug: "security", ja: "セキュリティ", en: "Security" },
+			{ slug: "testing", ja: "テスト", en: "Testing" },
+			{ slug: "devops", ja: "DevOps", en: "DevOps" },
+			{ slug: "design", ja: "デザイン", en: "Design" },
+			{ slug: "lifestyle", ja: "ライフスタイル", en: "Lifestyle" },
+			{ slug: "career", ja: "キャリア", en: "Career" },
+			{ slug: "tutorial", ja: "チュートリアル", en: "Tutorial" },
+			{
+				slug: "best-practices",
+				ja: "ベストプラクティス",
+				en: "Best Practices",
+			},
+			{ slug: "performance", ja: "パフォーマンス", en: "Performance" },
+			{ slug: "ui-ux", ja: "UI/UX", en: "UI/UX" },
+			{ slug: "accessibility", ja: "アクセシビリティ", en: "Accessibility" },
+		];
+
+		// タグを挿入
+		const tagData = await db
+			.insert(tags)
+			.values(tagDefinitions.map((tag) => ({ slug: tag.slug })))
+			.returning();
+
+		console.log(`✅ ${tagData.length}件のタグを作成しました`);
+
+		// タグ翻訳を生成
+		console.log("🌐 タグ翻訳を生成中...");
+
+		const tagTranslationData = [];
+		for (let i = 0; i < tagData.length; i++) {
+			const tag = tagData[i];
+			const tagDef = tagDefinitions[i];
+
+			// 日本語の翻訳
+			tagTranslationData.push({
+				tagId: tag.id,
+				name: tagDef.ja,
+				language: "ja" as const,
+			});
+
+			// 英語の翻訳
+			tagTranslationData.push({
+				tagId: tag.id,
+				name: tagDef.en,
+				language: "en" as const,
+			});
+		}
+
+		// タグ翻訳を挿入
+		await db.insert(tagTranslations).values(tagTranslationData);
+		console.log(`✅ ${tagTranslationData.length}件のタグ翻訳を作成しました`);
+
+		// 記事とタグを関連付け
+		console.log("🔗 記事とタグを関連付け中...");
+
+		const articleTagsData = [];
+
+		// タグのスラッグとIDのマッピングを作成
+		const tagSlugToId = new Map(
+			tagData.map((tag, index) => [tagDefinitions[index].slug, tag.id])
+		);
+
+		// 各記事にタグを割り当て
+		for (let i = 0; i < articleData.length; i++) {
+			const article = articleData[i];
+			const titleJa = titleTemplatesJa[i % titleTemplatesJa.length];
+
+			// タイトルに基づいてタグを選択
+			const articleTagSlugs: string[] = [];
+
+			// 技術系タグの割り当て
+			if (titleJa.includes("TypeScript")) articleTagSlugs.push("typescript");
+			if (titleJa.includes("React")) articleTagSlugs.push("react");
+			if (titleJa.includes("Next.js")) articleTagSlugs.push("nextjs");
+			if (titleJa.includes("JavaScript")) articleTagSlugs.push("javascript");
+			if (titleJa.includes("CSS")) articleTagSlugs.push("css");
+			if (titleJa.includes("GraphQL")) articleTagSlugs.push("graphql");
+			if (titleJa.includes("Docker")) articleTagSlugs.push("docker");
+			if (titleJa.includes("AWS")) articleTagSlugs.push("aws");
+			if (titleJa.includes("データベース")) articleTagSlugs.push("database");
+			if (titleJa.includes("セキュリティ")) articleTagSlugs.push("security");
+			if (titleJa.includes("テスト")) articleTagSlugs.push("testing");
+			if (titleJa.includes("DevOps")) articleTagSlugs.push("devops");
+
+			// カテゴリタグの割り当て
+			if (titleJa.includes("デザイン") || titleJa.includes("UI/UX"))
+				articleTagSlugs.push("design");
+			if (titleJa.includes("リモートワーク") || titleJa.includes("ライフ"))
+				articleTagSlugs.push("lifestyle");
+			if (titleJa.includes("キャリア") || titleJa.includes("フリーランス"))
+				articleTagSlugs.push("career");
+			if (titleJa.includes("入門") || titleJa.includes("ガイド"))
+				articleTagSlugs.push("tutorial");
+			if (titleJa.includes("ベストプラクティス") || titleJa.includes("最適化"))
+				articleTagSlugs.push("best-practices");
+			if (titleJa.includes("パフォーマンス"))
+				articleTagSlugs.push("performance");
+			if (titleJa.includes("アクセシビリティ"))
+				articleTagSlugs.push("accessibility");
+
+			// タグが割り当てられなかった場合、ランダムに1-3個選択
+			if (articleTagSlugs.length === 0) {
+				const randomTagCount = Math.floor(Math.random() * 3) + 1; // 1-3個
+				const availableTags = [...tagDefinitions];
+				for (let j = 0; j < randomTagCount; j++) {
+					const randomIndex = Math.floor(Math.random() * availableTags.length);
+					articleTagSlugs.push(availableTags[randomIndex].slug);
+					availableTags.splice(randomIndex, 1);
+				}
+			}
+
+			// 重複を削除
+			const uniqueTagSlugs = [...new Set(articleTagSlugs)];
+
+			// article_tagsレコードを作成
+			for (const tagSlug of uniqueTagSlugs) {
+				const tagId = tagSlugToId.get(tagSlug);
+				if (tagId) {
+					articleTagsData.push({
+						articleId: article.id,
+						tagId: tagId,
+					});
+				}
+			}
+		}
+
+		// 記事とタグの関連付けを挿入
+		await db.insert(articleTags).values(articleTagsData);
+		console.log(
+			`✅ ${articleTagsData.length}件の記事-タグ関連付けを作成しました`
+		);
+
 		console.log("🎉 200件シードデータの作成が完了しました！");
 
 		// 閲覧数の統計を計算
@@ -385,6 +540,9 @@ async function seed() {
 - ユーザー: 1件
 - 記事: ${articleData.length}件（公開日: 過去360日間に分散）
 - 記事翻訳: ${articleTranslationData.length}件（viewCount付き）
+- タグ: ${tagData.length}件
+- タグ翻訳: ${tagTranslationData.length}件（日本語・英語）
+- 記事-タグ関連付け: ${articleTagsData.length}件
 
 📈 閲覧数統計:
 - 合計閲覧数: ${totalViewCount.toLocaleString()}回
