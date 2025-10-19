@@ -35,9 +35,7 @@ export const createOAuthUserSchema = z.object({
 		.max(100, "名前は100文字以内で入力してください"),
 	avatarUrl: z.string().url("正しいURL形式で入力してください").optional(),
 	provider: z.enum(["google"], {
-		errorMap: () => ({
-			message: "サポートされていないプロバイダーです",
-		}),
+		error: () => "サポートされていないプロバイダーです",
 	}),
 	providerId: z.string().min(1, "プロバイダーIDを入力してください"),
 });

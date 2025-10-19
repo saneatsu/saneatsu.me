@@ -7,12 +7,12 @@ import { i18nMessage } from "./i18n";
 
 /** 言語コード */
 export const languageSchema = z.enum(["ja", "en"], {
-	errorMap: () => i18nMessage("validation.custom.common.languageInvalid"),
+	error: () => i18nMessage("validation.custom.common.languageInvalid"),
 });
 
 /** 記事ステータス */
 export const articleStatusSchema = z.enum(["published", "draft", "archived"], {
-	errorMap: () => i18nMessage("validation.custom.common.statusInvalid"),
+	error: () => i18nMessage("validation.custom.common.statusInvalid"),
 });
 
 /** スラッグ（URL用文字列） */
