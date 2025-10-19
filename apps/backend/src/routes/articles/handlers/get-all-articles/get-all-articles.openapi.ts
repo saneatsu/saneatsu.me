@@ -171,7 +171,7 @@ const ArticlesResponseSchema = z.object({
 /**
  * 記事一覧取得のルート定義
  */
-export const listArticlesRoute = createRoute({
+export const getAllArticlesRoute = createRoute({
 	method: "get",
 	path: "/",
 	request: {

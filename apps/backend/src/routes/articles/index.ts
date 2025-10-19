@@ -5,14 +5,14 @@ import { checkSlug } from "./handlers/check-slug/check-slug";
 import { checkSlugRoute } from "./handlers/check-slug/check-slug.openapi";
 import { createArticle } from "./handlers/create-article/create-article";
 import { createArticleRoute } from "./handlers/create-article/create-article.openapi";
+import { getAllArticles } from "./handlers/get-all-articles/get-all-articles";
+import { getAllArticlesRoute } from "./handlers/get-all-articles/get-all-articles.openapi";
 import { getArticle } from "./handlers/get-article/get-article";
 import { getArticleRoute } from "./handlers/get-article/get-article.openapi";
 import { getArticleById } from "./handlers/get-article-by-id/get-article-by-id";
 import { getArticleByIdRoute } from "./handlers/get-article-by-id/get-article-by-id.openapi";
 import { getSuggestions } from "./handlers/get-suggestions/get-suggestions";
 import { getSuggestionsRoute } from "./handlers/get-suggestions/get-suggestions.openapi";
-import { listArticles } from "./handlers/list-articles/list-articles";
-import { listArticlesRoute } from "./handlers/list-articles/list-articles.openapi";
 import { updateArticle } from "./handlers/update-article/update-article";
 import { updateArticleRoute } from "./handlers/update-article/update-article.openapi";
 import { updateStatus } from "./handlers/update-status/update-status";
@@ -33,7 +33,7 @@ type Env = {
 export const articlesRoute = new OpenAPIHono<{ Bindings: Env }>();
 
 // 記事一覧取得
-articlesRoute.openapi(listArticlesRoute, listArticles);
+articlesRoute.openapi(getAllArticlesRoute, getAllArticles);
 
 // スラッグ重複チェック
 articlesRoute.openapi(checkSlugRoute, checkSlug);

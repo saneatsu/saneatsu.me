@@ -3,7 +3,7 @@ import { articleListQuerySchema, type SortOrder } from "@saneatsu/schemas";
 import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
 
 import { getDatabase } from "@/lib/database";
-import type { listArticlesRoute } from "./list-articles.openapi";
+import type { getAllArticlesRoute } from "./get-all-articles.openapi";
 
 /**
  * Cloudflare Workers環境の型定義
@@ -14,7 +14,7 @@ type Env = {
 	GEMINI_API_KEY?: string;
 };
 
-type Handler = RouteHandler<typeof listArticlesRoute, { Bindings: Env }>;
+type Handler = RouteHandler<typeof getAllArticlesRoute, { Bindings: Env }>;
 
 /**
  * GET /api/articles - 記事一覧取得
@@ -29,7 +29,7 @@ type Handler = RouteHandler<typeof listArticlesRoute, { Bindings: Env }>;
  * 7. 総記事数を取得
  * 8. レスポンスを返す
  */
-export const listArticles: Handler = async (c) => {
+export const getAllArticles: Handler = async (c) => {
 	try {
 		// 1. DBクライアントを作成
 		const {
