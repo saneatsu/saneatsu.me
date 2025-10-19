@@ -9,6 +9,17 @@ vi.mock("@saneatsu/db/worker", () => ({
 	articleTranslations: {},
 	articleTags: {},
 	tags: {},
+	tagTranslations: {},
+	users: {},
+	createDatabaseClient: vi.fn(),
+}));
+
+vi.mock("@saneatsu/db", () => ({
+	articles: {},
+	articleTranslations: {},
+	articleTags: {},
+	tags: {},
+	tagTranslations: {},
 	users: {},
 	createDatabaseClient: vi.fn(),
 }));
@@ -23,7 +34,7 @@ describe("PATCH /articles/:id/status - 記事ステータス更新", () => {
 		const { mockDb } = setupDbMocks();
 
 		// createDatabaseClient関数がmockDbを返すように設定
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const { createDatabaseClient } = await import("@saneatsu/db");
 		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		// 既存記事チェックのモック（publishedAtがnull）
@@ -114,7 +125,7 @@ describe("PATCH /articles/:id/status - 記事ステータス更新", () => {
 		const { mockDb } = setupDbMocks();
 
 		// createDatabaseClient関数がmockDbを返すように設定
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const { createDatabaseClient } = await import("@saneatsu/db");
 		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		// 既存記事チェックのモック（記事が見つからない）
@@ -157,7 +168,7 @@ describe("PATCH /articles/:id/status - 記事ステータス更新", () => {
 		const { mockDb } = setupDbMocks();
 
 		// createDatabaseClient関数がmockDbを返すように設定
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const { createDatabaseClient } = await import("@saneatsu/db");
 		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		// 既存記事チェックのモック（publishedAtがある）

@@ -10,6 +10,17 @@ vi.mock("@saneatsu/db/worker", () => ({
 	articleTranslations: {},
 	articleTags: {},
 	tags: {},
+	tagTranslations: {},
+	users: {},
+	createDatabaseClient: vi.fn(),
+}));
+
+vi.mock("@saneatsu/db", () => ({
+	articles: {},
+	articleTranslations: {},
+	articleTags: {},
+	tags: {},
+	tagTranslations: {},
 	users: {},
 	createDatabaseClient: vi.fn(),
 }));
@@ -24,7 +35,7 @@ describe("GET /articles - 記事一覧取得", () => {
 		const { mockDb } = setupDbMocks();
 
 		// createDatabaseClient関数がmockDbを返すように設定
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const { createDatabaseClient } = await import("@saneatsu/db");
 		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		const mockArticles = [
@@ -73,7 +84,9 @@ describe("GET /articles - 記事一覧取得", () => {
 		const tagsMock = {
 			from: vi.fn().mockReturnValue({
 				innerJoin: vi.fn().mockReturnValue({
-					where: vi.fn().mockResolvedValue([]),
+					innerJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockResolvedValue([]),
+					}),
 				}),
 			}),
 		};
@@ -121,7 +134,7 @@ describe("GET /articles - 記事一覧取得", () => {
 		const { mockDb } = setupDbMocks();
 
 		// createDatabaseClient関数がmockDbを返すように設定
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const { createDatabaseClient } = await import("@saneatsu/db");
 		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		const mockArticles = [
@@ -150,7 +163,9 @@ describe("GET /articles - 記事一覧取得", () => {
 		const tagsMock = {
 			from: vi.fn().mockReturnValue({
 				innerJoin: vi.fn().mockReturnValue({
-					where: vi.fn().mockResolvedValue([]),
+					innerJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockResolvedValue([]),
+					}),
 				}),
 			}),
 		};
@@ -197,7 +212,7 @@ describe("GET /articles - 記事一覧取得", () => {
 		const { mockDb } = setupDbMocks();
 
 		// createDatabaseClient関数がmockDbを返すように設定
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const { createDatabaseClient } = await import("@saneatsu/db");
 		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		const mockArticles = [
@@ -231,7 +246,9 @@ describe("GET /articles - 記事一覧取得", () => {
 		const tagsMock = {
 			from: vi.fn().mockReturnValue({
 				innerJoin: vi.fn().mockReturnValue({
-					where: vi.fn().mockResolvedValue([]),
+					innerJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockResolvedValue([]),
+					}),
 				}),
 			}),
 		};
@@ -272,7 +289,7 @@ describe("GET /articles - 記事一覧取得", () => {
 		const { mockDb } = setupDbMocks();
 
 		// createDatabaseClient関数がmockDbを返すように設定
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const { createDatabaseClient } = await import("@saneatsu/db");
 		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		const articleListMock = {
@@ -331,7 +348,7 @@ describe("GET /articles - 記事一覧取得", () => {
 			const { mockDb } = setupDbMocks();
 
 			// createDatabaseClient関数がmockDbを返すように設定
-			const { createDatabaseClient } = await import("@saneatsu/db/worker");
+			const { createDatabaseClient } = await import("@saneatsu/db");
 			(createDatabaseClient as any).mockReturnValue(mockDb);
 
 			// 実際のDBの状況を再現:
@@ -370,7 +387,9 @@ describe("GET /articles - 記事一覧取得", () => {
 			const tagsMock = {
 				from: vi.fn().mockReturnValue({
 					innerJoin: vi.fn().mockReturnValue({
-						where: vi.fn().mockResolvedValue([]),
+						innerJoin: vi.fn().mockReturnValue({
+							where: vi.fn().mockResolvedValue([]),
+						}),
 					}),
 				}),
 			};
@@ -418,7 +437,7 @@ describe("GET /articles - 記事一覧取得", () => {
 			const { mockDb } = setupDbMocks();
 
 			// createDatabaseClient関数がmockDbを返すように設定
-			const { createDatabaseClient } = await import("@saneatsu/db/worker");
+			const { createDatabaseClient } = await import("@saneatsu/db");
 			(createDatabaseClient as any).mockReturnValue(mockDb);
 
 			const mockArticles = [
@@ -466,7 +485,9 @@ describe("GET /articles - 記事一覧取得", () => {
 			const tagsMock = {
 				from: vi.fn().mockReturnValue({
 					innerJoin: vi.fn().mockReturnValue({
-						where: vi.fn().mockResolvedValue([]),
+						innerJoin: vi.fn().mockReturnValue({
+							where: vi.fn().mockResolvedValue([]),
+						}),
 					}),
 				}),
 			};
@@ -510,7 +531,7 @@ describe("GET /articles - 記事一覧取得", () => {
 			const { mockDb } = setupDbMocks();
 
 			// createDatabaseClient関数がmockDbを返すように設定
-			const { createDatabaseClient } = await import("@saneatsu/db/worker");
+			const { createDatabaseClient } = await import("@saneatsu/db");
 			(createDatabaseClient as any).mockReturnValue(mockDb);
 
 			const mockArticles = [
@@ -558,7 +579,9 @@ describe("GET /articles - 記事一覧取得", () => {
 			const tagsMock = {
 				from: vi.fn().mockReturnValue({
 					innerJoin: vi.fn().mockReturnValue({
-						where: vi.fn().mockResolvedValue([]),
+						innerJoin: vi.fn().mockReturnValue({
+							where: vi.fn().mockResolvedValue([]),
+						}),
 					}),
 				}),
 			};
@@ -604,7 +627,7 @@ describe("GET /articles - 記事一覧取得", () => {
 			const { mockDb } = setupDbMocks();
 
 			// createDatabaseClient関数がmockDbを返すように設定
-			const { createDatabaseClient } = await import("@saneatsu/db/worker");
+			const { createDatabaseClient } = await import("@saneatsu/db");
 			(createDatabaseClient as any).mockReturnValue(mockDb);
 
 			const mockArticles = [
@@ -654,7 +677,9 @@ describe("GET /articles - 記事一覧取得", () => {
 			const tagsMock = {
 				from: vi.fn().mockReturnValue({
 					innerJoin: vi.fn().mockReturnValue({
-						where: vi.fn().mockResolvedValue([]),
+						innerJoin: vi.fn().mockReturnValue({
+							where: vi.fn().mockResolvedValue([]),
+						}),
 					}),
 				}),
 			};
@@ -698,7 +723,7 @@ describe("GET /articles - 記事一覧取得", () => {
 			const { mockDb } = setupDbMocks();
 
 			// createDatabaseClient関数がmockDbを返すように設定
-			const { createDatabaseClient } = await import("@saneatsu/db/worker");
+			const { createDatabaseClient } = await import("@saneatsu/db");
 			(createDatabaseClient as any).mockReturnValue(mockDb);
 
 			const mockArticles = [
@@ -746,7 +771,9 @@ describe("GET /articles - 記事一覧取得", () => {
 			const tagsMock = {
 				from: vi.fn().mockReturnValue({
 					innerJoin: vi.fn().mockReturnValue({
-						where: vi.fn().mockResolvedValue([]),
+						innerJoin: vi.fn().mockReturnValue({
+							where: vi.fn().mockResolvedValue([]),
+						}),
 					}),
 				}),
 			};
@@ -790,7 +817,7 @@ describe("GET /articles - 記事一覧取得", () => {
 			const { mockDb } = setupDbMocks();
 
 			// createDatabaseClient関数がmockDbを返すように設定
-			const { createDatabaseClient } = await import("@saneatsu/db/worker");
+			const { createDatabaseClient } = await import("@saneatsu/db");
 			(createDatabaseClient as any).mockReturnValue(mockDb);
 
 			const mockArticles = [
@@ -838,7 +865,9 @@ describe("GET /articles - 記事一覧取得", () => {
 			const tagsMock = {
 				from: vi.fn().mockReturnValue({
 					innerJoin: vi.fn().mockReturnValue({
-						where: vi.fn().mockResolvedValue([]),
+						innerJoin: vi.fn().mockReturnValue({
+							where: vi.fn().mockResolvedValue([]),
+						}),
 					}),
 				}),
 			};
@@ -882,7 +911,7 @@ describe("GET /articles - 記事一覧取得", () => {
 			const { mockDb } = setupDbMocks();
 
 			// createDatabaseClient関数がmockDbを返すように設定
-			const { createDatabaseClient } = await import("@saneatsu/db/worker");
+			const { createDatabaseClient } = await import("@saneatsu/db");
 			(createDatabaseClient as any).mockReturnValue(mockDb);
 
 			const mockArticles = [
@@ -918,7 +947,9 @@ describe("GET /articles - 記事一覧取得", () => {
 			const tagsMock = {
 				from: vi.fn().mockReturnValue({
 					innerJoin: vi.fn().mockReturnValue({
-						where: vi.fn().mockResolvedValue([]),
+						innerJoin: vi.fn().mockReturnValue({
+							where: vi.fn().mockResolvedValue([]),
+						}),
 					}),
 				}),
 			};

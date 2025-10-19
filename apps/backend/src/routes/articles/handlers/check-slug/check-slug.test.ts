@@ -9,6 +9,17 @@ vi.mock("@saneatsu/db/worker", () => ({
 	articleTranslations: {},
 	articleTags: {},
 	tags: {},
+	tagTranslations: {},
+	users: {},
+	createDatabaseClient: vi.fn(),
+}));
+
+vi.mock("@saneatsu/db", () => ({
+	articles: {},
+	articleTranslations: {},
+	articleTags: {},
+	tags: {},
+	tagTranslations: {},
 	users: {},
 	createDatabaseClient: vi.fn(),
 }));
@@ -23,7 +34,7 @@ describe("GET /articles/check-slug - スラッグ重複チェック", () => {
 		const { mockDb } = setupDbMocks();
 
 		// createDatabaseClient関数がmockDbを返すように設定
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const { createDatabaseClient } = await import("@saneatsu/db");
 		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		const selectMock = {
@@ -60,7 +71,7 @@ describe("GET /articles/check-slug - スラッグ重複チェック", () => {
 		const { mockDb } = setupDbMocks();
 
 		// createDatabaseClient関数がmockDbを返すように設定
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const { createDatabaseClient } = await import("@saneatsu/db");
 		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		const selectMock = {
@@ -100,7 +111,7 @@ describe("GET /articles/check-slug - スラッグ重複チェック", () => {
 		const { mockDb } = setupDbMocks();
 
 		// createDatabaseClient関数がmockDbを返すように設定
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const { createDatabaseClient } = await import("@saneatsu/db");
 		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		// Act

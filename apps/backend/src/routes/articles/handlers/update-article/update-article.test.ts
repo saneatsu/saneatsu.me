@@ -17,6 +17,17 @@ vi.mock("@saneatsu/db/worker", () => ({
 	articleTranslations: {},
 	articleTags: {},
 	tags: {},
+	tagTranslations: {},
+	users: {},
+	createDatabaseClient: vi.fn(),
+}));
+
+vi.mock("@saneatsu/db", () => ({
+	articles: {},
+	articleTranslations: {},
+	articleTags: {},
+	tags: {},
+	tagTranslations: {},
 	users: {},
 	createDatabaseClient: vi.fn(),
 }));
@@ -31,7 +42,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 		const { mockDb } = setupDbMocks();
 
 		// createDatabaseClient関数がmockDbを返すように設定
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const { createDatabaseClient } = await import("@saneatsu/db");
 		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		// 既存記事チェックのモック
@@ -142,7 +153,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 		const { mockDb } = setupDbMocks();
 
 		// createDatabaseClient関数がmockDbを返すように設定
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const { createDatabaseClient } = await import("@saneatsu/db");
 		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		// 既存記事チェックのモック（記事が見つからない）
@@ -189,7 +200,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 		const { mockDb } = setupDbMocks();
 
 		// createDatabaseClient関数がmockDbを返すように設定
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const { createDatabaseClient } = await import("@saneatsu/db");
 		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		// 既存記事チェックのモック
@@ -247,7 +258,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 			// Arrange
 			const { mockDb } = setupDbMocks();
 
-			const { createDatabaseClient } = await import("@saneatsu/db/worker");
+			const { createDatabaseClient } = await import("@saneatsu/db");
 			(createDatabaseClient as any).mockReturnValue(mockDb);
 
 			// 翻訳が成功する場合のモック
@@ -360,7 +371,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 			// Arrange
 			const { mockDb } = setupDbMocks();
 
-			const { createDatabaseClient } = await import("@saneatsu/db/worker");
+			const { createDatabaseClient } = await import("@saneatsu/db");
 			(createDatabaseClient as any).mockReturnValue(mockDb);
 
 			// 既存記事チェックのモック
@@ -457,7 +468,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 			// Arrange
 			const { mockDb } = setupDbMocks();
 
-			const { createDatabaseClient } = await import("@saneatsu/db/worker");
+			const { createDatabaseClient } = await import("@saneatsu/db");
 			(createDatabaseClient as any).mockReturnValue(mockDb);
 
 			// 翻訳が失敗する場合のモック

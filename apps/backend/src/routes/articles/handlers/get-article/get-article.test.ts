@@ -10,6 +10,17 @@ vi.mock("@saneatsu/db/worker", () => ({
 	articleTranslations: {},
 	articleTags: {},
 	tags: {},
+	tagTranslations: {},
+	users: {},
+	createDatabaseClient: vi.fn(),
+}));
+
+vi.mock("@saneatsu/db", () => ({
+	articles: {},
+	articleTranslations: {},
+	articleTags: {},
+	tags: {},
+	tagTranslations: {},
 	users: {},
 	createDatabaseClient: vi.fn(),
 }));
@@ -33,7 +44,7 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 		const { mockDb } = setupDbMocks();
 
 		// createDatabaseClient関数がmockDbを返すように設定
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const { createDatabaseClient } = await import("@saneatsu/db");
 		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		const mockArticle = createMockArticleWithTranslation({
@@ -69,10 +80,42 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 		const tagsMock = {
 			from: vi.fn().mockReturnValue({
 				innerJoin: vi.fn().mockReturnValue({
-					where: vi.fn().mockResolvedValue([
-						{ tagId: 1, tagSlug: "typescript" },
-						{ tagId: 2, tagSlug: "nextjs" },
-					]),
+					innerJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockResolvedValue([
+							{
+								tagId: 1,
+								tagSlug: "typescript",
+								tagCreatedAt: "2024-01-01T00:00:00.000Z",
+								tagUpdatedAt: "2024-01-01T00:00:00.000Z",
+								tagName: "TypeScript",
+								tagLanguage: "ja",
+							},
+							{
+								tagId: 1,
+								tagSlug: "typescript",
+								tagCreatedAt: "2024-01-01T00:00:00.000Z",
+								tagUpdatedAt: "2024-01-01T00:00:00.000Z",
+								tagName: "TypeScript",
+								tagLanguage: "en",
+							},
+							{
+								tagId: 2,
+								tagSlug: "nextjs",
+								tagCreatedAt: "2024-01-01T00:00:00.000Z",
+								tagUpdatedAt: "2024-01-01T00:00:00.000Z",
+								tagName: "Next.js",
+								tagLanguage: "ja",
+							},
+							{
+								tagId: 2,
+								tagSlug: "nextjs",
+								tagCreatedAt: "2024-01-01T00:00:00.000Z",
+								tagUpdatedAt: "2024-01-01T00:00:00.000Z",
+								tagName: "Next.js",
+								tagLanguage: "en",
+							},
+						]),
+					}),
 				}),
 			}),
 		};
@@ -106,8 +149,22 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 				...mockArticle,
 				viewCount: 6, // インクリメント後の値（5→6）
 				tags: [
-					{ id: 1, slug: "typescript" },
-					{ id: 2, slug: "nextjs" },
+					{
+						id: 1,
+						slug: "typescript",
+						createdAt: "2024-01-01T00:00:00.000Z",
+						updatedAt: "2024-01-01T00:00:00.000Z",
+						articleCount: 0,
+						translations: { ja: "TypeScript", en: "TypeScript" },
+					},
+					{
+						id: 2,
+						slug: "nextjs",
+						createdAt: "2024-01-01T00:00:00.000Z",
+						updatedAt: "2024-01-01T00:00:00.000Z",
+						articleCount: 0,
+						translations: { ja: "Next.js", en: "Next.js" },
+					},
 				],
 			},
 		});
@@ -118,7 +175,7 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 		const { mockDb } = setupDbMocks();
 
 		// createDatabaseClient関数がmockDbを返すように設定
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const { createDatabaseClient } = await import("@saneatsu/db");
 		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		const articleMock = {
@@ -159,7 +216,7 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 		const { mockDb } = setupDbMocks();
 
 		// createDatabaseClient関数がmockDbを返すように設定
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const { createDatabaseClient } = await import("@saneatsu/db");
 		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		const mockArticle = createMockArticleWithTranslation({
@@ -195,9 +252,26 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 		const tagsMock = {
 			from: vi.fn().mockReturnValue({
 				innerJoin: vi.fn().mockReturnValue({
-					where: vi
-						.fn()
-						.mockResolvedValue([{ tagId: 1, tagSlug: "typescript" }]),
+					innerJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockResolvedValue([
+							{
+								tagId: 1,
+								tagSlug: "typescript",
+								tagCreatedAt: "2024-01-01T00:00:00.000Z",
+								tagUpdatedAt: "2024-01-01T00:00:00.000Z",
+								tagName: "TypeScript",
+								tagLanguage: "ja",
+							},
+							{
+								tagId: 1,
+								tagSlug: "typescript",
+								tagCreatedAt: "2024-01-01T00:00:00.000Z",
+								tagUpdatedAt: "2024-01-01T00:00:00.000Z",
+								tagName: "TypeScript",
+								tagLanguage: "en",
+							},
+						]),
+					}),
 				}),
 			}),
 		};
@@ -228,7 +302,16 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 		expect(res.status).toBe(200);
 		const data = await res.json();
 		expect(data.data.title).toBe("Test Article");
-		expect(data.data.tags).toEqual([{ id: 1, slug: "typescript" }]);
+		expect(data.data.tags).toEqual([
+			{
+				id: 1,
+				slug: "typescript",
+				createdAt: "2024-01-01T00:00:00.000Z",
+				updatedAt: "2024-01-01T00:00:00.000Z",
+				articleCount: 0,
+				translations: { ja: "TypeScript", en: "TypeScript" },
+			},
+		]);
 	});
 
 	it("下書きステータスの記事の場合、404エラーを返す", async () => {
@@ -236,7 +319,7 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 		const { mockDb } = setupDbMocks();
 
 		// createDatabaseClient関数がmockDbを返すように設定
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const { createDatabaseClient } = await import("@saneatsu/db");
 		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		const mockDraftArticle = {
@@ -289,7 +372,7 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 		const { mockDb } = setupDbMocks();
 
 		// createDatabaseClient関数がmockDbを返すように設定
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const { createDatabaseClient } = await import("@saneatsu/db");
 		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		const mockArchivedArticle = {
@@ -342,7 +425,7 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 		const { mockDb } = setupDbMocks();
 
 		// createDatabaseClient関数がmockDbを返すように設定
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const { createDatabaseClient } = await import("@saneatsu/db");
 		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		const mockArticle = createMockArticleWithTranslation({
@@ -378,10 +461,42 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 		const tagsMock = {
 			from: vi.fn().mockReturnValue({
 				innerJoin: vi.fn().mockReturnValue({
-					where: vi.fn().mockResolvedValue([
-						{ tagId: 1, tagSlug: "typescript" },
-						{ tagId: 2, tagSlug: "nextjs" },
-					]),
+					innerJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockResolvedValue([
+							{
+								tagId: 1,
+								tagSlug: "typescript",
+								tagCreatedAt: "2024-01-01T00:00:00.000Z",
+								tagUpdatedAt: "2024-01-01T00:00:00.000Z",
+								tagName: "TypeScript",
+								tagLanguage: "ja",
+							},
+							{
+								tagId: 1,
+								tagSlug: "typescript",
+								tagCreatedAt: "2024-01-01T00:00:00.000Z",
+								tagUpdatedAt: "2024-01-01T00:00:00.000Z",
+								tagName: "TypeScript",
+								tagLanguage: "en",
+							},
+							{
+								tagId: 2,
+								tagSlug: "nextjs",
+								tagCreatedAt: "2024-01-01T00:00:00.000Z",
+								tagUpdatedAt: "2024-01-01T00:00:00.000Z",
+								tagName: "Next.js",
+								tagLanguage: "ja",
+							},
+							{
+								tagId: 2,
+								tagSlug: "nextjs",
+								tagCreatedAt: "2024-01-01T00:00:00.000Z",
+								tagUpdatedAt: "2024-01-01T00:00:00.000Z",
+								tagName: "Next.js",
+								tagLanguage: "en",
+							},
+						]),
+					}),
 				}),
 			}),
 		};
@@ -412,8 +527,22 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 		const data = await res.json();
 		expect(data.data.viewCount).toBe(43); // 42 + 1（インクリメント後）
 		expect(data.data.tags).toEqual([
-			{ id: 1, slug: "typescript" },
-			{ id: 2, slug: "nextjs" },
+			{
+				id: 1,
+				slug: "typescript",
+				createdAt: "2024-01-01T00:00:00.000Z",
+				updatedAt: "2024-01-01T00:00:00.000Z",
+				articleCount: 0,
+				translations: { ja: "TypeScript", en: "TypeScript" },
+			},
+			{
+				id: 2,
+				slug: "nextjs",
+				createdAt: "2024-01-01T00:00:00.000Z",
+				updatedAt: "2024-01-01T00:00:00.000Z",
+				articleCount: 0,
+				translations: { ja: "Next.js", en: "Next.js" },
+			},
 		]);
 		expect(mockDb.update).toHaveBeenCalled(); // updateが呼ばれたことを確認
 	});
@@ -423,7 +552,7 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 		const { mockDb } = setupDbMocks();
 
 		// createDatabaseClient関数がmockDbを返すように設定
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const { createDatabaseClient } = await import("@saneatsu/db");
 		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		const mockArticle = createMockArticleWithTranslation({
@@ -459,7 +588,9 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 		const tagsMock = {
 			from: vi.fn().mockReturnValue({
 				innerJoin: vi.fn().mockReturnValue({
-					where: vi.fn().mockResolvedValue([]),
+					innerJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockResolvedValue([]),
+					}),
 				}),
 			}),
 		};

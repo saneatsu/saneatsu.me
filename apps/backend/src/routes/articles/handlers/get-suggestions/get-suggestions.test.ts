@@ -10,6 +10,17 @@ vi.mock("@saneatsu/db/worker", () => ({
 	articleTranslations: {},
 	articleTags: {},
 	tags: {},
+	tagTranslations: {},
+	users: {},
+	createDatabaseClient: vi.fn(),
+}));
+
+vi.mock("@saneatsu/db", () => ({
+	articles: {},
+	articleTranslations: {},
+	articleTags: {},
+	tags: {},
+	tagTranslations: {},
 	users: {},
 	createDatabaseClient: vi.fn(),
 }));
@@ -59,7 +70,7 @@ describe("GET /articles/suggestions - 記事サジェスト取得", () => {
 			const { mockDb } = setupDbMocks();
 
 			// createDatabaseClient関数がmockDbを返すように設定
-			const { createDatabaseClient } = await import("@saneatsu/db/worker");
+			const { createDatabaseClient } = await import("@saneatsu/db");
 			(createDatabaseClient as any).mockReturnValue(mockDb);
 
 			// INNER JOINクエリのモック
@@ -128,7 +139,7 @@ describe("GET /articles/suggestions - 記事サジェスト取得", () => {
 			const { mockDb } = setupDbMocks();
 
 			// createDatabaseClient関数がmockDbを返すように設定
-			const { createDatabaseClient } = await import("@saneatsu/db/worker");
+			const { createDatabaseClient } = await import("@saneatsu/db");
 			(createDatabaseClient as any).mockReturnValue(mockDb);
 
 			// 最初のクエリ（記事タイトル検索）は空を返す
@@ -204,7 +215,7 @@ describe("GET /articles/suggestions - 記事サジェスト取得", () => {
 			const { mockDb } = setupDbMocks();
 
 			// createDatabaseClient関数がmockDbを返すように設定
-			const { createDatabaseClient } = await import("@saneatsu/db/worker");
+			const { createDatabaseClient } = await import("@saneatsu/db");
 			(createDatabaseClient as any).mockReturnValue(mockDb);
 
 			mockDb.select.mockReturnValue({
@@ -261,7 +272,7 @@ describe("GET /articles/suggestions - 記事サジェスト取得", () => {
 			const { mockDb } = setupDbMocks();
 
 			// createDatabaseClient関数がmockDbを返すように設定
-			const { createDatabaseClient } = await import("@saneatsu/db/worker");
+			const { createDatabaseClient } = await import("@saneatsu/db");
 			(createDatabaseClient as any).mockReturnValue(mockDb);
 
 			mockDb.select.mockReturnValue({
@@ -328,7 +339,7 @@ Learn about the useEffect hook.`,
 			const { mockDb } = setupDbMocks();
 
 			// createDatabaseClient関数がmockDbを返すように設定
-			const { createDatabaseClient } = await import("@saneatsu/db/worker");
+			const { createDatabaseClient } = await import("@saneatsu/db");
 			(createDatabaseClient as any).mockReturnValue(mockDb);
 
 			// 最初のクエリ（記事タイトル検索）は空を返す
@@ -404,7 +415,7 @@ Learn about the useEffect hook.`,
 			const { mockDb } = setupDbMocks();
 
 			// createDatabaseClient関数がmockDbを返すように設定
-			const { createDatabaseClient } = await import("@saneatsu/db/worker");
+			const { createDatabaseClient } = await import("@saneatsu/db");
 			(createDatabaseClient as any).mockReturnValue(mockDb);
 
 			mockDb.select.mockReturnValue({
@@ -461,7 +472,7 @@ Learn about the useEffect hook.`,
 			const { mockDb } = setupDbMocks();
 
 			// createDatabaseClient関数がmockDbを返すように設定
-			const { createDatabaseClient } = await import("@saneatsu/db/worker");
+			const { createDatabaseClient } = await import("@saneatsu/db");
 			(createDatabaseClient as any).mockReturnValue(mockDb);
 
 			mockDb.select.mockReturnValue({
@@ -517,7 +528,7 @@ Learn about the useEffect hook.`,
 			const { mockDb } = setupDbMocks();
 
 			// createDatabaseClient関数がmockDbを返すように設定
-			const { createDatabaseClient } = await import("@saneatsu/db/worker");
+			const { createDatabaseClient } = await import("@saneatsu/db");
 			(createDatabaseClient as any).mockReturnValue(mockDb);
 
 			// limitは内部で数値に変換されるため、3件のデータを返す
@@ -559,7 +570,7 @@ Learn about the useEffect hook.`,
 			const { mockDb } = setupDbMocks();
 
 			// createDatabaseClient関数がmockDbを返すように設定
-			const { createDatabaseClient } = await import("@saneatsu/db/worker");
+			const { createDatabaseClient } = await import("@saneatsu/db");
 			(createDatabaseClient as any).mockReturnValue(mockDb);
 
 			mockDb.select.mockReturnValue({

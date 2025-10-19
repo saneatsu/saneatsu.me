@@ -10,6 +10,17 @@ vi.mock("@saneatsu/db/worker", () => ({
 	articleTranslations: {},
 	articleTags: {},
 	tags: {},
+	tagTranslations: {},
+	users: {},
+	createDatabaseClient: vi.fn(),
+}));
+
+vi.mock("@saneatsu/db", () => ({
+	articles: {},
+	articleTranslations: {},
+	articleTags: {},
+	tags: {},
+	tagTranslations: {},
 	users: {},
 	createDatabaseClient: vi.fn(),
 }));
@@ -24,7 +35,7 @@ describe("GET /articles/admin/:id - 管理画面用記事詳細取得", () => {
 		const { mockDb } = setupDbMocks();
 
 		// createDatabaseClient関数がmockDbを返すように設定
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const { createDatabaseClient } = await import("@saneatsu/db");
 		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		const mockArticle = createMockArticleWithTranslation({
@@ -39,9 +50,39 @@ describe("GET /articles/admin/:id - 管理画面用記事詳細取得", () => {
 			},
 		});
 
-		const mockTags = [
-			{ id: 1, slug: "javascript", name: "javascript" },
-			{ id: 2, slug: "typescript", name: "typescript" },
+		const mockTagsData = [
+			{
+				tagId: 1,
+				tagSlug: "javascript",
+				tagCreatedAt: "2024-01-01T00:00:00.000Z",
+				tagUpdatedAt: "2024-01-01T00:00:00.000Z",
+				tagName: "JavaScript",
+				tagLanguage: "ja",
+			},
+			{
+				tagId: 1,
+				tagSlug: "javascript",
+				tagCreatedAt: "2024-01-01T00:00:00.000Z",
+				tagUpdatedAt: "2024-01-01T00:00:00.000Z",
+				tagName: "JavaScript",
+				tagLanguage: "en",
+			},
+			{
+				tagId: 2,
+				tagSlug: "typescript",
+				tagCreatedAt: "2024-01-01T00:00:00.000Z",
+				tagUpdatedAt: "2024-01-01T00:00:00.000Z",
+				tagName: "TypeScript",
+				tagLanguage: "ja",
+			},
+			{
+				tagId: 2,
+				tagSlug: "typescript",
+				tagCreatedAt: "2024-01-01T00:00:00.000Z",
+				tagUpdatedAt: "2024-01-01T00:00:00.000Z",
+				tagName: "TypeScript",
+				tagLanguage: "en",
+			},
 		];
 
 		// 記事取得のモック
@@ -55,11 +96,13 @@ describe("GET /articles/admin/:id - 管理画面用記事詳細取得", () => {
 			}),
 		};
 
-		// タグ取得のモック
+		// タグ取得のモック（2回のinnerJoinに対応）
 		const tagsMock = {
 			from: vi.fn().mockReturnValue({
 				innerJoin: vi.fn().mockReturnValue({
-					where: vi.fn().mockResolvedValue(mockTags),
+					innerJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockResolvedValue(mockTagsData),
+					}),
 				}),
 			}),
 		};
@@ -85,7 +128,24 @@ describe("GET /articles/admin/:id - 管理画面用記事詳細取得", () => {
 		expect(data).toEqual({
 			data: {
 				...mockArticle,
-				tags: mockTags,
+				tags: [
+					{
+						id: 1,
+						slug: "javascript",
+						createdAt: "2024-01-01T00:00:00.000Z",
+						updatedAt: "2024-01-01T00:00:00.000Z",
+						articleCount: 0,
+						translations: { ja: "JavaScript", en: "JavaScript" },
+					},
+					{
+						id: 2,
+						slug: "typescript",
+						createdAt: "2024-01-01T00:00:00.000Z",
+						updatedAt: "2024-01-01T00:00:00.000Z",
+						articleCount: 0,
+						translations: { ja: "TypeScript", en: "TypeScript" },
+					},
+				],
 			},
 		});
 	});
@@ -95,7 +155,7 @@ describe("GET /articles/admin/:id - 管理画面用記事詳細取得", () => {
 		const { mockDb } = setupDbMocks();
 
 		// createDatabaseClient関数がmockDbを返すように設定
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const { createDatabaseClient } = await import("@saneatsu/db");
 		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		const articleMock = {
@@ -137,7 +197,7 @@ describe("GET /articles/admin/:id - 管理画面用記事詳細取得", () => {
 		const { mockDb } = setupDbMocks();
 
 		// createDatabaseClient関数がmockDbを返すように設定
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const { createDatabaseClient } = await import("@saneatsu/db");
 		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		// Act
@@ -167,7 +227,7 @@ describe("GET /articles/admin/:id - 管理画面用記事詳細取得", () => {
 		const { mockDb } = setupDbMocks();
 
 		// createDatabaseClient関数がmockDbを返すように設定
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
+		const { createDatabaseClient } = await import("@saneatsu/db");
 		(createDatabaseClient as any).mockReturnValue(mockDb);
 
 		const mockDraftArticle = createMockArticleWithTranslation({
@@ -197,7 +257,9 @@ describe("GET /articles/admin/:id - 管理画面用記事詳細取得", () => {
 		const tagsMock = {
 			from: vi.fn().mockReturnValue({
 				innerJoin: vi.fn().mockReturnValue({
-					where: vi.fn().mockResolvedValue([]),
+					innerJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockResolvedValue([]),
+					}),
 				}),
 			}),
 		};
