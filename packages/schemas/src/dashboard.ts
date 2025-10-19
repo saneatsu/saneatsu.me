@@ -66,7 +66,7 @@ export const viewsTrendQuerySchema = z.object({
 			(val) => !Number.isNaN(val) && [30, 90, 180, 360].includes(val),
 			"表示期間は30、90、180、360日のいずれかを指定してください"
 		)
-		.default("30"),
+		.default(30),
 });
 
 /** 閲覧数推移データポイント */
@@ -103,7 +103,7 @@ export const dashboardStatsQuerySchema = z.object({
 			(val) => !Number.isNaN(val) && val >= 7 && val <= 90,
 			"時系列データの期間は7日から90日の間で指定してください"
 		)
-		.default("30"),
+		.default(30),
 });
 
 /** ダッシュボード統計レスポンススキーマ */

@@ -108,7 +108,7 @@ export const articleListQuerySchema = z.object({
 			(val) => !Number.isNaN(val) && val > 0,
 			i18nMessage("validation.custom.pagination.pagePositive")
 		)
-		.default("1"),
+		.default(1),
 	limit: z
 		.string()
 		.transform((val) => Number.parseInt(val, 10))
@@ -116,8 +116,31 @@ export const articleListQuerySchema = z.object({
 			(val) => !Number.isNaN(val) && val > 0 && val <= 200,
 			i18nMessage("validation.custom.pagination.limitRange")
 		)
-		.default("10"),
-	status: articleStatusSchema.optional(),
+		.default(10),
+	status: z
+		.preprocess((val) => {
+			// 配列の場合はそのまま返す
+			if (Array.isArray(val)) {
+				return val;
+			}
+			// 文字列の場合はカンマ区切りで分割して配列に変換
+			if (typeof val === "string") {
+				return val.split(",").filter(Boolean);
+			}
+			// それ以外の場合はundefined
+			return undefined;
+		}, z.array(z.string()).optional())
+		.optional()
+		.transform((val) => {
+			// 配列の各要素をarticleStatusSchemaで検証
+			if (!val) return undefined;
+			return val
+				.map((v) => {
+					const result = articleStatusSchema.safeParse(v);
+					return result.success ? result.data : null;
+				})
+				.filter((v): v is "published" | "draft" | "archived" => v !== null);
+		}),
 	tagId: z
 		.string()
 		.transform((val) => Number.parseInt(val, 10))
