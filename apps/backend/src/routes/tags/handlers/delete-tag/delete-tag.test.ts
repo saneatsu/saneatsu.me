@@ -4,10 +4,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { tagsRoute } from "@/routes/tags";
 import { setupDbMocks } from "@/utils/drizzle-test";
 
-// モック設定
-vi.mock("@saneatsu/db/worker", () => ({
-	tags: {},
-	createDatabaseClient: vi.fn(),
+// getDatabase関数のモック
+vi.mock("@/lib/database", () => ({
+	getDatabase: vi.fn(),
 }));
 
 describe("DELETE /tags/:id - タグ削除", () => {
@@ -20,9 +19,12 @@ describe("DELETE /tags/:id - タグ削除", () => {
 			// Arrange
 			const { mockDb } = setupDbMocks();
 
-			// createDatabaseClient関数がmockDbを返すように設定
-			const { createDatabaseClient } = await import("@saneatsu/db/worker");
-			(createDatabaseClient as any).mockReturnValue(mockDb);
+			// getDatabase関数がmockDbとスキーマを返すように設定
+			const { getDatabase } = await import("@/lib/database");
+			(getDatabase as any).mockResolvedValue({
+				createDatabaseClient: vi.fn().mockReturnValue(mockDb),
+				tags: {},
+			});
 
 			const mockExistingTag = [
 				{
@@ -69,8 +71,11 @@ describe("DELETE /tags/:id - タグ削除", () => {
 			// Arrange
 			const { mockDb } = setupDbMocks();
 
-			const { createDatabaseClient } = await import("@saneatsu/db/worker");
-			(createDatabaseClient as any).mockReturnValue(mockDb);
+			const { getDatabase } = await import("@/lib/database");
+			(getDatabase as any).mockResolvedValue({
+				createDatabaseClient: vi.fn().mockReturnValue(mockDb),
+				tags: {},
+			});
 
 			// 既存タグが存在しない
 			const existingTagMock = {
@@ -108,8 +113,11 @@ describe("DELETE /tags/:id - タグ削除", () => {
 			// Arrange
 			const { mockDb } = setupDbMocks();
 
-			const { createDatabaseClient } = await import("@saneatsu/db/worker");
-			(createDatabaseClient as any).mockReturnValue(mockDb);
+			const { getDatabase } = await import("@/lib/database");
+			(getDatabase as any).mockResolvedValue({
+				createDatabaseClient: vi.fn().mockReturnValue(mockDb),
+				tags: {},
+			});
 
 			// Act
 			const client = testClient(tagsRoute, {
@@ -136,8 +144,11 @@ describe("DELETE /tags/:id - タグ削除", () => {
 			// Arrange
 			const { mockDb } = setupDbMocks();
 
-			const { createDatabaseClient } = await import("@saneatsu/db/worker");
-			(createDatabaseClient as any).mockReturnValue(mockDb);
+			const { getDatabase } = await import("@/lib/database");
+			(getDatabase as any).mockResolvedValue({
+				createDatabaseClient: vi.fn().mockReturnValue(mockDb),
+				tags: {},
+			});
 
 			// データベースエラーをシミュレート
 			const existingTagMock = {

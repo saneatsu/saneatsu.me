@@ -6,17 +6,15 @@ import { setupDbMocks } from "@/utils/drizzle-test";
 
 // 翻訳サービスのモック
 const mockTranslateTag = vi.fn();
-vi.mock("@/services/gemini-translation", () => ({
+vi.mock("@/services/gemini-translation/gemini-translation", () => ({
 	createTranslationService: vi.fn(() => ({
 		translateTag: mockTranslateTag,
 	})),
 }));
 
-// モック設定
-vi.mock("@saneatsu/db/worker", () => ({
-	tags: {},
-	tagTranslations: {},
-	createDatabaseClient: vi.fn(),
+// getDatabase関数のモック
+vi.mock("@/lib/database", () => ({
+	getDatabase: vi.fn(),
 }));
 
 describe("POST /tags - タグ作成", () => {
@@ -28,9 +26,13 @@ describe("POST /tags - タグ作成", () => {
 		// Arrange
 		const { mockDb } = setupDbMocks();
 
-		// createDatabaseClient関数がmockDbを返すように設定
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
-		(createDatabaseClient as any).mockReturnValue(mockDb);
+		// getDatabase関数がmockDbとスキーマを返すように設定
+		const { getDatabase } = await import("@/lib/database");
+		(getDatabase as any).mockResolvedValue({
+			createDatabaseClient: vi.fn().mockReturnValue(mockDb),
+			tags: {},
+			tagTranslations: {},
+		});
 
 		const mockNewTag = {
 			id: 1,
@@ -94,9 +96,13 @@ describe("POST /tags - タグ作成", () => {
 		// Arrange
 		const { mockDb } = setupDbMocks();
 
-		// createDatabaseClient関数がmockDbを返すように設定
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
-		(createDatabaseClient as any).mockReturnValue(mockDb);
+		// getDatabase関数がmockDbとスキーマを返すように設定
+		const { getDatabase } = await import("@/lib/database");
+		(getDatabase as any).mockResolvedValue({
+			createDatabaseClient: vi.fn().mockReturnValue(mockDb),
+			tags: {},
+			tagTranslations: {},
+		});
 
 		// Act
 		const client = testClient(tagsRoute, {
@@ -119,9 +125,13 @@ describe("POST /tags - タグ作成", () => {
 		// Arrange
 		const { mockDb } = setupDbMocks();
 
-		// createDatabaseClient関数がmockDbを返すように設定
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
-		(createDatabaseClient as any).mockReturnValue(mockDb);
+		// getDatabase関数がmockDbとスキーマを返すように設定
+		const { getDatabase } = await import("@/lib/database");
+		(getDatabase as any).mockResolvedValue({
+			createDatabaseClient: vi.fn().mockReturnValue(mockDb),
+			tags: {},
+			tagTranslations: {},
+		});
 
 		// Act
 		const client = testClient(tagsRoute, {
@@ -144,9 +154,13 @@ describe("POST /tags - タグ作成", () => {
 		// Arrange
 		const { mockDb } = setupDbMocks();
 
-		// createDatabaseClient関数がmockDbを返すように設定
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
-		(createDatabaseClient as any).mockReturnValue(mockDb);
+		// getDatabase関数がmockDbとスキーマを返すように設定
+		const { getDatabase } = await import("@/lib/database");
+		(getDatabase as any).mockResolvedValue({
+			createDatabaseClient: vi.fn().mockReturnValue(mockDb),
+			tags: {},
+			tagTranslations: {},
+		});
 
 		// Act
 		const client = testClient(tagsRoute, {
@@ -169,9 +183,13 @@ describe("POST /tags - タグ作成", () => {
 		// Arrange
 		const { mockDb } = setupDbMocks();
 
-		// createDatabaseClient関数がmockDbを返すように設定
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
-		(createDatabaseClient as any).mockReturnValue(mockDb);
+		// getDatabase関数がmockDbとスキーマを返すように設定
+		const { getDatabase } = await import("@/lib/database");
+		(getDatabase as any).mockResolvedValue({
+			createDatabaseClient: vi.fn().mockReturnValue(mockDb),
+			tags: {},
+			tagTranslations: {},
+		});
 
 		const existingTag = {
 			id: 1,
@@ -222,9 +240,13 @@ describe("POST /tags - タグ作成", () => {
 		// Arrange
 		const { mockDb } = setupDbMocks();
 
-		// createDatabaseClient関数がmockDbを返すように設定
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
-		(createDatabaseClient as any).mockReturnValue(mockDb);
+		// getDatabase関数がmockDbとスキーマを返すように設定
+		const { getDatabase } = await import("@/lib/database");
+		(getDatabase as any).mockResolvedValue({
+			createDatabaseClient: vi.fn().mockReturnValue(mockDb),
+			tags: {},
+			tagTranslations: {},
+		});
 
 		// DBエラーをシミュレート
 		const checkExistingMock = {
@@ -265,8 +287,12 @@ describe("POST /tags - タグ作成", () => {
 		// Arrange
 		const { mockDb } = setupDbMocks();
 
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
-		(createDatabaseClient as any).mockReturnValue(mockDb);
+		const { getDatabase } = await import("@/lib/database");
+		(getDatabase as any).mockResolvedValue({
+			createDatabaseClient: vi.fn().mockReturnValue(mockDb),
+			tags: {},
+			tagTranslations: {},
+		});
 
 		// 翻訳が成功する場合のモック
 		mockTranslateTag.mockResolvedValue("typescript");
@@ -332,8 +358,12 @@ describe("POST /tags - タグ作成", () => {
 		// Arrange
 		const { mockDb } = setupDbMocks();
 
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
-		(createDatabaseClient as any).mockReturnValue(mockDb);
+		const { getDatabase } = await import("@/lib/database");
+		(getDatabase as any).mockResolvedValue({
+			createDatabaseClient: vi.fn().mockReturnValue(mockDb),
+			tags: {},
+			tagTranslations: {},
+		});
 
 		const mockNewTag = {
 			id: 1,
@@ -389,8 +419,12 @@ describe("POST /tags - タグ作成", () => {
 		// Arrange
 		const { mockDb } = setupDbMocks();
 
-		const { createDatabaseClient } = await import("@saneatsu/db/worker");
-		(createDatabaseClient as any).mockReturnValue(mockDb);
+		const { getDatabase } = await import("@/lib/database");
+		(getDatabase as any).mockResolvedValue({
+			createDatabaseClient: vi.fn().mockReturnValue(mockDb),
+			tags: {},
+			tagTranslations: {},
+		});
 
 		// 翻訳が失敗する場合のモック
 		mockTranslateTag.mockResolvedValue(null);

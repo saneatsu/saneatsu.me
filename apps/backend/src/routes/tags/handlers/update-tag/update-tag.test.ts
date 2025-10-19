@@ -5,17 +5,15 @@ import { setupDbMocks } from "@/utils/drizzle-test";
 
 // 翻訳サービスのモック
 const mockTranslateTag = vi.fn();
-vi.mock("@/services/gemini-translation", () => ({
+vi.mock("@/services/gemini-translation/gemini-translation", () => ({
 	createTranslationService: vi.fn(() => ({
 		translateTag: mockTranslateTag,
 	})),
 }));
 
-// モック設定
-vi.mock("@saneatsu/db/worker", () => ({
-	tags: {},
-	tagTranslations: {},
-	createDatabaseClient: vi.fn(),
+// getDatabase関数のモック
+vi.mock("@/lib/database", () => ({
+	getDatabase: vi.fn(),
 }));
 
 describe("PUT /tags/:id - タグ更新", () => {
@@ -28,9 +26,13 @@ describe("PUT /tags/:id - タグ更新", () => {
 			// Arrange
 			const { mockDb } = setupDbMocks();
 
-			// createDatabaseClient関数がmockDbを返すように設定
-			const { createDatabaseClient } = await import("@saneatsu/db/worker");
-			(createDatabaseClient as any).mockReturnValue(mockDb);
+			// getDatabase関数がmockDbとスキーマを返すように設定
+			const { getDatabase } = await import("@/lib/database");
+			(getDatabase as any).mockResolvedValue({
+				createDatabaseClient: vi.fn().mockReturnValue(mockDb),
+				tags: {},
+				tagTranslations: {},
+			});
 
 			const mockExistingTag = [
 				{
@@ -112,8 +114,12 @@ describe("PUT /tags/:id - タグ更新", () => {
 			// Arrange
 			const { mockDb } = setupDbMocks();
 
-			const { createDatabaseClient } = await import("@saneatsu/db/worker");
-			(createDatabaseClient as any).mockReturnValue(mockDb);
+			const { getDatabase } = await import("@/lib/database");
+			(getDatabase as any).mockResolvedValue({
+				createDatabaseClient: vi.fn().mockReturnValue(mockDb),
+				tags: {},
+				tagTranslations: {},
+			});
 
 			// 既存タグが存在しない
 			const existingTagMock = {
@@ -152,8 +158,12 @@ describe("PUT /tags/:id - タグ更新", () => {
 			// Arrange
 			const { mockDb } = setupDbMocks();
 
-			const { createDatabaseClient } = await import("@saneatsu/db/worker");
-			(createDatabaseClient as any).mockReturnValue(mockDb);
+			const { getDatabase } = await import("@/lib/database");
+			(getDatabase as any).mockResolvedValue({
+				createDatabaseClient: vi.fn().mockReturnValue(mockDb),
+				tags: {},
+				tagTranslations: {},
+			});
 
 			// Act
 			const client = testClient(tagsRoute, {
@@ -181,8 +191,12 @@ describe("PUT /tags/:id - タグ更新", () => {
 			// Arrange
 			const { mockDb } = setupDbMocks();
 
-			const { createDatabaseClient } = await import("@saneatsu/db/worker");
-			(createDatabaseClient as any).mockReturnValue(mockDb);
+			const { getDatabase } = await import("@/lib/database");
+			(getDatabase as any).mockResolvedValue({
+				createDatabaseClient: vi.fn().mockReturnValue(mockDb),
+				tags: {},
+				tagTranslations: {},
+			});
 
 			const mockExistingTag = [
 				{
@@ -239,8 +253,12 @@ describe("PUT /tags/:id - タグ更新", () => {
 			// Arrange
 			const { mockDb } = setupDbMocks();
 
-			const { createDatabaseClient } = await import("@saneatsu/db/worker");
-			(createDatabaseClient as any).mockReturnValue(mockDb);
+			const { getDatabase } = await import("@/lib/database");
+			(getDatabase as any).mockResolvedValue({
+				createDatabaseClient: vi.fn().mockReturnValue(mockDb),
+				tags: {},
+				tagTranslations: {},
+			});
 
 			// データベースエラーをシミュレート
 			const existingTagMock = {
@@ -279,8 +297,12 @@ describe("PUT /tags/:id - タグ更新", () => {
 			// Arrange
 			const { mockDb } = setupDbMocks();
 
-			const { createDatabaseClient } = await import("@saneatsu/db/worker");
-			(createDatabaseClient as any).mockReturnValue(mockDb);
+			const { getDatabase } = await import("@/lib/database");
+			(getDatabase as any).mockResolvedValue({
+				createDatabaseClient: vi.fn().mockReturnValue(mockDb),
+				tags: {},
+				tagTranslations: {},
+			});
 
 			// 翻訳が成功する場合のモック
 			mockTranslateTag.mockResolvedValue("typescript");
@@ -367,8 +389,12 @@ describe("PUT /tags/:id - タグ更新", () => {
 			// Arrange
 			const { mockDb } = setupDbMocks();
 
-			const { createDatabaseClient } = await import("@saneatsu/db/worker");
-			(createDatabaseClient as any).mockReturnValue(mockDb);
+			const { getDatabase } = await import("@/lib/database");
+			(getDatabase as any).mockResolvedValue({
+				createDatabaseClient: vi.fn().mockReturnValue(mockDb),
+				tags: {},
+				tagTranslations: {},
+			});
 
 			const mockExistingTag = [
 				{
@@ -440,12 +466,108 @@ describe("PUT /tags/:id - タグ更新", () => {
 			expect(mockDb.update).toHaveBeenCalledTimes(2); // tag + ja translation only
 		});
 
+		it("翻訳機能: enNameを手動指定した場合、自動翻訳をスキップして手動指定された英語名を使用する", async () => {
+			// Arrange
+			const { mockDb } = setupDbMocks();
+
+			const { getDatabase } = await import("@/lib/database");
+			(getDatabase as any).mockResolvedValue({
+				createDatabaseClient: vi.fn().mockReturnValue(mockDb),
+				tags: {},
+				tagTranslations: {},
+			});
+
+			const mockExistingTag = [
+				{
+					id: 1,
+					slug: "javascript",
+				},
+			];
+
+			const mockUpdatedTag = {
+				id: 1,
+				slug: "typescript",
+				createdAt: "2024-01-01T00:00:00.000Z",
+				updatedAt: "2024-01-02T00:00:00.000Z",
+			};
+
+			const existingTagMock = {
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue(mockExistingTag),
+					}),
+				}),
+			};
+
+			const duplicateMock = {
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([]),
+					}),
+				}),
+			};
+
+			const updateTagMock = {
+				set: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						returning: vi.fn().mockResolvedValue([mockUpdatedTag]),
+					}),
+				}),
+			};
+
+			const updateTranslationMock = {
+				set: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue(undefined),
+				}),
+			};
+
+			mockDb.select
+				.mockReturnValueOnce(existingTagMock)
+				.mockReturnValueOnce(duplicateMock);
+
+			mockDb.update
+				.mockReturnValueOnce(updateTagMock) // タグ更新
+				.mockReturnValueOnce(updateTranslationMock) // 日本語翻訳更新
+				.mockReturnValueOnce(updateTranslationMock); // 英語翻訳更新（手動指定）
+
+			// Act
+			const client = testClient(tagsRoute, {
+				TURSO_DATABASE_URL: "test://test.db",
+				TURSO_AUTH_TOKEN: "test-token",
+				GEMINI_API_KEY: "test-gemini-key", // APIキーがあっても手動指定が優先される
+			}) as any;
+			const res = await client[":id"].$put({
+				param: { id: "1" },
+				json: {
+					name: "タイプスクリプト",
+					enName: "TypeScript", // 手動指定
+					slug: "typescript",
+				},
+			});
+
+			// Assert
+			expect(res.status).toBe(200);
+			const data = await res.json();
+
+			expect(data.message).toBe("タグが正常に更新されました");
+
+			// 自動翻訳が呼ばれていないことを確認
+			expect(mockTranslateTag).not.toHaveBeenCalled();
+
+			// タグ更新と両方の翻訳更新が呼ばれたことを確認
+			expect(mockDb.update).toHaveBeenCalledTimes(3); // tag + ja translation + en translation
+		});
+
 		it("翻訳機能: 翻訳が失敗しても日本語の翻訳は更新され、処理は続行される", async () => {
 			// Arrange
 			const { mockDb } = setupDbMocks();
 
-			const { createDatabaseClient } = await import("@saneatsu/db/worker");
-			(createDatabaseClient as any).mockReturnValue(mockDb);
+			const { getDatabase } = await import("@/lib/database");
+			(getDatabase as any).mockResolvedValue({
+				createDatabaseClient: vi.fn().mockReturnValue(mockDb),
+				tags: {},
+				tagTranslations: {},
+			});
 
 			// 翻訳が失敗する場合のモック
 			mockTranslateTag.mockResolvedValue(null);
