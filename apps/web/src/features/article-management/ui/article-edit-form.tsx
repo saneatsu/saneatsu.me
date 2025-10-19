@@ -57,7 +57,17 @@ interface ArticleEditFormProps {
 		content: string;
 		status: string;
 		publishedAt: string | null;
-		tags: Array<{ id: number; slug: string; name: string | null }>;
+		tags: Array<{
+			id: number;
+			slug: string;
+			createdAt: string;
+			updatedAt: string;
+			articleCount: number;
+			translations: {
+				ja: string;
+				en: string;
+			};
+		}>;
 	};
 }
 
@@ -76,7 +86,7 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 	const [selectedTags, setSelectedTags] = useState<Option[]>(
 		article.tags.map((tag) => ({
 			value: String(tag.id),
-			label: tag.slug,
+			label: tag.translations.ja,
 		}))
 	);
 
@@ -262,7 +272,7 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 					options={
 						tagsData?.data.map((tag) => ({
 							value: String(tag.id),
-							label: tag.slug,
+							label: tag.translations.ja,
 						})) || []
 					}
 					placeholder="タグを選択してください"

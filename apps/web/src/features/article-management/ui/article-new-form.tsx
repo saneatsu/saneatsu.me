@@ -244,7 +244,7 @@ export function ArticleNewForm() {
 						options={
 							tagsData?.data.map((tag) => ({
 								value: String(tag.id),
-								label: tag.slug,
+								label: tag.translations.ja,
 							})) || []
 						}
 						placeholder="タグを選択してください"

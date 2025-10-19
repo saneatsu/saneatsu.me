@@ -21,7 +21,13 @@ type ArticleWithTags = {
 	tags: {
 		id: number;
 		slug: string;
-		name: string | null;
+		createdAt: string;
+		updatedAt: string;
+		articleCount: number;
+		translations: {
+			ja: string;
+			en: string;
+		};
 	}[];
 };
 
