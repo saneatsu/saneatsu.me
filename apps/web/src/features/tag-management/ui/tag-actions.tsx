@@ -1,7 +1,6 @@
 "use client";
 
-import { Edit, MoreHorizontal, Trash2 } from "lucide-react";
-import Link from "next/link";
+import { MoreHorizontal, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -20,7 +19,6 @@ import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
-	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/shared/ui";
 
@@ -39,7 +37,6 @@ interface TagActionsProps {
  * タグテーブルの各行に表示されるアクションメニュー。
  *
  * アクション:
- * - 編集: タグ編集ページへ遷移
  * - 削除: タグを削除（記事との紐づけも削除）
  */
 export function TagActions({ tag }: TagActionsProps) {
@@ -93,16 +90,6 @@ export function TagActions({ tag }: TagActionsProps) {
 					</Button>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent align="end">
-					{/* 編集アクション */}
-					<DropdownMenuItem asChild>
-						<Link href={`/admin/tags/${tag.id}/edit`}>
-							<Edit className="mr-2 h-4 w-4" />
-							編集
-						</Link>
-					</DropdownMenuItem>
-
-					<DropdownMenuSeparator />
-
 					{/* 削除アクション */}
 					<DropdownMenuItem
 						onClick={handleDeleteClick}
@@ -148,8 +135,8 @@ export function TagActions({ tag }: TagActionsProps) {
 			{/* エラーダイアログ */}
 			<AlertDialog
 				open={errorDialog.open}
-				onOpenChange={(open) =>
-					setErrorDialog({ open, message: errorDialog.message })
+				onOpenChange={(isOpen) =>
+					setErrorDialog({ open: isOpen, message: errorDialog.message })
 				}
 			>
 				<AlertDialogContent>

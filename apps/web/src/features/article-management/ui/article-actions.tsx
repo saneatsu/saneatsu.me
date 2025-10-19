@@ -1,13 +1,6 @@
 "use client";
 
-import {
-	Archive,
-	Edit,
-	Eye,
-	FileEdit,
-	MoreHorizontal,
-	Trash2,
-} from "lucide-react";
+import { Eye, FileEdit, MoreHorizontal, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -42,7 +35,7 @@ interface ArticleActionsProps {
 
 /**
  * 記事アクションコンポーネント
- * 編集・削除・ステータス変更などのアクションを提供
+ * プレビュー・公開・削除などのアクションを提供
  */
 export function ArticleActions({ article, onAction }: ArticleActionsProps) {
 	// ダイアログの状態管理
@@ -125,13 +118,6 @@ export function ArticleActions({ article, onAction }: ArticleActionsProps) {
 	};
 
 	/**
-	 * 記事編集ページへ移動
-	 */
-	const handleEdit = () => {
-		window.location.href = `/admin/articles/${article.id}/edit`;
-	};
-
-	/**
 	 * 記事プレビュー
 	 */
 	const handlePreview = () => {
@@ -150,10 +136,6 @@ export function ArticleActions({ article, onAction }: ArticleActionsProps) {
 				</DropdownMenuTrigger>
 				<DropdownMenuContent align="end">
 					{/* 基本アクション */}
-					<DropdownMenuItem onClick={handleEdit}>
-						<Edit className="mr-2 h-4 w-4" />
-						編集
-					</DropdownMenuItem>
 					<DropdownMenuItem onClick={handlePreview}>
 						<Eye className="mr-2 h-4 w-4" />
 						プレビュー
@@ -169,26 +151,6 @@ export function ArticleActions({ article, onAction }: ArticleActionsProps) {
 						>
 							<FileEdit className="mr-2 h-4 w-4" />
 							公開する
-						</DropdownMenuItem>
-					)}
-
-					{article.status !== "draft" && (
-						<DropdownMenuItem
-							onClick={() => handleStatusUpdateClick("draft")}
-							className="text-yellow-600"
-						>
-							<FileEdit className="mr-2 h-4 w-4" />
-							下書きに戻す
-						</DropdownMenuItem>
-					)}
-
-					{article.status !== "archived" && (
-						<DropdownMenuItem
-							onClick={() => handleStatusUpdateClick("archived")}
-							className="text-gray-600"
-						>
-							<Archive className="mr-2 h-4 w-4" />
-							アーカイブ
 						</DropdownMenuItem>
 					)}
 
@@ -208,9 +170,9 @@ export function ArticleActions({ article, onAction }: ArticleActionsProps) {
 			{/* ステータス更新確認ダイアログ */}
 			<AlertDialog
 				open={statusConfirmDialog.open}
-				onOpenChange={(open) =>
+				onOpenChange={(isOpen) =>
 					setStatusConfirmDialog({
-						open,
+						open: isOpen,
 						newStatus: statusConfirmDialog.newStatus,
 					})
 				}
@@ -260,8 +222,8 @@ export function ArticleActions({ article, onAction }: ArticleActionsProps) {
 			{/* エラーダイアログ */}
 			<AlertDialog
 				open={errorDialog.open}
-				onOpenChange={(open) =>
-					setErrorDialog({ open, message: errorDialog.message })
+				onOpenChange={(isOpen) =>
+					setErrorDialog({ open: isOpen, message: errorDialog.message })
 				}
 			>
 				<AlertDialogContent>
