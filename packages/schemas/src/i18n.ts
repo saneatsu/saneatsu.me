@@ -24,9 +24,9 @@ import { z } from "zod";
 export const makeZodI18nMap = (
 	t: (key: string, values?: Record<string, unknown>) => string
 ): z.ZodErrorMap => {
-	return (issue, ctx) => {
-		// デフォルトメッセージ
-		let message = ctx.defaultError;
+	return (issue) => {
+		// メッセージを格納する変数
+		let message: string | undefined;
 
 		switch (issue.code) {
 			case z.ZodIssueCode.invalid_type:
@@ -61,7 +61,7 @@ export const makeZodI18nMap = (
 				}
 				break;
 
-			case z.ZodIssueCode.invalid_string:
+			case z.ZodIssueCode.invalid_format:
 				switch (issue.validation) {
 					case "email":
 						message = t("validation.invalidString.email");
@@ -172,7 +172,7 @@ export const makeZodI18nMap = (
 									});
 						break;
 					default:
-						message = ctx.defaultError;
+						message = undefined;
 				}
 				break;
 
@@ -185,15 +185,15 @@ export const makeZodI18nMap = (
 				) {
 					message = t(issue.params.message);
 				} else {
-					message = issue.message ?? ctx.defaultError;
+					message = issue.message ?? undefined;
 				}
 				break;
 
 			default:
-				message = ctx.defaultError;
+				message = undefined;
 		}
 
-		return { message };
+		return message;
 	};
 };
 
