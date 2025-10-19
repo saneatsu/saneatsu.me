@@ -6,7 +6,7 @@ import {
 } from "@saneatsu/db/worker";
 import { and, eq, sql } from "drizzle-orm";
 
-import { createTranslationService } from "@/services/gemini-translation";
+import { createTranslationService } from "@/services/gemini-translation/gemini-translation";
 import type { createArticleRoute } from "./create-article.openapi";
 
 /**
@@ -73,7 +73,7 @@ export const createArticle: Handler = async (c) => {
 		// 作者IDを取得（現在はハードコードされた管理者メール、将来的には認証から取得）
 		// TODO: 認証システムが実装されたら、認証情報から作者IDを取得する
 		const authorEmail = "nito.tech.official@gmail.com";
-		const { getUserByEmail } = await import("../../../auth/service");
+		const { getUserByEmail } = await import("../../../auth/service/service");
 		const author = await getUserByEmail(db, authorEmail);
 
 		const [newArticle] = await db

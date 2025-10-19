@@ -1,11 +1,15 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
-import { createDbClient } from "../../lib/db";
+import { createDbClient } from "../../../lib/db";
 import {
 	AuthErrorSchema,
 	UpsertUserSchema,
 	UserResponseSchema,
-} from "./schema";
-import { getUserByEmail, isAdminEmail, upsertUserFromGoogle } from "./service";
+} from "../schema";
+import {
+	getUserByEmail,
+	isAdminEmail,
+	upsertUserFromGoogle,
+} from "../service/service";
 
 type Env = {
 	TURSO_DATABASE_URL: string;

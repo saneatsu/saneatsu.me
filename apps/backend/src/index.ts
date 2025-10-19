@@ -11,7 +11,7 @@ import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 import { articlesRoute } from "./routes/articles";
-import { authRoute } from "./routes/auth/worker";
+import { authRoute } from "./routes/auth/worker/worker";
 import { dashboardRoute } from "./routes/dashboard";
 import { tagsRoute } from "./routes/tags";
 

@@ -2,7 +2,7 @@ import type { RouteHandler } from "@hono/zod-openapi";
 import { tags, tagTranslations } from "@saneatsu/db/worker";
 import { and, eq, not } from "drizzle-orm";
 
-import { createTranslationService } from "@/services/gemini-translation";
+import { createTranslationService } from "@/services/gemini-translation/gemini-translation";
 import type { updateTagRoute } from "./update-tag.openapi";
 
 /**

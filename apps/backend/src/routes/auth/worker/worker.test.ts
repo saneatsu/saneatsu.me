@@ -3,13 +3,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { authRoute } from "./worker";
 
 // モックの設定
-vi.mock("./service", () => ({
+vi.mock("../service/service", () => ({
 	isAdminEmail: vi.fn(),
 	upsertUserFromGoogle: vi.fn(),
 	getUserByEmail: vi.fn(),
 }));
 
-vi.mock("../../lib/db", () => ({
+vi.mock("../../../lib/db", () => ({
 	createDbClient: vi.fn(),
 }));
 
@@ -40,8 +40,10 @@ describe("Auth API Routes", () => {
 		});
 
 		it("管理者メールアドレスでユーザーを作成できる", async () => {
-			const { isAdminEmail, upsertUserFromGoogle } = await import("./service");
-			const { createDbClient } = await import("../../lib/db");
+			const { isAdminEmail, upsertUserFromGoogle } = await import(
+				"../service/service"
+			);
+			const { createDbClient } = await import("../../../lib/db");
 
 			vi.mocked(isAdminEmail).mockReturnValue(true);
 			vi.mocked(createDbClient).mockReturnValue({} as any);
@@ -83,7 +85,7 @@ describe("Auth API Routes", () => {
 		});
 
 		it("管理者以外のメールアドレスで403エラーを返す", async () => {
-			const { isAdminEmail } = await import("./service");
+			const { isAdminEmail } = await import("../service/service");
 			vi.mocked(isAdminEmail).mockReturnValue(false);
 
 			const res = await app.request(
@@ -114,8 +116,10 @@ describe("Auth API Routes", () => {
 		});
 
 		it("既存ユーザーの情報を更新できる", async () => {
-			const { isAdminEmail, upsertUserFromGoogle } = await import("./service");
-			const { createDbClient } = await import("../../lib/db");
+			const { isAdminEmail, upsertUserFromGoogle } = await import(
+				"../service/service"
+			);
+			const { createDbClient } = await import("../../../lib/db");
 
 			vi.mocked(isAdminEmail).mockReturnValue(true);
 			vi.mocked(createDbClient).mockReturnValue({} as any);
@@ -166,8 +170,8 @@ describe("Auth API Routes", () => {
 		};
 
 		it("存在するユーザー情報を取得できる", async () => {
-			const { getUserByEmail } = await import("./service");
-			const { createDbClient } = await import("../../lib/db");
+			const { getUserByEmail } = await import("../service/service");
+			const { createDbClient } = await import("../../../lib/db");
 
 			vi.mocked(createDbClient).mockReturnValue({} as any);
 			vi.mocked(getUserByEmail).mockResolvedValue({
@@ -199,8 +203,8 @@ describe("Auth API Routes", () => {
 		});
 
 		it("存在しないユーザーで404エラーを返す", async () => {
-			const { getUserByEmail } = await import("./service");
-			const { createDbClient } = await import("../../lib/db");
+			const { getUserByEmail } = await import("../service/service");
+			const { createDbClient } = await import("../../../lib/db");
 
 			vi.mocked(createDbClient).mockReturnValue({} as any);
 			vi.mocked(getUserByEmail).mockResolvedValue(null);
@@ -224,8 +228,10 @@ describe("Auth API Routes", () => {
 		});
 
 		it("管理者以外のユーザーでisAdminがfalseになる", async () => {
-			const { getUserByEmail, isAdminEmail } = await import("./service");
-			const { createDbClient } = await import("../../lib/db");
+			const { getUserByEmail, isAdminEmail } = await import(
+				"../service/service"
+			);
+			const { createDbClient } = await import("../../../lib/db");
 
 			vi.mocked(createDbClient).mockReturnValue({} as any);
 			vi.mocked(getUserByEmail).mockResolvedValue({

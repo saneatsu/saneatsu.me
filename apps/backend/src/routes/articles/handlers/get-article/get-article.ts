@@ -7,7 +7,7 @@ import {
 } from "@saneatsu/db/worker";
 import { and, eq, sql } from "drizzle-orm";
 
-import { convertWikiLinks } from "@/utils/wiki-link";
+import { convertWikiLinks } from "@/utils/wiki-link/wiki-link";
 
 import type { getArticleRoute } from "./get-article.openapi";
 

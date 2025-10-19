@@ -5,7 +5,7 @@ import {
 	articleTranslations,
 } from "@saneatsu/db/worker";
 import { and, eq, not, sql } from "drizzle-orm";
-import { createTranslationService } from "@/services/gemini-translation";
+import { createTranslationService } from "@/services/gemini-translation/gemini-translation";
 import type { updateArticleRoute } from "./update-article.openapi";
 
 /**

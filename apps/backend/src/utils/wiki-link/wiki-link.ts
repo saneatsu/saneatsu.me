@@ -1,6 +1,6 @@
 import { articles, articleTranslations } from "@saneatsu/db/worker";
 import { and, eq, inArray } from "drizzle-orm";
-import type { DrizzleClient } from "../lib/db";
+import type { DrizzleClient } from "../../lib/db";
 
 /**
  * Wiki Linkの情報
