@@ -24,6 +24,20 @@ const TagSchema = z.object({
 		example: 5,
 		description: "このタグが付けられた記事の数",
 	}),
+	translations: z
+		.object({
+			ja: z.string().nullable().openapi({
+				example: "タイプスクリプト",
+				description: "日本語の翻訳",
+			}),
+			en: z.string().nullable().openapi({
+				example: "TypeScript",
+				description: "英語の翻訳",
+			}),
+		})
+		.openapi({
+			description: "タグの翻訳データ",
+		}),
 });
 
 /**

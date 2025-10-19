@@ -26,6 +26,15 @@ const TagUpdateSchema = z.object({
 			example: "タイプスクリプト",
 			description: "タグの表示名（日本語）",
 		}),
+	enName: z
+		.string()
+		.min(1, "英語のタグ名は1文字以上である必要があります")
+		.max(100, "英語のタグ名は100文字以内で入力してください")
+		.optional()
+		.openapi({
+			example: "TypeScript",
+			description: "タグの表示名（英語）。未指定の場合は自動翻訳されます。",
+		}),
 	slug: z
 		.string()
 		.min(1, "スラッグは必須です")

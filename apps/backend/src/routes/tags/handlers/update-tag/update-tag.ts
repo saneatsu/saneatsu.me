@@ -27,7 +27,9 @@ type Handler = RouteHandler<typeof updateTagRoute, { Bindings: Env }>;
  * 5. スラッグの重複チェック（自分自身は除外）
  * 6. タグデータを更新
  * 7. タグ翻訳データを更新（日本語）
- * 8. 英語への自動翻訳を実行（非同期）
+ * 8. 英語への翻訳を実行（手動指定または自動翻訳）
+ *    - enNameが提供されている場合：手動で指定された英語名を使用
+ *    - enNameが未指定の場合：Gemini APIで自動翻訳
  * 9. レスポンスを返す
  */
 export const updateTag: Handler = async (c) => {
@@ -41,7 +43,7 @@ export const updateTag: Handler = async (c) => {
 
 		// 2. パラメータとリクエストボディを取得
 		const { id } = c.req.valid("param");
-		const { name, slug } = c.req.valid("json");
+		const { name, enName, slug } = c.req.valid("json");
 
 		// 3. IDの検証
 		const tagId = Number.parseInt(id);
@@ -122,29 +124,23 @@ export const updateTag: Handler = async (c) => {
 				)
 			);
 
-		// 8. 英語への自動翻訳を実行（非同期）
-		if (c.env.GEMINI_API_KEY) {
+		// 8. 英語への翻訳を実行（手動指定または自動翻訳）
+		let englishName: string | null = null;
+
+		if (enName) {
+			// 手動で提供された英語名を使用
+			englishName = enName;
+			console.log(`Using manually provided English name for tag ${tagId}`);
+		} else if (c.env.GEMINI_API_KEY) {
+			// 英語名が提供されていない場合は自動翻訳
 			try {
 				const translationService = createTranslationService({
 					GEMINI_API_KEY: c.env.GEMINI_API_KEY,
 				});
 
-				// タグ名を翻訳
-				const translatedName = await translationService.translateTag(name);
+				englishName = await translationService.translateTag(name);
 
-				if (translatedName) {
-					// 英語版を更新
-					await db
-						.update(tagTranslations)
-						.set({
-							name: translatedName,
-						})
-						.where(
-							and(
-								eq(tagTranslations.tagId, tagId),
-								eq(tagTranslations.language, "en")
-							)
-						);
+				if (englishName) {
 					console.log(`Tag ${tagId} translated successfully`);
 				} else {
 					console.warn(
@@ -157,6 +153,21 @@ export const updateTag: Handler = async (c) => {
 			}
 		} else {
 			console.log("GEMINI_API_KEY not configured, skipping translation");
+		}
+
+		// 英語名が取得できた場合のみ更新
+		if (englishName) {
+			await db
+				.update(tagTranslations)
+				.set({
+					name: englishName,
+				})
+				.where(
+					and(
+						eq(tagTranslations.tagId, tagId),
+						eq(tagTranslations.language, "en")
+					)
+				);
 		}
 
 		// 9. レスポンスを返す
