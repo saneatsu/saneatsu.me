@@ -25,7 +25,7 @@ vi.mock("@saneatsu/db", () => ({
 }));
 
 // getUserByEmail関数をモック
-vi.mock("../../../auth/service", () => ({
+vi.mock("../../../auth/service/service", () => ({
 	getUserByEmail: vi.fn().mockResolvedValue({
 		id: "user123",
 		email: "nito.tech.official@gmail.com",

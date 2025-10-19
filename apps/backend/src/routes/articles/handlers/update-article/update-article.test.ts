@@ -5,7 +5,7 @@ import { setupDbMocks } from "@/utils/drizzle-test";
 
 // 翻訳サービスのモック
 const mockTranslateArticle = vi.fn();
-vi.mock("@/services/gemini-translation", () => ({
+vi.mock("@/services/gemini-translation/gemini-translation", () => ({
 	createTranslationService: vi.fn(() => ({
 		translateArticle: mockTranslateArticle,
 	})),
