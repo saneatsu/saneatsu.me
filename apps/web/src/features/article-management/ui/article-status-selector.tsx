@@ -79,7 +79,7 @@ export function ArticleStatusSelector({
 										variant={config.variant}
 										className={
 											shouldShowDashed
-												? "border-2 border-dashed opacity-60 hover:opacity-80 transition-opacity"
+												? "!border-2 !border-dashed !border-current opacity-60 hover:opacity-80 transition-opacity"
 												: ""
 										}
 									>
