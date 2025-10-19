@@ -88,9 +88,9 @@ export function TagsTable() {
 			<div className="flex items-center justify-between gap-2 py-4">
 				<Input
 					placeholder="タグ名で検索..."
-					value={(table.getColumn("slug")?.getFilterValue() as string) ?? ""}
+					value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
 					onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-						table.getColumn("slug")?.setFilterValue(event.target.value)
+						table.getColumn("name")?.setFilterValue(event.target.value)
 					}
 					className="max-w-sm"
 				/>

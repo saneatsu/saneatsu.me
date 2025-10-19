@@ -62,9 +62,30 @@ useEffect(() => {
 React Hooksを使って、より良いReactアプリケーションを構築しましょう！`,
 	viewCount: 127,
 	tags: [
-		{ id: 1, slug: "react" },
-		{ id: 2, slug: "typescript" },
-		{ id: 3, slug: "hooks" },
+		{
+			id: 1,
+			slug: "react",
+			createdAt: "2024-01-01T00:00:00Z",
+			updatedAt: "2024-01-01T00:00:00Z",
+			articleCount: 0,
+			translations: { ja: "React", en: "React" },
+		},
+		{
+			id: 2,
+			slug: "typescript",
+			createdAt: "2024-01-01T00:00:00Z",
+			updatedAt: "2024-01-01T00:00:00Z",
+			articleCount: 0,
+			translations: { ja: "TypeScript", en: "TypeScript" },
+		},
+		{
+			id: 3,
+			slug: "hooks",
+			createdAt: "2024-01-01T00:00:00Z",
+			updatedAt: "2024-01-01T00:00:00Z",
+			articleCount: 0,
+			translations: { ja: "フック", en: "Hooks" },
+		},
 	],
 };
 
@@ -173,14 +194,14 @@ export const タグ表示テスト: Story = {
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		const canvas = within(canvasElement);
 
-		// タグバッジの確認
-		const reactTag = canvas.getByText("react");
+		// タグバッジの確認（日本語のタグ名）
+		const reactTag = canvas.getByText("React");
 		expect(reactTag).toBeInTheDocument();
 
-		const typescriptTag = canvas.getByText("typescript");
+		const typescriptTag = canvas.getByText("TypeScript");
 		expect(typescriptTag).toBeInTheDocument();
 
-		const hooksTag = canvas.getByText("hooks");
+		const hooksTag = canvas.getByText("フック");
 		expect(hooksTag).toBeInTheDocument();
 
 		// タグの数を確認（3つのタグがあるはず）
@@ -212,10 +233,10 @@ export const タグなし記事テスト: Story = {
 		expect(title).toBeInTheDocument();
 
 		// タグバッジが表示されないことを確認
-		const reactTag = canvas.queryByText("react");
+		const reactTag = canvas.queryByText("React");
 		expect(reactTag).not.toBeInTheDocument();
 
-		const typescriptTag = canvas.queryByText("typescript");
+		const typescriptTag = canvas.queryByText("TypeScript");
 		expect(typescriptTag).not.toBeInTheDocument();
 	},
 };

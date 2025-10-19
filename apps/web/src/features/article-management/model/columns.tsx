@@ -132,7 +132,7 @@ export const columns: ColumnDef<Article>[] = [
 					{article.tags.length > 0 ? (
 						article.tags.map((tag) => (
 							<Badge key={tag.id} variant="outline" className="text-xs">
-								{tag.slug}
+								{tag.translations.ja}
 							</Badge>
 						))
 					) : (

@@ -37,14 +37,15 @@ function formatDate(dateString: string): string {
  * @tanstack/react-tableのColumnDef型を使用したカラム定義。
  *
  * カラム:
- * - タグ名: タグのスラッグ（日本語名）
+ * - タグ名: 日本語のタグ名（メイン）とスラッグ（サブテキスト）
  * - 記事数: このタグが付けられた記事の数
  * - 作成日: 作成日時
  * - 更新日: 更新日時
  */
 export const columns: ColumnDef<Tag>[] = [
 	{
-		accessorKey: "slug",
+		id: "name",
+		accessorFn: (row) => row.translations.ja,
 		header: ({ column }) => (
 			<Button
 				variant="ghost"
@@ -60,9 +61,12 @@ export const columns: ColumnDef<Tag>[] = [
 			return (
 				<Link
 					href={`/admin/tags/${tag.id}/edit`}
-					className="font-medium min-w-[200px] hover:underline"
+					className="block min-w-[200px] hover:underline"
 				>
-					{tag.slug || "タグ名なし"}
+					<div className="font-medium">
+						{tag.translations.ja || "タグ名なし"}
+					</div>
+					<div className="text-sm text-muted-foreground">{tag.slug}</div>
 				</Link>
 			);
 		},

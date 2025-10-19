@@ -14,6 +14,10 @@ import { Button, Input, Label } from "@/shared/ui";
  * タグ作成フォームのスキーマ
  */
 const tagCreateSchema = z.object({
+	name: z
+		.string()
+		.min(1, "タグ名は必須です")
+		.max(100, "タグ名は100文字以内で入力してください"),
 	slug: z
 		.string()
 		.min(1, "スラッグは必須です")
@@ -31,7 +35,7 @@ type TagCreateForm = z.infer<typeof tagCreateSchema>;
  *
  * @description
  * 新しいタグを作成するためのフォーム。
- * スラッグフィールドのみを持つシンプルなフォーム。
+ * 日本語タグ名とスラッグフィールドを持つ。
  * 作成成功時にタグ一覧ページにリダイレクトする。
  */
 export function TagCreateForm() {
@@ -45,6 +49,7 @@ export function TagCreateForm() {
 	} = useForm<TagCreateForm>({
 		resolver: zodResolver(tagCreateSchema),
 		defaultValues: {
+			name: "",
 			slug: "",
 		},
 	});
@@ -56,7 +61,7 @@ export function TagCreateForm() {
 	 * フォーム送信処理
 	 *
 	 * 1. エラーメッセージをクリア
-	 * 2. タグを作成
+	 * 2. タグを作成（日本語名とスラッグ）
 	 * 3. 成功時にタグ一覧ページにリダイレクト
 	 * 4. エラー時にエラーメッセージを表示
 	 */
@@ -65,6 +70,7 @@ export function TagCreateForm() {
 			setFormError(""); // エラーメッセージをクリア
 
 			await createMutation.mutateAsync({
+				name: data.name,
 				slug: data.slug,
 			});
 
@@ -91,6 +97,23 @@ export function TagCreateForm() {
 					<p className="text-sm text-destructive mt-1">{formError}</p>
 				</div>
 			)}
+
+			{/* タグ名（日本語） */}
+			<div className="space-y-2">
+				<Label htmlFor="name">タグ名（日本語） *</Label>
+				<Input
+					id="name"
+					{...register("name")}
+					placeholder="タイプスクリプト"
+					className="max-w-md"
+				/>
+				{errors.name && (
+					<p className="text-sm text-destructive">{errors.name.message}</p>
+				)}
+				<p className="text-sm text-muted-foreground">
+					タグの表示名を日本語で入力してください
+				</p>
+			</div>
 
 			{/* スラッグ */}
 			<div className="space-y-2">

@@ -15,6 +15,16 @@ import { Button, Input, Label } from "@/shared/ui";
  * タグ更新フォームのスキーマ
  */
 const tagUpdateSchema = z.object({
+	name: z
+		.string()
+		.min(1, "タグ名は必須です")
+		.max(100, "タグ名は100文字以内で入力してください"),
+	enName: z
+		.string()
+		.min(1, "英語のタグ名は1文字以上である必要があります")
+		.max(100, "英語のタグ名は100文字以内で入力してください")
+		.optional()
+		.or(z.literal("")),
 	slug: z
 		.string()
 		.min(1, "スラッグは必須です")
@@ -40,7 +50,7 @@ interface TagUpdateFormProps {
  *
  * @description
  * 既存のタグを更新するためのフォーム。
- * スラッグフィールドのみを持つシンプルなフォーム。
+ * 日本語タグ名、英語タグ名、スラッグフィールドを持つ。
  * 更新成功時にタグ一覧ページにリダイレクトする。
  */
 export function TagUpdateForm({ tag }: TagUpdateFormProps) {
@@ -54,6 +64,8 @@ export function TagUpdateForm({ tag }: TagUpdateFormProps) {
 	} = useForm<TagUpdateForm>({
 		resolver: zodResolver(tagUpdateSchema),
 		defaultValues: {
+			name: tag.translations.ja ?? "",
+			enName: tag.translations.en ?? "",
 			slug: tag.slug,
 		},
 	});
@@ -65,7 +77,7 @@ export function TagUpdateForm({ tag }: TagUpdateFormProps) {
 	 * フォーム送信処理
 	 *
 	 * 1. エラーメッセージをクリア
-	 * 2. タグを更新
+	 * 2. タグを更新（日本語名、英語名、スラッグ）
 	 * 3. 成功時にタグ一覧ページにリダイレクト
 	 * 4. エラー時にエラーメッセージを表示
 	 */
@@ -75,6 +87,8 @@ export function TagUpdateForm({ tag }: TagUpdateFormProps) {
 
 			await updateMutation.mutateAsync({
 				id: tag.id,
+				name: data.name,
+				enName: data.enName || undefined,
 				slug: data.slug,
 			});
 
@@ -101,6 +115,40 @@ export function TagUpdateForm({ tag }: TagUpdateFormProps) {
 					<p className="text-sm text-destructive mt-1">{formError}</p>
 				</div>
 			)}
+
+			{/* タグ名（日本語） */}
+			<div className="space-y-2">
+				<Label htmlFor="name">タグ名（日本語） *</Label>
+				<Input
+					id="name"
+					{...register("name")}
+					placeholder="タイプスクリプト"
+					className="max-w-md"
+				/>
+				{errors.name && (
+					<p className="text-sm text-destructive">{errors.name.message}</p>
+				)}
+				<p className="text-sm text-muted-foreground">
+					タグの表示名を日本語で入力してください
+				</p>
+			</div>
+
+			{/* タグ名（英語） */}
+			<div className="space-y-2">
+				<Label htmlFor="enName">タグ名（英語）</Label>
+				<Input
+					id="enName"
+					{...register("enName")}
+					placeholder="TypeScript"
+					className="max-w-md"
+				/>
+				{errors.enName && (
+					<p className="text-sm text-destructive">{errors.enName.message}</p>
+				)}
+				<p className="text-sm text-muted-foreground">
+					英語のタグ名を入力してください。未入力の場合は自動翻訳されます。
+				</p>
+			</div>
 
 			{/* スラッグ */}
 			<div className="space-y-2">

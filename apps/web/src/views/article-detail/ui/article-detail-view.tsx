@@ -59,7 +59,7 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 							<div className="flex flex-wrap gap-2">
 								{article.tags.map((tag) => (
 									<Badge key={tag.id} variant="outline">
-										{tag.slug}
+										{tag.translations[locale as "ja" | "en"]}
 									</Badge>
 								))}
 							</div>
