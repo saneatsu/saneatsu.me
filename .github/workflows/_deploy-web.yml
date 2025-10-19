@@ -42,6 +42,7 @@ jobs:
         run: |
           pnpm --filter @saneatsu/schemas build
           pnpm --filter @saneatsu/db build
+          pnpm --filter @saneatsu/backend build
 
       - name: Download .env artifact
         uses: actions/download-artifact@v4
