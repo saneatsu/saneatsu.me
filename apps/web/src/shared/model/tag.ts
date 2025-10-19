@@ -5,7 +5,7 @@
 export interface Tag {
 	/** タグのユニークID */
 	id: number;
-	/** タグのスラッグ（日本語名） */
+	/** タグのスラッグ */
 	slug: string;
 	/** 作成日時 */
 	createdAt: string;
@@ -13,6 +13,13 @@ export interface Tag {
 	updatedAt: string;
 	/** このタグが付けられた記事の数 */
 	articleCount: number;
+	/** タグの翻訳データ */
+	translations: {
+		/** 日本語の翻訳 */
+		ja: string;
+		/** 英語の翻訳 */
+		en: string;
+	};
 }
 
 /**
@@ -27,6 +34,8 @@ export interface TagsResponse {
  * タグ作成リクエストボディ
  */
 export interface TagCreateRequest {
+	/** 日本語のタグ名（1-100文字） */
+	name: string;
 	/** タグのスラッグ（小文字の英数字とハイフンのみ、1-100文字） */
 	slug: string;
 }
@@ -54,6 +63,10 @@ export interface TagCreateResponse {
  * タグ更新リクエストボディ
  */
 export interface TagUpdateRequest {
+	/** 日本語のタグ名（1-100文字） */
+	name: string;
+	/** 英語のタグ名（1-100文字、オプショナル。未指定の場合は自動翻訳） */
+	enName?: string;
 	/** タグのスラッグ（小文字の英数字とハイフンのみ、1-100文字） */
 	slug: string;
 }

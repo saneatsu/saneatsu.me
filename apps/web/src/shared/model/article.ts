@@ -1,4 +1,5 @@
 import type { PaginationInfo } from "./common";
+import type { Tag } from "./tag";
 
 /**
  * 記事のステータス
@@ -9,16 +10,6 @@ export type ArticleStatus = "published" | "draft" | "archived";
  * 言語コード
  */
 export type LanguageCode = "ja" | "en";
-
-/**
- * タグオブジェクト
- */
-export interface Tag {
-	/** タグID */
-	id: number;
-	/** タグスラッグ */
-	slug: string;
-}
 
 /**
  * 記事オブジェクト（API レスポンス用）
