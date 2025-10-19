@@ -16,8 +16,12 @@
  * @returns データベースモジュール（createDatabaseClient関数とスキーマを含む）
  */
 export async function getDatabase() {
-	const isNodeEnv = typeof process !== "undefined" && process.versions?.node;
-	return isNodeEnv
-		? await import("@saneatsu/db")
-		: await import("@saneatsu/db/worker");
+	// Cloudflare Workers環境チェック
+	// nodejs_compat有効時でもprocessが存在するため、WorkerGlobalScopeで判定
+	const isWorkerEnv =
+		typeof globalThis !== "undefined" && "WorkerGlobalScope" in globalThis;
+
+	return isWorkerEnv
+		? await import("@saneatsu/db/worker")
+		: await import("@saneatsu/db");
 }

@@ -57,7 +57,6 @@ export const getArticle: Handler = async (c) => {
 				id: articles.id,
 				slug: articles.slug,
 				cfImageId: articles.cfImageId,
-				authorId: articles.authorId,
 				status: articles.status,
 				publishedAt: articles.publishedAt,
 				updatedAt: articles.updatedAt,

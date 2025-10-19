@@ -115,70 +115,63 @@ export async function fetchArticle(
 	query: ArticleDetailQuery = {}
 ): Promise<ArticleResponse> {
 	// NextAuthのセッション情報を取得（Server Component用）
-	const session = await auth();
+	// Cloudflare Workers環境でエラーが発生する可能性があるため、try-catchで囲む
+	let session = null;
+	try {
+		session = await auth();
+	} catch (error) {
+		console.warn("⚠️ Failed to get session, continuing without it:", error);
+	}
 
 	// Service Bindingが利用可能かチェック
 	const serviceBinding = getServiceBinding();
 
-	console.log("🔍 fetchArticle Debug:", {
-		slug,
-		query,
-		hasSession: !!session,
-		userEmail: session?.user?.email,
-		hasServiceBinding: !!serviceBinding,
-		API_BASE_URL,
-		timestamp: new Date().toISOString(),
-	});
-
+	// Service Bindingが利用可能な場合は使用
 	if (serviceBinding) {
-		console.log("🔍 Using Service Binding for article fetch");
-
 		// Service Bindingを使用したリクエスト
 		const url = `https://backend/api/articles/${slug}?lang=${query.lang || "ja"}`;
-		console.log("🔍 Service Binding URL:", url);
+
+		const bindingHeaders: Record<string, string> = {
+			"Content-Type": "application/json",
+		};
+
+		// ログイン中のユーザーの場合、X-User-Emailヘッダーを追加
+		const email = session?.user?.email;
+		if (email !== undefined) {
+			bindingHeaders["X-User-Email"] = email as string;
+		}
 
 		const request = new Request(url, {
 			method: "GET",
-			headers: {
-				"Content-Type": "application/json",
-				// ログイン中のユーザーの場合、X-User-Emailヘッダーを追加
-				...(session?.user?.email && { "X-User-Email": session.user.email }),
-			},
+			headers: bindingHeaders,
 		});
 
 		try {
 			const response = await serviceBinding.fetch(request);
-			console.log("🔍 Service Binding Response:", {
-				status: response.status,
-				ok: response.ok,
-				headers: Object.fromEntries(response.headers.entries()),
-			});
-
 			return handleApiResponse<ArticleResponse>(response);
 		} catch (error) {
-			console.error("❌ Service Binding Error:", error);
+			console.error("Service Binding Error:", error);
 			throw error;
 		}
 	}
 
 	// Service Bindingが利用できない場合は通常のHTTP経由
-	console.log("🔍 Using HTTP for article fetch");
 	const fullUrl = `${API_BASE_URL}/api/articles/${slug}?lang=${query.lang || "ja"}`;
-	console.log("🔍 HTTP URL:", fullUrl);
 
 	// Hono Clientの$getに直接headersを渡せないため、fetchを使用
+	const headers: Record<string, string> = {
+		"Content-Type": "application/json",
+	};
+
+	// ログイン中のユーザーの場合、X-User-Emailヘッダーを追加
+	const email = session?.user?.email;
+	if (email !== undefined) {
+		headers["X-User-Email"] = email as string;
+	}
+
 	const response = await fetch(fullUrl, {
 		method: "GET",
-		headers: {
-			"Content-Type": "application/json",
-			// ログイン中のユーザーの場合、X-User-Emailヘッダーを追加
-			...(session?.user?.email && { "X-User-Email": session.user.email }),
-		},
-	});
-
-	console.log("🔍 HTTP Response received:", {
-		status: response.status,
-		ok: response.ok,
+		headers,
 	});
 
 	return handleApiResponse<ArticleResponse>(response);
