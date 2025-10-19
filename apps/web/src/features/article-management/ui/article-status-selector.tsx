@@ -78,9 +78,11 @@ export function ArticleStatusSelector({
 									<Badge
 										variant={config.variant}
 										className={
-											shouldShowDashed
-												? "!border-2 !border-dashed !border-current opacity-60 hover:opacity-80 transition-opacity"
-												: ""
+											isSelected
+												? "!border-2 !border-black/10 dark:!border-white/30"
+												: shouldShowDashed
+													? "!border-2 !border-dashed !border-current opacity-60 hover:opacity-80 transition-opacity"
+													: ""
 										}
 									>
 										{config.label}
