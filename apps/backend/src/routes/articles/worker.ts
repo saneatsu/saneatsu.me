@@ -7,7 +7,8 @@ import {
 	tags,
 } from "@saneatsu/db/worker";
 import { articleListQuerySchema as ImportedArticlesQuerySchema } from "@saneatsu/schemas";
-import { and, eq, not, sql } from "drizzle-orm";
+import { and, eq, inArray, not, sql } from "drizzle-orm";
+
 import { createTranslationService } from "../../services/gemini-translation";
 import { convertWikiLinks } from "../../utils/wiki-link";
 
@@ -41,7 +42,7 @@ const ArticleResponseSchema = z.object({
 	status: z.enum(["draft", "published", "archived"]),
 	publishedAt: z.string().nullable(),
 	language: z.enum(["ja", "en"]).nullable(),
-	tags: z.array(z.string()).optional(),
+	tags: z.array(z.object({ id: z.number(), slug: z.string() })),
 });
 
 const ArticleAdminResponseSchema = z.object({
@@ -312,6 +313,37 @@ articlesRoute.openapi(listArticlesRoute, async (c: any) => {
 			.limit(limit)
 			.offset(offset);
 
+		// タグ情報を取得
+		const articleIds = articleList.map((article) => article.id);
+		let articleTagsData: Array<{
+			articleId: number;
+			tagId: number;
+			tagSlug: string;
+		}> = [];
+
+		if (articleIds.length > 0) {
+			articleTagsData = await db
+				.select({
+					articleId: articleTags.articleId,
+					tagId: tags.id,
+					tagSlug: tags.slug,
+				})
+				.from(articleTags)
+				.innerJoin(tags, eq(articleTags.tagId, tags.id))
+				.where(inArray(articleTags.articleId, articleIds));
+		}
+
+		// 記事ごとにタグをグループ化
+		const articleWithTags = articleList.map((article) => ({
+			...article,
+			tags: articleTagsData
+				.filter((tag) => tag.articleId === article.id)
+				.map((tag) => ({
+					id: tag.tagId,
+					slug: tag.tagSlug,
+				})),
+		}));
+
 		// 総記事数を取得
 		const countConditions = status ? [eq(articles.status, status)] : [];
 		const totalCount = await db
@@ -320,7 +352,7 @@ articlesRoute.openapi(listArticlesRoute, async (c: any) => {
 			.where(countConditions.length > 0 ? and(...countConditions) : undefined);
 
 		return c.json({
-			data: articleList,
+			data: articleWithTags,
 			pagination: {
 				page,
 				limit,
