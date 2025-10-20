@@ -14,7 +14,7 @@ export const queryKeys = {
 	article: {
 		// すべての記事（フィルタリング可能）
 		all: (filters?: {
-			status?: string;
+			status?: string[];
 			language?: string;
 			search?: string;
 			page?: number;

@@ -27,7 +27,7 @@ export function ArticlesList({ limit }: ArticlesListProps) {
 	} = useGetAllArticles({
 		language: locale as "ja" | "en",
 		limit: limit || 10,
-		status: "published",
+		status: ["published"],
 		sortBy: "updatedAt",
 		sortOrder: "desc",
 	});

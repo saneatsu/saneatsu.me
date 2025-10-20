@@ -15,8 +15,8 @@ type UseGetAllArticlesOptions = {
 	limit?: number;
 	/** 言語 */
 	language?: "ja" | "en";
-	/** 記事のステータス */
-	status?: ArticleStatus;
+	/** 記事のステータス（複数選択可能） */
+	status?: ArticleStatus[];
 	/** 検索キーワード */
 	search?: string;
 	/** ソート対象フィールド */
@@ -69,7 +69,8 @@ export function useGetAllArticles({
 					page: page.toString(),
 					limit: limit.toString(),
 					language,
-					status,
+					// 配列の場合はカンマ区切りの文字列に変換
+					status: status && status.length > 0 ? status.join(",") : undefined,
 					search,
 					sortBy,
 					sortOrder,
