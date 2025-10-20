@@ -11,8 +11,12 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
-import { parseAsInteger, parseAsString, parseAsStringEnum } from "nuqs";
-import { createParser } from "nuqs";
+import {
+	createParser,
+	parseAsInteger,
+	parseAsString,
+	parseAsStringEnum,
+} from "nuqs";
 import { useMemo, useState } from "react";
 
 import { useGetAllArticles } from "@/entities/article";
