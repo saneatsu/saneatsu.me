@@ -16,9 +16,9 @@ const articlesOpenApiQuerySchema = z.object({
 		example: "ja",
 		description: "言語",
 	}),
-	status: z.enum(["published", "draft", "archived"]).optional().openapi({
-		example: "published",
-		description: "記事のステータス",
+	status: z.string().optional().openapi({
+		example: "published,draft",
+		description: "記事のステータス（カンマ区切りで複数指定可能）",
 	}),
 	search: z.string().optional().openapi({
 		example: "検索キーワード",

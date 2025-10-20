@@ -68,8 +68,8 @@ export const getAllArticles: Handler = async (c) => {
 		const conditions = [];
 
 		// ステータス条件
-		if (status) {
-			conditions.push(eq(articles.status, status));
+		if (status && status.length > 0) {
+			conditions.push(inArray(articles.status, status));
 		}
 
 		// 検索条件
