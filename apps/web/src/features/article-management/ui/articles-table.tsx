@@ -11,10 +11,13 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
+import { parseAsInteger, parseAsString, parseAsStringEnum } from "nuqs";
+import { createParser } from "nuqs";
 import { useMemo, useState } from "react";
+
 import { useGetAllArticles } from "@/entities/article";
 import { useDashboardOverview } from "@/features/dashboard";
-import type { ArticleFilters } from "@/shared/model";
+import { usePersistentQueryStates } from "@/shared/lib";
 import {
 	DataTable,
 	DataTableFacetedFilter,
@@ -23,6 +26,22 @@ import {
 } from "@/shared/ui";
 
 import { articleStatusOptions, columns } from "../model/columns";
+
+/**
+ * カンマ区切り文字列を配列として扱うカスタムパーサー
+ */
+const parseAsCommaSeparatedArray = createParser({
+	parse(queryValue) {
+		return queryValue.split(",").filter(Boolean) as (
+			| "published"
+			| "draft"
+			| "archived"
+		)[];
+	},
+	serialize(value) {
+		return value.join(",");
+	},
+}).withDefault([]);
 
 /**
  * 記事一覧テーブルコンポーネントのプロパティ
@@ -46,25 +65,98 @@ interface ArticlesTableProps {
  * - ローディング状態表示
  */
 export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
-	const [sorting, setSorting] = useState<SortingState>([
+	/**
+	 * nuqsを使った永続的な状態管理
+	 * - URLパラメータとlocalStorageに保存される
+	 */
+	const [params, setParams] = usePersistentQueryStates(
+		"articles-table-filters",
 		{
-			id: "updatedAt",
-			desc: true, // 最新順でデフォルトソート
+			page: parseAsInteger.withDefault(1),
+			pageSize: parseAsInteger.withDefault(10),
+			status: parseAsCommaSeparatedArray,
+			search: parseAsString.withDefault(""),
+			sortBy: parseAsString.withDefault("updatedAt"),
+			sortOrder: parseAsStringEnum(["asc", "desc"] as const).withDefault(
+				"desc"
+			),
 		},
-	]);
-	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+		{
+			scroll: false,
+			history: "push",
+		}
+	);
+
+	/**
+	 * TanStack Table用のローカル状態
+	 * - テーブルの表示状態のみ（永続化不要）
+	 */
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 	const [rowSelection, setRowSelection] = useState({});
 
-	// サーバーサイドページネーション用の状態管理
-	const [page, setPage] = useState(1);
-	const [pageSize, setPageSize] = useState(10);
+	/**
+	 * nuqsのパラメータからTanStack Tableのsorting状態を生成
+	 */
+	const sorting: SortingState = useMemo(
+		() => [
+			{
+				id: params.sortBy,
+				desc: params.sortOrder === "desc",
+			},
+		],
+		[params.sortBy, params.sortOrder]
+	);
 
-	const [filters, _setFilters] = useState<ArticleFilters>({
-		status: "all",
-		language: "ja",
-		search: "",
-	});
+	/**
+	 * sortingの変更をnuqsに反映
+	 */
+	const setSorting = (
+		updater: SortingState | ((old: SortingState) => SortingState)
+	) => {
+		const newSorting =
+			typeof updater === "function" ? updater(sorting) : updater;
+		if (newSorting[0]) {
+			setParams({
+				sortBy: newSorting[0].id,
+				sortOrder: newSorting[0].desc ? "desc" : "asc",
+			});
+		}
+	};
+
+	/**
+	 * nuqsのパラメータからTanStack TableのcolumnFilters状態を生成
+	 */
+	const columnFilters: ColumnFiltersState = useMemo(() => {
+		const filters: ColumnFiltersState = [];
+		if (params.status.length > 0) {
+			filters.push({ id: "status", value: params.status });
+		}
+		if (params.search) {
+			filters.push({ id: "title", value: params.search });
+		}
+		return filters;
+	}, [params.status, params.search]);
+
+	/**
+	 * columnFiltersの変更をnuqsに反映
+	 */
+	const setColumnFilters = (
+		updater:
+			| ColumnFiltersState
+			| ((old: ColumnFiltersState) => ColumnFiltersState)
+	) => {
+		const newFilters =
+			typeof updater === "function" ? updater(columnFilters) : updater;
+		const statusFilter = newFilters.find((f) => f.id === "status");
+		const searchFilter = newFilters.find((f) => f.id === "title");
+
+		setParams({
+			status: statusFilter
+				? (statusFilter.value as ("published" | "draft" | "archived")[])
+				: [],
+			search: searchFilter ? (searchFilter.value as string) : "",
+		});
+	};
 
 	/**
 	 * ダッシュボード統計を取得（ステータスフィルターの件数表示用）
@@ -75,19 +167,19 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 	 * 記事一覧を取得（サーバーサイドページネーション）
 	 */
 	const { data, isLoading, error, refetch } = useGetAllArticles({
-		page,
-		limit: pageSize,
+		page: params.page,
+		limit: params.pageSize,
 		language: "ja",
-		status: filters.status === "all" ? undefined : filters.status,
-		search: filters.search.trim() || undefined,
-		sortBy: sorting[0]?.id as
+		status: params.status.length === 0 ? undefined : params.status,
+		search: params.search.trim() || undefined,
+		sortBy: params.sortBy as
 			| "createdAt"
 			| "updatedAt"
 			| "publishedAt"
 			| "title"
 			| "viewCount"
 			| undefined,
-		sortOrder: sorting[0]?.desc ? "desc" : "asc",
+		sortOrder: params.sortOrder,
 	});
 
 	const articles = data?.data || [];
@@ -125,7 +217,9 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 		onRefresh?.();
 	};
 
-	// テーブルインスタンスを作成（サーバーサイドページネーション対応）
+	/**
+	 * テーブルインスタンスを作成（サーバーサイドページネーション対応）
+	 */
 	const table = useReactTable({
 		data: articles,
 		columns,
@@ -144,10 +238,12 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 		onPaginationChange: (updater) => {
 			const newPagination =
 				typeof updater === "function"
-					? updater({ pageIndex: page - 1, pageSize })
+					? updater({ pageIndex: params.page - 1, pageSize: params.pageSize })
 					: updater;
-			setPage(newPagination.pageIndex + 1);
-			setPageSize(newPagination.pageSize);
+			setParams({
+				page: newPagination.pageIndex + 1,
+				pageSize: newPagination.pageSize,
+			});
 		},
 		state: {
 			sorting,
@@ -155,8 +251,8 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 			columnVisibility,
 			rowSelection,
 			pagination: {
-				pageIndex: page - 1, // TanStack Tableは0ベース、APIは1ベース
-				pageSize,
+				pageIndex: params.page - 1, // TanStack Tableは0ベース、APIは1ベース
+				pageSize: params.pageSize,
 			},
 		},
 		meta: {
