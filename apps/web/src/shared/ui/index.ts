@@ -157,6 +157,15 @@ export {
 	type Option,
 } from "./multiple-selector";
 
+// OG Image
+export {
+	ArticleOgImage,
+	OG_IMAGE_ALT,
+	OG_IMAGE_CONTENT_TYPE,
+	OG_IMAGE_SIZE,
+	SiteOgImage,
+} from "./og-image/og-image";
+
 // Popover
 export {
 	Popover,
