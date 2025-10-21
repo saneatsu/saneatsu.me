@@ -1,25 +1,21 @@
+/**
+ * OG画像生成コンポーネント
+ *
+ * @description
+ * Next.js の ImageResponse を使用してOG画像を動的に生成する。
+ * このファイルは server-side only で使用される。
+ * クライアントサイドでインポートすると "Can't resolve 'fs'" エラーが発生するので注意。
+ */
 import { ImageResponse } from "next/og";
 
-/**
- * OG画像の共通サイズ
- */
-export const OG_IMAGE_SIZE = {
-	width: 1200,
-	height: 630,
-};
-
-/**
- * OG画像の共通alt属性
- */
-export const OG_IMAGE_ALT = "saneatsu.me";
-
-/**
- * OG画像の共通Content-Type
- */
-export const OG_IMAGE_CONTENT_TYPE = "image/png";
+import { OG_IMAGE_SIZE } from "./og-image-constants";
 
 /**
  * 共通のグラデーション背景スタイル
+ *
+ * @description
+ * OG画像の背景グラデーション色。
+ * server-side only で使用される。
  */
 const GRADIENT_BACKGROUND = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
 

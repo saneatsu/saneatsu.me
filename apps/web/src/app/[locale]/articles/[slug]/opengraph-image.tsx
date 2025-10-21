@@ -1,11 +1,10 @@
 import { fetchArticle } from "@/shared/lib";
 import {
-	ArticleOgImage,
 	OG_IMAGE_ALT,
 	OG_IMAGE_CONTENT_TYPE,
 	OG_IMAGE_SIZE,
-	SiteOgImage,
 } from "@/shared/ui";
+import { ArticleOgImage, SiteOgImage } from "@/shared/ui/og-image/og-image";
 
 /**
  * OGP画像のメタデータ

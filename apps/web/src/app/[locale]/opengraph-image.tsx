@@ -20,4 +20,4 @@ export const contentType = OG_IMAGE_CONTENT_TYPE;
  *
  * @returns ImageResponse - 生成されたOG画像（"saneatsu.me" + "Tech & Lifestyle Blog"）
  */
-export { SiteOgImage as default } from "@/shared/ui";
+export { SiteOgImage as default } from "@/shared/ui/og-image/og-image";
