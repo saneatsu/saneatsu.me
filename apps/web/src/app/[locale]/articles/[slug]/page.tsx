@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 
 import { extractDescription, fetchArticle, getOgImageUrl } from "@/shared/lib";
 import { ArticleDetailWrapper } from "@/views";
@@ -39,12 +40,18 @@ export async function generateMetadata({
 		// 記事本文から説明文を抽出
 		const description = extractDescription(article.content || "", 160);
 
-		// OGP画像URLを取得
-		const ogImageUrl = getOgImageUrl(article.cfImageId);
-
-		// 記事の完全なURLを生成
-		const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://saneatsu.me";
+		// リクエストヘッダーからホスト情報を取得
+		// ngrok経由でのテスト時に正しいURLを生成するため
+		const headersList = await headers();
+		const host = headersList.get("host");
+		const protocol = host?.includes("localhost") ? "http" : "https";
+		const baseUrl = host
+			? `${protocol}://${host}`
+			: process.env.NEXT_PUBLIC_SITE_URL || "https://saneatsu.me";
 		const articleUrl = `${baseUrl}/${locale}/articles/${slug}`;
+
+		// OGP画像URLを取得
+		const ogImageUrl = getOgImageUrl(article.cfImageId, locale, slug, baseUrl);
 
 		return {
 			title: `${article.title} - saneatsu.me`,
@@ -67,6 +74,8 @@ export async function generateMetadata({
 			},
 			twitter: {
 				card: "summary_large_image",
+				site: "@saneatsu_wakana",
+				creator: "@saneatsu_wakana",
 				title: article.title || "",
 				description,
 				images: [ogImageUrl],
@@ -76,7 +85,14 @@ export async function generateMetadata({
 		// 記事が見つからない場合やエラーが発生した場合はデフォルトのメタデータを返す
 		console.error("Failed to generate metadata for article:", error);
 
-		const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://saneatsu.me";
+		// リクエストヘッダーからホスト情報を取得
+		const headersList = await headers();
+		const host = headersList.get("host");
+		const protocol = host?.includes("localhost") ? "http" : "https";
+		const baseUrl = host
+			? `${protocol}://${host}`
+			: process.env.NEXT_PUBLIC_SITE_URL || "https://saneatsu.me";
+
 		const defaultDescription =
 			locale === "ja"
 				? "プログラミング、開発ツール、日常の気づきなど、技術とライフスタイルに関する記事を発信しています。"
@@ -92,7 +108,7 @@ export async function generateMetadata({
 				url: `${baseUrl}/${locale}`,
 				images: [
 					{
-						url: `${baseUrl}/og-image.png`,
+						url: `${baseUrl}/${locale}/opengraph-image`,
 						width: 1200,
 						height: 630,
 						alt: "saneatsu.me",
@@ -102,9 +118,11 @@ export async function generateMetadata({
 			},
 			twitter: {
 				card: "summary_large_image",
+				site: "@saneatsu_wakana",
+				creator: "@saneatsu_wakana",
 				title: "Article Not Found",
 				description: defaultDescription,
-				images: [`${baseUrl}/og-image.png`],
+				images: [`${baseUrl}/${locale}/opengraph-image`],
 			},
 		};
 	}

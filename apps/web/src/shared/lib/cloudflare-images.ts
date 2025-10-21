@@ -62,24 +62,28 @@ export function getCloudflareImageUrl(
  *
  * @description
  * OGP用の画像URLを取得する。
- * Cloudflare Images IDがある場合はそのURLを、ない場合はデフォルトのOGP画像URLを返す。
+ * Cloudflare Images IDがある場合はそのURLを、ない場合は動的OG画像のURLを返す。
  * OGPに最適化された1200x630pxのバリアントを使用する。
  *
  * @param imageId - Cloudflare Images ID（オプショナル）
+ * @param locale - ロケール（例: "ja", "en"）
+ * @param slug - 記事のslug
  * @param baseUrl - サイトのベースURL（デフォルト: "https://saneatsu.me"）
  * @returns OGP用の画像URL
  *
  * @example
  * ```ts
- * const ogImageUrl = getOgImageUrl("abc123");
+ * const ogImageUrl = getOgImageUrl("abc123", "ja", "article-001");
  * // => "https://imagedelivery.net/<account-hash>/abc123/ogp"
  *
- * const defaultOgImageUrl = getOgImageUrl(null);
- * // => "https://saneatsu.me/og-image.png"
+ * const defaultOgImageUrl = getOgImageUrl(null, "ja", "article-001");
+ * // => "https://saneatsu.me/ja/articles/article-001/opengraph-image"
  * ```
  */
 export function getOgImageUrl(
 	imageId: string | null | undefined,
+	locale: string,
+	slug: string,
 	baseUrl = "https://saneatsu.me"
 ): string {
 	if (imageId) {
@@ -91,6 +95,6 @@ export function getOgImageUrl(
 		}
 	}
 
-	// デフォルトのOGP画像を返す
-	return `${baseUrl}/og-image.png`;
+	// 動的OG画像のURLを返す
+	return `${baseUrl}/${locale}/articles/${slug}/opengraph-image`;
 }
