@@ -1,10 +1,10 @@
 "use client";
 
-import { Eye, FileEdit, MoreHorizontal, Trash2 } from "lucide-react";
+import { ExternalLink, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { useDelete, useUpdateStatus } from "@/entities/article";
+import { useDelete } from "@/entities/article";
 import type { Article } from "@/shared/model";
 import {
 	AlertDialog,
@@ -16,11 +16,10 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle,
 	Button,
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
 } from "@/shared/ui";
 
 /**
@@ -35,59 +34,21 @@ interface ArticleActionsProps {
 
 /**
  * 記事アクションコンポーネント
- * プレビュー・公開・削除などのアクションを提供
+ * プレビュー・削除などのアクションを提供
  */
 export function ArticleActions({ article, onAction }: ArticleActionsProps) {
 	// ダイアログの状態管理
-	const [statusConfirmDialog, setStatusConfirmDialog] = useState<{
-		open: boolean;
-		newStatus: string;
-	}>({ open: false, newStatus: "" });
 	const [deleteConfirmDialog, setDeleteConfirmDialog] = useState(false);
 	const [errorDialog, setErrorDialog] = useState<{
 		open: boolean;
 		message: string;
 	}>({ open: false, message: "" });
 
-	// 記事ステータス更新フック
-	const updateStatusMutation = useUpdateStatus();
-
 	// 記事削除フック
 	const deleteArticleMutation = useDelete();
 
-	// いずれかのmutationが実行中かどうか
-	const loading =
-		updateStatusMutation.isPending || deleteArticleMutation.isPending;
-
-	/**
-	 * ステータス更新の確認ダイアログを表示
-	 */
-	const handleStatusUpdateClick = (newStatus: string) => {
-		if (loading) return;
-		setStatusConfirmDialog({ open: true, newStatus });
-	};
-
-	/**
-	 * 記事ステータス更新の実行
-	 */
-	const executeStatusUpdate = async () => {
-		try {
-			await updateStatusMutation.mutateAsync({
-				id: article.id,
-				status: statusConfirmDialog.newStatus,
-			});
-			onAction?.();
-			setStatusConfirmDialog({ open: false, newStatus: "" });
-		} catch (error) {
-			const errorMessage =
-				error instanceof Error ? error.message : "ステータス更新に失敗しました";
-			setStatusConfirmDialog({ open: false, newStatus: "" });
-			setErrorDialog({
-				open: true,
-				message: `ステータス更新に失敗しました: ${errorMessage}`,
-			});
-		}
-	};
+	// mutationが実行中かどうか
+	const loading = deleteArticleMutation.isPending;
 
 	/**
 	 * 削除確認ダイアログを表示
@@ -127,70 +88,47 @@ export function ArticleActions({ article, onAction }: ArticleActionsProps) {
 
 	return (
 		<>
-			<DropdownMenu>
-				<DropdownMenuTrigger asChild>
-					<Button variant="ghost" className="h-8 w-8 p-0" disabled={loading}>
-						<span className="sr-only">アクションメニューを開く</span>
-						<MoreHorizontal className="h-4 w-4" />
-					</Button>
-				</DropdownMenuTrigger>
-				<DropdownMenuContent align="end">
-					{/* 基本アクション */}
-					<DropdownMenuItem onClick={handlePreview}>
-						<Eye className="mr-2 h-4 w-4" />
-						プレビュー
-					</DropdownMenuItem>
+			<TooltipProvider>
+				<div className="flex items-center gap-2">
+					{/* プレビューボタン */}
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<Button
+								variant="ghost"
+								size="icon"
+								className="h-8 w-8"
+								onClick={handlePreview}
+								disabled={loading}
+							>
+								<ExternalLink className="h-4 w-4" />
+								<span className="sr-only">プレビュー</span>
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent>
+							<p>プレビュー</p>
+						</TooltipContent>
+					</Tooltip>
 
-					<DropdownMenuSeparator />
-
-					{/* ステータス変更 */}
-					{article.status !== "published" && (
-						<DropdownMenuItem
-							onClick={() => handleStatusUpdateClick("published")}
-							className="text-green-600"
-						>
-							<FileEdit className="mr-2 h-4 w-4" />
-							公開する
-						</DropdownMenuItem>
-					)}
-
-					{/* 削除アクション */}
-					<DropdownMenuItem
-						onClick={handleDeleteClick}
-						className="text-red-600 focus:text-red-600"
-					>
-						<Trash2 className="mr-2 h-4 w-4" />
-						削除
-					</DropdownMenuItem>
-				</DropdownMenuContent>
-			</DropdownMenu>
-
-			{/* ステータス更新確認ダイアログ */}
-			<AlertDialog
-				open={statusConfirmDialog.open}
-				onOpenChange={(isOpen) =>
-					setStatusConfirmDialog({
-						open: isOpen,
-						newStatus: statusConfirmDialog.newStatus,
-					})
-				}
-			>
-				<AlertDialogContent>
-					<AlertDialogHeader>
-						<AlertDialogTitle>ステータス変更の確認</AlertDialogTitle>
-						<AlertDialogDescription>
-							記事「{article.title || article.slug}」のステータスを「
-							{statusConfirmDialog.newStatus}」に変更しますか？
-						</AlertDialogDescription>
-					</AlertDialogHeader>
-					<AlertDialogFooter>
-						<AlertDialogCancel>キャンセル</AlertDialogCancel>
-						<AlertDialogAction onClick={executeStatusUpdate}>
-							変更
-						</AlertDialogAction>
-					</AlertDialogFooter>
-				</AlertDialogContent>
-			</AlertDialog>
+					{/* 削除ボタン */}
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<Button
+								variant="ghost"
+								size="icon"
+								className="h-8 w-8 text-red-600 hover:text-red-700"
+								onClick={handleDeleteClick}
+								disabled={loading}
+							>
+								<Trash2 className="h-4 w-4" />
+								<span className="sr-only">削除</span>
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent>
+							<p>削除</p>
+						</TooltipContent>
+					</Tooltip>
+				</div>
+			</TooltipProvider>
 
 			{/* 削除確認ダイアログ */}
 			<AlertDialog

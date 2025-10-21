@@ -1,6 +1,6 @@
 "use client";
 
-import { MoreHorizontal, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -16,10 +16,10 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle,
 	Button,
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
 } from "@/shared/ui";
 
 /**
@@ -82,24 +82,26 @@ export function TagActions({ tag }: TagActionsProps) {
 
 	return (
 		<>
-			<DropdownMenu>
-				<DropdownMenuTrigger asChild>
-					<Button variant="ghost" className="h-8 w-8 p-0" disabled={loading}>
-						<span className="sr-only">アクションメニューを開く</span>
-						<MoreHorizontal className="h-4 w-4" />
-					</Button>
-				</DropdownMenuTrigger>
-				<DropdownMenuContent align="end">
-					{/* 削除アクション */}
-					<DropdownMenuItem
-						onClick={handleDeleteClick}
-						className="text-destructive focus:text-destructive"
-					>
-						<Trash2 className="mr-2 h-4 w-4" />
-						削除
-					</DropdownMenuItem>
-				</DropdownMenuContent>
-			</DropdownMenu>
+			<TooltipProvider>
+				{/* 削除ボタン */}
+				<Tooltip>
+					<TooltipTrigger asChild>
+						<Button
+							variant="ghost"
+							size="icon"
+							className="h-8 w-8 text-destructive hover:text-destructive"
+							onClick={handleDeleteClick}
+							disabled={loading}
+						>
+							<Trash2 className="h-4 w-4" />
+							<span className="sr-only">削除</span>
+						</Button>
+					</TooltipTrigger>
+					<TooltipContent>
+						<p>削除</p>
+					</TooltipContent>
+				</Tooltip>
+			</TooltipProvider>
 
 			{/* 削除確認ダイアログ */}
 			<AlertDialog
