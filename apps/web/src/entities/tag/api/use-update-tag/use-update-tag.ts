@@ -27,7 +27,11 @@ export function useUpdateTag() {
 		mutationFn: async (data: TagUpdateRequest & { id: number }) => {
 			const response = await honoClient.api.tags[":id"].$put({
 				param: { id: String(data.id) },
-				json: { slug: data.slug },
+				json: {
+					name: data.name,
+					enName: data.enName,
+					slug: data.slug,
+				},
 			});
 
 			if (!response.ok) {
