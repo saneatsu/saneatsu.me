@@ -33,11 +33,7 @@ console.log(`🚀 Server is running on http://localhost:${port}`);
 serve({
 	fetch: (request, env) => {
 		// Node.js環境でprocess.envをc.envに渡す
-		return app.fetch(request, {
-			...process.env,
-			...env,
-			// biome-ignore lint/suspicious/noExplicitAny: Node.js環境のprocess.envをWorkers環境のEnvに変換するため
-		} as any);
+		return app.fetch(request, { ...process.env, ...env });
 	},
 	port,
 });
