@@ -21,10 +21,13 @@
 
 import { serve } from "@hono/node-server";
 import dotenv from "dotenv";
-import { app } from "./index";
+import { createApp } from "./index";
 
 // .envファイルを読み込み
 dotenv.config();
+
+// 開発環境専用の設定（localhost全ポートとngrok-free.appを許可）
+const app = createApp({ isDevelopment: true });
 
 const port = process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 8888;
 
