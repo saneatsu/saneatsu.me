@@ -42,26 +42,26 @@ export function RecentActivities({
 			case "article_created":
 				return {
 					icon: <Plus className="h-4 w-4" />,
-					color: "text-blue-600",
-					bgColor: "bg-blue-100",
+					color: "text-primary",
+					bgColor: "bg-primary/10",
 				};
 			case "article_published":
 				return {
 					icon: <TrendingUp className="h-4 w-4" />,
-					color: "text-green-600",
-					bgColor: "bg-green-100",
+					color: "text-emerald-600",
+					bgColor: "bg-emerald-100",
 				};
 			case "article_updated":
 				return {
 					icon: <FileText className="h-4 w-4" />,
-					color: "text-yellow-600",
-					bgColor: "bg-yellow-100",
+					color: "text-amber-600",
+					bgColor: "bg-amber-100",
 				};
 			default:
 				return {
 					icon: <Activity className="h-4 w-4" />,
-					color: "text-gray-600",
-					bgColor: "bg-gray-100",
+					color: "text-muted-foreground",
+					bgColor: "bg-muted/20",
 				};
 		}
 	};

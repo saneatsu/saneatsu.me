@@ -112,7 +112,7 @@ export const columns: ColumnDef<Article>[] = [
 				<div className="space-y-1 min-w-[200px]">
 					<Link
 						href={`/admin/articles/${article.id}/edit`}
-						className="font-medium hover:text-blue-600 hover:underline transition-colors inline-block"
+						className="font-medium hover:text-primary hover:underline transition-colors inline-block"
 					>
 						{article.title || "タイトルなし"}
 					</Link>

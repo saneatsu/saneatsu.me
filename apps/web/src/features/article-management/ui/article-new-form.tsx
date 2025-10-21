@@ -201,7 +201,7 @@ export function ArticleNewForm() {
 								errors.slug || slugError
 									? "border-destructive"
 									: slugChecking
-										? "border-blue-300"
+										? "border-primary/30"
 										: ""
 							}
 						/>
@@ -214,7 +214,7 @@ export function ArticleNewForm() {
 					)}
 					{slugError && <p className="text-sm text-destructive">{slugError}</p>}
 					{!errors.slug && !slugError && debouncedSlug && !slugChecking && (
-						<p className="text-sm text-green-600">
+						<p className="text-sm text-emerald-600">
 							✓ このスラッグは利用可能です
 						</p>
 					)}

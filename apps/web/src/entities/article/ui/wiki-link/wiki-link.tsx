@@ -57,10 +57,7 @@ export function WikiLink({
 	if (isError) {
 		return (
 			<span
-				className={cn(
-					"text-red-600 dark:text-red-400 pointer-events-none",
-					className
-				)}
+				className={cn("text-destructive pointer-events-none", className)}
 				{...props}
 			>
 				記事が見つかりません
@@ -90,7 +87,7 @@ export function WikiLink({
 			href={href}
 			className={cn(
 				"underline decoration-dotted underline-offset-4 hover:decoration-solid",
-				isAnchorLink && "text-blue-600 dark:text-blue-400",
+				isAnchorLink && "text-primary",
 				isLoading && "opacity-70",
 				className
 			)}
