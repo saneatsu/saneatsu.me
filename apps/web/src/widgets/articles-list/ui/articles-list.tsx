@@ -22,6 +22,7 @@ interface ArticlesListProps {
 export function ArticlesList({ limit }: ArticlesListProps) {
 	const locale = useLocale();
 	const t = useTranslations("pagination");
+	const tList = useTranslations("articlesList");
 	const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
 
 	const {
@@ -58,16 +59,14 @@ export function ArticlesList({ limit }: ArticlesListProps) {
 		return (
 			<div className="text-center p-8 bg-muted rounded-lg">
 				<p className="text-destructive mb-4">
-					{error instanceof Error
-						? error.message
-						: "記事の読み込みに失敗しました。"}
+					{error instanceof Error ? error.message : tList("loadFailed")}
 				</p>
 				<button
 					type="button"
 					onClick={() => refetch()}
 					className="text-primary hover:text-primary/80 underline"
 				>
-					再試行
+					{tList("retry")}
 				</button>
 			</div>
 		);
@@ -76,7 +75,7 @@ export function ArticlesList({ limit }: ArticlesListProps) {
 	if (articles.length === 0) {
 		return (
 			<div className="text-center p-8 bg-muted rounded-lg">
-				<p className="text-muted-foreground">記事が見つかりませんでした。</p>
+				<p className="text-muted-foreground">{tList("empty")}</p>
 			</div>
 		);
 	}
