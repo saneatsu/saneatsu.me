@@ -25,6 +25,10 @@ export default defineConfig({
 			"**/*.bak/**",
 		],
 		css: true,
+		coverage: {
+			reporter: ["text", "json-summary", "json", "html"],
+			reportsDirectory: "./coverage",
+		},
 	},
 	resolve: {
 		alias: {
