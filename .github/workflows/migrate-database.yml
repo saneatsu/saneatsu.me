@@ -123,22 +123,3 @@ jobs:
         run: |
           echo "::error::Failed to apply database migrations to ${{ needs.set-environment.outputs.environment }}"
           exit 1
-
-  # PRの場合、マイグレーション適用完了をコメントで通知
-  comment-migration:
-    needs: [set-environment, migrate-database]
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    steps:
-      - name: Comment migration status
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const environment = '${{ needs.set-environment.outputs.environment }}';
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `🗄️ **Database Migrations Applied!**\n\n✅ Migrations have been successfully applied to the **${environment}** database.\n\n*Environment: ${environment}*`
-            });
