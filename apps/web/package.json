@@ -104,7 +104,7 @@
 		"storybook": "^9.0.18",
 		"tailwindcss-animate": "^1.0.7",
 		"typescript": "^5.8.3",
-		"vitest": "^1.6.1"
+		"vitest": "^3.2.4"
 	},
 	"msw": {
 		"workerDirectory": [
