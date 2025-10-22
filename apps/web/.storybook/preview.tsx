@@ -3,6 +3,7 @@ import type { Preview } from "@storybook/nextjs";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { initialize, mswLoader } from "msw-storybook-addon";
 import { NextIntlClientProvider } from "next-intl";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 import "../src/app/globals.css";
 
@@ -31,11 +32,13 @@ const preview: Preview = {
 	},
 	decorators: [
 		(Story) => (
-			<QueryClientProvider client={queryClient}>
-				<NextIntlClientProvider locale="ja" messages={jaMessages}>
-					<Story />
-				</NextIntlClientProvider>
-			</QueryClientProvider>
+			<NuqsAdapter>
+				<QueryClientProvider client={queryClient}>
+					<NextIntlClientProvider locale="ja" messages={jaMessages}>
+						<Story />
+					</NextIntlClientProvider>
+				</QueryClientProvider>
+			</NuqsAdapter>
 		),
 	],
 	// MSWローダーを追加
