@@ -4,17 +4,18 @@ import { FileText, Hash } from "lucide-react";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
 
-import type { SuggestionItem } from "@/entities/article";
-// FIXME: こうしないとStorybookで以下エラーが発生する
-// Cannot access 'ArticleSuggestionsPopover' before initialization という
-import { useArticleSuggestions } from "@/entities/article/api/use-suggestions/use-suggestions";
 import {
 	Command,
 	CommandEmpty,
 	CommandGroup,
 	CommandItem,
 	CommandList,
-} from "@/shared/ui/command/command";
+} from "@/shared/ui";
+
+import {
+	type SuggestionItem,
+	useArticleSuggestions,
+} from "../../api/use-suggestions/use-suggestions";
 
 /**
  * サジェストポップアップのプロパティ
