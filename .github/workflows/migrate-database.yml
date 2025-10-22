@@ -110,8 +110,12 @@ jobs:
           TURSO_AUTH_TOKEN: ${{ needs.set-environment.outputs.environment == 'production' && secrets.TURSO_AUTH_TOKEN_PROD || secrets.TURSO_AUTH_TOKEN_PREVIEW }}
         run: |
           echo "🚀 Applying migrations to ${{ needs.set-environment.outputs.environment }} database..."
-          pnpm --filter @saneatsu/db db:push --verbose
-          echo "✅ Migrations applied successfully!"
+          if pnpm --filter @saneatsu/db db:push --verbose; then
+            echo "✅ Migrations applied successfully!"
+          else
+            echo "❌ Failed to apply migrations"
+            exit 1
+          fi
 
       - name: Report success
         if: success()
