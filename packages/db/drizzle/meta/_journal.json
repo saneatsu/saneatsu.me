@@ -15,6 +15,13 @@
 			"when": 1753708302699,
 			"tag": "0001_whole_marvel_boy",
 			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "6",
+			"when": 1761124097314,
+			"tag": "0002_add_daily_article_views",
+			"breakpoints": true
 		}
 	]
 }

@@ -16,6 +16,7 @@ export {
 	articles,
 	articleTags,
 	articleTranslations,
+	dailyArticleViews,
 	tags,
 	tagTranslations,
 	users,
