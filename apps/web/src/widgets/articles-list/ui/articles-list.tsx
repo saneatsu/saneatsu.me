@@ -112,9 +112,10 @@ export function ArticlesList({ limit }: ArticlesListProps) {
 				<div className="text-center mt-8">
 					<a
 						href="/articles"
-						className="text-primary hover:text-primary/80 underline font-medium"
+						className="text-primary hover:text-primary/80 underline font-medium inline-flex items-center gap-1"
 					>
-						{t("viewAllArticles")} →
+						{t("viewAllArticles")}
+						<ChevronRight className="h-4 w-4" />
 					</a>
 				</div>
 			)}
