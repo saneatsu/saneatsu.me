@@ -31,7 +31,7 @@ jobs:
 
       # Vitestテストを実行（カバレッジ含む）
       - name: Run Vitest tests with coverage
-        run: pnpm test -- --coverage
+        run: pnpm test -- -- --coverage
 
       - name: Copy coverage files to root directory
         run: |
