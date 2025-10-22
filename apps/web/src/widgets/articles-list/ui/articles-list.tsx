@@ -1,8 +1,11 @@
 "use client";
 
-import { useLocale } from "next-intl";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import { parseAsInteger, useQueryState } from "nuqs";
 
 import { ArticleCard, useGetAllArticles } from "@/entities/article";
+import { Button } from "@/shared/ui";
 
 interface ArticlesListProps {
 	/** 表示する記事の数（省略時は全て表示） */
@@ -18,6 +21,8 @@ interface ArticlesListProps {
  */
 export function ArticlesList({ limit }: ArticlesListProps) {
 	const locale = useLocale();
+	const t = useTranslations("pagination");
+	const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
 
 	const {
 		data: articlesResponse,
@@ -25,8 +30,9 @@ export function ArticlesList({ limit }: ArticlesListProps) {
 		error,
 		refetch,
 	} = useGetAllArticles({
+		page: limit ? 1 : page, // limitが指定されている場合は常に1ページ目
 		language: locale as "ja" | "en",
-		limit: limit || 10,
+		limit: limit || 24,
 		status: ["published"],
 		sortBy: "updatedAt",
 		sortOrder: "desc",
@@ -75,6 +81,24 @@ export function ArticlesList({ limit }: ArticlesListProps) {
 		);
 	}
 
+	const pagination = articlesResponse?.pagination;
+	const hasPrevPage = pagination && pagination.page > 1;
+	const hasNextPage = pagination && pagination.page < pagination.totalPages;
+
+	const handlePrevPage = () => {
+		if (hasPrevPage) {
+			setPage(page - 1);
+			window.scrollTo({ top: 0, behavior: "smooth" });
+		}
+	};
+
+	const handleNextPage = () => {
+		if (hasNextPage) {
+			setPage(page + 1);
+			window.scrollTo({ top: 0, behavior: "smooth" });
+		}
+	};
+
 	return (
 		<div className="space-y-6">
 			<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -83,14 +107,43 @@ export function ArticlesList({ limit }: ArticlesListProps) {
 				))}
 			</div>
 
+			{/* トップページなど（limitが指定されている場合）は「すべての記事を見る」リンクを表示 */}
 			{limit && articles.length >= limit && (
 				<div className="text-center mt-8">
 					<a
 						href="/articles"
 						className="text-primary hover:text-primary/80 underline font-medium"
 					>
-						すべての記事を見る →
+						{t("viewAllArticles")} →
 					</a>
+				</div>
+			)}
+
+			{/* /articlesページ（limitが指定されていない場合）はページネーションを表示 */}
+			{!limit && pagination && pagination.totalPages > 1 && (
+				<div className="flex items-center justify-center gap-4 mt-8">
+					<Button
+						variant="outline"
+						onClick={handlePrevPage}
+						disabled={!hasPrevPage}
+					>
+						<ChevronLeft className="h-4 w-4 mr-1" />
+						{t("previous")}
+					</Button>
+					<span className="text-sm text-muted-foreground">
+						{t("pageIndicator", {
+							page: pagination.page,
+							totalPages: pagination.totalPages,
+						})}
+					</span>
+					<Button
+						variant="outline"
+						onClick={handleNextPage}
+						disabled={!hasNextPage}
+					>
+						{t("next")}
+						<ChevronRight className="h-4 w-4 ml-1" />
+					</Button>
 				</div>
 			)}
 		</div>
