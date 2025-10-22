@@ -97,13 +97,22 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Debug environment variables
+        env:
+          TURSO_DATABASE_URL: ${{ needs.set-environment.outputs.environment == 'production' && secrets.TURSO_DATABASE_URL_PROD || secrets.TURSO_DATABASE_URL_PREVIEW }}
+          TURSO_AUTH_TOKEN: ${{ needs.set-environment.outputs.environment == 'production' && secrets.TURSO_AUTH_TOKEN_PROD || secrets.TURSO_AUTH_TOKEN_PREVIEW }}
+        run: |
+          echo "Environment: ${{ needs.set-environment.outputs.environment }}"
+          echo "TURSO_DATABASE_URL is set: $([[ -n "$TURSO_DATABASE_URL" ]] && echo "yes" || echo "no")"
+          echo "TURSO_AUTH_TOKEN is set: $([[ -n "$TURSO_AUTH_TOKEN" ]] && echo "yes" || echo "no")"
+
       - name: Apply migrations to ${{ needs.set-environment.outputs.environment }} database
         env:
           TURSO_DATABASE_URL: ${{ needs.set-environment.outputs.environment == 'production' && secrets.TURSO_DATABASE_URL_PROD || secrets.TURSO_DATABASE_URL_PREVIEW }}
           TURSO_AUTH_TOKEN: ${{ needs.set-environment.outputs.environment == 'production' && secrets.TURSO_AUTH_TOKEN_PROD || secrets.TURSO_AUTH_TOKEN_PREVIEW }}
         run: |
           echo "🚀 Applying migrations to ${{ needs.set-environment.outputs.environment }} database..."
-          pnpm --filter @saneatsu/db db:push
+          pnpm --filter @saneatsu/db db:push --verbose
           echo "✅ Migrations applied successfully!"
 
       - name: Report success
