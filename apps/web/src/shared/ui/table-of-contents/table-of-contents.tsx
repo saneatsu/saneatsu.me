@@ -120,37 +120,36 @@ export function TableOfContents({
 		};
 	}, [headings]);
 
-	// headingsが空の場合は何も表示しない
-	if (headings.length === 0) {
-		return null;
-	}
-
 	const flatHeadings = flattenHeadings(headings);
 
 	return (
 		<nav className={cn("space-y-2", className)}>
 			<h3 className="font-semibold text-sm text-foreground mb-3">{title}</h3>
-			<ul className="space-y-1">
-				{flatHeadings.map((heading) => (
-					<li key={heading.id}>
-						<button
-							type="button"
-							onClick={() => handleClick(heading.id)}
-							className={cn(
-								"block w-full text-left text-sm transition-colors hover:text-foreground cursor-pointer",
-								// インデントをレベルに応じて調整
-								getIndentClass(heading.level),
-								// アクティブな項目をハイライト
-								currentActiveId === heading.id
-									? "text-foreground font-medium"
-									: "text-muted-foreground"
-							)}
-						>
-							{heading.text}
-						</button>
-					</li>
-				))}
-			</ul>
+			{headings.length === 0 ? (
+				<p className="text-sm text-muted-foreground">見出しなし</p>
+			) : (
+				<ul className="space-y-1">
+					{flatHeadings.map((heading) => (
+						<li key={heading.id}>
+							<button
+								type="button"
+								onClick={() => handleClick(heading.id)}
+								className={cn(
+									"block w-full text-left text-sm transition-colors hover:text-foreground cursor-pointer",
+									// インデントをレベルに応じて調整
+									getIndentClass(heading.level),
+									// アクティブな項目をハイライト
+									currentActiveId === heading.id
+										? "text-foreground font-medium"
+										: "text-muted-foreground"
+								)}
+							>
+								{heading.text}
+							</button>
+						</li>
+					))}
+				</ul>
+			)}
 		</nav>
 	);
 }
