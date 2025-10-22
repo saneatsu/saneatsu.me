@@ -5,6 +5,8 @@ export default defineConfig({
 		globals: true,
 		// Node.js環境を使用（データベーステスト用）
 		environment: "node",
+		// setupFilesを無効化（ルート設定を上書き）
+		setupFiles: [],
 		include: ["**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts}"],
 		exclude: [
 			"node_modules",
