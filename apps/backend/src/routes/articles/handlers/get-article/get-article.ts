@@ -64,7 +64,7 @@ export const getArticle: Handler = async (c) => {
 				updatedAt: articles.updatedAt,
 				title: articleTranslations.title,
 				content: articleTranslations.content,
-				viewCount: sql<number>`COALESCE(${articleTranslations.viewCount}, 0)`,
+				viewCount: articles.viewCount,
 				translationId: articleTranslations.id,
 			})
 			.from(articles)
@@ -128,13 +128,13 @@ export const getArticle: Handler = async (c) => {
 					},
 				});
 
-			// 既存の総閲覧数も更新（互換性のため維持）
+			// 記事全体の閲覧数を更新
 			await db
-				.update(articleTranslations)
+				.update(articles)
 				.set({
-					viewCount: sql`${articleTranslations.viewCount} + 1`,
+					viewCount: sql`${articles.viewCount} + 1`,
 				})
-				.where(eq(articleTranslations.id, articleData.translationId));
+				.where(eq(articles.id, articleData.id));
 
 			// レスポンス用に更新後の値を設定
 			articleData.viewCount = (articleData.viewCount || 0) + 1;
