@@ -27,6 +27,8 @@ export {
 	type NestedHeading,
 	slugify,
 } from "./extract-headings";
+// Format Date
+export { convertIsoToDatetimeLocal } from "./format-date/format-date";
 // Hono Hook
 export { type HonoClient, useHonoClient } from "./hono/use-client";
 // Hono Client

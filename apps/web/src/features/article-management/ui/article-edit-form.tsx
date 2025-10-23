@@ -9,7 +9,7 @@ import { z } from "zod";
 import { useCheckSlug, useUpdate } from "@/entities/article";
 import { useGetAllTags } from "@/entities/tag";
 import { ArticleMarkdownEditor } from "@/features/article-editor";
-import { useDebounce } from "@/shared/lib";
+import { convertIsoToDatetimeLocal, useDebounce } from "@/shared/lib";
 import {
 	Button,
 	Input,
@@ -103,7 +103,7 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 			slug: article.slug || "",
 			content: article.content || "",
 			status: article.status as "draft" | "published" | "archived",
-			publishedAt: article.publishedAt || undefined,
+			publishedAt: convertIsoToDatetimeLocal(article.publishedAt),
 		},
 	});
 
