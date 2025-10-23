@@ -1,5 +1,5 @@
 import type { RouteHandler } from "@hono/zod-openapi";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 import { getDatabase } from "@/lib/database";
 import type { updateStatusRoute } from "./update-status.openapi";
@@ -111,7 +111,7 @@ export const updateStatus: Handler = async (c) => {
 				updatedAt: articles.updatedAt,
 				title: articleTranslations.title,
 				content: articleTranslations.content,
-				viewCount: sql<number>`COALESCE(${articleTranslations.viewCount}, 0)`,
+				viewCount: articles.viewCount,
 			})
 			.from(articles)
 			.leftJoin(

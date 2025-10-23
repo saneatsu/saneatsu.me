@@ -302,7 +302,7 @@ app.openapi(getDashboardStatsRoute, async (c) => {
 				id: articles.id,
 				slug: articles.slug,
 				title: articleTranslations.title,
-				viewCount: articleTranslations.viewCount,
+				viewCount: articles.viewCount,
 				publishedAt: articles.publishedAt,
 			})
 			.from(articles)
@@ -316,7 +316,7 @@ app.openapi(getDashboardStatsRoute, async (c) => {
 					eq(articles.status, "published")
 				)
 			)
-			.orderBy(desc(articleTranslations.viewCount))
+			.orderBy(desc(articles.viewCount))
 			.limit(10);
 
 		// 4. 時系列統計（記事作成数と日別閲覧数）
@@ -498,7 +498,7 @@ app.openapi(getDashboardOverviewRoute, async (c) => {
 				id: articles.id,
 				slug: articles.slug,
 				title: articleTranslations.title,
-				viewCount: articleTranslations.viewCount,
+				viewCount: articles.viewCount,
 				publishedAt: articles.publishedAt,
 			})
 			.from(articles)
@@ -512,7 +512,7 @@ app.openapi(getDashboardOverviewRoute, async (c) => {
 					eq(articles.status, "published")
 				)
 			)
-			.orderBy(desc(articleTranslations.viewCount))
+			.orderBy(desc(articles.viewCount))
 			.limit(5);
 
 		// 4. 最近の活動（簡易版：最近作成された記事）
