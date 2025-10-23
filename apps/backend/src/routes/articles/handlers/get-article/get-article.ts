@@ -2,18 +2,10 @@ import type { RouteHandler } from "@hono/zod-openapi";
 import { and, eq, sql } from "drizzle-orm";
 
 import { getDatabase } from "@/lib/database";
+import type { Env } from "@/types/env";
 import { convertWikiLinks } from "@/utils/wiki-link/wiki-link";
 
 import type { getArticleRoute } from "./get-article.openapi";
-
-/**
- * Cloudflare Workers環境の型定義
- */
-type Env = {
-	TURSO_DATABASE_URL: string;
-	TURSO_AUTH_TOKEN: string;
-	GEMINI_API_KEY?: string;
-};
 
 type Handler = RouteHandler<typeof getArticleRoute, { Bindings: Env }>;
 

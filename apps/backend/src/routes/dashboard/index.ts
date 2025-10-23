@@ -1,20 +1,13 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 
+import type { Env } from "@/types/env";
+
 import { getDashboardOverview } from "./handlers/get-overview/get-overview";
 import { getDashboardOverviewRoute } from "./handlers/get-overview/get-overview.openapi";
 import { getDashboardStats } from "./handlers/get-stats/get-stats";
 import { getDashboardStatsRoute } from "./handlers/get-stats/get-stats.openapi";
 import { getViewsTrend } from "./handlers/get-views-trend/get-views-trend";
 import { getViewsTrendRoute } from "./handlers/get-views-trend/get-views-trend.openapi";
-
-/**
- * Cloudflare Workers環境の型定義
- */
-type Env = {
-	TURSO_DATABASE_URL: string;
-	TURSO_AUTH_TOKEN: string;
-	ENVIRONMENT?: string;
-};
 
 const app = new OpenAPIHono<{ Bindings: Env }>();
 

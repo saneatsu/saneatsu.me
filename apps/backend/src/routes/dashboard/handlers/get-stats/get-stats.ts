@@ -4,17 +4,9 @@ import { dashboardStatsQuerySchema } from "@saneatsu/schemas";
 import { and, count, desc, eq, gte, sql } from "drizzle-orm";
 
 import { getDatabase } from "@/lib/database";
+import type { Env } from "@/types/env";
 
 import type { getDashboardStatsRoute } from "./get-stats.openapi";
-
-/**
- * Cloudflare Workers環境の型定義
- */
-type Env = {
-	TURSO_DATABASE_URL: string;
-	TURSO_AUTH_TOKEN: string;
-	ENVIRONMENT?: string;
-};
 
 type Handler = RouteHandler<typeof getDashboardStatsRoute, { Bindings: Env }>;
 

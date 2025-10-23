@@ -2,15 +2,9 @@ import type { RouteHandler } from "@hono/zod-openapi";
 import { desc, eq, inArray, sql } from "drizzle-orm";
 
 import { getDatabase } from "@/lib/database";
-import type { getAllTagsRoute } from "./get-all-tags.openapi";
+import type { Env } from "@/types/env";
 
-/**
- * Cloudflare Workers環境の型定義
- */
-type Env = {
-	TURSO_DATABASE_URL: string;
-	TURSO_AUTH_TOKEN: string;
-};
+import type { getAllTagsRoute } from "./get-all-tags.openapi";
 
 type Handler = RouteHandler<typeof getAllTagsRoute, { Bindings: Env }>;
 
