@@ -295,6 +295,7 @@ function Calendar({
 	return (
 		<DayPicker
 			showOutsideDays={showOutsideDays}
+			weekStartsOn={1}
 			className={cn("p-3", className)}
 			classNames={{
 				months:
@@ -732,6 +733,7 @@ const DateTimePicker = React.forwardRef<
 	(
 		{
 			locale = ja,
+			weekStartsOn = 1,
 			defaultPopupValue = new Date(new Date().setHours(0, 0, 0, 0)),
 			value,
 			onChange,
@@ -863,6 +865,7 @@ const DateTimePicker = React.forwardRef<
 				<PopoverContent className="w-auto p-0" align="start">
 					<Calendar
 						mode="single"
+						weekStartsOn={weekStartsOn}
 						selected={displayDate}
 						month={month}
 						onSelect={(newDate) => {
