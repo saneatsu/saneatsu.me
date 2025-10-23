@@ -40,6 +40,7 @@ export const getArticle: Handler = async (c) => {
 			articles,
 			articleTags,
 			articleTranslations,
+			dailyArticleViews,
 			tagTranslations,
 			tags,
 		} = await getDatabase();
@@ -111,6 +112,23 @@ export const getArticle: Handler = async (c) => {
 
 		// 7. 閲覧数をインクリメント（未ログインの場合のみ）
 		if (articleData.translationId && !isLoggedIn) {
+			const today = new Date().toISOString().split("T")[0]; // 'YYYY-MM-DD'
+
+			// 日別閲覧数テーブルに記録（UPSERT）
+			await db
+				.insert(dailyArticleViews)
+				.values({
+					date: today,
+					viewCount: 1,
+				})
+				.onConflictDoUpdate({
+					target: dailyArticleViews.date,
+					set: {
+						viewCount: sql`${dailyArticleViews.viewCount} + 1`,
+					},
+				});
+
+			// 既存の総閲覧数も更新（互換性のため維持）
 			await db
 				.update(articleTranslations)
 				.set({

@@ -12,6 +12,7 @@ vi.mock("@saneatsu/db/worker", () => ({
 	tags: {},
 	tagTranslations: {},
 	users: {},
+	dailyArticleViews: {},
 	createDatabaseClient: vi.fn(),
 }));
 
@@ -22,6 +23,7 @@ vi.mock("@saneatsu/db", () => ({
 	tags: {},
 	tagTranslations: {},
 	users: {},
+	dailyArticleViews: {},
 	createDatabaseClient: vi.fn(),
 }));
 
@@ -119,6 +121,13 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 				}),
 			}),
 		};
+
+		// 日別閲覧数インサートのモック（UPSERT）
+		mockDb.insert = vi.fn().mockReturnValue({
+			values: vi.fn().mockReturnValue({
+				onConflictDoUpdate: vi.fn().mockResolvedValue({}),
+			}),
+		});
 
 		// ビューカウント更新のモック
 		mockDb.update = vi.fn().mockReturnValue({
@@ -275,6 +284,13 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 				}),
 			}),
 		};
+
+		// 日別閲覧数インサートのモック（UPSERT）
+		mockDb.insert = vi.fn().mockReturnValue({
+			values: vi.fn().mockReturnValue({
+				onConflictDoUpdate: vi.fn().mockResolvedValue({}),
+			}),
+		});
 
 		// ビューカウント更新のモック
 		mockDb.update = vi.fn().mockReturnValue({
@@ -500,6 +516,13 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 				}),
 			}),
 		};
+
+		// 日別閲覧数インサートのモック（UPSERT）
+		mockDb.insert = vi.fn().mockReturnValue({
+			values: vi.fn().mockReturnValue({
+				onConflictDoUpdate: vi.fn().mockResolvedValue({}),
+			}),
+		});
 
 		// Update関数のモック（view_countインクリメント用）
 		const updateMock = {

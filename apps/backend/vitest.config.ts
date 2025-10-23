@@ -13,6 +13,10 @@ export default defineConfig({
 		// 以下の書き方は使用しないこと
 		// setupFiles: ["./vitest.setup.ts"],
 		setupFiles: [path.resolve(__dirname, "./vitest.setup.ts")],
+		coverage: {
+			reporter: ["text", "json-summary", "json", "html"],
+			reportsDirectory: "./coverage",
+		},
 	},
 	resolve: {
 		alias: {

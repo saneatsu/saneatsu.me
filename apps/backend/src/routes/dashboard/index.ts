@@ -227,8 +227,12 @@ const getDashboardOverviewRoute = createRoute({
 app.openapi(getDashboardStatsRoute, async (c) => {
 	try {
 		// DBクライアントを作成（環境に応じて適切なクライアントを使用）
-		const { createDatabaseClient, articles, articleTranslations } =
-			await getDatabase();
+		const {
+			createDatabaseClient,
+			articles,
+			articleTranslations,
+			dailyArticleViews,
+		} = await getDatabase();
 		const db = createDatabaseClient(c.env);
 
 		const query = c.req.valid("query");
@@ -238,6 +242,7 @@ app.openapi(getDashboardStatsRoute, async (c) => {
 		// 現在日時と期間の計算
 		const now = new Date();
 		const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+		const startOfMonthStr = startOfMonth.toISOString().split("T")[0];
 		const timeRangeStart = new Date(now);
 		timeRangeStart.setDate(now.getDate() - timeRange);
 
@@ -282,8 +287,13 @@ app.openapi(getDashboardStatsRoute, async (c) => {
 				.select({ totalViews: sql`COALESCE(SUM(view_count), 0)` })
 				.from(articleTranslations)
 				.where(eq(articleTranslations.language, language)),
-			// 今月の閲覧数（複雑なクエリのため、とりあえず0で代用）
-			Promise.resolve([{ thisMonthViews: 0 }]),
+			// 今月の閲覧数（daily_article_viewsから集計）
+			db
+				.select({
+					thisMonthViews: sql`COALESCE(SUM(view_count), 0)`,
+				})
+				.from(dailyArticleViews)
+				.where(gte(dailyArticleViews.date, startOfMonthStr)),
 		]);
 
 		// 2. 人気記事トップ10の取得
@@ -309,17 +319,83 @@ app.openapi(getDashboardStatsRoute, async (c) => {
 			.orderBy(desc(articleTranslations.viewCount))
 			.limit(10);
 
-		// 4. 時系列統計（簡易版：過去30日間の記事作成数）
-		const dailyStatsResult = await db
+		// 4. 時系列統計（記事作成数と日別閲覧数）
+		const timeRangeStartStr = timeRangeStart.toISOString().split("T")[0];
+		const nowStr = now.toISOString().split("T")[0];
+
+		// 記事作成数を取得
+		const articlesCreatedResult = await db
 			.select({
 				date: sql`DATE(created_at)`.as("date"),
 				articlesCreated: count(),
-				views: sql`0`.as("views"), // 簡易版：閲覧数は0で固定
 			})
 			.from(articles)
 			.where(gte(articles.createdAt, timeRangeStart.toISOString()))
 			.groupBy(sql`DATE(created_at)`)
 			.orderBy(sql`DATE(created_at)`);
+
+		// 日別閲覧数を取得
+		const dailyViewsResult = await db
+			.select({
+				date: dailyArticleViews.date,
+				views: dailyArticleViews.viewCount,
+			})
+			.from(dailyArticleViews)
+			.where(
+				and(
+					gte(dailyArticleViews.date, timeRangeStartStr),
+					sql`${dailyArticleViews.date} <= ${nowStr}`
+				)
+			)
+			.orderBy(dailyArticleViews.date);
+
+		// データを統合（日付ごとにマージ）
+		const dateMap = new Map<
+			string,
+			{ articlesCreated: number; views: number }
+		>();
+
+		// 記事作成数を追加
+		for (const row of articlesCreatedResult) {
+			const dateStr = row.date as string;
+			dateMap.set(dateStr, {
+				articlesCreated: row.articlesCreated,
+				views: 0,
+			});
+		}
+
+		// 閲覧数を追加
+		for (const row of dailyViewsResult) {
+			const existing = dateMap.get(row.date);
+			if (existing) {
+				existing.views = row.views;
+			} else {
+				dateMap.set(row.date, {
+					articlesCreated: 0,
+					views: row.views,
+				});
+			}
+		}
+
+		// 完全な日付範囲のデータを生成
+		const dailyStatsResult: Array<{
+			date: string;
+			articlesCreated: number;
+			views: number;
+		}> = [];
+		const currentDate = new Date(timeRangeStart);
+		const endDate = new Date(now);
+
+		while (currentDate <= endDate) {
+			const dateStr = currentDate.toISOString().split("T")[0];
+			const data = dateMap.get(dateStr);
+			dailyStatsResult.push({
+				date: dateStr,
+				articlesCreated: data?.articlesCreated || 0,
+				views: data?.views || 0,
+			});
+			currentDate.setDate(currentDate.getDate() + 1);
+		}
 
 		// レスポンスデータの構築
 		const response: DashboardStatsResponse = {
@@ -330,7 +406,7 @@ app.openapi(getDashboardStatsRoute, async (c) => {
 				archivedArticles: archivedArticlesResult[0]?.count || 0,
 				thisMonthArticles: thisMonthArticlesResult[0]?.count || 0,
 				totalViews: Number(totalViewsResult[0]?.totalViews) || 0,
-				thisMonthViews: thisMonthViewsResult[0]?.thisMonthViews || 0,
+				thisMonthViews: Number(thisMonthViewsResult[0]?.thisMonthViews) || 0,
 			},
 			popularArticles: {
 				articles: popularArticlesResult.map((article) => ({
@@ -362,8 +438,12 @@ app.openapi(getDashboardStatsRoute, async (c) => {
 app.openapi(getDashboardOverviewRoute, async (c) => {
 	try {
 		// DBクライアントを作成（環境に応じて適切なクライアントを使用）
-		const { createDatabaseClient, articles, articleTranslations } =
-			await getDatabase();
+		const {
+			createDatabaseClient,
+			articles,
+			articleTranslations,
+			dailyArticleViews,
+		} = await getDatabase();
 		const db = createDatabaseClient(c.env);
 
 		const query = c.req.valid("query");
@@ -371,6 +451,8 @@ app.openapi(getDashboardOverviewRoute, async (c) => {
 
 		// 現在日時
 		const now = new Date();
+		const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+		const startOfMonthStr = startOfMonth.toISOString().split("T")[0];
 
 		// 1. 記事統計の取得（概要版）
 		const [
@@ -394,11 +476,21 @@ app.openapi(getDashboardOverviewRoute, async (c) => {
 				.where(eq(articles.status, "archived")),
 		]);
 
-		// 総閲覧数
-		const totalViewsResult = await db
-			.select({ totalViews: sql`COALESCE(SUM(view_count), 0)` })
-			.from(articleTranslations)
-			.where(eq(articleTranslations.language, language));
+		// 閲覧数統計
+		const [totalViewsResult, thisMonthViewsResult] = await Promise.all([
+			// 総閲覧数
+			db
+				.select({ totalViews: sql`COALESCE(SUM(view_count), 0)` })
+				.from(articleTranslations)
+				.where(eq(articleTranslations.language, language)),
+			// 今月の閲覧数
+			db
+				.select({
+					thisMonthViews: sql`COALESCE(SUM(view_count), 0)`,
+				})
+				.from(dailyArticleViews)
+				.where(gte(dailyArticleViews.date, startOfMonthStr)),
+		]);
 
 		// 2. 人気記事トップ5
 		const topArticlesResult = await db
@@ -451,7 +543,7 @@ app.openapi(getDashboardOverviewRoute, async (c) => {
 				archivedArticles: archivedArticlesResult[0]?.count || 0,
 				thisMonthArticles: 0, // 概要版では省略
 				totalViews: Number(totalViewsResult[0]?.totalViews) || 0,
-				thisMonthViews: 0, // 概要版では省略
+				thisMonthViews: Number(thisMonthViewsResult[0]?.thisMonthViews) || 0,
 			},
 			topArticles: {
 				articles: topArticlesResult.map((article) => ({
@@ -525,18 +617,13 @@ const getViewsTrendRoute = createRoute({
 // @ts-ignore - OpenAPIの型推論エラーを一時的に回避
 app.openapi(getViewsTrendRoute, async (c) => {
 	try {
-		// DBクライアントを作成（環境に応じて適切なクライアントを使用）
-		const { createDatabaseClient, articles, articleTranslations } =
-			await getDatabase();
+		// DBクライアントを作成
+		const { createDatabaseClient, dailyArticleViews } = await getDatabase();
 		const db = createDatabaseClient(c.env);
 
 		const query = c.req.valid("query");
 		const validated = viewsTrendQuerySchema.parse(query);
-		const { language, days } = validated;
-
-		// 環境判定（preview, productionは本番扱い）
-		const isProduction =
-			c.env.ENVIRONMENT === "production" || c.env.ENVIRONMENT === "preview";
+		const { days } = validated;
 
 		// 現在日時と開始日の計算
 		const now = new Date();
@@ -547,162 +634,31 @@ app.openapi(getViewsTrendRoute, async (c) => {
 		startDate.setDate(now.getDate() - days + 1);
 		startDate.setHours(0, 0, 0, 0);
 
-		// 公開済み記事とその閲覧数を取得（記事IDも取得）
-		const articlesWithViews = await db
+		const startDateStr = startDate.toISOString().split("T")[0];
+		const endDateStr = endDate.toISOString().split("T")[0];
+
+		// 期間内の日別閲覧数を取得
+		const dailyViewsResult = await db
 			.select({
-				id: articles.id,
-				publishedAt: articles.publishedAt,
-				viewCount: articleTranslations.viewCount,
+				date: dailyArticleViews.date,
+				viewCount: dailyArticleViews.viewCount,
 			})
-			.from(articles)
-			.innerJoin(
-				articleTranslations,
-				and(
-					eq(articles.id, articleTranslations.articleId),
-					eq(articleTranslations.language, language)
-				)
-			)
+			.from(dailyArticleViews)
 			.where(
 				and(
-					eq(articles.status, "published"),
-					sql`${articles.publishedAt} IS NOT NULL`
+					gte(dailyArticleViews.date, startDateStr),
+					sql`${dailyArticleViews.date} <= ${endDateStr}`
 				)
-			);
+			)
+			.orderBy(dailyArticleViews.date);
 
-		// 日別閲覧数マップを初期化
+		// 日別閲覧数をMapに格納
 		const dateMap = new Map<string, number>();
-
-		if (isProduction) {
-			// 本番環境：実データモード
-			// 現在は日別閲覧数テーブルがないため、総閲覧数を期間内に均等分散（暫定対応）
-
-			// 各記事の公開日を考慮した単純な分散
-			for (const article of articlesWithViews) {
-				if (!article.publishedAt || !article.viewCount) continue;
-
-				const publishedDate = new Date(article.publishedAt);
-				const viewCount = Number(article.viewCount);
-
-				// 公開日から現在までの日数
-				const daysSincePublished = Math.floor(
-					(now.getTime() - publishedDate.getTime()) / (1000 * 60 * 60 * 24)
-				);
-				if (daysSincePublished <= 0) continue;
-
-				// 期間内の日数を計算
-				const effectiveStartDate =
-					publishedDate > startDate ? publishedDate : startDate;
-				const daysInPeriod =
-					Math.floor(
-						(endDate.getTime() - effectiveStartDate.getTime()) /
-							(1000 * 60 * 60 * 24)
-					) + 1;
-
-				if (daysInPeriod <= 0) continue;
-
-				// 閲覧数を期間内に均等分散
-				const viewsPerDay = Math.floor(viewCount / Math.max(daysInPeriod, 1));
-				const remainder = viewCount % daysInPeriod;
-
-				const distributionDate = new Date(effectiveStartDate);
-				for (let i = 0; i < daysInPeriod && distributionDate <= endDate; i++) {
-					const dateStr = distributionDate.toISOString().split("T")[0];
-					const dailyViews = viewsPerDay + (i < remainder ? 1 : 0);
-
-					const currentViews = dateMap.get(dateStr) || 0;
-					dateMap.set(dateStr, currentViews + dailyViews);
-
-					distributionDate.setDate(distributionDate.getDate() + 1);
-				}
-			}
-		} else {
-			// 開発環境：改善されたシミュレーションモード
-			for (const article of articlesWithViews) {
-				if (!article.publishedAt || !article.viewCount) continue;
-
-				const articleId = article.id;
-				const publishedDate = new Date(article.publishedAt);
-				const viewCount = Number(article.viewCount);
-
-				// 公開日から現在までの日数を計算
-				const daysSincePublished = Math.floor(
-					(now.getTime() - publishedDate.getTime()) / (1000 * 60 * 60 * 24)
-				);
-				if (daysSincePublished <= 0) continue;
-
-				// 記事IDベースのシード（記事ごとに異なるパターン）
-				let randomSeed = articleId * 7919; // 記事IDで初期化
-				const seededRandom = () => {
-					randomSeed = (randomSeed * 9301 + 49297) % 233280;
-					return randomSeed / 233280;
-				};
-
-				// 閲覧数を現実的に分散
-				const distributionDate = new Date(publishedDate);
-				let remainingViews = viewCount;
-				const decayFactor = 0.95; // 日々の減衰率
-
-				for (
-					let day = 0;
-					day < daysSincePublished && remainingViews > 0;
-					day++
-				) {
-					const dateStr = distributionDate.toISOString().split("T")[0];
-
-					// 指定期間内の日付のみ処理
-					if (distributionDate >= startDate && distributionDate <= endDate) {
-						let dailyMultiplier = 1;
-
-						// 公開直後のピーク（最初の3日間）
-						if (day === 0) {
-							dailyMultiplier = 2.5 + seededRandom(); // 2.5-3.5倍
-						} else if (day === 1) {
-							dailyMultiplier = 2.0 + seededRandom() * 0.5; // 2.0-2.5倍
-						} else if (day === 2) {
-							dailyMultiplier = 1.5 + seededRandom() * 0.5; // 1.5-2.0倍
-						} else if (day < 7) {
-							// 最初の週は緩やかに減少
-							dailyMultiplier = 1.2 - (day - 3) * 0.1 + seededRandom() * 0.2;
-						} else {
-							// その後は指数関数的に減衰 + ランダム変動
-							dailyMultiplier =
-								decayFactor ** (day / 7) * (0.5 + seededRandom() * 0.5);
-						}
-
-						// 週末効果（土日は平日の70-80%）
-						const dayOfWeek = distributionDate.getDay();
-						if (dayOfWeek === 0 || dayOfWeek === 6) {
-							dailyMultiplier *= 0.7 + seededRandom() * 0.1;
-						}
-
-						// 月曜日は少し増える
-						if (dayOfWeek === 1) {
-							dailyMultiplier *= 1.1;
-						}
-
-						// 基本の1日あたり閲覧数
-						const baseViewsPerDay = viewCount / Math.max(daysSincePublished, 1);
-						const dailyViews = Math.max(
-							1,
-							Math.floor(baseViewsPerDay * dailyMultiplier)
-						);
-
-						// 残り閲覧数を超えないように調整
-						const actualDailyViews = Math.min(dailyViews, remainingViews);
-
-						if (actualDailyViews > 0) {
-							const currentDayViews = dateMap.get(dateStr) || 0;
-							dateMap.set(dateStr, currentDayViews + actualDailyViews);
-							remainingViews -= actualDailyViews;
-						}
-					}
-
-					distributionDate.setDate(distributionDate.getDate() + 1);
-				}
-			}
+		for (const row of dailyViewsResult) {
+			dateMap.set(row.date, row.viewCount);
 		}
 
-		// 完全な日付範囲のデータを生成
+		// 完全な日付範囲のデータを生成（欠けている日付は0で埋める）
 		const data: Array<{ date: string; views: number }> = [];
 		let totalViews = 0;
 		const currentDate = new Date(startDate);
@@ -717,8 +673,8 @@ app.openapi(getViewsTrendRoute, async (c) => {
 
 		const response: ViewsTrendResponse = {
 			data,
-			startDate: startDate.toISOString().split("T")[0],
-			endDate: endDate.toISOString().split("T")[0],
+			startDate: startDateStr,
+			endDate: endDateStr,
 			totalViews,
 			lastUpdated: now.toISOString(),
 		};

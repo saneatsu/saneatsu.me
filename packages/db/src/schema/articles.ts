@@ -1,6 +1,5 @@
 import { sql } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { users } from "./users";
 
 /**
  * 記事テーブル
@@ -13,8 +12,6 @@ export const articles = sqliteTable("articles", {
 	slug: text("slug").notNull().unique(),
 	/** Cloudflare Images ID（サムネイル画像） */
 	cfImageId: text("cf_image_id"),
-	/** 作者のユーザーID（既存記事との互換性のためnullable） */
-	authorId: integer("author_id").references(() => users.id),
 	/** ステータス（published: 公開済み, draft: 下書き, archived: アーカイブ済み） */
 	status: text("status", {
 		enum: ["published", "draft", "archived"],

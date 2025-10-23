@@ -1,1 +1,0 @@
-ALTER TABLE `article_translations` ADD `view_count` integer DEFAULT 0 NOT NULL;

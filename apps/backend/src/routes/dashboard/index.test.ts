@@ -11,6 +11,7 @@ vi.mock("@saneatsu/db/worker", () => ({
 	tags: {},
 	tagTranslations: {},
 	users: {},
+	dailyArticleViews: {},
 	createDatabaseClient: vi.fn(),
 }));
 
@@ -21,6 +22,7 @@ vi.mock("@saneatsu/db", () => ({
 	tags: {},
 	tagTranslations: {},
 	users: {},
+	dailyArticleViews: {},
 	createDatabaseClient: vi.fn(),
 }));
 
@@ -67,6 +69,13 @@ describe("GET /dashboard/overview - ダッシュボード概要取得", () => {
 		const totalViewsMock = {
 			from: vi.fn().mockReturnValue({
 				where: vi.fn().mockResolvedValue([{ totalViews: 5000 }]),
+			}),
+		};
+
+		// 今月の閲覧数のモック
+		const thisMonthViewsMock = {
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockResolvedValue([{ thisMonthViews: 500 }]),
 			}),
 		};
 
@@ -127,6 +136,7 @@ describe("GET /dashboard/overview - ダッシュボード概要取得", () => {
 			.mockReturnValueOnce(draftArticlesCountMock) // 下書き記事数
 			.mockReturnValueOnce(archivedArticlesCountMock) // アーカイブ記事数
 			.mockReturnValueOnce(totalViewsMock) // 総閲覧数
+			.mockReturnValueOnce(thisMonthViewsMock) // 今月の閲覧数
 			.mockReturnValueOnce(topArticlesMock) // 人気記事トップ5
 			.mockReturnValueOnce(recentActivitiesMock); // 最近の活動
 
@@ -201,6 +211,13 @@ describe("GET /dashboard/overview - ダッシュボード概要取得", () => {
 			}),
 		};
 
+		// 今月の閲覧数のモック
+		const thisMonthViewsMock = {
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockResolvedValue([{ thisMonthViews: 1000 }]),
+			}),
+		};
+
 		// 人気記事トップ5のモック（空）
 		const topArticlesMock = {
 			from: vi.fn().mockReturnValue({
@@ -234,6 +251,7 @@ describe("GET /dashboard/overview - ダッシュボード概要取得", () => {
 			.mockReturnValueOnce(draftArticlesCountMock) // 下書き記事数
 			.mockReturnValueOnce(archivedArticlesCountMock) // アーカイブ記事数
 			.mockReturnValueOnce(totalViewsMock) // 総閲覧数
+			.mockReturnValueOnce(thisMonthViewsMock) // 今月の閲覧数
 			.mockReturnValueOnce(topArticlesMock) // 人気記事トップ5
 			.mockReturnValueOnce(recentActivitiesMock); // 最近の活動
 
