@@ -121,7 +121,7 @@ jobs:
           # Check for error patterns in output
           if echo "$OUTPUT" | grep -qE "LibsqlError|SERVER_ERROR|HTTP status 401"; then
             echo "❌ Migration failed: Authentication or connection error detected"
-            echo "::error::Please check Turso credentials (TURSO_AUTH_TOKEN_PREVIEW or TURSO_DATABASE_URL_PREVIEW)"
+            echo "::error::Please check Turso credentials for ${{ needs.set-environment.outputs.environment }} environment (TURSO_AUTH_TOKEN_${{ needs.set-environment.outputs.environment == 'production' && 'PROD' || 'PREVIEW' }} or TURSO_DATABASE_URL_${{ needs.set-environment.outputs.environment == 'production' && 'PROD' || 'PREVIEW' }})"
             exit 1
           fi
 
