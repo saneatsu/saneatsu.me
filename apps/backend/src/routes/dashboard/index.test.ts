@@ -65,11 +65,9 @@ describe("GET /dashboard/overview - ダッシュボード概要取得", () => {
 			}),
 		};
 
-		// 総閲覧数のモック
+		// 総閲覧数のモック（articlesテーブルから取得、言語フィルターなし）
 		const totalViewsMock = {
-			from: vi.fn().mockReturnValue({
-				where: vi.fn().mockResolvedValue([{ totalViews: 5000 }]),
-			}),
+			from: vi.fn().mockResolvedValue([{ totalViews: 5000 }]),
 		};
 
 		// 今月の閲覧数のモック
@@ -204,11 +202,9 @@ describe("GET /dashboard/overview - ダッシュボード概要取得", () => {
 			}),
 		};
 
-		// 総閲覧数のモック
+		// 総閲覧数のモック（articlesテーブルから取得、言語フィルターなし）
 		const totalViewsMock = {
-			from: vi.fn().mockReturnValue({
-				where: vi.fn().mockResolvedValue([{ totalViews: 10000 }]),
-			}),
+			from: vi.fn().mockResolvedValue([{ totalViews: 10000 }]),
 		};
 
 		// 今月の閲覧数のモック
