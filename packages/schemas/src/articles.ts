@@ -26,7 +26,6 @@ export const articleTranslationSchema = z.object({
 		.max(50000, i18nMessage("validation.custom.article.contentTooLong")),
 	language: languageSchema,
 	articleId: idSchema,
-	viewCount: z.number().int().min(0).default(0),
 });
 
 /** 記事翻訳作成時の入力スキーマ */
@@ -46,6 +45,7 @@ export const articleSchema = z.object({
 	cfImageId: cloudflareImageIdSchema,
 	status: articleStatusSchema,
 	publishedAt: z.string().datetime().nullable(),
+	viewCount: z.number().int().min(0).default(0),
 	createdAt: dateTimeSchema,
 	updatedAt: dateTimeSchema,
 });
