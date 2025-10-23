@@ -110,12 +110,28 @@ jobs:
           TURSO_AUTH_TOKEN: ${{ needs.set-environment.outputs.environment == 'production' && secrets.TURSO_AUTH_TOKEN_PROD || secrets.TURSO_AUTH_TOKEN_PREVIEW }}
         run: |
           echo "🚀 Applying migrations to ${{ needs.set-environment.outputs.environment }} database..."
-          if pnpm --filter @saneatsu/db db:push --verbose; then
-            echo "✅ Migrations applied successfully!"
-          else
-            echo "❌ Failed to apply migrations"
+
+          # Run drizzle-kit push and capture output
+          OUTPUT=$(pnpm --filter @saneatsu/db db:push --verbose 2>&1)
+          EXIT_CODE=$?
+
+          # Display the output
+          echo "$OUTPUT"
+
+          # Check for error patterns in output
+          if echo "$OUTPUT" | grep -qE "LibsqlError|SERVER_ERROR|HTTP status 401"; then
+            echo "❌ Migration failed: Authentication or connection error detected"
+            echo "::error::Please check Turso credentials (TURSO_AUTH_TOKEN_PREVIEW or TURSO_DATABASE_URL_PREVIEW)"
             exit 1
           fi
+
+          # Also check exit code as fallback
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "❌ Migration failed with exit code $EXIT_CODE"
+            exit 1
+          fi
+
+          echo "✅ Migrations applied successfully!"
 
       - name: Report success
         if: success()
