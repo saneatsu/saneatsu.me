@@ -1,7 +1,7 @@
 "use client";
 
 import { add, format } from "date-fns";
-import { enUS, type Locale } from "date-fns/locale";
+import { ja, type Locale } from "date-fns/locale";
 import {
 	Calendar as CalendarIcon,
 	ChevronLeft,
@@ -256,7 +256,7 @@ function Calendar({
 	...props
 }: DayPickerProps & { yearRange?: number }) {
 	const MONTHS = React.useMemo(() => {
-		let locale: Pick<Locale, "options" | "localize" | "formatLong"> = enUS;
+		let locale: Pick<Locale, "options" | "localize" | "formatLong"> = ja;
 		const { options, localize, formatLong } = props.locale || {};
 		if (options && localize && formatLong) {
 			locale = {
@@ -731,7 +731,7 @@ const DateTimePicker = React.forwardRef<
 >(
 	(
 		{
-			locale = enUS,
+			locale = ja,
 			defaultPopupValue = new Date(new Date().setHours(0, 0, 0, 0)),
 			value,
 			onChange,
@@ -821,11 +821,11 @@ const DateTimePicker = React.forwardRef<
 				`PP hh:mm${!granularity || granularity === "second" ? ":ss" : ""} b`,
 		};
 
-		let loc = enUS;
+		let loc = ja;
 		const { options, localize, formatLong } = locale;
 		if (options && localize && formatLong) {
 			loc = {
-				...enUS,
+				...ja,
 				options,
 				localize,
 				formatLong,
