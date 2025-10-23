@@ -1,7 +1,7 @@
 {
 	"version": "6",
 	"dialect": "sqlite",
-	"id": "83ec1ba0-437c-47d4-b6a3-c43487ef7bbb",
+	"id": "5f622340-000f-4a3c-8494-e66b51472f7e",
 	"prevId": "00000000-0000-0000-0000-000000000000",
 	"tables": {
 		"article_translations": {
@@ -41,6 +41,14 @@
 					"primaryKey": false,
 					"notNull": true,
 					"autoincrement": false
+				},
+				"view_count": {
+					"name": "view_count",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false,
+					"default": 0
 				}
 			},
 			"indexes": {},
@@ -127,51 +135,41 @@
 			"uniqueConstraints": {},
 			"checkConstraints": {}
 		},
-		"article_tags": {
-			"name": "article_tags",
+		"daily_article_views": {
+			"name": "daily_article_views",
 			"columns": {
-				"article_id": {
-					"name": "article_id",
+				"id": {
+					"name": "id",
 					"type": "integer",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"date": {
+					"name": "date",
+					"type": "text",
 					"primaryKey": false,
 					"notNull": true,
 					"autoincrement": false
 				},
-				"tag_id": {
-					"name": "tag_id",
+				"view_count": {
+					"name": "view_count",
 					"type": "integer",
 					"primaryKey": false,
 					"notNull": true,
-					"autoincrement": false
+					"autoincrement": false,
+					"default": 0
 				}
 			},
-			"indexes": {},
-			"foreignKeys": {
-				"article_tags_article_id_articles_id_fk": {
-					"name": "article_tags_article_id_articles_id_fk",
-					"tableFrom": "article_tags",
-					"tableTo": "articles",
-					"columnsFrom": ["article_id"],
-					"columnsTo": ["id"],
-					"onDelete": "cascade",
-					"onUpdate": "no action"
-				},
-				"article_tags_tag_id_tags_id_fk": {
-					"name": "article_tags_tag_id_tags_id_fk",
-					"tableFrom": "article_tags",
-					"tableTo": "tags",
-					"columnsFrom": ["tag_id"],
-					"columnsTo": ["id"],
-					"onDelete": "cascade",
-					"onUpdate": "no action"
+			"indexes": {
+				"daily_article_views_date_unique": {
+					"name": "daily_article_views_date_unique",
+					"columns": ["date"],
+					"isUnique": true
 				}
 			},
-			"compositePrimaryKeys": {
-				"article_tags_article_id_tag_id_pk": {
-					"columns": ["article_id", "tag_id"],
-					"name": "article_tags_article_id_tag_id_pk"
-				}
-			},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
 			"uniqueConstraints": {},
 			"checkConstraints": {}
 		},
@@ -212,6 +210,49 @@
 				"tag_translations_tag_id_tags_id_fk": {
 					"name": "tag_translations_tag_id_tags_id_fk",
 					"tableFrom": "tag_translations",
+					"tableTo": "tags",
+					"columnsFrom": ["tag_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"checkConstraints": {}
+		},
+		"article_tags": {
+			"name": "article_tags",
+			"columns": {
+				"article_id": {
+					"name": "article_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"tag_id": {
+					"name": "tag_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"article_tags_article_id_articles_id_fk": {
+					"name": "article_tags_article_id_articles_id_fk",
+					"tableFrom": "article_tags",
+					"tableTo": "articles",
+					"columnsFrom": ["article_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				},
+				"article_tags_tag_id_tags_id_fk": {
+					"name": "article_tags_tag_id_tags_id_fk",
+					"tableFrom": "article_tags",
 					"tableTo": "tags",
 					"columnsFrom": ["tag_id"],
 					"columnsTo": ["id"],

@@ -67,12 +67,6 @@ export const createArticle: Handler = async (c) => {
 		const now = new Date().toISOString();
 		const finalPublishedAt = status === "published" ? publishedAt || now : null;
 
-		// 作者IDを取得（現在はハードコードされた管理者メール、将来的には認証から取得）
-		// TODO: 認証システムが実装されたら、認証情報から作者IDを取得する
-		const authorEmail = "nito.tech.official@gmail.com";
-		const { getUserByEmail } = await import("../../../auth/service/service");
-		const author = await getUserByEmail(db, authorEmail);
-
 		const [newArticle] = await db
 			.insert(articles)
 			.values({
@@ -80,7 +74,6 @@ export const createArticle: Handler = async (c) => {
 				status,
 				publishedAt: finalPublishedAt,
 				cfImageId: null, // 現在は画像なし
-				authorId: author?.id || null, // 作者IDを設定
 				createdAt: now,
 				updatedAt: now,
 			})

@@ -13,6 +13,7 @@ import {
 	articles,
 	articleTags,
 	articleTranslations,
+	dailyArticleViews,
 	tags,
 	tagTranslations,
 	users,
@@ -37,6 +38,7 @@ async function clearAllTables() {
 		await db.delete(tagTranslations);
 		await db.delete(tags);
 		await db.delete(articleTranslations);
+		await db.delete(dailyArticleViews);
 		await db.delete(articles);
 		await db.delete(users);
 
@@ -273,9 +275,127 @@ function getRandomViewCount(
 	return 0; // fallback
 }
 
+/**
+ * 記事の閲覧数を日別に分散する
+ * 過去90日間の各日付に対して、現実的な閲覧数を計算
+ *
+ * @param publishedAt - 記事の公開日時
+ * @param totalViews - 記事の総閲覧数
+ * @param articleId - 記事ID（ランダムシード用）
+ * @returns 日付ごとの閲覧数の配列
+ */
+function distributeDailyViews(
+	publishedAt: string | null,
+	totalViews: number,
+	articleId: number
+): Array<{ date: string; views: number }> {
+	// 公開されていない、または閲覧数が0の記事は空配列を返す
+	if (!publishedAt || totalViews === 0) {
+		return [];
+	}
+
+	const result: Array<{ date: string; views: number }> = [];
+	const publishedDate = new Date(publishedAt);
+	const now = new Date();
+
+	// 90日前の日付を計算
+	const ninetyDaysAgo = new Date(now);
+	ninetyDaysAgo.setDate(now.getDate() - 90);
+
+	// データ生成の開始日を決定（公開日と90日前の新しい方）
+	const startDate =
+		publishedDate > ninetyDaysAgo ? publishedDate : ninetyDaysAgo;
+
+	// 開始日から現在までの日数を計算（今日を含める）
+	const daysSinceStart =
+		Math.floor((now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) +
+		1;
+
+	if (daysSinceStart <= 0) {
+		return [];
+	}
+
+	// 記事IDベースのシード（記事ごとに異なるパターン）
+	let randomSeed = articleId * 7919;
+	const seededRandom = () => {
+		randomSeed = (randomSeed * 9301 + 49297) % 233280;
+		return randomSeed / 233280;
+	};
+
+	// 閲覧数を日別に分散
+	const currentDate = new Date(startDate);
+	let remainingViews = totalViews;
+	const decayFactor = 0.95; // 日々の減衰率
+
+	for (let day = 0; day < daysSinceStart && remainingViews > 0; day++) {
+		let dailyMultiplier = 1;
+
+		// 公開直後のピーク（最初の3日間）
+		if (day === 0) {
+			dailyMultiplier = 2.5 + seededRandom(); // 2.5-3.5倍
+		} else if (day === 1) {
+			dailyMultiplier = 2.0 + seededRandom() * 0.5; // 2.0-2.5倍
+		} else if (day === 2) {
+			dailyMultiplier = 1.5 + seededRandom() * 0.5; // 1.5-2.0倍
+		} else if (day < 7) {
+			// 最初の週は緩やかに減少
+			dailyMultiplier = 1.2 - (day - 3) * 0.1 + seededRandom() * 0.2;
+		} else {
+			// その後は指数関数的に減衰 + ランダム変動
+			dailyMultiplier = decayFactor ** (day / 7) * (0.5 + seededRandom() * 0.5);
+		}
+
+		// 週末効果（土日は平日の70-80%）
+		const dayOfWeek = currentDate.getDay();
+		if (dayOfWeek === 0 || dayOfWeek === 6) {
+			dailyMultiplier *= 0.7 + seededRandom() * 0.1;
+		}
+
+		// 月曜日は少し増える
+		if (dayOfWeek === 1) {
+			dailyMultiplier *= 1.1;
+		}
+
+		// 基本の1日あたり閲覧数
+		const baseViewsPerDay = totalViews / Math.max(daysSinceStart, 1);
+		const dailyViews = Math.max(
+			1,
+			Math.floor(baseViewsPerDay * dailyMultiplier)
+		);
+
+		// 残り閲覧数を超えないように調整
+		const actualDailyViews = Math.min(dailyViews, remainingViews);
+
+		if (actualDailyViews > 0) {
+			const dateStr = currentDate.toISOString().split("T")[0];
+			result.push({ date: dateStr, views: actualDailyViews });
+			remainingViews -= actualDailyViews;
+		}
+
+		currentDate.setDate(currentDate.getDate() + 1);
+	}
+
+	// 残った閲覧数を全日に均等に分散（端数処理）
+	if (remainingViews > 0 && result.length > 0) {
+		const viewsPerDay = Math.floor(remainingViews / result.length);
+		const extraViews = remainingViews % result.length;
+
+		// 各日に均等に追加
+		for (let i = 0; i < result.length; i++) {
+			result[i].views += viewsPerDay;
+			// 余りを最初の数日に分散
+			if (i < extraViews) {
+				result[i].views += 1;
+			}
+		}
+	}
+
+	return result;
+}
+
 async function seed() {
 	console.log("🌱 200件シードデータの作成を開始します...");
-	console.log("📅 記事の公開日: 現在から360日前まで");
+	console.log("📅 記事の公開日: 現在から360日前まで、日別閲覧数: 過去90日間");
 
 	try {
 		// すべてのテーブルをクリア
@@ -523,6 +643,61 @@ async function seed() {
 			`✅ ${articleTagsData.length}件の記事-タグ関連付けを作成しました`
 		);
 
+		// 日別閲覧数を生成
+		console.log("📊 日別閲覧数を生成中...");
+
+		// すべての記事の日別閲覧数を計算
+		const dailyViewsMap = new Map<string, number>();
+
+		for (let i = 0; i < articleData.length; i++) {
+			const article = articleData[i];
+
+			// 日本語版と英語版の両方の閲覧数を考慮
+			const jaTranslation = articleTranslationData.find(
+				(t) => t.articleId === article.id && t.language === "ja"
+			);
+			const enTranslation = articleTranslationData.find(
+				(t) => t.articleId === article.id && t.language === "en"
+			);
+
+			const jaViewCount = jaTranslation?.viewCount || 0;
+			const enViewCount = enTranslation?.viewCount || 0;
+
+			// 日本語版の日別閲覧数を分散
+			const jaDailyViews = distributeDailyViews(
+				article.publishedAt,
+				jaViewCount,
+				article.id
+			);
+
+			// 英語版の日別閲覧数を分散
+			const enDailyViews = distributeDailyViews(
+				article.publishedAt,
+				enViewCount,
+				article.id + 10000 // 英語版は異なるシードを使用
+			);
+
+			// 日別閲覧数を合算
+			for (const { date, views } of [...jaDailyViews, ...enDailyViews]) {
+				const currentViews = dailyViewsMap.get(date) || 0;
+				dailyViewsMap.set(date, currentViews + views);
+			}
+		}
+
+		// daily_article_viewsテーブルに挿入
+		const dailyViewsData = Array.from(dailyViewsMap.entries()).map(
+			([date, viewCount]) => ({
+				date,
+				viewCount,
+			})
+		);
+
+		// 日付順にソート
+		dailyViewsData.sort((a, b) => a.date.localeCompare(b.date));
+
+		await db.insert(dailyArticleViews).values(dailyViewsData);
+		console.log(`✅ ${dailyViewsData.length}件の日別閲覧数を作成しました`);
+
 		console.log("🎉 200件シードデータの作成が完了しました！");
 
 		// 閲覧数の統計を計算
@@ -543,12 +718,14 @@ async function seed() {
 - タグ: ${tagData.length}件
 - タグ翻訳: ${tagTranslationData.length}件（日本語・英語）
 - 記事-タグ関連付け: ${articleTagsData.length}件
+- 日別閲覧数: ${dailyViewsData.length}件（過去90日間の日別データ）
 
 📈 閲覧数統計:
 - 合計閲覧数: ${totalViewCount.toLocaleString()}回
 - 平均閲覧数: ${avgViewCount}回/記事
 - 人気記事数: ${popularCount}件（全体の5%）
 - 閲覧数は公開日からの経過日数を考慮して生成
+- 日別閲覧数は過去90日間の現実的なパターン（公開直後ピーク、週末効果）で分散
 		`);
 	} catch (error) {
 		console.error("❌ エラーが発生しました:", error);

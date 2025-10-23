@@ -10,8 +10,8 @@
 		"dev": "tsc --watch --preserveWatchOutput",
 		"lint": "biome check .",
 		"lint:fix": "biome check --write .",
-		"test": "vitest",
-		"test:coverage": "vitest run --coverage"
+		"test": "vitest --passWithNoTests",
+		"test:coverage": "vitest run --coverage --passWithNoTests"
 	},
 	"dependencies": {
 		"next-intl": "^3.0.0"

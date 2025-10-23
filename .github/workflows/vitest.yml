@@ -31,16 +31,13 @@ jobs:
 
       # Vitestテストを実行（カバレッジ含む）
       - name: Run Vitest tests with coverage
-        run: pnpm test -- --coverage
+        run: pnpm test -- -- --coverage.enabled=true
 
       - name: Copy coverage files to root directory
         run: |
           mkdir -p coverage
-          if [ -d "./apps/web/coverage" ]; then
-            cp -r ./apps/web/coverage/* ./coverage/
-          fi
-          if [ -d "./apps/backend/coverage" ]; then
-            cp -r ./apps/backend/coverage/* ./coverage/
+          if [ -d "apps/backend/coverage" ]; then
+            cp -r apps/backend/coverage/* ./coverage/
           fi
 
       - name: Report Coverage

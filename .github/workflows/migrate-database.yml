@@ -1,0 +1,145 @@
+name: 🗄️ Migrate Database
+
+# 動作の流れ
+# ## Production環境（mainブランチ）
+#
+# 1. マイグレーションファイルを変更してmainにmerge
+# 2. 🔄 ワークフローが自動実行
+# 3. 🗄️ production DBにマイグレーション適用
+# 4. ✅ 成功通知
+#
+# ## Preview環境（PR）
+#
+# 1. マイグレーションファイルを変更してPR作成
+# 2. 🔄 ワークフローが自動実行
+# 3. 🗄️ preview DBにマイグレーション適用
+# 4. 💬 PRにコメントで通知
+# 5. ✅ 成功通知
+
+on:
+  # mainブランチへのpush時（マイグレーションファイル変更時のみ）
+  push:
+    branches:
+      - main
+    paths:
+      - "packages/db/drizzle/**/*.sql"
+      - "packages/db/src/schema/**"
+      - ".github/workflows/migrate-database.yml"
+
+  # PRの作成・更新時（マイグレーションファイル変更時のみ）
+  pull_request:
+    paths:
+      - "packages/db/drizzle/**/*.sql"
+      - "packages/db/src/schema/**"
+      - ".github/workflows/migrate-database.yml"
+
+  # 手動実行も可能
+  workflow_dispatch:
+
+# 必要な権限
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  # 環境を判定
+  set-environment:
+    name: Set environment
+    runs-on: ubuntu-latest
+    # Draft PRの場合はスキップ
+    if: github.event.pull_request.draft != true
+    steps:
+      - name: Set environment
+        id: set-env
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "env=production" >> $GITHUB_OUTPUT
+          else
+            echo "env=preview" >> $GITHUB_OUTPUT
+          fi
+    outputs:
+      environment: ${{ steps.set-env.outputs.env }}
+
+  # データベースマイグレーションを適用
+  migrate-database:
+    name: Apply migrations to ${{ needs.set-environment.outputs.environment }} database
+    needs: set-environment
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Debug environment variables
+        env:
+          TURSO_DATABASE_URL: ${{ needs.set-environment.outputs.environment == 'production' && secrets.TURSO_DATABASE_URL_PROD || secrets.TURSO_DATABASE_URL_PREVIEW }}
+          TURSO_AUTH_TOKEN: ${{ needs.set-environment.outputs.environment == 'production' && secrets.TURSO_AUTH_TOKEN_PROD || secrets.TURSO_AUTH_TOKEN_PREVIEW }}
+        run: |
+          echo "Environment: ${{ needs.set-environment.outputs.environment }}"
+          echo "TURSO_DATABASE_URL is set: $([[ -n "$TURSO_DATABASE_URL" ]] && echo "yes" || echo "no")"
+          echo "TURSO_AUTH_TOKEN is set: $([[ -n "$TURSO_AUTH_TOKEN" ]] && echo "yes" || echo "no")"
+
+      - name: Apply migrations to ${{ needs.set-environment.outputs.environment }} database
+        env:
+          TURSO_DATABASE_URL: ${{ needs.set-environment.outputs.environment == 'production' && secrets.TURSO_DATABASE_URL_PROD || secrets.TURSO_DATABASE_URL_PREVIEW }}
+          TURSO_AUTH_TOKEN: ${{ needs.set-environment.outputs.environment == 'production' && secrets.TURSO_AUTH_TOKEN_PROD || secrets.TURSO_AUTH_TOKEN_PREVIEW }}
+        run: |
+          echo "🚀 Applying migrations to ${{ needs.set-environment.outputs.environment }} database..."
+
+          # Run drizzle-kit push and capture output
+          OUTPUT=$(pnpm --filter @saneatsu/db db:push --verbose 2>&1)
+          EXIT_CODE=$?
+
+          # Display the output
+          echo "$OUTPUT"
+
+          # Check for error patterns in output
+          if echo "$OUTPUT" | grep -qE "LibsqlError|SERVER_ERROR|HTTP status 401"; then
+            echo "❌ Migration failed: Authentication or connection error detected"
+            echo "::error::Please check Turso credentials for ${{ needs.set-environment.outputs.environment }} environment (TURSO_AUTH_TOKEN_${{ needs.set-environment.outputs.environment == 'production' && 'PROD' || 'PREVIEW' }} or TURSO_DATABASE_URL_${{ needs.set-environment.outputs.environment == 'production' && 'PROD' || 'PREVIEW' }})"
+            exit 1
+          fi
+
+          # Also check exit code as fallback
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "❌ Migration failed with exit code $EXIT_CODE"
+            exit 1
+          fi
+
+          echo "✅ Migrations applied successfully!"
+
+      - name: Report success
+        if: success()
+        run: |
+          echo "::notice::Database migrations applied successfully to ${{ needs.set-environment.outputs.environment }}"
+
+      - name: Report failure
+        if: failure()
+        run: |
+          echo "::error::Failed to apply database migrations to ${{ needs.set-environment.outputs.environment }}"
+          exit 1
