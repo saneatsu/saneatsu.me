@@ -306,12 +306,12 @@ function Calendar({
 				nav: "space-x-1 flex items-center ",
 				button_previous: cn(
 					buttonVariants({ variant: "outline" }),
-					"h-9 w-9 bg-transparent opacity-50 hover:opacity-100 absolute left-5 top-1/2 -translate-y-1/2 cursor-pointer",
+					"h-9 w-9 bg-transparent opacity-50 hover:opacity-100 absolute left-5 top-5 cursor-pointer",
 					disableLeftNavigation() && "pointer-events-none"
 				),
 				button_next: cn(
 					buttonVariants({ variant: "outline" }),
-					"h-9 w-9 bg-transparent opacity-50 hover:opacity-100 absolute right-5 top-1/2 -translate-y-1/2 cursor-pointer",
+					"h-9 w-9 bg-transparent opacity-50 hover:opacity-100 absolute right-5 top-5 cursor-pointer",
 					disableRightNavigation() && "pointer-events-none"
 				),
 				month_grid: "w-full border-collapse space-y-1",
