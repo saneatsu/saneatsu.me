@@ -93,9 +93,7 @@ export const getAllArticles: Handler = async (c) => {
 				break;
 			case "viewCount":
 				orderByClause =
-					order === "asc"
-						? asc(articleTranslations.viewCount)
-						: desc(articleTranslations.viewCount);
+					order === "asc" ? asc(articles.viewCount) : desc(articles.viewCount);
 				break;
 			case "publishedAt":
 				orderByClause =
@@ -124,7 +122,7 @@ export const getAllArticles: Handler = async (c) => {
 				updatedAt: articles.updatedAt,
 				title: articleTranslations.title,
 				content: articleTranslations.content,
-				viewCount: sql<number>`COALESCE(${articleTranslations.viewCount}, 0)`,
+				viewCount: articles.viewCount,
 			})
 			.from(articles)
 			.leftJoin(

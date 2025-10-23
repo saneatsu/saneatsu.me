@@ -1,5 +1,5 @@
 import type { RouteHandler } from "@hono/zod-openapi";
-import { and, eq, not, sql } from "drizzle-orm";
+import { and, eq, not } from "drizzle-orm";
 
 import { getDatabase } from "@/lib/database";
 import { createTranslationService } from "@/services/gemini-translation/gemini-translation";
@@ -193,7 +193,7 @@ export const updateArticle: Handler = async (c) => {
 				updatedAt: articles.updatedAt,
 				title: articleTranslations.title,
 				content: articleTranslations.content,
-				viewCount: sql<number>`COALESCE(${articleTranslations.viewCount}, 0)`,
+				viewCount: articles.viewCount,
 			})
 			.from(articles)
 			.leftJoin(
