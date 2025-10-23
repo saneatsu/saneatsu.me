@@ -12,7 +12,7 @@ export {
 export { useUpdate } from "./api/use-update/use-update";
 export { useUpdateStatus } from "./api/use-update-status/use-update-status";
 
-export { ArticleCard } from "./ui/article-card";
+export { ArticleCard } from "./ui/article-card/article-card";
 export {
 	ArticleSuggestionsPopover,
 	type ArticleSuggestionsPopoverProps,

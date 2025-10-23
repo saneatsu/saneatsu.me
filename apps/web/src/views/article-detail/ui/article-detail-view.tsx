@@ -7,7 +7,13 @@ import remarkGfm from "remark-gfm";
 
 import { WikiLink } from "@/entities/article";
 import type { Article } from "@/shared";
-import { cn, extractHeadings, remarkTag, remarkWikiLink } from "@/shared/lib";
+import {
+	cn,
+	extractHeadings,
+	formatRelativeDate,
+	remarkTag,
+	remarkWikiLink,
+} from "@/shared/lib";
 import { Badge, TableOfContents } from "@/shared/ui";
 
 export interface ArticleDetailViewProps {
@@ -41,6 +47,12 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 			)
 		: null;
 
+	// 更新日の相対日付フォーマット
+	const updatedDateInfo = formatRelativeDate(
+		article.updatedAt ?? null,
+		locale as "ja" | "en"
+	);
+
 	// Markdownから見出しを抽出
 	const headings = extractHeadings(article.content || "");
 
@@ -69,6 +81,16 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 							{publishedDate && (
 								<time dateTime={article.publishedAt || undefined}>
 									{t("publishedAt")}: {publishedDate}
+								</time>
+							)}
+							{updatedDateInfo && (
+								<time dateTime={article.updatedAt || undefined}>
+									{t("updatedAt")}:{" "}
+									{updatedDateInfo.isRelative
+										? updatedDateInfo.days === 0
+											? t("today")
+											: t("daysAgo", { days: updatedDateInfo.days })
+										: updatedDateInfo.formatted}
 								</time>
 							)}
 							<span className="flex items-center space-x-1">
