@@ -28,7 +28,11 @@ export {
 	slugify,
 } from "./extract-headings";
 // Format Date
-export { convertIsoToDatetimeLocal } from "./format-date/format-date";
+export {
+	convertIsoToDatetimeLocal,
+	formatRelativeDate,
+	type RelativeDateResult,
+} from "./format-date/format-date";
 // Hono Hook
 export { type HonoClient, useHonoClient } from "./hono/use-client";
 // Hono Client
