@@ -2,16 +2,9 @@ import type { RouteHandler } from "@hono/zod-openapi";
 import { and, eq } from "drizzle-orm";
 
 import { getDatabase } from "@/lib/database";
-import type { updateStatusRoute } from "./update-status.openapi";
+import type { Env } from "@/types/env";
 
-/**
- * Cloudflare Workers環境の型定義
- */
-type Env = {
-	TURSO_DATABASE_URL: string;
-	TURSO_AUTH_TOKEN: string;
-	GEMINI_API_KEY?: string;
-};
+import type { updateStatusRoute } from "./update-status.openapi";
 
 type Handler = RouteHandler<typeof updateStatusRoute, { Bindings: Env }>;
 

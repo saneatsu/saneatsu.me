@@ -3,16 +3,9 @@ import { articleListQuerySchema, type SortOrder } from "@saneatsu/schemas";
 import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
 
 import { getDatabase } from "@/lib/database";
-import type { getAllArticlesRoute } from "./get-all-articles.openapi";
+import type { Env } from "@/types/env";
 
-/**
- * Cloudflare Workers環境の型定義
- */
-type Env = {
-	TURSO_DATABASE_URL: string;
-	TURSO_AUTH_TOKEN: string;
-	GEMINI_API_KEY?: string;
-};
+import type { getAllArticlesRoute } from "./get-all-articles.openapi";
 
 type Handler = RouteHandler<typeof getAllArticlesRoute, { Bindings: Env }>;
 

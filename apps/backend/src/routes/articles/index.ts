@@ -1,4 +1,6 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
+
+import type { Env } from "@/types/env";
 // ハンドラーをimport
 import { checkSlug } from "./handlers/check-slug/check-slug";
 // ルート定義をimport
@@ -17,15 +19,6 @@ import { updateArticle } from "./handlers/update-article/update-article";
 import { updateArticleRoute } from "./handlers/update-article/update-article.openapi";
 import { updateStatus } from "./handlers/update-status/update-status";
 import { updateStatusRoute } from "./handlers/update-status/update-status.openapi";
-
-/**
- * Cloudflare Workers環境の型定義
- */
-type Env = {
-	TURSO_DATABASE_URL: string;
-	TURSO_AUTH_TOKEN: string;
-	GEMINI_API_KEY?: string;
-};
 
 /**
  * 記事関連のAPIルート

@@ -1,5 +1,7 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import type { Env } from "../../../types/env";
 import { authRoute } from "./worker";
 
 // モックの設定
@@ -12,13 +14,6 @@ vi.mock("../service/service", () => ({
 vi.mock("../../../lib/db", () => ({
 	createDbClient: vi.fn(),
 }));
-
-// 環境変数の型定義
-type Env = {
-	TURSO_DATABASE_URL: string;
-	TURSO_AUTH_TOKEN: string;
-	ADMIN_EMAILS?: string;
-};
 
 describe("Auth API Routes", () => {
 	let app: OpenAPIHono<{ Bindings: Env }>;

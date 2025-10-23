@@ -2,21 +2,13 @@ import { OpenAPIHono } from "@hono/zod-openapi";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
+
+import type { Env } from "@/types/env";
+
 import { articlesRoute } from "./routes/articles";
 import { authRoute } from "./routes/auth/worker/worker";
 import { dashboardRoute } from "./routes/dashboard";
 import { tagsRoute } from "./routes/tags";
-
-/**
- * Cloudflare Workers環境の型定義
- */
-type Env = {
-	TURSO_DATABASE_URL: string;
-	TURSO_AUTH_TOKEN: string;
-	CORS_ORIGIN: string;
-	ADMIN_EMAILS?: string;
-	TEST_DATABASE_URL?: string;
-};
 
 /**
  * OpenAPIHono APIサーバーの作成

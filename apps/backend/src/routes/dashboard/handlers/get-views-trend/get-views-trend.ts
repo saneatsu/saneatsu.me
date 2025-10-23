@@ -4,17 +4,9 @@ import { viewsTrendQuerySchema } from "@saneatsu/schemas";
 import { and, gte, sql } from "drizzle-orm";
 
 import { getDatabase } from "@/lib/database";
+import type { Env } from "@/types/env";
 
 import type { getViewsTrendRoute } from "./get-views-trend.openapi";
-
-/**
- * Cloudflare Workers環境の型定義
- */
-type Env = {
-	TURSO_DATABASE_URL: string;
-	TURSO_AUTH_TOKEN: string;
-	ENVIRONMENT?: string;
-};
 
 type Handler = RouteHandler<typeof getViewsTrendRoute, { Bindings: Env }>;
 

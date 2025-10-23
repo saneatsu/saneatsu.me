@@ -2,15 +2,9 @@ import type { RouteHandler } from "@hono/zod-openapi";
 import { eq } from "drizzle-orm";
 
 import { getDatabase } from "@/lib/database";
-import type { deleteTagRoute } from "./delete-tag.openapi";
+import type { Env } from "@/types/env";
 
-/**
- * Cloudflare Workers環境の型定義
- */
-type Env = {
-	TURSO_DATABASE_URL: string;
-	TURSO_AUTH_TOKEN: string;
-};
+import type { deleteTagRoute } from "./delete-tag.openapi";
 
 type Handler = RouteHandler<typeof deleteTagRoute, { Bindings: Env }>;
 
