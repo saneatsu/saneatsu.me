@@ -58,6 +58,37 @@ vi.mock("@/shared/lib", async (importOriginal) => {
 	};
 });
 
+vi.mock("@/shared/ui", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("@/shared/ui")>();
+	return {
+		...actual,
+		DateTimePicker: ({
+			value,
+			onChange,
+			placeholder,
+		}: {
+			value?: Date;
+			onChange: (date: Date | undefined) => void;
+			placeholder?: string;
+		}) => (
+			<div data-testid="datetime-picker">
+				<input
+					aria-label="公開日時"
+					type="text"
+					value={value ? value.toISOString() : ""}
+					onChange={(e) => {
+						const newValue = e.target.value
+							? new Date(e.target.value)
+							: undefined;
+						onChange(newValue);
+					}}
+					placeholder={placeholder}
+				/>
+			</div>
+		),
+	};
+});
+
 /**
  * テスト用のQueryClientを作成するヘルパー関数
  */
@@ -81,7 +112,7 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 describe("ArticleEditForm", () => {
 	describe("Unit Test", () => {
 		describe("publishedAt field handling", () => {
-			it("should display publishedAt value in datetime-local format when article has publishedAt in ISO 8601 format", async () => {
+			it("should display publishedAt value when article has publishedAt in ISO 8601 format", async () => {
 				// Arrange: ISO 8601形式の公開日時を持つ記事データを用意
 				const article = {
 					id: 1,
@@ -96,22 +127,19 @@ describe("ArticleEditForm", () => {
 				// Act: フォームをレンダリング
 				render(<ArticleEditForm article={article} />, { wrapper });
 
-				// Assert: datetime-localフィールドが正しい値を持つことを確認
+				// Assert: DateTimePickerに正しい値が渡されていることを確認
 				await waitFor(() => {
 					const publishedAtInput = screen.getByLabelText(
 						"公開日時"
 					) as HTMLInputElement;
 
-					// datetime-local形式（YYYY-MM-DDTHH:mm）に変換された値が表示されるべき
-					// "2024-01-15T10:30:00.000Z" → "2024-01-15T10:30" (UTCからローカルタイムゾーンへの変換を考慮)
+					// ISO 8601形式の日付が表示されるべき
 					expect(publishedAtInput.value).toBeTruthy();
-					expect(publishedAtInput.value).toMatch(
-						/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/
-					);
+					expect(publishedAtInput.value).toBe("2024-01-15T10:30:00.000Z");
 				});
 			});
 
-			it("should keep datetime-local field empty when article has null publishedAt", async () => {
+			it("should keep DateTimePicker field empty when article has null publishedAt", async () => {
 				// Arrange: publishedAtがnullの記事データを用意
 				const article = {
 					id: 1,
@@ -126,7 +154,7 @@ describe("ArticleEditForm", () => {
 				// Act: フォームをレンダリング
 				render(<ArticleEditForm article={article} />, { wrapper });
 
-				// Assert: datetime-localフィールドが空であることを確認
+				// Assert: DateTimePickerフィールドが空であることを確認
 				await waitFor(() => {
 					const publishedAtInput = screen.getByLabelText(
 						"公開日時"
