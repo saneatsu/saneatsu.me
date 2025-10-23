@@ -418,13 +418,25 @@ async function seed() {
 		console.log("📝 200件の記事を生成中...");
 
 		const articleDefinitions = [];
+		// 人気記事をランダムに選択（全体の5%）
+		const popularArticleCount = Math.floor(200 * 0.05);
+		const popularArticleIndices = new Set<number>();
+		while (popularArticleIndices.size < popularArticleCount) {
+			popularArticleIndices.add(Math.floor(Math.random() * 200));
+		}
+
 		for (let i = 1; i <= 200; i++) {
 			const status = getRandomStatus();
+			const publishedAt = status === "published" ? getRandomDate() : null;
+			const isPopular = popularArticleIndices.has(i - 1);
+			const viewCount = getRandomViewCount(status, publishedAt, isPopular);
+
 			articleDefinitions.push({
 				slug: `article-${i.toString().padStart(3, "0")}`,
 				status,
-				publishedAt: status === "published" ? getRandomDate() : null,
+				publishedAt,
 				cfImageId: getRandomImageId(),
+				viewCount,
 			});
 		}
 
@@ -442,28 +454,15 @@ async function seed() {
 		const titleTemplatesJa = getTitleTemplates();
 		const titleTemplatesEn = getEnglishTitleTemplates();
 
-		// 人気記事をランダムに選択（全体の5%）
-		const popularArticleCount = Math.floor(articleData.length * 0.05);
-		const popularArticleIndices = new Set<number>();
-		while (popularArticleIndices.size < popularArticleCount) {
-			popularArticleIndices.add(Math.floor(Math.random() * articleData.length));
-		}
-
 		const articleTranslationData = [];
 
 		for (let i = 0; i < articleData.length; i++) {
 			const article = articleData[i];
-			const isPopular = popularArticleIndices.has(i);
 
 			// 日本語版
 			const titleJa = titleTemplatesJa[i % titleTemplatesJa.length].replace(
 				"{i}",
 				(i + 1).toString()
-			);
-			const viewCountJa = getRandomViewCount(
-				article.status,
-				article.publishedAt,
-				isPopular
 			);
 
 			articleTranslationData.push({
@@ -471,7 +470,6 @@ async function seed() {
 				title: titleJa,
 				content: generateRandomContent(titleJa, true),
 				language: "ja" as const,
-				viewCount: viewCountJa,
 			});
 
 			// 英語版
@@ -479,18 +477,12 @@ async function seed() {
 				"{i}",
 				(i + 1).toString()
 			);
-			const viewCountEn = getRandomViewCount(
-				article.status,
-				article.publishedAt,
-				isPopular
-			);
 
 			articleTranslationData.push({
 				articleId: article.id,
 				title: titleEn,
 				content: generateRandomContent(titleEn, false),
 				language: "en" as const,
-				viewCount: viewCountEn,
 			});
 		}
 
@@ -652,33 +644,18 @@ async function seed() {
 		for (let i = 0; i < articleData.length; i++) {
 			const article = articleData[i];
 
-			// 日本語版と英語版の両方の閲覧数を考慮
-			const jaTranslation = articleTranslationData.find(
-				(t) => t.articleId === article.id && t.language === "ja"
-			);
-			const enTranslation = articleTranslationData.find(
-				(t) => t.articleId === article.id && t.language === "en"
-			);
+			// 記事全体の閲覧数を使用
+			const articleViewCount = article.viewCount || 0;
 
-			const jaViewCount = jaTranslation?.viewCount || 0;
-			const enViewCount = enTranslation?.viewCount || 0;
-
-			// 日本語版の日別閲覧数を分散
-			const jaDailyViews = distributeDailyViews(
+			// 記事の閲覧数を日別に分散
+			const dailyViews = distributeDailyViews(
 				article.publishedAt,
-				jaViewCount,
+				articleViewCount,
 				article.id
 			);
 
-			// 英語版の日別閲覧数を分散
-			const enDailyViews = distributeDailyViews(
-				article.publishedAt,
-				enViewCount,
-				article.id + 10000 // 英語版は異なるシードを使用
-			);
-
 			// 日別閲覧数を合算
-			for (const { date, views } of [...jaDailyViews, ...enDailyViews]) {
+			for (const { date, views } of dailyViews) {
 				const currentViews = dailyViewsMap.get(date) || 0;
 				dailyViewsMap.set(date, currentViews + views);
 			}
@@ -701,30 +678,28 @@ async function seed() {
 		console.log("🎉 200件シードデータの作成が完了しました！");
 
 		// 閲覧数の統計を計算
-		const totalViewCount = articleTranslationData.reduce(
-			(sum, translation) => sum + (translation.viewCount || 0),
+		const totalViewCount = articleData.reduce(
+			(sum, article) => sum + (article.viewCount || 0),
 			0
 		);
 		const popularCount = popularArticleIndices.size;
-		const avgViewCount = Math.round(
-			totalViewCount / articleTranslationData.length
-		);
+		const avgViewCount = Math.round(totalViewCount / articleData.length);
 
 		console.log(`
 📊 作成されたデータ:
 - ユーザー: 1件
-- 記事: ${articleData.length}件（公開日: 過去360日間に分散）
-- 記事翻訳: ${articleTranslationData.length}件（viewCount付き）
+- 記事: ${articleData.length}件（公開日: 過去360日間に分散、viewCount付き）
+- 記事翻訳: ${articleTranslationData.length}件
 - タグ: ${tagData.length}件
 - タグ翻訳: ${tagTranslationData.length}件（日本語・英語）
 - 記事-タグ関連付け: ${articleTagsData.length}件
 - 日別閲覧数: ${dailyViewsData.length}件（過去90日間の日別データ）
 
 📈 閲覧数統計:
-- 合計閲覧数: ${totalViewCount.toLocaleString()}回
+- 合計閲覧数: ${totalViewCount.toLocaleString()}回（記事全体）
 - 平均閲覧数: ${avgViewCount}回/記事
 - 人気記事数: ${popularCount}件（全体の5%）
-- 閲覧数は公開日からの経過日数を考慮して生成
+- 閲覧数は記事全体でカウントされ、公開日からの経過日数を考慮して生成
 - 日別閲覧数は過去90日間の現実的なパターン（公開直後ピーク、週末効果）で分散
 		`);
 	} catch (error) {
