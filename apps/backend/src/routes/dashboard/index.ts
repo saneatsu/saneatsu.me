@@ -282,11 +282,10 @@ app.openapi(getDashboardStatsRoute, async (c) => {
 
 		// 閲覧数統計
 		const [totalViewsResult, thisMonthViewsResult] = await Promise.all([
-			// 総閲覧数（指定言語）
+			// 総閲覧数
 			db
 				.select({ totalViews: sql`COALESCE(SUM(view_count), 0)` })
-				.from(articleTranslations)
-				.where(eq(articleTranslations.language, language)),
+				.from(articles),
 			// 今月の閲覧数（daily_article_viewsから集計）
 			db
 				.select({
@@ -481,8 +480,7 @@ app.openapi(getDashboardOverviewRoute, async (c) => {
 			// 総閲覧数
 			db
 				.select({ totalViews: sql`COALESCE(SUM(view_count), 0)` })
-				.from(articleTranslations)
-				.where(eq(articleTranslations.language, language)),
+				.from(articles),
 			// 今月の閲覧数
 			db
 				.select({
