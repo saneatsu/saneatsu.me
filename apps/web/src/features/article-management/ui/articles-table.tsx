@@ -77,7 +77,7 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 		"articles-table-filters",
 		{
 			page: parseAsInteger.withDefault(1),
-			pageSize: parseAsInteger.withDefault(10),
+			pageSize: parseAsInteger.withDefault(50),
 			status: parseAsCommaSeparatedArray,
 			search: parseAsString.withDefault(""),
 			sortBy: parseAsString.withDefault("updatedAt"),
@@ -301,7 +301,7 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 			{isLoading ? (
 				<DataTableSkeleton
 					columnCount={columns.length}
-					rowCount={10}
+					rowCount={50}
 					cellWidths={[
 						"80px",
 						"200px",
