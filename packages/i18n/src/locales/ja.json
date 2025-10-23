@@ -84,9 +84,12 @@
 	},
 	"article": {
 		"publishedAt": "公開日",
+		"updatedAt": "更新日",
 		"viewCount": "{count} 回閲覧",
 		"readMore": "続きを読む",
 		"backToList": "記事一覧に戻る",
+		"today": "今日",
+		"daysAgo": "{days}日前",
 		"notFound": {
 			"title": "記事が見つかりません",
 			"message": "お探しの記事は存在しないか、削除された可能性があります。"

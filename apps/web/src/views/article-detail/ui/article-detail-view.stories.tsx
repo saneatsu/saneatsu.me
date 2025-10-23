@@ -24,6 +24,7 @@ const mockArticle: Article = {
 	cfImageId: null,
 	status: "published",
 	publishedAt: "2024-01-15T10:00:00Z",
+	updatedAt: "2024-01-20T15:30:00Z",
 	title: "React Hooksの完全ガイド",
 	content: `# React Hooksとは
 
@@ -400,4 +401,158 @@ export const 長いコンテンツ: Story = {
 		locale: "ja",
 	},
 	parameters: {},
+};
+
+/**
+ * 更新日が今日の場合のテスト
+ */
+export const 更新日が今日: Story = {
+	name: "更新日が今日の場合",
+	tags: ["validation"],
+	args: {
+		article: {
+			...mockArticle,
+			updatedAt: new Date().toISOString(),
+		},
+		locale: "ja",
+	},
+	parameters: {},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+
+		// 公開日の確認
+		const publishedDate = canvas.getByText(/公開日:/);
+		expect(publishedDate).toBeInTheDocument();
+
+		// 更新日の確認
+		const updatedDate = canvas.getByText(/更新日:/);
+		expect(updatedDate).toBeInTheDocument();
+
+		// 「今日」が表示されていることを確認
+		const todayText = canvas.getByText(/今日/);
+		expect(todayText).toBeInTheDocument();
+	},
+};
+
+/**
+ * 更新日が5日前の場合のテスト
+ */
+export const 更新日が5日前: Story = {
+	name: "更新日が5日前の場合",
+	tags: ["validation"],
+	args: {
+		article: {
+			...mockArticle,
+			updatedAt: (() => {
+				const date = new Date();
+				date.setDate(date.getDate() - 5);
+				return date.toISOString();
+			})(),
+		},
+		locale: "ja",
+	},
+	parameters: {},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+
+		// 更新日の確認
+		const updatedDate = canvas.getByText(/更新日:/);
+		expect(updatedDate).toBeInTheDocument();
+
+		// 「5日前」が表示されていることを確認
+		const daysAgoText = canvas.getByText(/5日前/);
+		expect(daysAgoText).toBeInTheDocument();
+	},
+};
+
+/**
+ * 更新日が10日前の場合のテスト（境界値）
+ */
+export const 更新日が10日前: Story = {
+	name: "更新日が10日前の場合（境界値）",
+	tags: ["validation"],
+	args: {
+		article: {
+			...mockArticle,
+			updatedAt: (() => {
+				const date = new Date();
+				date.setDate(date.getDate() - 10);
+				return date.toISOString();
+			})(),
+		},
+		locale: "ja",
+	},
+	parameters: {},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+
+		// 更新日の確認
+		const updatedDate = canvas.getByText(/更新日:/);
+		expect(updatedDate).toBeInTheDocument();
+
+		// 「10日前」が表示されていることを確認
+		const daysAgoText = canvas.getByText(/10日前/);
+		expect(daysAgoText).toBeInTheDocument();
+	},
+};
+
+/**
+ * 更新日が15日前の場合のテスト（通常の日付形式）
+ */
+export const 更新日が15日前: Story = {
+	name: "更新日が15日前の場合（通常の日付形式）",
+	tags: ["validation"],
+	args: {
+		article: {
+			...mockArticle,
+			updatedAt: "2024-01-01T10:00:00.000Z",
+		},
+		locale: "ja",
+	},
+	parameters: {},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+
+		// 更新日の確認
+		const updatedDate = canvas.getByText(/更新日:/);
+		expect(updatedDate).toBeInTheDocument();
+
+		// 通常の日付形式で表示されていることを確認（相対表示ではない）
+		const timeElements = canvasElement.querySelectorAll("time");
+		const updatedTimeElement = Array.from(timeElements).find((el) =>
+			el.textContent?.includes("更新日:")
+		);
+		expect(updatedTimeElement).toBeDefined();
+
+		// 「日前」が含まれていないことを確認
+		const hasRelativeFormat = updatedTimeElement?.textContent?.includes("日前");
+		expect(hasRelativeFormat).toBe(false);
+	},
+};
+
+/**
+ * 更新日がnullの場合のテスト
+ */
+export const 更新日がnull: Story = {
+	name: "更新日がnullの場合",
+	tags: ["validation"],
+	args: {
+		article: {
+			...mockArticle,
+			updatedAt: null,
+		},
+		locale: "ja",
+	},
+	parameters: {},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+
+		// 公開日は表示されていることを確認
+		const publishedDate = canvas.getByText(/公開日:/);
+		expect(publishedDate).toBeInTheDocument();
+
+		// 更新日は表示されていないことを確認
+		const updatedDates = canvas.queryAllByText(/更新日:/);
+		expect(updatedDates.length).toBe(0);
+	},
 };
