@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CalendarIcon, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -21,6 +21,7 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle,
 	Button,
+	DateTimePicker,
 	Input,
 	Label,
 	MultipleSelector,
@@ -67,6 +68,7 @@ export function ArticleNewForm() {
 	const [markdownValue, setMarkdownValue] = useState("");
 	const [showSlugErrorDialog, setShowSlugErrorDialog] = useState(false);
 	const [selectedTags, setSelectedTags] = useState<Option[]>([]);
+	const [publishedAtDate, setPublishedAtDate] = useState<Date | undefined>();
 	const router = useRouter();
 
 	const {
@@ -124,9 +126,9 @@ export function ArticleNewForm() {
 		try {
 			// 公開日時の処理
 			let publishedAt: string | undefined;
-			if (data.status === "published" && data.publishedAt) {
-				// datetime-localの値をISO文字列に変換
-				publishedAt = new Date(data.publishedAt).toISOString();
+			if (data.status === "published" && publishedAtDate) {
+				// DateオブジェクトをISO文字列に変換
+				publishedAt = publishedAtDate.toISOString();
 			}
 
 			// タグIDを抽出
@@ -264,14 +266,14 @@ export function ArticleNewForm() {
 				{watch("status") === "published" && (
 					<div className="space-y-2">
 						<Label htmlFor="publishedAt">公開日時</Label>
-						<div className="relative">
-							<Input
-								id="publishedAt"
-								type="datetime-local"
-								{...register("publishedAt")}
-							/>
-							<CalendarIcon className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-						</div>
+						<DateTimePicker
+							value={publishedAtDate}
+							onChange={setPublishedAtDate}
+							placeholder="公開日時を選択してください"
+						/>
+						<p className="text-sm text-muted-foreground">
+							空欄の場合は現在時刻が設定されます
+						</p>
 					</div>
 				)}
 
