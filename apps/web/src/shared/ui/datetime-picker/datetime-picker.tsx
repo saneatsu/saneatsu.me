@@ -269,28 +269,6 @@ function Calendar({
 	}, [props.locale]);
 
 	const YEARS = React.useMemo(() => genYears(yearRange), [yearRange]);
-	const disableLeftNavigation = () => {
-		const today = new Date();
-		const startDate = new Date(today.getFullYear() - yearRange, 0, 1);
-		if (props.month) {
-			return (
-				props.month.getMonth() === startDate.getMonth() &&
-				props.month.getFullYear() === startDate.getFullYear()
-			);
-		}
-		return false;
-	};
-	const disableRightNavigation = () => {
-		const today = new Date();
-		const endDate = new Date(today.getFullYear() + yearRange, 11, 31);
-		if (props.month) {
-			return (
-				props.month.getMonth() === endDate.getMonth() &&
-				props.month.getFullYear() === endDate.getFullYear()
-			);
-		}
-		return false;
-	};
 
 	return (
 		<DayPicker
@@ -304,16 +282,8 @@ function Calendar({
 				month_caption: "flex justify-center pt-1 relative items-center",
 				caption_label: "text-sm font-medium",
 				nav: "space-x-1 flex items-center ",
-				button_previous: cn(
-					buttonVariants({ variant: "outline" }),
-					"h-9 w-9 bg-transparent opacity-50 hover:opacity-100 absolute left-5 top-5 cursor-pointer",
-					disableLeftNavigation() && "pointer-events-none"
-				),
-				button_next: cn(
-					buttonVariants({ variant: "outline" }),
-					"h-9 w-9 bg-transparent opacity-50 hover:opacity-100 absolute right-5 top-5 cursor-pointer",
-					disableRightNavigation() && "pointer-events-none"
-				),
+				button_previous: "hidden",
+				button_next: "hidden",
 				month_grid: "w-full border-collapse space-y-1",
 				weekdays: cn("flex", props.showWeekNumber && "justify-end"),
 				weekday:
@@ -344,8 +314,39 @@ function Calendar({
 						<ChevronRight className="h-4 w-4" />
 					),
 				MonthCaption: ({ calendarMonth }) => {
+					// 年範囲の制約を計算
+					const today = new Date();
+					const startDate = new Date(today.getFullYear() - yearRange, 0, 1);
+					const endDate = new Date(today.getFullYear() + yearRange, 11, 31);
+
+					const isLeftDisabled =
+						calendarMonth.date.getMonth() === startDate.getMonth() &&
+						calendarMonth.date.getFullYear() === startDate.getFullYear();
+
+					const isRightDisabled =
+						calendarMonth.date.getMonth() === endDate.getMonth() &&
+						calendarMonth.date.getFullYear() === endDate.getFullYear();
+
 					return (
-						<div className="inline-flex gap-2">
+						<div className="flex items-center gap-2">
+							{/* 左矢印ボタン */}
+							<Button
+								variant="outline"
+								className={cn(
+									"h-9 w-9 bg-transparent p-0 opacity-50 hover:opacity-100 cursor-pointer",
+									isLeftDisabled && "pointer-events-none"
+								)}
+								disabled={isLeftDisabled}
+								onClick={() => {
+									const newDate = new Date(calendarMonth.date);
+									newDate.setMonth(newDate.getMonth() - 1);
+									props.onMonthChange?.(newDate);
+								}}
+							>
+								<ChevronLeft className="h-4 w-4" />
+							</Button>
+
+							{/* 年Select */}
 							<Select
 								defaultValue={calendarMonth.date.getFullYear().toString()}
 								onValueChange={(value) => {
@@ -369,6 +370,8 @@ function Calendar({
 									))}
 								</SelectContent>
 							</Select>
+
+							{/* 月Select */}
 							<Select
 								defaultValue={calendarMonth.date.getMonth().toString()}
 								onValueChange={(value) => {
@@ -392,6 +395,23 @@ function Calendar({
 									))}
 								</SelectContent>
 							</Select>
+
+							{/* 右矢印ボタン */}
+							<Button
+								variant="outline"
+								className={cn(
+									"h-9 w-9 bg-transparent p-0 opacity-50 hover:opacity-100 cursor-pointer",
+									isRightDisabled && "pointer-events-none"
+								)}
+								disabled={isRightDisabled}
+								onClick={() => {
+									const newDate = new Date(calendarMonth.date);
+									newDate.setMonth(newDate.getMonth() + 1);
+									props.onMonthChange?.(newDate);
+								}}
+							>
+								<ChevronRight className="h-4 w-4" />
+							</Button>
 						</div>
 					);
 				},
