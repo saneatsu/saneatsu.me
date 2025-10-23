@@ -63,9 +63,10 @@ function formatDate(dateString: string | null): string {
  * カラム:
  * - 画像: サムネイル画像
  * - タイトル: 記事タイトルとスラッグ
- * - タグ: 記事のタグ（未実装）
+ * - タグ: 記事のタグ
  * - ステータス: 公開/下書き/アーカイブ
  * - 閲覧数: 記事の閲覧数
+ * - 公開日: 公開日時（未公開の場合は「未公開」を表示）
  * - 最終更新日: 更新日時
  * - アクション: 編集・削除ボタン
  */
@@ -177,6 +178,28 @@ export const columns: ColumnDef<Article>[] = [
 			return (
 				<div className="text-sm font-medium text-right w-[100px]">
 					{article.viewCount?.toLocaleString() ?? "0"}
+				</div>
+			);
+		},
+		enableSorting: true,
+	},
+	{
+		accessorKey: "publishedAt",
+		header: ({ column }) => (
+			<Button
+				variant="ghost"
+				onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+				className="font-medium"
+			>
+				公開日
+				<ArrowUpDown className="ml-2 h-4 w-4" />
+			</Button>
+		),
+		cell: ({ row }) => {
+			const article = row.original;
+			return (
+				<div className="text-sm w-[180px]">
+					{article.publishedAt ? formatDate(article.publishedAt) : "未公開"}
 				</div>
 			);
 		},

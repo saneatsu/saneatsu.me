@@ -63,7 +63,7 @@ interface ArticlesTableProps {
  * Nitoプロジェクトのパターンに従った実装。
  *
  * 機能:
- * - ソート（タイトル、ステータス、閲覧数、更新日）
+ * - ソート（タイトル、ステータス、閲覧数、更新日、公開日）
  * - フィルタリング（ステータス、検索）
  * - ページネーション
  * - ローディング状態表示
@@ -308,6 +308,7 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 						"200px",
 						"120px",
 						"100px",
+						"180px",
 						"180px",
 						"120px",
 					]}
