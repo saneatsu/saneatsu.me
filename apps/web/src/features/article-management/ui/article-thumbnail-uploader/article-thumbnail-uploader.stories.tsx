@@ -87,8 +87,7 @@ export const サムネイルあり: Story = {
 	tags: ["code-only"],
 	args: {
 		articleId: 1,
-		thumbnailUrl:
-			"https://imagedelivery.net/test-hash/test-image-id/medium",
+		thumbnailUrl: "https://imagedelivery.net/test-hash/test-image-id/medium",
 		onUploadSuccess: fn(),
 		onDeleteSuccess: fn(),
 		onError: fn(),
@@ -164,8 +163,7 @@ export const 削除中: Story = {
 	tags: ["code-only"],
 	args: {
 		articleId: 1,
-		thumbnailUrl:
-			"https://imagedelivery.net/test-hash/test-image-id/medium",
+		thumbnailUrl: "https://imagedelivery.net/test-hash/test-image-id/medium",
 		onUploadSuccess: fn(),
 		onDeleteSuccess: fn(),
 		onError: fn(),

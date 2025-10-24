@@ -23,8 +23,8 @@ import {
 	type Option,
 } from "@/shared/ui";
 
-import { ArticleStatusSelector } from "./article-status-selector";
-import { ArticleThumbnailUploader } from "./article-thumbnail-uploader";
+import { ArticleStatusSelector } from "../article-status-selector/article-status-selector";
+import { ArticleThumbnailUploader } from "../article-thumbnail-uploader/article-thumbnail-uploader";
 
 /**
  * 記事編集フォームのスキーマ
