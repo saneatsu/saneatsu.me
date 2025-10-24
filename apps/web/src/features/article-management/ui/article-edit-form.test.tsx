@@ -50,6 +50,12 @@ vi.mock("@/features/article-editor", () => ({
 	),
 }));
 
+vi.mock("./article-thumbnail-uploader", () => ({
+	ArticleThumbnailUploader: () => (
+		<div data-testid="thumbnail-uploader">Thumbnail Uploader</div>
+	),
+}));
+
 vi.mock("@/shared/lib", async (importOriginal) => {
 	const actual = await importOriginal<typeof import("@/shared/lib")>();
 	return {
@@ -121,6 +127,7 @@ describe("ArticleEditForm", () => {
 					content: "Test content",
 					status: "published",
 					publishedAt: "2024-01-15T10:30:00.000Z", // ISO 8601形式
+					cfImageId: null,
 					tags: [],
 				};
 
@@ -148,6 +155,7 @@ describe("ArticleEditForm", () => {
 					content: "Draft content",
 					status: "published",
 					publishedAt: null,
+					cfImageId: null,
 					tags: [],
 				};
 
