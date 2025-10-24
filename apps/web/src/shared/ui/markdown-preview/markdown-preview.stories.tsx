@@ -18,7 +18,7 @@ type Story = StoryObj<typeof meta>;
 /**
  * 基本的なMarkdown要素の表示確認
  */
-export const 基本的なMarkdown要素: Story = {
+export const BasicMarkdownElements: Story = {
 	name: "基本的なMarkdown要素",
 	tags: ["validation"],
 	args: {
@@ -66,7 +66,7 @@ export const 基本的なMarkdown要素: Story = {
 /**
  * コードブロックのテスト
  */
-export const コードブロック: Story = {
+export const CodeBlock: Story = {
 	name: "コードブロック",
 	tags: ["validation"],
 	args: {
@@ -119,7 +119,7 @@ console.log(sum(1, 2)); // 3
 /**
  * インラインコードのテスト
  */
-export const インラインコード: Story = {
+export const InlineCode: Story = {
 	name: "インラインコード",
 	tags: ["validation"],
 	args: {
@@ -151,7 +151,7 @@ export const インラインコード: Story = {
 /**
  * ブロッククォートのテスト
  */
-export const ブロッククォート: Story = {
+export const Blockquote: Story = {
 	name: "ブロッククォート",
 	tags: ["validation"],
 	args: {
@@ -194,7 +194,7 @@ export const ブロッククォート: Story = {
 /**
  * 表のテスト
  */
-export const 表: Story = {
+export const Table: Story = {
 	name: "表",
 	tags: ["validation"],
 	args: {
@@ -278,7 +278,7 @@ export const WikiLink: Story = {
 /**
  * タグのテスト
  */
-export const タグ: Story = {
+export const Tags: Story = {
 	name: "タグ",
 	tags: ["code-only"],
 	args: {
@@ -300,8 +300,8 @@ export const タグ: Story = {
 /**
  * GFM機能のテスト
  */
-export const GFM機能: Story = {
-	name: "GFM機能（取り消し線・タスクリスト・自動リンク）",
+export const GfmFeatures: Story = {
+	name: "GFM機能（取り消し線、タスクリスト、自動リンク）",
 	tags: ["validation"],
 	args: {
 		content: `# GitHub Flavored Markdownの機能
@@ -358,7 +358,7 @@ URLを直接書くと自動リンクになります：https://example.com
 /**
  * 複雑なネスト構造のテスト
  */
-export const 複雑なネスト構造: Story = {
+export const ComplexNestedStructure: Story = {
 	name: "複雑なネスト構造",
 	tags: ["validation"],
 	args: {
@@ -423,7 +423,7 @@ export const 複雑なネスト構造: Story = {
 /**
  * 空のコンテンツのテスト
  */
-export const 空のコンテンツ: Story = {
+export const EmptyContent: Story = {
 	name: "空のコンテンツ",
 	tags: ["validation"],
 	args: {
@@ -444,7 +444,7 @@ export const 空のコンテンツ: Story = {
 /**
  * ダークモード表示のテスト
  */
-export const ダークモード表示: Story = {
+export const DarkModeDisplay: Story = {
 	name: "ダークモード表示",
 	tags: ["code-only"],
 	args: {
@@ -480,7 +480,7 @@ console.log("Dark mode is enabled");
 /**
  * 英語ロケールのテスト
  */
-export const 英語ロケール: Story = {
+export const EnglishLocale: Story = {
 	name: "英語ロケール",
 	tags: ["validation"],
 	args: {

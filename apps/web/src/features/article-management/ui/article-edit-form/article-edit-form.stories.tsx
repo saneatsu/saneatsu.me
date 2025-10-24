@@ -107,7 +107,7 @@ const mockArticle = {
 /**
  * デフォルト状態（公開済み記事）
  */
-export const 公開済み記事: Story = {
+export const PublishedArticle: Story = {
 	name: "デフォルト状態（公開済み記事）",
 	tags: ["code-only"],
 	args: {
@@ -118,7 +118,7 @@ export const 公開済み記事: Story = {
 /**
  * 下書き記事
  */
-export const 下書き記事: Story = {
+export const DraftArticle: Story = {
 	name: "下書き記事",
 	tags: ["code-only"],
 	args: {
@@ -133,7 +133,7 @@ export const 下書き記事: Story = {
 /**
  * アーカイブ済み記事
  */
-export const アーカイブ済み記事: Story = {
+export const ArchivedArticle: Story = {
 	name: "アーカイブ済み記事",
 	tags: ["code-only"],
 	args: {
@@ -147,7 +147,7 @@ export const アーカイブ済み記事: Story = {
 /**
  * サムネイルなし記事
  */
-export const サムネイルなし: Story = {
+export const NoThumbnail: Story = {
 	name: "サムネイルなし記事",
 	tags: ["code-only"],
 	args: {
@@ -161,7 +161,7 @@ export const サムネイルなし: Story = {
 /**
  * タグなし記事
  */
-export const タグなし: Story = {
+export const NoTags: Story = {
 	name: "タグなし記事",
 	tags: ["code-only"],
 	args: {

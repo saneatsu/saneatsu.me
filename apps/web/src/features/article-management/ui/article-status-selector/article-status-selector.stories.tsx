@@ -65,7 +65,7 @@ function ArticleStatusSelectorWrapper({
 /**
  * デフォルト状態 (新規作成フォーム用)
  */
-export const 新規作成用: Story = {
+export const ForNewArticle: Story = {
 	name: "デフォルト状態（draft/published）",
 	tags: ["code-only"],
 	render: () => (
@@ -81,7 +81,7 @@ export const 新規作成用: Story = {
 /**
  * 編集フォーム用（全ステータス）
  */
-export const 編集用: Story = {
+export const ForEditing: Story = {
 	name: "編集フォーム（全ステータス）",
 	tags: ["code-only"],
 	render: () => (
@@ -97,7 +97,7 @@ export const 編集用: Story = {
 /**
  * エラー表示
  */
-export const エラー表示: Story = {
+export const ErrorDisplay: Story = {
 	name: "エラー表示",
 	tags: ["code-only"],
 	render: () => (
@@ -114,7 +114,7 @@ export const エラー表示: Story = {
 /**
  * ステータス選択のインタラクション
  */
-export const ステータス選択インタラクション: Story = {
+export const StatusSelectionInteraction: Story = {
 	name: "ステータス選択インタラクション",
 	tags: ["validation"],
 	render: () => {

@@ -57,7 +57,7 @@ type Story = StoryObj<typeof meta>;
 /**
  * サムネイルなし状態
  */
-export const サムネイルなし: Story = {
+export const NoThumbnail: Story = {
 	name: "サムネイルなし状態",
 	tags: ["code-only"],
 	args: {
@@ -82,7 +82,7 @@ export const サムネイルなし: Story = {
 /**
  * サムネイルあり状態
  */
-export const サムネイルあり: Story = {
+export const WithThumbnail: Story = {
 	name: "サムネイルあり状態",
 	tags: ["code-only"],
 	args: {
@@ -107,8 +107,8 @@ export const サムネイルあり: Story = {
 /**
  * 無効状態（articleIdなし）
  */
-export const 無効状態: Story = {
-	name: "無効状態（記事保存前）",
+export const DisabledState: Story = {
+	name: "無効状態（articleIdなし）",
 	tags: ["code-only"],
 	args: {
 		articleId: undefined,
@@ -133,7 +133,7 @@ export const 無効状態: Story = {
 /**
  * アップロード中状態
  */
-export const アップロード中: Story = {
+export const Uploading: Story = {
 	name: "アップロード中状態",
 	tags: ["code-only"],
 	args: {
@@ -158,7 +158,7 @@ export const アップロード中: Story = {
 /**
  * 削除中状態
  */
-export const 削除中: Story = {
+export const Deleting: Story = {
 	name: "削除中状態",
 	tags: ["code-only"],
 	args: {
