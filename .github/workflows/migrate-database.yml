@@ -28,6 +28,7 @@ on:
 
   # PRの作成・更新時（マイグレーションファイル変更時のみ）
   pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
     paths:
       - "packages/db/drizzle/**/*.sql"
       - "packages/db/src/schema/**"
