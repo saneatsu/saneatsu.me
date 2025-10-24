@@ -79,7 +79,7 @@ const mockArticle: Article = {
 /**
  * デフォルト状態
  */
-export const デフォルト: Story = {
+export const Default: Story = {
 	name: "デフォルト状態",
 	tags: ["code-only"],
 	args: {
@@ -98,7 +98,7 @@ export const デフォルト: Story = {
 /**
  * ローディング状態
  */
-export const ローディング: Story = {
+export const Loading: Story = {
 	name: "ローディング状態（削除中）",
 	tags: ["code-only"],
 	args: {
@@ -116,7 +116,7 @@ export const ローディング: Story = {
 /**
  * プレビューボタンクリック
  */
-export const プレビュークリック: Story = {
+export const PreviewClick: Story = {
 	name: "プレビューボタンクリック",
 	tags: ["validation"],
 	args: {
@@ -148,7 +148,7 @@ export const プレビュークリック: Story = {
 /**
  * 削除ダイアログを開く
  */
-export const 削除ダイアログ表示: Story = {
+export const DeleteDialogDisplay: Story = {
 	name: "削除ダイアログ表示",
 	tags: ["validation"],
 	args: {

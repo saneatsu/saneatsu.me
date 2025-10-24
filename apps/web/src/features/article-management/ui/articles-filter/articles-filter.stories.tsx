@@ -27,7 +27,7 @@ type Story = StoryObj<typeof meta>;
 /**
  * デフォルト状態（フィルターなし）
  */
-export const デフォルト: Story = {
+export const Default: Story = {
 	name: "デフォルト状態",
 	tags: ["code-only"],
 	args: {
@@ -44,7 +44,7 @@ export const デフォルト: Story = {
 /**
  * フィルター適用済み
  */
-export const フィルター適用済み: Story = {
+export const FiltersApplied: Story = {
 	name: "フィルター適用済み",
 	tags: ["code-only"],
 	args: {
@@ -61,7 +61,7 @@ export const フィルター適用済み: Story = {
 /**
  * ローディング状態
  */
-export const ローディング: Story = {
+export const Loading: Story = {
 	name: "ローディング状態",
 	tags: ["code-only"],
 	args: {
@@ -78,7 +78,7 @@ export const ローディング: Story = {
 /**
  * ステータスフィルター選択
  */
-export const ステータスフィルター選択: Story = {
+export const StatusFilterSelection: Story = {
 	name: "ステータスフィルター選択",
 	tags: ["validation"],
 	args: {
@@ -121,7 +121,7 @@ export const ステータスフィルター選択: Story = {
 /**
  * 検索入力
  */
-export const 検索入力: Story = {
+export const SearchInput: Story = {
 	name: "検索入力（Enterキーで実行）",
 	tags: ["validation"],
 	args: {
@@ -164,7 +164,7 @@ export const 検索入力: Story = {
 /**
  * フィルターリセット
  */
-export const フィルターリセット: Story = {
+export const FilterReset: Story = {
 	name: "フィルターリセット",
 	tags: ["validation"],
 	args: {

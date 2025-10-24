@@ -65,7 +65,7 @@ type Story = StoryObj<typeof meta>;
 /**
  * 基本的な表示確認
  */
-export const 基本表示: Story = {
+export const Default: Story = {
 	name: "基本表示",
 	tags: ["code-only"],
 	args: {
@@ -82,7 +82,7 @@ export const 基本表示: Story = {
 /**
  * 空の検索結果
  */
-export const 検索結果なし: Story = {
+export const NoSearchResults: Story = {
 	name: "検索結果なし",
 	tags: ["code-only"],
 	args: {
@@ -110,8 +110,8 @@ export const 検索結果なし: Story = {
 /**
  * キーボードナビゲーションのテスト
  */
-export const キーボードナビゲーション: Story = {
-	name: "キーボードナビゲーション（Tab/矢印キー）",
+export const KeyboardNavigation: Story = {
+	name: "キーボードナビゲーション",
 	tags: ["code-only", "!test"],
 	args: {
 		open: true,
@@ -163,7 +163,7 @@ export const キーボードナビゲーション: Story = {
 /**
  * Ctrl+P/Ctrl+Nでのナビゲーション
  */
-export const CtrlPNナビゲーション: Story = {
+export const CtrlPNNavigation: Story = {
 	name: "Ctrl+P/Ctrl+Nでのナビゲーション",
 	tags: ["code-only", "!test"],
 	args: {
@@ -252,7 +252,7 @@ export const CtrlPNナビゲーション: Story = {
 /**
  * ESCキーでの閉じる動作
  */
-export const ESCキーで閉じる: Story = {
+export const CloseWithEscKey: Story = {
 	name: "ESCキーで閉じる",
 	tags: ["validation"],
 	args: {
@@ -291,7 +291,7 @@ export const ESCキーで閉じる: Story = {
 /**
  * アイテム選択のテスト
  */
-export const アイテム選択: Story = {
+export const ItemSelection: Story = {
 	name: "アイテム選択",
 	tags: ["validation"],
 	args: {
@@ -335,8 +335,8 @@ export const アイテム選択: Story = {
 /**
  * Enterキーでの選択（MDEditor内でのシミュレーション）
  */
-export const Enterキーで選択: Story = {
-	name: "Enterキーで選択",
+export const SelectWithEnterKey: Story = {
+	name: "Enterキーでの選択",
 	tags: ["validation"],
 	args: {
 		open: true,
@@ -394,7 +394,7 @@ export const Enterキーで選択: Story = {
 /**
  * スクロール動作の確認
  */
-export const スクロール動作: Story = {
+export const ScrollBehavior: Story = {
 	name: "スクロール動作",
 	tags: ["code-only"],
 	args: {
@@ -426,7 +426,7 @@ export const スクロール動作: Story = {
 /**
  * 位置調整の確認（画面下部）
  */
-export const 画面下部での表示: Story = {
+export const DisplayAtBottomOfScreen: Story = {
 	name: "画面下部での表示",
 	tags: ["code-only"],
 	args: {
@@ -443,7 +443,7 @@ export const 画面下部での表示: Story = {
 /**
  * ローディング状態（実際のAPI通信をシミュレート）
  */
-export const ローディング状態: Story = {
+export const LoadingState: Story = {
 	name: "ローディング状態",
 	tags: ["code-only"],
 	args: {
@@ -462,7 +462,7 @@ export const ローディング状態: Story = {
 /**
  * 記事と見出しの混在表示
  */
-export const 記事と見出しの混在: Story = {
+export const MixedArticlesAndHeadings: Story = {
 	name: "記事と見出しの混在",
 	tags: ["code-only"],
 	args: {
@@ -517,7 +517,7 @@ export const 記事と見出しの混在: Story = {
 /**
  * カーソル位置チェックの動作確認
  */
-export const カーソル位置チェック: Story = {
+export const CursorPositionCheck: Story = {
 	name: "カーソル位置チェック",
 	tags: ["code-only", "!test"],
 	args: {
@@ -606,8 +606,8 @@ export const カーソル位置チェック: Story = {
  * IME入力競合の防止テスト
  * 日本語変換中のEnterがPopover選択に影響しないことを確認
  */
-export const IME入力競合防止: Story = {
-	name: "IME入力競合防止テスト",
+export const ImeInputConflictPrevention: Story = {
+	name: "IME入力競合の防止テスト",
 	tags: ["code-only", "!test"],
 	args: {
 		open: true,
@@ -680,7 +680,7 @@ export const IME入力競合防止: Story = {
 /**
  * デバウンスの動作確認
  */
-export const デバウンス動作確認: Story = {
+export const DebounceCheck: Story = {
 	name: "デバウンス動作確認",
 	tags: ["validation"],
 	args: {

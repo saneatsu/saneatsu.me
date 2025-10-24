@@ -132,7 +132,7 @@ const mockArticles: Article[] = [
 /**
  * デフォルト状態（記事データあり）
  */
-export const デフォルト: Story = {
+export const Default: Story = {
 	name: "デフォルト状態（記事あり）",
 	tags: ["code-only"],
 	args: {
@@ -193,7 +193,7 @@ export const デフォルト: Story = {
 /**
  * ローディング状態
  */
-export const ローディング: Story = {
+export const Loading: Story = {
 	name: "ローディング状態",
 	tags: ["code-only"],
 	args: {
@@ -221,7 +221,7 @@ export const ローディング: Story = {
 /**
  * 空状態
  */
-export const 空状態: Story = {
+export const EmptyState: Story = {
 	name: "空状態（記事なし）",
 	tags: ["code-only"],
 	args: {

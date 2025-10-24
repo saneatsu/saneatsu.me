@@ -141,7 +141,7 @@ const user: User = {
 /**
  * 基本的な表示確認用のStory
  */
-export const 基本表示: Story = {
+export const Default: Story = {
 	name: "基本表示",
 	tags: ["code-only"],
 	args: {
@@ -154,7 +154,7 @@ export const 基本表示: Story = {
 /**
  * 記事ヘッダーのテスト
  */
-export const 記事ヘッダーテスト: Story = {
+export const ArticleHeaderTest: Story = {
 	name: "記事ヘッダーテスト",
 	tags: ["validation"],
 	args: {
@@ -191,7 +191,7 @@ export const 記事ヘッダーテスト: Story = {
 /**
  * タグ表示のテスト
  */
-export const タグ表示テスト: Story = {
+export const TagsDisplayTest: Story = {
 	name: "タグ表示テスト",
 	tags: ["code-only"],
 	args: {
@@ -204,8 +204,8 @@ export const タグ表示テスト: Story = {
 /**
  * タグなし記事のテスト
  */
-export const タグなし記事テスト: Story = {
-	name: "タグなし記事テスト",
+export const NoTagsArticleTest: Story = {
+	name: "タグなし記事",
 	tags: ["code-only"],
 	args: {
 		article: {
@@ -220,7 +220,7 @@ export const タグなし記事テスト: Story = {
 /**
  * 英語ロケールでのテスト
  */
-export const 英語ロケールテスト: Story = {
+export const EnglishLocaleTest: Story = {
 	name: "英語ロケールテスト",
 	tags: ["validation"],
 	args: {
@@ -247,8 +247,8 @@ export const 英語ロケールテスト: Story = {
 /**
  * 下書き記事のテスト
  */
-export const 下書き記事テスト: Story = {
-	name: "下書き記事テスト",
+export const DraftArticleTest: Story = {
+	name: "下書き記事",
 	tags: ["validation"],
 	args: {
 		article: draftArticle,
@@ -275,8 +275,8 @@ export const 下書き記事テスト: Story = {
 /**
  * Markdownレンダリングのテスト
  */
-export const Markdownレンダリングテスト: Story = {
-	name: "Markdownレンダリングテスト",
+export const MarkdownRenderingTest: Story = {
+	name: "Markdownレンダリング",
 	tags: ["validation"],
 	args: {
 		article: markdownArticle,
@@ -316,8 +316,8 @@ export const Markdownレンダリングテスト: Story = {
 /**
  * セマンティック構造の確認
  */
-export const セマンティック構造確認: Story = {
-	name: "セマンティック構造確認",
+export const SemanticStructureCheck: Story = {
+	name: "セマンティック構造",
 	tags: ["validation"],
 	args: {
 		article: mockArticle,
@@ -352,7 +352,7 @@ export const セマンティック構造確認: Story = {
 /**
  * レスポンシブ表示の確認
  */
-export const モバイル表示: Story = {
+export const MobileView: Story = {
 	name: "モバイル表示",
 	tags: ["code-only"],
 	args: {
@@ -369,7 +369,7 @@ export const モバイル表示: Story = {
 /**
  * 長いコンテンツでの表示確認
  */
-export const 長いコンテンツ: Story = {
+export const LongContent: Story = {
 	name: "長いコンテンツ",
 	tags: ["code-only"],
 	args: {
@@ -385,8 +385,8 @@ export const 長いコンテンツ: Story = {
 /**
  * 更新日が今日の場合のテスト
  */
-export const 更新日が今日: Story = {
-	name: "更新日が今日の場合",
+export const UpdatedToday: Story = {
+	name: "更新日が今日",
 	tags: ["validation"],
 	args: {
 		article: {
@@ -416,8 +416,8 @@ export const 更新日が今日: Story = {
 /**
  * 更新日が5日前の場合のテスト
  */
-export const 更新日が5日前: Story = {
-	name: "更新日が5日前の場合",
+export const Updated5DaysAgo: Story = {
+	name: "更新日が5日前",
 	tags: ["validation"],
 	args: {
 		article: {
@@ -447,8 +447,8 @@ export const 更新日が5日前: Story = {
 /**
  * 更新日が10日前の場合のテスト（境界値）
  */
-export const 更新日が10日前: Story = {
-	name: "更新日が10日前の場合（境界値）",
+export const Updated10DaysAgo: Story = {
+	name: "更新日が10日前（境界値）",
 	tags: ["validation"],
 	args: {
 		article: {
@@ -478,8 +478,8 @@ export const 更新日が10日前: Story = {
 /**
  * 更新日が15日前の場合のテスト（通常の日付形式）
  */
-export const 更新日が15日前: Story = {
-	name: "更新日が15日前の場合（通常の日付形式）",
+export const Updated15DaysAgo: Story = {
+	name: "更新日が15日前（通常の日付形式）",
 	tags: ["validation"],
 	args: {
 		article: {
@@ -512,8 +512,8 @@ export const 更新日が15日前: Story = {
 /**
  * 更新日がnullの場合のテスト
  */
-export const 更新日がnull: Story = {
-	name: "更新日がnullの場合",
+export const UpdatedAtNull: Story = {
+	name: "更新日がnull",
 	tags: ["validation"],
 	args: {
 		article: {
@@ -539,7 +539,7 @@ export const 更新日がnull: Story = {
 /**
  * 長いタイトル（100文字以上）のテスト
  */
-export const 長いタイトル: Story = {
+export const LongTitle: Story = {
 	name: "長いタイトル（100文字以上）",
 	tags: ["code-only"],
 	args: {
@@ -556,7 +556,7 @@ export const 長いタイトル: Story = {
 /**
  * 特殊文字を含むタイトルのテスト
  */
-export const 特殊文字を含むタイトル: Story = {
+export const TitleWithSpecialCharacters: Story = {
 	name: "特殊文字を含むタイトル（絵文字・記号）",
 	tags: ["code-only"],
 	args: {
@@ -572,7 +572,7 @@ export const 特殊文字を含むタイトル: Story = {
 /**
  * Wiki Linkを含むコンテンツのテスト
  */
-export const WikiLinkを含むコンテンツ: Story = {
+export const ContentWithWikiLinks: Story = {
 	name: "Wiki Linkを含むコンテンツ",
 	tags: ["code-only"],
 	args: {
@@ -603,7 +603,7 @@ useStateの使い方については [[react-hooks-guide#useState]] を確認し�
 /**
  * 画像を含むコンテンツのテスト
  */
-export const 画像を含むコンテンツ: Story = {
+export const ContentWithImages: Story = {
 	name: "画像を含むコンテンツ",
 	tags: ["code-only"],
 	args: {
@@ -638,7 +638,7 @@ useEffectは以下のタイミングで実行されます：
 /**
  * 複雑なMarkdown構造のテスト
  */
-export const 複雑なMarkdown構造: Story = {
+export const ComplexMarkdownStructure: Story = {
 	name: "複雑なMarkdown構造（ネストリスト・表）",
 	tags: ["code-only"],
 	args: {
@@ -718,7 +718,7 @@ export const 複雑なMarkdown構造: Story = {
 /**
  * 多数のタグ（10個以上）のテスト
  */
-export const 多数のタグ: Story = {
+export const ManyTags: Story = {
 	name: "多数のタグ（10個以上）",
 	tags: ["code-only"],
 	args: {
@@ -831,8 +831,8 @@ export const 多数のタグ: Story = {
 /**
  * 閲覧数が非常に大きい記事のテスト
  */
-export const 閲覧数が非常に大きい記事: Story = {
-	name: "閲覧数が非常に大きい記事（10万回以上）",
+export const VeryHighViewCount: Story = {
+	name: "閲覧数が非常に大きい記事（10万以上）",
 	tags: ["code-only"],
 	args: {
 		article: {
