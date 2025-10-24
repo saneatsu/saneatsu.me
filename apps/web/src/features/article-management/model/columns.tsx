@@ -2,6 +2,7 @@
 
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 import { ARTICLE_STATUS_CONFIG, type Article } from "@/shared/model";
@@ -76,14 +77,17 @@ export const columns: ColumnDef<Article>[] = [
 		header: "画像",
 		cell: ({ row }) => {
 			const article = row.original;
+			const accountHash = process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH;
+
 			return (
-				<div className="relative h-12 w-12 overflow-hidden rounded-md bg-muted">
-					{article.cfImageId ? (
-						<div
-							className="h-full w-full bg-cover bg-center"
-							style={{
-								backgroundImage: `url(https://imagedelivery.net/placeholder/${article.cfImageId}/public)`,
-							}}
+				<div className="relative h-12 w-12 overflow-hidden rounded-md bg-muted flex-shrink-0">
+					{article.cfImageId && accountHash ? (
+						<Image
+							src={`https://imagedelivery.net/${accountHash}/${article.cfImageId}/small`}
+							alt={article.title || "記事のサムネイル"}
+							fill
+							className="object-cover"
+							sizes="48px"
 						/>
 					) : (
 						<div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
