@@ -24,9 +24,6 @@ export type Env = {
 	/** 管理者メールアドレス（カンマ区切り）（オプショナル） */
 	ADMIN_EMAILS?: string;
 
-	/** テスト用データベースURL（オプショナル） */
-	TEST_DATABASE_URL?: string;
-
 	/** Cloudflare Account ID */
 	CLOUDFLARE_ACCOUNT_ID: string;
 
