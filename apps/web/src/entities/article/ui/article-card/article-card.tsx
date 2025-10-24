@@ -1,8 +1,9 @@
+import Image from "next/image";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 
 import type { Article } from "@/shared";
-import { formatRelativeDate } from "@/shared/lib";
+import { formatRelativeDate, getCloudflareImageUrl } from "@/shared/lib";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui";
 
 interface ArticleCardProps {
@@ -29,7 +30,20 @@ export function ArticleCard({ article }: ArticleCardProps) {
 
 	return (
 		<Link href={`/articles/${article.slug}`}>
-			<Card className="group hover:shadow-md transition-shadow cursor-pointer">
+			<Card className="group hover:shadow-md transition-shadow cursor-pointer overflow-hidden">
+				{/* サムネイル画像 */}
+				{article.cfImageId && (
+					<div className="relative w-full aspect-video overflow-hidden">
+						<Image
+							src={getCloudflareImageUrl(article.cfImageId, "medium") ?? ""}
+							alt={article.title ?? ""}
+							fill
+							className="object-cover transition-transform group-hover:scale-105"
+							sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+						/>
+					</div>
+				)}
+
 				<CardHeader>
 					<div className="flex items-center justify-between mb-2 text-sm text-muted-foreground">
 						{updatedDateInfo && (
