@@ -143,6 +143,14 @@ export const columns: ColumnDef<Article>[] = [
 			);
 		},
 		enableSorting: false,
+		filterFn: (row, _id, value) => {
+			// valueは選択されたタグIDの配列（文字列形式）
+			const selectedTagIds = value as string[];
+			const article = row.original;
+			const articleTagIds = article.tags.map((tag) => tag.id.toString());
+			// 記事のタグIDと選択されたタグIDの交差をチェック
+			return selectedTagIds.some((tagId) => articleTagIds.includes(tagId));
+		},
 	},
 	{
 		accessorKey: "status",
