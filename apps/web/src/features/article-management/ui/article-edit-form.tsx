@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { useCheckSlug, useUpdate } from "@/entities/article";
@@ -20,6 +21,7 @@ import {
 } from "@/shared/ui";
 
 import { ArticleStatusSelector } from "./article-status-selector";
+import { ArticleThumbnailUploader } from "./article-thumbnail-uploader";
 
 /**
  * 記事編集フォームのスキーマ
@@ -58,6 +60,7 @@ interface ArticleEditFormProps {
 		content: string;
 		status: string;
 		publishedAt: string | null;
+		cfImageId: string | null;
 		tags: Array<{
 			id: number;
 			slug: string;
@@ -93,6 +96,14 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 	const [publishedAtDate, setPublishedAtDate] = useState<Date | undefined>(
 		article.publishedAt ? new Date(article.publishedAt) : undefined
 	);
+	const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(() => {
+		// 初期サムネイルURLを生成
+		if (article.cfImageId) {
+			const accountHash = process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH;
+			return `https://imagedelivery.net/${accountHash}/${article.cfImageId}/medium`;
+		}
+		return null;
+	});
 
 	const {
 		register,
@@ -287,6 +298,18 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 					記事に関連するタグを選択してください
 				</p>
 			</div>
+
+			{/* サムネイル画像 */}
+			<ArticleThumbnailUploader
+				articleId={article.id}
+				thumbnailUrl={thumbnailUrl}
+				onUploadSuccess={(imageUrl) => {
+					setThumbnailUrl(imageUrl);
+				}}
+				onDeleteSuccess={() => {
+					setThumbnailUrl(null);
+				}}
+			/>
 
 			{/* 本文エディタ */}
 			<div className="space-y-2">
