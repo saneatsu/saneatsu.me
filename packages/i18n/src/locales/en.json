@@ -84,9 +84,12 @@
 	},
 	"article": {
 		"publishedAt": "Published",
+		"updatedAt": "Updated",
 		"viewCount": "Viewed {count} times",
 		"readMore": "Read more",
 		"backToList": "Back to articles",
+		"today": "Today",
+		"daysAgo": "{days} days ago",
 		"notFound": {
 			"title": "Article not found",
 			"message": "The article you're looking for doesn't exist or may have been deleted."

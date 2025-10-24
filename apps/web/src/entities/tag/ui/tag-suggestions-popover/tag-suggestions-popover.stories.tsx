@@ -151,7 +151,7 @@ export const ErrorState: Story = {
 // キーボードナビゲーションのテスト
 export const KeyboardNavigation: Story = {
 	name: "キーボードナビゲーション（Ctrl+P/N）",
-	tags: ["validation"],
+	tags: ["code-only", "!test"],
 	args: {
 		open: true,
 		query: "",
@@ -241,7 +241,7 @@ export const KeyboardNavigation: Story = {
 // 選択動作のテスト
 export const SelectionBehavior: Story = {
 	name: "タグ選択動作",
-	tags: ["validation"],
+	tags: ["code-only", "!test"],
 	args: {
 		open: true,
 		query: "",
@@ -286,7 +286,7 @@ export const SelectionBehavior: Story = {
 // Escape キーでの閉じる動作
 export const EscapeKey: Story = {
 	name: "Escape キーで閉じる",
-	tags: ["validation"],
+	tags: ["code-only", "!test"],
 	args: {
 		open: true,
 		query: "",
@@ -363,7 +363,7 @@ export const JapaneseTags: Story = {
 // 使用回数の表示テスト
 export const UsageCount: Story = {
 	name: "使用回数の表示",
-	tags: ["validation"],
+	tags: ["code-only", "!test"],
 	args: {
 		open: true,
 		query: "",

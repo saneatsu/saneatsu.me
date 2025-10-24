@@ -17,6 +17,8 @@ type UseGetAllArticlesOptions = {
 	language?: "ja" | "en";
 	/** 記事のステータス（複数選択可能） */
 	status?: ArticleStatus[];
+	/** タグID（複数選択可能） */
+	tagIds?: number[];
 	/** 検索キーワード */
 	search?: string;
 	/** ソート対象フィールド */
@@ -48,6 +50,7 @@ export function useGetAllArticles({
 	limit = 10,
 	language = "ja",
 	status,
+	tagIds,
 	search,
 	sortBy = "createdAt",
 	sortOrder = "desc",
@@ -59,6 +62,7 @@ export function useGetAllArticles({
 			limit,
 			language,
 			status,
+			tagIds,
 			search,
 			sortBy,
 			sortOrder,
@@ -71,6 +75,7 @@ export function useGetAllArticles({
 					language,
 					// 配列の場合はカンマ区切りの文字列に変換
 					status: status && status.length > 0 ? status.join(",") : undefined,
+					tags: tagIds && tagIds.length > 0 ? tagIds.join(",") : undefined,
 					search,
 					sortBy,
 					sortOrder,

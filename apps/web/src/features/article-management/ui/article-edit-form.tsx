@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CalendarIcon, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -12,6 +12,7 @@ import { ArticleMarkdownEditor } from "@/features/article-editor";
 import { useDebounce } from "@/shared/lib";
 import {
 	Button,
+	DateTimePicker,
 	Input,
 	Label,
 	MultipleSelector,
@@ -89,6 +90,9 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 			label: tag.translations.ja,
 		}))
 	);
+	const [publishedAtDate, setPublishedAtDate] = useState<Date | undefined>(
+		article.publishedAt ? new Date(article.publishedAt) : undefined
+	);
 
 	const {
 		register,
@@ -103,7 +107,6 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 			slug: article.slug || "",
 			content: article.content || "",
 			status: article.status as "draft" | "published" | "archived",
-			publishedAt: article.publishedAt || undefined,
 		},
 	});
 
@@ -137,10 +140,10 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 			setFormError(""); // エラーメッセージをクリア
 
 			// publishedAtがある場合、ISO 8601形式に変換
-			let publishedAtISO: string | undefined = data.publishedAt;
-			if (data.publishedAt && data.status === "published") {
-				// datetime-local形式(YYYY-MM-DDTHH:mm)をISO形式に変換
-				publishedAtISO = new Date(data.publishedAt).toISOString();
+			let publishedAtISO: string | undefined;
+			if (publishedAtDate && data.status === "published") {
+				// DateオブジェクトをISO形式に変換
+				publishedAtISO = publishedAtDate.toISOString();
 			}
 
 			// タグIDを抽出
@@ -249,14 +252,11 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 			{watchStatus === "published" && (
 				<div className="space-y-2">
 					<Label htmlFor="publishedAt">公開日時</Label>
-					<div className="relative">
-						<Input
-							id="publishedAt"
-							type="datetime-local"
-							{...register("publishedAt")}
-						/>
-						<CalendarIcon className="absolute right-3 top-3 h-4 w-4 text-muted-foreground pointer-events-none" />
-					</div>
+					<DateTimePicker
+						value={publishedAtDate}
+						onChange={setPublishedAtDate}
+						placeholder="公開日時を選択してください"
+					/>
 					<p className="text-sm text-muted-foreground">
 						空欄の場合は現在時刻が設定されます
 					</p>

@@ -3,16 +3,9 @@ import { articleListQuerySchema, type SortOrder } from "@saneatsu/schemas";
 import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
 
 import { getDatabase } from "@/lib/database";
-import type { getAllArticlesRoute } from "./get-all-articles.openapi";
+import type { Env } from "@/types/env";
 
-/**
- * Cloudflare Workers環境の型定義
- */
-type Env = {
-	TURSO_DATABASE_URL: string;
-	TURSO_AUTH_TOKEN: string;
-	GEMINI_API_KEY?: string;
-};
+import type { getAllArticlesRoute } from "./get-all-articles.openapi";
 
 type Handler = RouteHandler<typeof getAllArticlesRoute, { Bindings: Env }>;
 
@@ -54,6 +47,7 @@ export const getAllArticles: Handler = async (c) => {
 			limit,
 			language: lang,
 			status,
+			tagIds,
 			search,
 			sortBy,
 			sortOrder,
@@ -70,6 +64,16 @@ export const getAllArticles: Handler = async (c) => {
 		// ステータス条件
 		if (status && status.length > 0) {
 			conditions.push(inArray(articles.status, status));
+		}
+
+		// タグ条件
+		if (tagIds && tagIds.length > 0) {
+			// 指定されたタグのいずれかを持つ記事IDを取得するサブクエリ
+			const articlesWithTags = db
+				.selectDistinct({ articleId: articleTags.articleId })
+				.from(articleTags)
+				.where(inArray(articleTags.tagId, tagIds));
+			conditions.push(inArray(articles.id, articlesWithTags));
 		}
 
 		// 検索条件
@@ -93,9 +97,7 @@ export const getAllArticles: Handler = async (c) => {
 				break;
 			case "viewCount":
 				orderByClause =
-					order === "asc"
-						? asc(articleTranslations.viewCount)
-						: desc(articleTranslations.viewCount);
+					order === "asc" ? asc(articles.viewCount) : desc(articles.viewCount);
 				break;
 			case "publishedAt":
 				orderByClause =
@@ -124,7 +126,7 @@ export const getAllArticles: Handler = async (c) => {
 				updatedAt: articles.updatedAt,
 				title: articleTranslations.title,
 				content: articleTranslations.content,
-				viewCount: sql<number>`COALESCE(${articleTranslations.viewCount}, 0)`,
+				viewCount: articles.viewCount,
 			})
 			.from(articles)
 			.leftJoin(

@@ -18,6 +18,4 @@ export const articleTranslations = sqliteTable("article_translations", {
 	articleId: integer("article_id")
 		.notNull()
 		.references(() => articles.id, { onDelete: "cascade" }),
-	/** 閲覧数（言語ごとにカウント） */
-	viewCount: integer("view_count").notNull().default(0),
 });

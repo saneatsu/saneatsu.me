@@ -1,5 +1,7 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+
 import { createDbClient } from "../../../lib/db";
+import type { Env } from "../../../types/env";
 import {
 	AuthErrorSchema,
 	UpsertUserSchema,
@@ -10,12 +12,6 @@ import {
 	isAdminEmail,
 	upsertUserFromGoogle,
 } from "../service/service";
-
-type Env = {
-	TURSO_DATABASE_URL: string;
-	TURSO_AUTH_TOKEN: string;
-	ADMIN_EMAILS?: string;
-};
 
 export const authRoute = new OpenAPIHono<{ Bindings: Env }>();
 
