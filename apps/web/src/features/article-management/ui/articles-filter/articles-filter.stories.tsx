@@ -143,9 +143,8 @@ export const 検索入力: Story = {
 		const canvas = within(canvasElement);
 
 		// 検索入力欄を見つける
-		const searchInput = canvas.getByPlaceholderText(
-			/日本語記事のタイトル・内容で検索/i
-		);
+		const searchInput =
+			canvas.getByPlaceholderText(/日本語記事のタイトル・内容で検索/i);
 
 		// テキストを入力
 		await userEvent.type(searchInput, "TypeScript");

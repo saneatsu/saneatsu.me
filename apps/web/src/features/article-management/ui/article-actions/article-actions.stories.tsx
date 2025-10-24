@@ -172,9 +172,8 @@ export const 削除ダイアログ表示: Story = {
 		const dialogTitle = await canvas.findByText("記事の削除");
 		await expect(dialogTitle).toBeInTheDocument();
 
-		const dialogDescription = await canvas.findByText(
-			/記事「テスト記事」を削除しますか？/i
-		);
+		const dialogDescription =
+			await canvas.findByText(/記事「テスト記事」を削除しますか？/i);
 		await expect(dialogDescription).toBeInTheDocument();
 	},
 };

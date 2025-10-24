@@ -8,7 +8,7 @@ import Link from "next/link";
 import { ARTICLE_STATUS_CONFIG, type Article } from "@/shared/model";
 import { Badge, Button } from "@/shared/ui";
 
-import { ArticleActions } from "../ui/article-actions";
+import { ArticleActions } from "../ui/article-actions/article-actions";
 
 /**
  * 記事ステータスフィルター用のオプション定義
