@@ -29,6 +29,7 @@ import {
 } from "@/shared/ui";
 
 import { ArticleStatusSelector } from "./article-status-selector";
+import { ArticleThumbnailUploader } from "./article-thumbnail-uploader";
 
 /**
  * 記事作成フォームのスキーマ
@@ -261,6 +262,13 @@ export function ArticleNewForm() {
 						記事に関連するタグを選択してください
 					</p>
 				</div>
+
+				{/* サムネイル画像 */}
+				<ArticleThumbnailUploader
+					articleId={undefined}
+					thumbnailUrl={null}
+					disabled={true}
+				/>
 
 				{/* 公開日時（公開時のみ表示） */}
 				{watch("status") === "published" && (
