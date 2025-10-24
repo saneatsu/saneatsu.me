@@ -237,7 +237,7 @@ export function ArticleThumbnailUploader({
 
 			{/* ファイル選択とプレビューなし時の表示 */}
 			{!displayUrl && (
-				<div className="w-full max-w-md aspect-video rounded-lg border-2 border-dashed border-muted-foreground/25 bg-muted/50 flex items-center justify-center">
+				<div className="w-full max-w-md aspect-video rounded-lg border-2 border-dashed border-border bg-muted/50 flex items-center justify-center">
 					<div className="text-center space-y-2">
 						<ImagePlus className="h-12 w-12 mx-auto text-muted-foreground" />
 						<p className="text-sm text-muted-foreground">
