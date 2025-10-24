@@ -157,6 +157,11 @@ export { Input } from "./input/input";
 export { Label } from "./label/label";
 // Locale Switcher
 export { LocaleSwitcher } from "./locale-switcher/locale-switcher";
+// Markdown Preview
+export {
+	MarkdownPreview,
+	type MarkdownPreviewProps,
+} from "./markdown-preview/markdown-preview";
 // Multiple Selector
 export {
 	MultipleSelector,
