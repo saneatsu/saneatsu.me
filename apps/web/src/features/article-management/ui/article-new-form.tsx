@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -13,6 +13,8 @@ import { useGetAllTags } from "@/entities/tag";
 import { ArticleMarkdownEditor } from "@/features/article-editor";
 import { useDebounce } from "@/shared/lib";
 import {
+	Alert,
+	AlertDescription,
 	AlertDialog,
 	AlertDialogAction,
 	AlertDialogContent,
@@ -20,6 +22,7 @@ import {
 	AlertDialogFooter,
 	AlertDialogHeader,
 	AlertDialogTitle,
+	AlertTitle,
 	Button,
 	DateTimePicker,
 	Input,
@@ -70,6 +73,7 @@ export function ArticleNewForm() {
 	const [showSlugErrorDialog, setShowSlugErrorDialog] = useState(false);
 	const [selectedTags, setSelectedTags] = useState<Option[]>([]);
 	const [publishedAtDate, setPublishedAtDate] = useState<Date | undefined>();
+	const [thumbnailError, setThumbnailError] = useState<string>("");
 	const router = useRouter();
 
 	const {
@@ -169,6 +173,23 @@ export function ArticleNewForm() {
 	return (
 		<>
 			<form onSubmit={handleSubmit(onSubmit)} className="space-y-8 max-w-4xl">
+				{/* サムネイルエラー表示 */}
+				{thumbnailError && (
+					<Alert variant="destructive">
+						<AlertCircle className="h-4 w-4" />
+						<AlertTitle>サムネイル画像エラー</AlertTitle>
+						<AlertDescription>{thumbnailError}</AlertDescription>
+					</Alert>
+				)}
+
+				{/* サムネイル画像 */}
+				<ArticleThumbnailUploader
+					articleId={undefined}
+					thumbnailUrl={null}
+					disabled={true}
+					onError={setThumbnailError}
+				/>
+
 				{/* タイトル */}
 				<div className="space-y-2">
 					<Label htmlFor="title" className="required">
@@ -262,13 +283,6 @@ export function ArticleNewForm() {
 						記事に関連するタグを選択してください
 					</p>
 				</div>
-
-				{/* サムネイル画像 */}
-				<ArticleThumbnailUploader
-					articleId={undefined}
-					thumbnailUrl={null}
-					disabled={true}
-				/>
 
 				{/* 公開日時（公開時のみ表示） */}
 				{watch("status") === "published" && (
