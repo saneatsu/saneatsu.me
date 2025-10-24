@@ -134,7 +134,7 @@ export function DataTableFacetedFilter<TData, TValue>({
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
 			<PopoverTrigger asChild>
-				<Button variant="outline" size="sm" className="h-8 border-dashed">
+				<Button variant="outline" size="sm" className="h-9 border-dashed">
 					{selectedValues?.size > 0 ? (
 						// biome-ignore lint/a11y/useSemanticElements: PopoverTrigger内のカスタムクリアボタンコンポーネント
 						<div

@@ -47,6 +47,7 @@ export const getAllArticles: Handler = async (c) => {
 			limit,
 			language: lang,
 			status,
+			tagIds,
 			search,
 			sortBy,
 			sortOrder,
@@ -63,6 +64,16 @@ export const getAllArticles: Handler = async (c) => {
 		// ステータス条件
 		if (status && status.length > 0) {
 			conditions.push(inArray(articles.status, status));
+		}
+
+		// タグ条件
+		if (tagIds && tagIds.length > 0) {
+			// 指定されたタグのいずれかを持つ記事IDを取得するサブクエリ
+			const articlesWithTags = db
+				.selectDistinct({ articleId: articleTags.articleId })
+				.from(articleTags)
+				.where(inArray(articleTags.tagId, tagIds));
+			conditions.push(inArray(articles.id, articlesWithTags));
 		}
 
 		// 検索条件

@@ -20,6 +20,10 @@ const articlesOpenApiQuerySchema = z.object({
 		example: "published,draft",
 		description: "記事のステータス（カンマ区切りで複数指定可能）",
 	}),
+	tags: z.string().optional().openapi({
+		example: "1,2,3",
+		description: "タグID（カンマ区切りで複数指定可能）",
+	}),
 	search: z.string().optional().openapi({
 		example: "検索キーワード",
 		description: "タイトル検索",
