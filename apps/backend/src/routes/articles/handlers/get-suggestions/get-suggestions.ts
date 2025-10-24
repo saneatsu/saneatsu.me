@@ -3,20 +3,13 @@ import { and, eq, sql } from "drizzle-orm";
 import type { z } from "zod";
 
 import { getDatabase } from "@/lib/database";
+import type { Env } from "@/types/env";
 import { extractHeadings } from "@/utils/markdown";
+
 import type {
 	getSuggestionsRoute,
 	SuggestionItemSchema,
 } from "./get-suggestions.openapi";
-
-/**
- * Cloudflare Workers環境の型定義
- */
-type Env = {
-	TURSO_DATABASE_URL: string;
-	TURSO_AUTH_TOKEN: string;
-	GEMINI_API_KEY?: string;
-};
 
 type Handler = RouteHandler<typeof getSuggestionsRoute, { Bindings: Env }>;
 

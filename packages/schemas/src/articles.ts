@@ -26,7 +26,6 @@ export const articleTranslationSchema = z.object({
 		.max(50000, i18nMessage("validation.custom.article.contentTooLong")),
 	language: languageSchema,
 	articleId: idSchema,
-	viewCount: z.number().int().min(0).default(0),
 });
 
 /** 記事翻訳作成時の入力スキーマ */
@@ -46,6 +45,7 @@ export const articleSchema = z.object({
 	cfImageId: cloudflareImageIdSchema,
 	status: articleStatusSchema,
 	publishedAt: z.string().datetime().nullable(),
+	viewCount: z.number().int().min(0).default(0),
 	createdAt: dateTimeSchema,
 	updatedAt: dateTimeSchema,
 });
@@ -146,6 +146,30 @@ export const articleListQuerySchema = z.object({
 		.transform((val) => Number.parseInt(val, 10))
 		.refine((val) => !Number.isNaN(val) && val > 0)
 		.optional(),
+	tagIds: z
+		.preprocess((val) => {
+			// 配列の場合はそのまま返す
+			if (Array.isArray(val)) {
+				return val;
+			}
+			// 文字列の場合はカンマ区切りで分割して配列に変換
+			if (typeof val === "string") {
+				return val.split(",").filter(Boolean);
+			}
+			// それ以外の場合はundefined
+			return undefined;
+		}, z.array(z.string()).optional())
+		.optional()
+		.transform((val) => {
+			// 配列の各要素を数値に変換
+			if (!val) return undefined;
+			return val
+				.map((v) => {
+					const num = Number.parseInt(v, 10);
+					return !Number.isNaN(num) && num > 0 ? num : null;
+				})
+				.filter((v): v is number => v !== null);
+		}),
 	language: languageSchema.default("ja"),
 	sortBy: sortableColumnsSchema.optional(),
 	sortOrder: sortOrderSchema.default("desc"),

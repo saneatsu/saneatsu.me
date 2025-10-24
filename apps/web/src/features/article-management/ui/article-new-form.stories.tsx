@@ -7,6 +7,12 @@ import { ArticleNewForm } from "./article-new-form";
 const meta: Meta<typeof ArticleNewForm> = {
 	component: ArticleNewForm,
 	parameters: {
+		nextjs: {
+			appDirectory: true,
+			navigation: {
+				pathname: "/admin/articles/new",
+			},
+		},
 		viewport: {
 			defaultViewport: "reset",
 		},
@@ -44,6 +50,23 @@ const meta: Meta<typeof ArticleNewForm> = {
 						fromCache: false,
 					});
 				}),
+				// タグ一覧API
+				http.get("*/api/tags", () => {
+					return HttpResponse.json({
+						data: [
+							{
+								id: 1,
+								translations: { ja: "React", en: "React" },
+								usageCount: 5,
+							},
+							{
+								id: 2,
+								translations: { ja: "TypeScript", en: "TypeScript" },
+								usageCount: 3,
+							},
+						],
+					});
+				}),
 			],
 		},
 	},
@@ -58,7 +81,7 @@ type Story = StoryObj<typeof meta>;
  */
 export const UnixKeyBindings: Story = {
 	name: "Unixキーバインド（Ctrl+N/P/B/F）",
-	tags: ["validation"],
+	tags: ["code-only", "!test"],
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 
@@ -118,7 +141,7 @@ export const UnixKeyBindings: Story = {
  */
 export const WikiLinkHeadingFormat: Story = {
 	name: "Wiki Link見出し選択時の形式",
-	tags: ["validation"],
+	tags: ["code-only", "!test"],
 	parameters: {
 		msw: {
 			handlers: [
@@ -257,7 +280,7 @@ export const WikiLinkHeadingFormat: Story = {
  */
 export const UnixKeyBindingsWithWikiLink: Story = {
 	name: "Wiki Link内でのUnixキーバインド",
-	tags: ["validation"],
+	tags: ["code-only", "!test"],
 	parameters: {
 		msw: {
 			handlers: [
@@ -359,7 +382,7 @@ export const UnixKeyBindingsWithWikiLink: Story = {
  */
 export const UnixKeyBindingsBoundary: Story = {
 	name: "Unixキーバインドの境界値テスト",
-	tags: ["validation"],
+	tags: ["code-only", "!test"],
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 
@@ -403,7 +426,7 @@ export const UnixKeyBindingsBoundary: Story = {
  */
 export const BoldFormattingWithSelection: Story = {
 	name: "選択テキストのBoldフォーマット",
-	tags: ["validation"],
+	tags: ["code-only", "!test"],
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 
@@ -453,7 +476,7 @@ export const BoldFormattingWithSelection: Story = {
  */
 export const CtrlBCursorMovementWithoutSelection: Story = {
 	name: "選択なしでのCtrl+Bカーソル移動",
-	tags: ["validation"],
+	tags: ["code-only", "!test"],
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 
@@ -492,7 +515,7 @@ export const CtrlBCursorMovementWithoutSelection: Story = {
  */
 export const CmdBAndCtrlBBehavior: Story = {
 	name: "Cmd+BでBold、Ctrl+Bでカーソル移動",
-	tags: ["validation"],
+	tags: ["code-only", "!test"],
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 
@@ -549,7 +572,7 @@ export const CmdBAndCtrlBBehavior: Story = {
  */
 export const ComprehensiveShortcutTest: Story = {
 	name: "エディターショートカット包括テスト",
-	tags: ["validation"],
+	tags: ["code-only", "!test"],
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 
@@ -682,7 +705,7 @@ export const BasicForm: Story = {
  */
 export const ExpandedClickArea: Story = {
 	name: "MDEditorクリック領域拡張テスト",
-	tags: ["validation"],
+	tags: ["code-only", "!test"],
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 
@@ -806,7 +829,7 @@ export const SlugDuplicateError: Story = {
  */
 export const BracketPairDeletionCursorFix: Story = {
 	name: "括弧ペア削除カーソル位置修正",
-	tags: ["validation"],
+	tags: ["code-only", "!test"],
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 
@@ -964,7 +987,7 @@ export const BracketPairDeletionCursorFix: Story = {
  */
 export const CtrlDForwardDelete: Story = {
 	name: "Ctrl+Dで前方削除（Forward Delete）",
-	tags: ["validation"],
+	tags: ["code-only", "!test"],
 	play: async ({ canvas }) => {
 		const editorContainer = await within(canvas as HTMLElement).findByTestId(
 			"md-editor"
@@ -1079,7 +1102,7 @@ export const CtrlDForwardDelete: Story = {
  */
 export const WikiLinkPopoverAppears: Story = {
 	name: "[[入力時にWiki Link Popoverが表示される",
-	tags: ["validation"],
+	tags: ["code-only", "!test"],
 	play: async ({ canvas }) => {
 		const editorContainer = await within(canvas as HTMLElement).findByTestId(
 			"md-editor"
@@ -1152,7 +1175,7 @@ export const WikiLinkPopoverAppears: Story = {
  */
 export const WikiLinkJapaneseInput: Story = {
 	name: "日本語入力時にWiki Link Popoverが表示される",
-	tags: ["validation"],
+	tags: ["code-only", "!test"],
 	play: async ({ canvas }) => {
 		const editorContainer = await within(canvas as HTMLElement).findByTestId(
 			"md-editor"
@@ -1237,7 +1260,7 @@ export const WikiLinkJapaneseInput: Story = {
  */
 export const WikiLinkPopoverPositioning: Story = {
 	name: "Popover位置が入力テキストと重ならない",
-	tags: ["validation"],
+	tags: ["code-only", "!test"],
 	play: async ({ canvas }) => {
 		const editorContainer = await within(canvas as HTMLElement).findByTestId(
 			"md-editor"
@@ -1312,6 +1335,7 @@ export const WikiLinkPopoverPositioning: Story = {
 
 export const WikiLinkHashNotTriggerTag: Story = {
 	name: "WikiLink内の#はタグサジェストを表示しない",
+	tags: ["code-only", "!test"],
 	play: async ({ canvas }) => {
 		// エディタのtextareaを取得
 		const editorContainer = within(canvas as HTMLElement).getByRole("textbox", {
@@ -1357,6 +1381,7 @@ export const WikiLinkHashNotTriggerTag: Story = {
 
 export const WikiLinkClosingBracketsNotTriggerTag: Story = {
 	name: "WikiLink閉じ括弧の間でタグサジェストを表示しない",
+	tags: ["code-only", "!test"],
 	play: async ({ canvas }) => {
 		// エディタのtextareaを取得
 		const editorContainer = within(canvas as HTMLElement).getByRole("textbox", {

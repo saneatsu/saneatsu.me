@@ -32,7 +32,7 @@ export interface Article {
 	title: string | null;
 	/** 記事の本文 */
 	content: string | null;
-	/** 記事の閲覧数（言語ごと） */
+	/** 記事の閲覧数（記事全体） */
 	viewCount: number;
 	/** 記事に関連付けられたタグ */
 	tags: Tag[];

@@ -1,7 +1,11 @@
+import { OpenAPIHono } from "@hono/zod-openapi";
 import { testClient } from "hono/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { setupDbMocks } from "@/utils/drizzle-test";
-import { dashboardRoute } from "./index";
+
+import { getDashboardOverview } from "./get-overview";
+import { getDashboardOverviewRoute } from "./get-overview.openapi";
 
 // モック設定
 vi.mock("@saneatsu/db/worker", () => ({
@@ -65,11 +69,9 @@ describe("GET /dashboard/overview - ダッシュボード概要取得", () => {
 			}),
 		};
 
-		// 総閲覧数のモック
+		// 総閲覧数のモック（articlesテーブルから取得、言語フィルターなし）
 		const totalViewsMock = {
-			from: vi.fn().mockReturnValue({
-				where: vi.fn().mockResolvedValue([{ totalViews: 5000 }]),
-			}),
+			from: vi.fn().mockResolvedValue([{ totalViews: 5000 }]),
 		};
 
 		// 今月の閲覧数のモック
@@ -141,7 +143,13 @@ describe("GET /dashboard/overview - ダッシュボード概要取得", () => {
 			.mockReturnValueOnce(recentActivitiesMock); // 最近の活動
 
 		// Act
-		const client = testClient(dashboardRoute, {
+		const app = new OpenAPIHono<{
+			Bindings: { TURSO_DATABASE_URL: string; TURSO_AUTH_TOKEN: string };
+		}>();
+		// @ts-ignore - OpenAPIの型推論エラーを一時的に回避
+		app.openapi(getDashboardOverviewRoute, getDashboardOverview);
+
+		const client = testClient(app, {
 			TURSO_DATABASE_URL: "test://test.db",
 			TURSO_AUTH_TOKEN: "test-token",
 		}) as any;
@@ -204,11 +212,9 @@ describe("GET /dashboard/overview - ダッシュボード概要取得", () => {
 			}),
 		};
 
-		// 総閲覧数のモック
+		// 総閲覧数のモック（articlesテーブルから取得、言語フィルターなし）
 		const totalViewsMock = {
-			from: vi.fn().mockReturnValue({
-				where: vi.fn().mockResolvedValue([{ totalViews: 10000 }]),
-			}),
+			from: vi.fn().mockResolvedValue([{ totalViews: 10000 }]),
 		};
 
 		// 今月の閲覧数のモック
@@ -256,7 +262,13 @@ describe("GET /dashboard/overview - ダッシュボード概要取得", () => {
 			.mockReturnValueOnce(recentActivitiesMock); // 最近の活動
 
 		// Act
-		const client = testClient(dashboardRoute, {
+		const app = new OpenAPIHono<{
+			Bindings: { TURSO_DATABASE_URL: string; TURSO_AUTH_TOKEN: string };
+		}>();
+		// @ts-ignore - OpenAPIの型推論エラーを一時的に回避
+		app.openapi(getDashboardOverviewRoute, getDashboardOverview);
+
+		const client = testClient(app, {
 			TURSO_DATABASE_URL: "test://test.db",
 			TURSO_AUTH_TOKEN: "test-token",
 		}) as any;

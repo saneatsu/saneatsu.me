@@ -2,18 +2,10 @@ import type { RouteHandler } from "@hono/zod-openapi";
 import { and, eq, sql } from "drizzle-orm";
 
 import { getDatabase } from "@/lib/database";
+import type { Env } from "@/types/env";
 import { convertWikiLinks } from "@/utils/wiki-link/wiki-link";
 
 import type { getArticleRoute } from "./get-article.openapi";
-
-/**
- * Cloudflare Workers環境の型定義
- */
-type Env = {
-	TURSO_DATABASE_URL: string;
-	TURSO_AUTH_TOKEN: string;
-	GEMINI_API_KEY?: string;
-};
 
 type Handler = RouteHandler<typeof getArticleRoute, { Bindings: Env }>;
 
@@ -64,7 +56,7 @@ export const getArticle: Handler = async (c) => {
 				updatedAt: articles.updatedAt,
 				title: articleTranslations.title,
 				content: articleTranslations.content,
-				viewCount: sql<number>`COALESCE(${articleTranslations.viewCount}, 0)`,
+				viewCount: articles.viewCount,
 				translationId: articleTranslations.id,
 			})
 			.from(articles)
@@ -128,13 +120,13 @@ export const getArticle: Handler = async (c) => {
 					},
 				});
 
-			// 既存の総閲覧数も更新（互換性のため維持）
+			// 記事全体の閲覧数を更新
 			await db
-				.update(articleTranslations)
+				.update(articles)
 				.set({
-					viewCount: sql`${articleTranslations.viewCount} + 1`,
+					viewCount: sql`${articles.viewCount} + 1`,
 				})
-				.where(eq(articleTranslations.id, articleData.translationId));
+				.where(eq(articles.id, articleData.id));
 
 			// レスポンス用に更新後の値を設定
 			articleData.viewCount = (articleData.viewCount || 0) + 1;

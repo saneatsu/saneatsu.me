@@ -75,7 +75,7 @@ export const FirstPage: Story = {
 	parameters: {
 		msw: {
 			handlers: [
-				http.get("http://localhost:8787/api/articles", ({ request }) => {
+				http.get("http://localhost:8888/api/articles", ({ request }) => {
 					const url = new URL(request.url);
 					const page = Number.parseInt(url.searchParams.get("page") || "1");
 					const limit = Number.parseInt(url.searchParams.get("limit") || "24");
@@ -113,7 +113,7 @@ export const MiddlePage: Story = {
 	parameters: {
 		msw: {
 			handlers: [
-				http.get("http://localhost:8787/api/articles", ({ request }) => {
+				http.get("http://localhost:8888/api/articles", ({ request }) => {
 					const url = new URL(request.url);
 					const page = Number.parseInt(url.searchParams.get("page") || "1");
 					const limit = Number.parseInt(url.searchParams.get("limit") || "24");
@@ -155,7 +155,7 @@ export const LastPage: Story = {
 	parameters: {
 		msw: {
 			handlers: [
-				http.get("http://localhost:8787/api/articles", ({ request }) => {
+				http.get("http://localhost:8888/api/articles", ({ request }) => {
 					const url = new URL(request.url);
 					const page = Number.parseInt(url.searchParams.get("page") || "1");
 					const limit = Number.parseInt(url.searchParams.get("limit") || "24");
@@ -198,7 +198,7 @@ export const SinglePage: Story = {
 	parameters: {
 		msw: {
 			handlers: [
-				http.get("http://localhost:8787/api/articles", ({ request }) => {
+				http.get("http://localhost:8888/api/articles", ({ request }) => {
 					const url = new URL(request.url);
 					const page = Number.parseInt(url.searchParams.get("page") || "1");
 					const limit = Number.parseInt(url.searchParams.get("limit") || "24");
@@ -238,7 +238,7 @@ export const WithLimit: Story = {
 	parameters: {
 		msw: {
 			handlers: [
-				http.get("http://localhost:8787/api/articles", ({ request }) => {
+				http.get("http://localhost:8888/api/articles", ({ request }) => {
 					const url = new URL(request.url);
 					const page = Number.parseInt(url.searchParams.get("page") || "1");
 					const limit = Number.parseInt(url.searchParams.get("limit") || "6");
@@ -280,7 +280,7 @@ export const PageSwitching: Story = {
 	parameters: {
 		msw: {
 			handlers: [
-				http.get("http://localhost:8787/api/articles", ({ request }) => {
+				http.get("http://localhost:8888/api/articles", ({ request }) => {
 					const url = new URL(request.url);
 					const page = Number.parseInt(url.searchParams.get("page") || "1");
 					const limit = Number.parseInt(url.searchParams.get("limit") || "24");

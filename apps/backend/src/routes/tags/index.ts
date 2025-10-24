@@ -1,5 +1,7 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 
+import type { Env } from "@/types/env";
+
 import { createTag } from "./handlers/create-tag/create-tag";
 import { createTagRoute } from "./handlers/create-tag/create-tag.openapi";
 import { deleteTag } from "./handlers/delete-tag/delete-tag";
@@ -8,14 +10,6 @@ import { getAllTags } from "./handlers/get-all-tags/get-all-tags";
 import { getAllTagsRoute } from "./handlers/get-all-tags/get-all-tags.openapi";
 import { updateTag } from "./handlers/update-tag/update-tag";
 import { updateTagRoute } from "./handlers/update-tag/update-tag.openapi";
-
-/**
- * Cloudflare Workers環境の型定義
- */
-type Env = {
-	TURSO_DATABASE_URL: string;
-	TURSO_AUTH_TOKEN: string;
-};
 
 /**
  * タグ関連のAPIルート

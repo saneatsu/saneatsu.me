@@ -2,12 +2,8 @@ import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 
 import type { Article } from "@/shared";
-import {
-	Card,
-	CardContent,
-	CardHeader,
-	CardTitle,
-} from "@/shared/ui/card/card";
+import { formatRelativeDate } from "@/shared/lib";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui";
 
 interface ArticleCardProps {
 	article: Article;
@@ -17,16 +13,11 @@ export function ArticleCard({ article }: ArticleCardProps) {
 	const locale = useLocale();
 	const t = useTranslations("article");
 
-	const publishedDate = article.publishedAt
-		? new Date(article.publishedAt).toLocaleDateString(
-				locale === "ja" ? "ja-JP" : "en-US",
-				{
-					year: "numeric",
-					month: "long",
-					day: "numeric",
-				}
-			)
-		: null;
+	// 更新日の相対日付フォーマット
+	const updatedDateInfo = formatRelativeDate(
+		article.updatedAt ?? null,
+		locale as "ja" | "en"
+	);
 
 	// コンテンツから本文の抜粋を生成
 	const excerpt = (article.content || "")
@@ -41,7 +32,16 @@ export function ArticleCard({ article }: ArticleCardProps) {
 			<Card className="group hover:shadow-md transition-shadow cursor-pointer">
 				<CardHeader>
 					<div className="flex items-center justify-between mb-2 text-sm text-muted-foreground">
-						{publishedDate && <time>{publishedDate}</time>}
+						{updatedDateInfo && (
+							<time>
+								{t("updatedAt")}:{" "}
+								{updatedDateInfo.isRelative
+									? updatedDateInfo.days === 0
+										? t("today")
+										: t("daysAgo", { days: updatedDateInfo.days })
+									: updatedDateInfo.formatted}
+							</time>
+						)}
 						<div className="flex items-center space-x-1">
 							<svg
 								className="h-3 w-3"

@@ -3,16 +3,9 @@ import { and, eq, not } from "drizzle-orm";
 
 import { getDatabase } from "@/lib/database";
 import { createTranslationService } from "@/services/gemini-translation/gemini-translation";
-import type { updateTagRoute } from "./update-tag.openapi";
+import type { Env } from "@/types/env";
 
-/**
- * Cloudflare Workers環境の型定義
- */
-type Env = {
-	TURSO_DATABASE_URL: string;
-	TURSO_AUTH_TOKEN: string;
-	GEMINI_API_KEY?: string;
-};
+import type { updateTagRoute } from "./update-tag.openapi";
 
 type Handler = RouteHandler<typeof updateTagRoute, { Bindings: Env }>;
 

@@ -20,6 +20,8 @@ export const articles = sqliteTable("articles", {
 		.default("draft"),
 	/** 公開日時 */
 	publishedAt: text("published_at"),
+	/** 閲覧数（記事全体） */
+	viewCount: integer("view_count").notNull().default(0),
 	/** 作成日時 */
 	createdAt: text("created_at").notNull().default(sql`(datetime('now'))`),
 	/** 更新日時 */

@@ -20,6 +20,7 @@ import {
 import { useMemo, useState } from "react";
 
 import { useGetAllArticles } from "@/entities/article";
+import { useGetAllTags } from "@/entities/tag";
 import { useDashboardOverview } from "@/features/dashboard";
 import { usePersistentQueryStates } from "@/shared/lib";
 import {
@@ -32,7 +33,7 @@ import {
 import { articleStatusOptions, columns } from "../model/columns";
 
 /**
- * カンマ区切り文字列を配列として扱うカスタムパーサー
+ * カンマ区切り文字列を配列として扱うカスタムパーサー（ステータス用）
  */
 const parseAsCommaSeparatedArray = createParser({
 	parse(queryValue) {
@@ -41,6 +42,22 @@ const parseAsCommaSeparatedArray = createParser({
 			| "draft"
 			| "archived"
 		)[];
+	},
+	serialize(value) {
+		return value.join(",");
+	},
+}).withDefault([]);
+
+/**
+ * カンマ区切り文字列を数値配列として扱うカスタムパーサー（タグ用）
+ */
+const parseAsCommaSeparatedNumbers = createParser({
+	parse(queryValue) {
+		return queryValue
+			.split(",")
+			.filter(Boolean)
+			.map((id) => Number.parseInt(id, 10))
+			.filter((id) => !Number.isNaN(id));
 	},
 	serialize(value) {
 		return value.join(",");
@@ -63,7 +80,7 @@ interface ArticlesTableProps {
  * Nitoプロジェクトのパターンに従った実装。
  *
  * 機能:
- * - ソート（タイトル、ステータス、閲覧数、更新日）
+ * - ソート（タイトル、ステータス、閲覧数、更新日、公開日）
  * - フィルタリング（ステータス、検索）
  * - ページネーション
  * - ローディング状態表示
@@ -77,8 +94,9 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 		"articles-table-filters",
 		{
 			page: parseAsInteger.withDefault(1),
-			pageSize: parseAsInteger.withDefault(10),
+			pageSize: parseAsInteger.withDefault(50),
 			status: parseAsCommaSeparatedArray,
+			tagIds: parseAsCommaSeparatedNumbers,
 			search: parseAsString.withDefault(""),
 			sortBy: parseAsString.withDefault("updatedAt"),
 			sortOrder: parseAsStringEnum(["asc", "desc"] as const).withDefault(
@@ -135,11 +153,14 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 		if (params.status.length > 0) {
 			filters.push({ id: "status", value: params.status });
 		}
+		if (params.tagIds.length > 0) {
+			filters.push({ id: "tags", value: params.tagIds.map(String) });
+		}
 		if (params.search) {
 			filters.push({ id: "title", value: params.search });
 		}
 		return filters;
-	}, [params.status, params.search]);
+	}, [params.status, params.tagIds, params.search]);
 
 	/**
 	 * columnFiltersの変更をnuqsに反映
@@ -152,11 +173,15 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 		const newFilters =
 			typeof updater === "function" ? updater(columnFilters) : updater;
 		const statusFilter = newFilters.find((f) => f.id === "status");
+		const tagsFilter = newFilters.find((f) => f.id === "tags");
 		const searchFilter = newFilters.find((f) => f.id === "title");
 
 		setParams({
 			status: statusFilter
 				? (statusFilter.value as ("published" | "draft" | "archived")[])
+				: [],
+			tagIds: tagsFilter
+				? (tagsFilter.value as string[]).map((id) => Number.parseInt(id, 10))
 				: [],
 			search: searchFilter ? (searchFilter.value as string) : "",
 		});
@@ -168,6 +193,11 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 	const { data: dashboardData } = useDashboardOverview({ language: "ja" });
 
 	/**
+	 * タグ一覧を取得（タグフィルター用）
+	 */
+	const { data: tagsData } = useGetAllTags();
+
+	/**
 	 * 記事一覧を取得（サーバーサイドページネーション）
 	 */
 	const { data, isLoading, error, refetch } = useGetAllArticles({
@@ -175,6 +205,7 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 		limit: params.pageSize,
 		language: "ja",
 		status: params.status.length === 0 ? undefined : params.status,
+		tagIds: params.tagIds.length === 0 ? undefined : params.tagIds,
 		search: params.search.trim() || undefined,
 		sortBy: params.sortBy as
 			| "createdAt"
@@ -212,6 +243,25 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 							: undefined,
 		}));
 	}, [dashboardData]);
+
+	/**
+	 * タグフィルターオプション（記事数付き）
+	 *
+	 * @description
+	 * タグAPIから取得したタグ一覧を使用して、
+	 * 各タグの記事数を表示する。
+	 */
+	const tagOptions = useMemo(() => {
+		if (!tagsData?.data) {
+			return [];
+		}
+
+		return tagsData.data.map((tag) => ({
+			label: tag.translations.ja,
+			value: tag.id.toString(),
+			count: tag.articleCount,
+		}));
+	}, [tagsData]);
 
 	/**
 	 * 記事アクション実行後の処理
@@ -287,6 +337,14 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 					}
 					className="max-w-sm"
 				/>
+				{table.getColumn("tags") && tagOptions.length > 0 && (
+					<DataTableFacetedFilter
+						column={table.getColumn("tags")}
+						title="タグ"
+						options={tagOptions}
+						multiple={true}
+					/>
+				)}
 				{table.getColumn("status") && (
 					<DataTableFacetedFilter
 						column={table.getColumn("status")}
@@ -301,13 +359,14 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 			{isLoading ? (
 				<DataTableSkeleton
 					columnCount={columns.length}
-					rowCount={10}
+					rowCount={50}
 					cellWidths={[
 						"80px",
 						"200px",
 						"200px",
 						"120px",
 						"100px",
+						"180px",
 						"180px",
 						"120px",
 					]}
