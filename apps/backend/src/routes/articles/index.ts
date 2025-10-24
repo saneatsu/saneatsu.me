@@ -7,6 +7,8 @@ import { checkSlug } from "./handlers/check-slug/check-slug";
 import { checkSlugRoute } from "./handlers/check-slug/check-slug.openapi";
 import { createArticle } from "./handlers/create-article/create-article";
 import { createArticleRoute } from "./handlers/create-article/create-article.openapi";
+import { deleteThumbnail } from "./handlers/delete-thumbnail/delete-thumbnail";
+import { deleteThumbnailRoute } from "./handlers/delete-thumbnail/delete-thumbnail.openapi";
 import { getAllArticles } from "./handlers/get-all-articles/get-all-articles";
 import { getAllArticlesRoute } from "./handlers/get-all-articles/get-all-articles.openapi";
 import { getArticle } from "./handlers/get-article/get-article";
@@ -19,6 +21,8 @@ import { updateArticle } from "./handlers/update-article/update-article";
 import { updateArticleRoute } from "./handlers/update-article/update-article.openapi";
 import { updateStatus } from "./handlers/update-status/update-status";
 import { updateStatusRoute } from "./handlers/update-status/update-status.openapi";
+import { uploadThumbnail } from "./handlers/upload-thumbnail/upload-thumbnail";
+import { uploadThumbnailRoute } from "./handlers/upload-thumbnail/upload-thumbnail.openapi";
 
 /**
  * 記事関連のAPIルート
@@ -48,3 +52,9 @@ articlesRoute.openapi(updateArticleRoute, updateArticle);
 
 // 記事ステータス更新
 articlesRoute.openapi(updateStatusRoute, updateStatus);
+
+// サムネイル画像アップロード
+articlesRoute.openapi(uploadThumbnailRoute, uploadThumbnail);
+
+// サムネイル画像削除
+articlesRoute.openapi(deleteThumbnailRoute, deleteThumbnail);
