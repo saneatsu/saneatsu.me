@@ -84,7 +84,7 @@ export const JapaneseAnchorLink: Story = {
 		const link = await canvas.findByRole("link");
 
 		// 表示テキストが正しくデコードされていることを確認
-		expect(link).toHaveTextContent("Next.jsパフォーマンス最適化#基本的な概念");
+		expect(link).toHaveTextContent("nextjs-performance#基本的な概念");
 
 		// URLエンコードされていないことを確認（%エンコードが含まれていない）
 		expect(link.textContent).not.toMatch(/%[0-9A-F]{2}/);
@@ -128,7 +128,7 @@ export const EncodedAnchorLink: Story = {
 		const link = await canvas.findByRole("link");
 
 		// 表示テキストが正しくデコードされていることを確認
-		expect(link).toHaveTextContent("Webアプリケーション設計#基本的な概念");
+		expect(link).toHaveTextContent("web-optimization#基本的な概念");
 
 		// URLエンコードが残っていないことを確認
 		expect(link.textContent).not.toContain("%E5%9F%BA");
@@ -261,7 +261,7 @@ export const ComplexJapaneseAnchor: Story = {
 
 		// 特殊文字を含む日本語が正しく表示されることを確認
 		expect(link).toHaveTextContent(
-			"JavaScript ES2024新機能#新機能：配列のグループ化"
+			"javascript-es2024#新機能：配列のグループ化"
 		);
 	},
 };
