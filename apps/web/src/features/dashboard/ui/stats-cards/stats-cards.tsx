@@ -31,11 +31,11 @@ export function StatsCards({ articleStats, loading = false }: StatsCardsProps) {
 	return (
 		<div className="grid gap-4 grid-cols-1 lg:grid-cols-4">
 			{/* 総閲覧数 */}
-			<Card className="h-full">
+			<Card className="h-full flex flex-col">
 				<CardHeader className="flex flex-row items-center justify-between">
 					<CardTitle className="text-md font-bold">総閲覧数</CardTitle>
 				</CardHeader>
-				<CardContent>
+				<CardContent className="flex-1 flex flex-col justify-end items-end">
 					<div className="flex items-end gap-1">
 						<span className="text-2xl font-bold text-primary leading-none">
 							{loading
@@ -52,78 +52,85 @@ export function StatsCards({ articleStats, loading = false }: StatsCardsProps) {
 			</Card>
 
 			{/* 今月の閲覧数 */}
-			<Card className="h-full">
+			<Card className="h-full flex flex-col">
 				<CardHeader className="flex flex-row items-center justify-between">
 					<CardTitle className="text-md font-bold">今月の閲覧数</CardTitle>
 				</CardHeader>
-				<CardContent>
-					<div className="flex items-end gap-1">
-						<span className="text-2xl font-bold text-primary leading-none">
-							{loading
-								? "-"
-								: (articleStats?.thisMonthViews?.toLocaleString() ?? "0")}
-						</span>
-						{!loading && (
-							<span className="text-sm font-bold text-primary leading-none pb-[2px]">
-								回
+				<CardContent className="flex-1 flex flex-col justify-end items-end">
+					<div className="flex flex-col gap-1">
+						<div className="flex items-end gap-1">
+							<span className="text-2xl font-bold text-primary leading-none">
+								{loading
+									? "-"
+									: (articleStats?.thisMonthViews?.toLocaleString() ?? "0")}
 							</span>
-						)}
+							{!loading && (
+								<span className="text-sm font-bold text-primary leading-none pb-[2px]">
+									回
+								</span>
+							)}
+						</div>
 					</div>
 				</CardContent>
 			</Card>
 
 			{/* 総記事数カード */}
-			<Card className="h-full">
+			<Card className="h-full flex flex-col gap-2">
 				<CardHeader className="flex flex-row items-center justify-between">
 					<CardTitle className="text-md font-bold">総記事数</CardTitle>
 				</CardHeader>
-				<CardContent>
-					<div className="flex items-end gap-1">
-						{loading ? (
-							<span className="text-2xl font-bold text-primary leading-none">
-								-（- + - + -）
-							</span>
-						) : (
-							<>
+				<CardContent className="flex-1 flex flex-col justify-end items-end">
+					{loading ? (
+						<div className="flex flex-col gap-1 items-end">
+							<div className="flex items-end gap-1 justify-end">
+								<span className="text-2xl font-bold text-primary leading-none">
+									-
+								</span>
+								<span className="text-sm font-bold text-primary leading-none pb-[2px]">
+									記事
+								</span>
+							</div>
+						</div>
+					) : (
+						<div className="flex flex-col gap-1 items-end">
+							{/* 1行目: 内訳 */}
+							<div className="flex items-center gap-1 justify-end">
+								<Badge variant="success" className="text-xs leading-none">
+									{articleStats.publishedArticles}
+								</Badge>
+								<span className="text-xs font-bold text-primary leading-none">
+									+
+								</span>
+								<Badge variant="secondary" className="text-xs leading-none">
+									{articleStats.draftArticles}
+								</Badge>
+								<span className="text-xs font-bold text-primary leading-none">
+									+
+								</span>
+								<Badge variant="destructive" className="text-xs leading-none">
+									{articleStats.archivedArticles}
+								</Badge>
+							</div>
+							{/* 2行目: 総記事数 */}
+							<div className="flex items-end gap-1 justify-end">
 								<span className="text-2xl font-bold text-primary leading-none">
 									{formatNumber(articleStats.totalArticles)}
 								</span>
 								<span className="text-sm font-bold text-primary leading-none pb-[2px]">
 									記事
 								</span>
-								<span className="self-center text-sm font-bold text-primary leading-none">
-									（
-								</span>
-								<Badge variant="success" className="text-sm leading-none">
-									{articleStats.publishedArticles}
-								</Badge>
-								<span className="self-center text-sm font-bold text-primary leading-none">
-									+
-								</span>
-								<Badge variant="secondary" className="text-sm leading-none">
-									{articleStats.draftArticles}
-								</Badge>
-								<span className="self-center text-sm font-bold text-primary leading-none">
-									+
-								</span>
-								<Badge variant="destructive" className="text-sm leading-none">
-									{articleStats.archivedArticles}
-								</Badge>
-								<span className="self-center text-sm font-bold text-primary leading-none">
-									）
-								</span>
-							</>
-						)}
-					</div>
+							</div>
+						</div>
+					)}
 				</CardContent>
 			</Card>
 
 			{/* 今月の新規記事 */}
-			<Card className="h-full">
+			<Card className="h-full flex flex-col">
 				<CardHeader className="flex flex-row items-center justify-between">
 					<CardTitle className="text-md font-bold">今月の新規記事</CardTitle>
 				</CardHeader>
-				<CardContent>
+				<CardContent className="flex-1 flex flex-col justify-end items-end">
 					<div className="flex items-end gap-1">
 						<span className="text-2xl font-bold text-primary leading-none">
 							{loading ? "-" : articleStats.thisMonthArticles}
