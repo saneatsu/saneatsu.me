@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -12,6 +12,9 @@ import { useGetAllTags } from "@/entities/tag";
 import { ArticleMarkdownEditor } from "@/features/article-editor";
 import { useDebounce } from "@/shared/lib";
 import {
+	Alert,
+	AlertDescription,
+	AlertTitle,
 	Button,
 	DateTimePicker,
 	Input,
@@ -87,6 +90,7 @@ interface ArticleEditFormProps {
 export function ArticleEditForm({ article }: ArticleEditFormProps) {
 	const [markdownValue, setMarkdownValue] = useState(article.content || "");
 	const [formError, setFormError] = useState<string>("");
+	const [thumbnailError, setThumbnailError] = useState<string>("");
 	const [selectedTags, setSelectedTags] = useState<Option[]>(
 		article.tags.map((tag) => ({
 			value: String(tag.id),
@@ -169,6 +173,8 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 					tagIds,
 				},
 			});
+
+			toast.success("記事を更新しました");
 		} catch (error) {
 			// エラーメッセージをフォーム上部に表示
 			if (error instanceof Error) {
@@ -189,15 +195,36 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 
 	return (
 		<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-			{/* エラーメッセージ */}
+			{/* フォームエラー表示 */}
 			{formError && (
-				<div className="p-4 border border-destructive/50 bg-destructive/10 rounded-md">
-					<p className="text-sm text-destructive font-medium">
-						エラーが発生しました
-					</p>
-					<p className="text-sm text-destructive mt-1">{formError}</p>
-				</div>
+				<Alert variant="destructive">
+					<AlertCircle className="h-4 w-4" />
+					<AlertTitle>エラーが発生しました</AlertTitle>
+					<AlertDescription>{formError}</AlertDescription>
+				</Alert>
 			)}
+
+			{/* サムネイルエラー表示 */}
+			{thumbnailError && (
+				<Alert variant="destructive">
+					<AlertCircle className="h-4 w-4" />
+					<AlertTitle>サムネイル画像エラー</AlertTitle>
+					<AlertDescription>{thumbnailError}</AlertDescription>
+				</Alert>
+			)}
+
+			{/* サムネイル画像 */}
+			<ArticleThumbnailUploader
+				articleId={article.id}
+				thumbnailUrl={thumbnailUrl}
+				onUploadSuccess={(imageUrl) => {
+					setThumbnailUrl(imageUrl);
+				}}
+				onDeleteSuccess={() => {
+					setThumbnailUrl(null);
+				}}
+				onError={setThumbnailError}
+			/>
 
 			{/* タイトル */}
 			<div className="space-y-2">
@@ -298,18 +325,6 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 					記事に関連するタグを選択してください
 				</p>
 			</div>
-
-			{/* サムネイル画像 */}
-			<ArticleThumbnailUploader
-				articleId={article.id}
-				thumbnailUrl={thumbnailUrl}
-				onUploadSuccess={(imageUrl) => {
-					setThumbnailUrl(imageUrl);
-				}}
-				onDeleteSuccess={() => {
-					setThumbnailUrl(null);
-				}}
-			/>
 
 			{/* 本文エディタ */}
 			<div className="space-y-2">
