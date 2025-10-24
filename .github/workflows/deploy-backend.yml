@@ -12,6 +12,7 @@ on:
       - '.github/workflows/_deploy-backend.yml'
       - '.github/workflows/_create-backend-env-file.yml'
   pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
     paths:
       - 'apps/backend/**'
       - 'packages/**'
