@@ -12,6 +12,13 @@ const meta = {
 			defaultViewport: "reset",
 		},
 	},
+	decorators: [
+		(Story) => (
+			<div className="p-4 max-w-lg mx-auto">
+				<Story />
+			</div>
+		),
+	],
 } satisfies Meta<typeof ArticleCard>;
 
 export default meta;
@@ -226,4 +233,99 @@ export const HighViewCount: Story = {
 			viewCount: 9999,
 		},
 	},
+};
+
+export const WithThumbnail: Story = {
+	name: "サムネイルあり",
+	tags: ["code-only"],
+	args: {
+		article: {
+			...baseArticle,
+			cfImageId: "test-image-id",
+		},
+	},
+};
+
+export const WithThumbnailLongTitle: Story = {
+	name: "サムネイルあり（長いタイトル）",
+	tags: ["code-only"],
+	args: {
+		article: {
+			...baseArticle,
+			cfImageId: "test-image-id",
+			title:
+				"これは非常に長いタイトルのテストです。サムネイル画像がある場合でも、タイトルが適切に省略されて表示されることを確認します。",
+		},
+	},
+};
+
+export const GridLayout: Story = {
+	name: "グリッド表示（サムネイル混在）",
+	tags: ["code-only"],
+	args: {
+		article: baseArticle,
+	},
+	render: () => (
+		<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+			<ArticleCard
+				article={{
+					...baseArticle,
+					id: 1,
+					slug: "article-1",
+					title: "サムネイルありの記事",
+					cfImageId: "test-image-id-1",
+				}}
+			/>
+			<ArticleCard
+				article={{
+					...baseArticle,
+					id: 2,
+					slug: "article-2",
+					title: "サムネイルなしの記事",
+					cfImageId: null,
+				}}
+			/>
+			<ArticleCard
+				article={{
+					...baseArticle,
+					id: 3,
+					slug: "article-3",
+					title: "サムネイルありの記事（長いタイトル）",
+					cfImageId: "test-image-id-3",
+					content:
+						"これは非常に長いタイトルのテストです。サムネイル画像がある場合でも、タイトルが適切に省略されて表示されることを確認します。",
+				}}
+			/>
+			<ArticleCard
+				article={{
+					...baseArticle,
+					id: 4,
+					slug: "article-4",
+					title: "サムネイルありの記事",
+					cfImageId: "test-image-id-4",
+				}}
+			/>
+			<ArticleCard
+				article={{
+					...baseArticle,
+					id: 5,
+					slug: "article-5",
+					title: "サムネイルなしの記事（長いタイトル）",
+					cfImageId: null,
+					content:
+						"これは非常に長いタイトルのテストです。サムネイル画像がない場合でも、タイトルと本文抜粋が適切に表示されることを確認します。",
+				}}
+			/>
+			<ArticleCard
+				article={{
+					...baseArticle,
+					id: 6,
+					slug: "article-6",
+					title: "サムネイルありの記事",
+					cfImageId: "test-image-id-6",
+					viewCount: 12345,
+				}}
+			/>
+		</div>
+	),
 };
