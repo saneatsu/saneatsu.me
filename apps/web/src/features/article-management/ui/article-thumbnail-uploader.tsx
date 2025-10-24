@@ -31,6 +31,8 @@ export interface ArticleThumbnailUploaderProps {
 	onUploadSuccess?: (imageUrl: string, imageId: string) => void;
 	/** 削除成功時のコールバック */
 	onDeleteSuccess?: () => void;
+	/** エラー発生時のコールバック */
+	onError?: (error: string) => void;
 	/** 無効化フラグ */
 	disabled?: boolean;
 }
@@ -67,6 +69,7 @@ export function ArticleThumbnailUploader({
 	thumbnailUrl,
 	onUploadSuccess,
 	onDeleteSuccess,
+	onError,
 	disabled = false,
 }: ArticleThumbnailUploaderProps) {
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -150,6 +153,7 @@ export function ArticleThumbnailUploader({
 					: "サムネイル画像のアップロードに失敗しました";
 
 			toast.error(errorMessage);
+			onError?.(errorMessage);
 		}
 	};
 
@@ -181,6 +185,7 @@ export function ArticleThumbnailUploader({
 					: "サムネイル画像の削除に失敗しました";
 
 			toast.error(errorMessage);
+			onError?.(errorMessage);
 		}
 	};
 
@@ -236,7 +241,7 @@ export function ArticleThumbnailUploader({
 					<div className="text-center space-y-2">
 						<ImagePlus className="h-12 w-12 mx-auto text-muted-foreground" />
 						<p className="text-sm text-muted-foreground">
-							サムネイル画像が設定されていません
+							サムネイルを選択してください（オプション）
 						</p>
 					</div>
 				</div>
