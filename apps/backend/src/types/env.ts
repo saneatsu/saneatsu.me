@@ -26,4 +26,13 @@ export type Env = {
 
 	/** テスト用データベースURL（オプショナル） */
 	TEST_DATABASE_URL?: string;
+
+	/** Cloudflare Account ID */
+	CLOUDFLARE_ACCOUNT_ID: string;
+
+	/** Cloudflare Account Hash（画像配信URL用） */
+	CLOUDFLARE_ACCOUNT_HASH: string;
+
+	/** Cloudflare Images API Token */
+	CLOUDFLARE_IMAGES_TOKEN: string;
 };
