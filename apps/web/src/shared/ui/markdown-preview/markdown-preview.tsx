@@ -3,8 +3,8 @@
 import "@uiw/react-markdown-preview/markdown.css";
 import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
-import ReactMarkdown from "react-markdown";
 import type { Components } from "react-markdown";
+import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 import { remarkTag } from "@/shared/lib/remark-tag";
