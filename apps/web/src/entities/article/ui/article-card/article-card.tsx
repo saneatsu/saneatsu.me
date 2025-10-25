@@ -3,7 +3,11 @@ import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 
 import type { Article } from "@/shared";
-import { formatRelativeDate, getCloudflareImageUrl } from "@/shared/lib";
+import {
+	formatRelativeDate,
+	getArticleEmoji,
+	getCloudflareImageUrl,
+} from "@/shared/lib";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui";
 
 interface ArticleCardProps {
@@ -31,9 +35,9 @@ export function ArticleCard({ article }: ArticleCardProps) {
 	return (
 		<Link href={`/articles/${article.slug}`}>
 			<Card className="group hover:shadow-md transition-shadow cursor-pointer overflow-hidden">
-				{/* サムネイル画像 */}
-				{article.cfImageId && (
-					<div className="relative w-full aspect-video overflow-hidden">
+				{/* サムネイル画像またはフォールバック */}
+				<div className="relative w-full aspect-video overflow-hidden">
+					{article.cfImageId ? (
 						<Image
 							src={getCloudflareImageUrl(article.cfImageId, "medium") ?? ""}
 							alt={article.title ?? ""}
@@ -41,8 +45,12 @@ export function ArticleCard({ article }: ArticleCardProps) {
 							className="object-cover transition-transform group-hover:scale-105"
 							sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
 						/>
-					</div>
-				)}
+					) : (
+						<div className="w-full h-full bg-muted flex items-center justify-center">
+							<span className="text-8xl">{getArticleEmoji(article.id)}</span>
+						</div>
+					)}
+				</div>
 
 				<CardHeader>
 					<div className="flex items-center justify-between mb-2 text-sm text-muted-foreground">
