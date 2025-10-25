@@ -49,6 +49,7 @@
 		"@saneatsu/db": "workspace:*",
 		"@saneatsu/i18n": "workspace:*",
 		"@saneatsu/schemas": "workspace:*",
+		"@t3-oss/env-nextjs": "^0.13.8",
 		"@tanstack/react-query": "^5.83.0",
 		"@tanstack/react-query-devtools": "^5.83.0",
 		"@tanstack/react-table": "^8.21.3",
