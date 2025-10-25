@@ -5,7 +5,7 @@ import { ArrowUpDown } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { getImageUrl } from "@/shared/lib";
+import { getArticleEmoji, getImageUrl } from "@/shared/lib";
 import { ARTICLE_STATUS_CONFIG, type Article } from "@/shared/model";
 import { Badge, Button } from "@/shared/ui";
 
@@ -90,8 +90,8 @@ export const columns: ColumnDef<Article>[] = [
 							sizes="80px"
 						/>
 					) : (
-						<div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
-							NoImage
+						<div className="flex h-full w-full items-center justify-center">
+							<span className="text-3xl">{getArticleEmoji(article.id)}</span>
 						</div>
 					)}
 				</div>

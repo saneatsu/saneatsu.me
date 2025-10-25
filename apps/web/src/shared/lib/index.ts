@@ -32,6 +32,8 @@ export {
 	formatRelativeDate,
 	type RelativeDateResult,
 } from "./format-date/format-date";
+// Get Article Emoji
+export { getArticleEmoji } from "./get-article-emoji";
 export {
 	extractImageId,
 	getImageUrl,
