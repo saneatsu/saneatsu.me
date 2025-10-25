@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Dialog, DialogContent } from "../dialog/dialog";
@@ -61,6 +62,7 @@ export function Lightbox({
 	onClose,
 	forceLoading = false,
 }: LightboxProps) {
+	const t = useTranslations();
 	const [isLoading, setIsLoading] = useState(true);
 
 	// forceLoadingがtrueの場合は常にローディング状態を表示
@@ -72,7 +74,7 @@ export function Lightbox({
 				{showLoading && (
 					<div className="absolute inset-0 flex items-center justify-center bg-background z-10">
 						<div className="animate-pulse text-muted-foreground">
-							読み込み中...
+							{t("loading")}
 						</div>
 					</div>
 				)}
