@@ -1,7 +1,11 @@
 import { redirect } from "next/navigation";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
 
 import { auth } from "@/app/api/auth/[...nextauth]/auth";
 import { AdminLayout } from "@/widgets/admin-layout";
+
+const locale = "ja";
 
 /**
  * 管理画面共通レイアウト
@@ -24,5 +28,13 @@ export default async function AdminPagesLayout({
 		redirect("/login");
 	}
 
-	return <AdminLayout user={session?.user}>{children}</AdminLayout>;
+	const messages = await getMessages({ locale });
+
+	return (
+		// 管理画面は日本語で固定だが、Lightboxコンポーネントなどでは next-intl を利用しているので
+		// Providerを使用する必要がある
+		<NextIntlClientProvider messages={messages} locale={locale}>
+			<AdminLayout user={session?.user}>{children}</AdminLayout>
+		</NextIntlClientProvider>
+	);
 }
