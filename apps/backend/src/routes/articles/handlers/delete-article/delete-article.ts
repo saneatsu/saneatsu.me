@@ -32,10 +32,7 @@ export const deleteArticle: Handler = async (c) => {
 		// 2. DBクライアントを作成
 		const { createDatabaseClient, articles, articleTranslations } =
 			await getDatabase();
-		const db = createDatabaseClient({
-			TURSO_DATABASE_URL: c.env.TURSO_DATABASE_URL,
-			TURSO_AUTH_TOKEN: c.env.TURSO_AUTH_TOKEN,
-		});
+		const db = createDatabaseClient(c.env);
 
 		// 3. 記事を取得
 		const [article] = await db
