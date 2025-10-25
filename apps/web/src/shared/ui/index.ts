@@ -246,6 +246,8 @@ export {
 } from "./sidebar/sidebar";
 // Skeleton
 export { Skeleton } from "./skeleton/skeleton";
+// Toaster
+export { Toaster } from "./sonner/sonner";
 // Switch
 export { Switch } from "./switch/switch";
 // Table
