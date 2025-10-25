@@ -1,5 +1,3 @@
-import { Lightbox } from "./lightbox/lightbox";
-
 // Shared UI Segment Public API
 
 // Alert

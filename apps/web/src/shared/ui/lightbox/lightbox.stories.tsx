@@ -98,3 +98,28 @@ export const Square: Story = {
 		);
 	},
 };
+
+/**
+ * ローディング状態
+ * ずっとローディング中の状態を表示
+ */
+export const LoadingState: Story = {
+	name: "ローディング状態",
+	tags: ["code-only"],
+	render: () => {
+		const [open, setOpen] = useState(false);
+
+		return (
+			<>
+				<Button onClick={() => setOpen(true)}>Lightboxを開く</Button>
+				<Lightbox
+					imageUrl="https://picsum.photos/1200/1200"
+					alt="ローディング中"
+					open={open}
+					onClose={() => setOpen(false)}
+					forceLoading={true}
+				/>
+			</>
+		);
+	},
+};

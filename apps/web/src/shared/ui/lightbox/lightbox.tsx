@@ -17,6 +17,8 @@ export interface LightboxProps {
 	open: boolean;
 	/** Lightboxを閉じるときのコールバック */
 	onClose: () => void;
+	/** ローディング状態を強制的に表示し続けるかどうか（Storybook用） */
+	forceLoading?: boolean;
 }
 
 /**
@@ -52,20 +54,29 @@ export interface LightboxProps {
  * />
  * ```
  */
-export function Lightbox({ imageUrl, alt, open, onClose }: LightboxProps) {
+export function Lightbox({
+	imageUrl,
+	alt,
+	open,
+	onClose,
+	forceLoading = false,
+}: LightboxProps) {
 	const [isLoading, setIsLoading] = useState(true);
+
+	// forceLoadingがtrueの場合は常にローディング状態を表示
+	const showLoading = forceLoading || isLoading;
 
 	return (
 		<Dialog open={open} onOpenChange={onClose}>
-			<DialogContent className="p-0 border-0 flex items-center justify-center">
-				{isLoading && (
+			<DialogContent className="p-0 border-0 flex items-center justify-center max-w-dvw">
+				{showLoading && (
 					<div className="absolute inset-0 flex items-center justify-center bg-background z-10">
 						<div className="animate-pulse text-muted-foreground">
 							読み込み中...
 						</div>
 					</div>
 				)}
-				<div className="relative" style={{ width: "60vw", height: "60vh" }}>
+				<div className="relative" style={{ width: "90vw", height: "90vh" }}>
 					<Image
 						src={imageUrl}
 						alt={alt || ""}
