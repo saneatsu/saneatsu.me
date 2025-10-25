@@ -54,13 +54,11 @@ export function useImageUpload() {
 		setError(null);
 
 		try {
-			// FormDataを作成
-			const formData = new FormData();
-			formData.append("file", file);
-
-			// APIリクエスト
+			// APIリクエスト（Hono RPCでmultipart/form-dataを送信）
 			const response = await honoClient.api.images.$post({
-				form: formData,
+				form: {
+					file: file,
+				},
 			});
 
 			if (!response.ok) {
