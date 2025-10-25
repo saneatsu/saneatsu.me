@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 
 import { extractImageId, getImageUrl } from "@/shared/lib";
@@ -57,8 +58,15 @@ export function ArticleImage({ src, alt, className = "" }: ArticleImageProps) {
 				className={`cursor-pointer hover:opacity-90 transition-opacity border-0 bg-transparent p-0 ${className}`}
 				aria-label={alt ? `${alt}を拡大表示` : "画像を拡大表示"}
 			>
-				{/* biome-ignore lint/performance/noImgElement: ArticleImageではCloudflare Imagesのvariantを使用するため、Next.js Imageの自動最適化は不要 */}
-				<img src={src} alt={alt || ""} loading="lazy" />
+				<Image
+					src={src}
+					alt={alt || ""}
+					width={800}
+					height={600}
+					className="w-full h-auto"
+					loading="lazy"
+					unoptimized={true}
+				/>
 			</button>
 
 			<Lightbox

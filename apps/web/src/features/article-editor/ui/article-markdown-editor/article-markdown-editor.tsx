@@ -15,6 +15,7 @@ import {
 import { type TagSuggestionItem, TagSuggestionsPopover } from "@/entities/tag";
 import { remarkTag } from "@/shared/lib/remark-tag";
 import { remarkWikiLink } from "@/shared/lib/remark-wiki-link";
+import { ArticleImage } from "@/shared/ui";
 
 import { createImageUploadCommand } from "../../lib/image-upload-command/image-upload-command";
 import { useClickExpansion } from "../../lib/use-click-expansion/use-click-expansion";
@@ -327,6 +328,17 @@ export function ArticleMarkdownEditor({
 										{children}
 									</a>
 								);
+							},
+							// 画像のカスタムレンダリング
+							img: ({ src, alt, ...props }) => {
+								// Cloudflare Images URLの場合はArticleImageを使用
+								if (src?.includes("imagedelivery.net")) {
+									return <ArticleImage src={src} alt={alt} />;
+								}
+
+								// 通常の画像（外部URL）
+								// biome-ignore lint/performance/noImgElement: 外部画像URLはNext.js Imageで最適化できないため<img>を使用
+								return <img src={src} alt={alt} {...props} />;
 							},
 						},
 					}}
