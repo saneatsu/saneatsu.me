@@ -529,3 +529,82 @@ This article is tagged with #React #TypeScript #English`,
 		expect(wikiLink).toBeInTheDocument();
 	},
 };
+
+/**
+ * Cloudflare Images（ArticleImageコンポーネント）のテスト
+ */
+export const CloudflareImages: Story = {
+	name: "Cloudflare Images（ArticleImage統合）",
+	tags: ["code-only"],
+	args: {
+		content: `# Cloudflare Imagesを使った画像表示
+
+Cloudflare Images URLを含む画像は、ArticleImageコンポーネントでレンダリングされ、クリックでLightbox表示されます。
+
+![記事内画像1](https://imagedelivery.net/abc123/image-id-1/medium)
+
+テキストを挟んで複数の画像：
+
+![記事内画像2](https://imagedelivery.net/abc123/image-id-2/medium)
+
+## 画像とテキストの組み合わせ
+
+![サンプル画像](https://imagedelivery.net/abc123/sample-image/medium)
+
+画像の後にテキストが続きます。画像をクリックするとLightboxで拡大表示されます。`,
+		language: "ja",
+	},
+	parameters: {},
+};
+
+/**
+ * 通常の画像URLのテスト
+ */
+export const RegularImages: Story = {
+	name: "通常の画像URL（imgタグ）",
+	tags: ["code-only"],
+	args: {
+		content: `# 通常の画像URL
+
+Cloudflare Images以外の画像URLは、通常のimgタグでレンダリングされます。
+
+![外部画像1](https://picsum.photos/800/600)
+
+テキストを挟んで：
+
+![外部画像2](https://via.placeholder.com/600x400)
+
+## 複数の画像
+
+![サンプル1](https://picsum.photos/400/300)
+![サンプル2](https://picsum.photos/500/350)`,
+		language: "ja",
+	},
+	parameters: {},
+};
+
+/**
+ * Cloudflare Imagesと通常画像の混在
+ */
+export const MixedImages: Story = {
+	name: "Cloudflare Imagesと通常画像の混在",
+	tags: ["code-only"],
+	args: {
+		content: `# 異なる画像タイプの混在
+
+## Cloudflare Images
+
+![記事画像](https://imagedelivery.net/abc123/article-image/medium)
+
+## 通常の外部画像
+
+![外部画像](https://picsum.photos/800/600)
+
+両方のタイプの画像が同一記事内に存在する場合でも、正しくレンダリングされます。
+
+- Cloudflare Images → ArticleImageコンポーネント（Lightbox対応）
+- 通常の画像URL → 通常のimgタグ`,
+		language: "ja",
+	},
+	parameters: {},
+};
