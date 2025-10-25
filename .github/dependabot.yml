@@ -9,7 +9,7 @@ updates:
       interval: "daily" # 毎日実行
       time: "08:00" # 午前8時（JST）
       timezone: "Asia/Tokyo"
-    open-pull-requests-limit: 2 # 同時にオープンするPRは最大2つまで
+    open-pull-requests-limit: 4 # 同時にオープンするPRは最大4つまで
     labels:
       - "dependencies"
       - "npm"
