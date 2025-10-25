@@ -159,8 +159,6 @@ export {
 export { Input } from "./input/input";
 // Label
 export { Label } from "./label/label";
-// Lightbox
-export { Lightbox } from "./lightbox/lightbox";
 // Locale Switcher
 export { LocaleSwitcher } from "./locale-switcher/locale-switcher";
 // Markdown Preview
@@ -286,3 +284,6 @@ export {
 	TooltipProvider,
 	TooltipTrigger,
 } from "./tooltip/tooltip";
+
+// Zoomable Image
+export { ZoomableImage } from "./zoomable-image/zoomable-image";
