@@ -339,7 +339,7 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 						onChange={handleEditorChange}
 						setValue={setValue as (name: string, value: string) => void}
 						height={600}
-						preview="edit"
+						preview="live"
 						language="ja"
 					/>
 				</div>
