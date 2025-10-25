@@ -65,6 +65,9 @@ importers:
       '@saneatsu/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
+      '@t3-oss/env-core':
+        specifier: ^0.13.8
+        version: 0.13.8(typescript@5.8.3)(zod@4.0.10)
       drizzle-orm:
         specifier: ^0.44.3
         version: 0.44.3(@libsql/client@0.15.10)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.2.0)
