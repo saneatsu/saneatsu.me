@@ -17,7 +17,7 @@ import {
 	remarkTag,
 	remarkWikiLink,
 } from "@/shared/lib";
-import { Badge, TableOfContents } from "@/shared/ui";
+import { Badge, TableOfContents, ZoomableImage } from "@/shared/ui";
 
 export interface ArticleDetailViewProps {
 	/** 表示する記事データ */
@@ -301,6 +301,9 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 											</a>
 										);
 									},
+									img: ({ src, alt }) => (
+										<ZoomableImage src={src || ""} alt={alt || ""} />
+									),
 								}}
 							>
 								{article.content}

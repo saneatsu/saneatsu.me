@@ -2,10 +2,10 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import YetAnotherLightbox from "yet-another-react-lightbox";
+import "yet-another-react-lightbox/styles.css";
 
 import { extractImageId, getImageUrl } from "@/shared/lib";
-
-import { Lightbox } from "../lightbox/lightbox";
 
 /**
  * ArticleImageのプロパティ
@@ -69,11 +69,10 @@ export function ArticleImage({ src, alt, className = "" }: ArticleImageProps) {
 				/>
 			</button>
 
-			<Lightbox
-				imageUrl={xlargeUrl}
-				alt={alt}
+			<YetAnotherLightbox
 				open={lightboxOpen}
-				onClose={() => setLightboxOpen(false)}
+				close={() => setLightboxOpen(false)}
+				slides={[{ src: xlargeUrl, alt }]}
 			/>
 		</>
 	);
