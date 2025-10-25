@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 /**
  * サムネイル画像削除のレスポンス型
@@ -43,6 +43,8 @@ export type DeleteThumbnailError = {
  * };
  */
 export function useDeleteThumbnail() {
+	const queryClient = useQueryClient();
+
 	return useMutation<
 		DeleteThumbnailResponse,
 		DeleteThumbnailError,
@@ -50,7 +52,7 @@ export function useDeleteThumbnail() {
 	>({
 		mutationFn: async ({ articleId }) => {
 			const response = await fetch(
-				`${process.env.NEXT_PUBLIC_API_URL}/articles/${articleId}/thumbnail`,
+				`${process.env.NEXT_PUBLIC_API_URL}/api/articles/${articleId}/thumbnail`,
 				{
 					method: "DELETE",
 				}
@@ -62,6 +64,12 @@ export function useDeleteThumbnail() {
 			}
 
 			return response.json();
+		},
+		onSuccess: (_data, variables) => {
+			// 記事詳細のキャッシュを無効化して最新データを取得させる
+			queryClient.invalidateQueries({
+				queryKey: ["article", variables.articleId],
+			});
 		},
 	});
 }

@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 /**
  * サムネイル画像アップロードのレスポンス型
@@ -46,6 +46,8 @@ export type UploadThumbnailError = {
  * };
  */
 export function useUploadThumbnail() {
+	const queryClient = useQueryClient();
+
 	return useMutation<
 		UploadThumbnailResponse,
 		UploadThumbnailError,
@@ -56,7 +58,7 @@ export function useUploadThumbnail() {
 			formData.append("file", file);
 
 			const response = await fetch(
-				`${process.env.NEXT_PUBLIC_API_URL}/articles/${articleId}/thumbnail`,
+				`${process.env.NEXT_PUBLIC_API_URL}/api/articles/${articleId}/thumbnail`,
 				{
 					method: "POST",
 					body: formData,
@@ -69,6 +71,12 @@ export function useUploadThumbnail() {
 			}
 
 			return response.json();
+		},
+		onSuccess: (_data, variables) => {
+			// 記事詳細のキャッシュを無効化して最新データを取得させる
+			queryClient.invalidateQueries({
+				queryKey: ["article", variables.articleId],
+			});
 		},
 	});
 }
