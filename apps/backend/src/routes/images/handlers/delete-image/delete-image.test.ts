@@ -16,7 +16,7 @@ const mockEnv: Env = {
 	TURSO_DATABASE_URL: "test-db-url",
 	TURSO_AUTH_TOKEN: "test-auth-token",
 	CLOUDFLARE_ACCOUNT_ID: "test-account-id",
-	CLOUDFLARE_IMAGES_TOKEN: "test-token",
+	CLOUDFLARE_API_TOKEN: "test-token",
 	CLOUDFLARE_ACCOUNT_HASH: "test-hash",
 };
 
@@ -47,7 +47,7 @@ describe("ユニットテスト", () => {
 			// Delete should be called with correct parameters
 			expect(mockDeleteImage).toHaveBeenCalledWith("test-image-id-123", {
 				CLOUDFLARE_ACCOUNT_ID: "test-account-id",
-				CLOUDFLARE_IMAGES_TOKEN: "test-token",
+				CLOUDFLARE_API_TOKEN: "test-token",
 			});
 		});
 
@@ -77,7 +77,7 @@ describe("ユニットテスト", () => {
 			// Delete should have been called
 			expect(mockDeleteImage).toHaveBeenCalledWith("test-image-id-456", {
 				CLOUDFLARE_ACCOUNT_ID: "test-account-id",
-				CLOUDFLARE_IMAGES_TOKEN: "test-token",
+				CLOUDFLARE_API_TOKEN: "test-token",
 			});
 		});
 

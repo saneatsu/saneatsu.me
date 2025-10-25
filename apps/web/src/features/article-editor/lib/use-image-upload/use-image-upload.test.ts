@@ -178,7 +178,7 @@ describe("Unit Test", () => {
 			});
 		});
 
-		it("should call API with correct FormData", async () => {
+		it("should call API with correct form data", async () => {
 			// Arrange
 			const mockFile = new File(["test"], "test.png", { type: "image/png" });
 			const mockResponse = {
@@ -195,11 +195,10 @@ describe("Unit Test", () => {
 			const { result } = renderHook(() => useImageUpload());
 			await result.current.uploadImage(mockFile);
 
-			// Assert - API should be called with FormData containing the file
+			// Assert - API should be called with form object containing the file
 			expect(mockPost).toHaveBeenCalledTimes(1);
 			const callArg = mockPost.mock.calls[0][0];
-			expect(callArg.form).toBeInstanceOf(FormData);
-			expect(callArg.form.get("file")).toBe(mockFile);
+			expect(callArg.form).toEqual({ file: mockFile });
 		});
 	});
 });

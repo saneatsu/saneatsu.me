@@ -30,6 +30,6 @@ export type Env = {
 	/** Cloudflare Account Hash（画像配信URL用） */
 	CLOUDFLARE_ACCOUNT_HASH: string;
 
-	/** Cloudflare Images API Token */
-	CLOUDFLARE_IMAGES_TOKEN: string;
+	/** Cloudflare API Token */
+	CLOUDFLARE_API_TOKEN: string;
 };

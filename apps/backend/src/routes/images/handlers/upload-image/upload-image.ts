@@ -90,7 +90,7 @@ export const uploadImageHandler: Handler = async (c) => {
 			file,
 			{
 				CLOUDFLARE_ACCOUNT_ID: c.env.CLOUDFLARE_ACCOUNT_ID,
-				CLOUDFLARE_IMAGES_TOKEN: c.env.CLOUDFLARE_IMAGES_TOKEN,
+				CLOUDFLARE_API_TOKEN: c.env.CLOUDFLARE_API_TOKEN,
 			},
 			{ prefix: "content" }
 		);

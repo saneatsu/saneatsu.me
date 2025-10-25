@@ -52,7 +52,22 @@ const ErrorSchema = z.object({
 export const uploadImageRoute = createRoute({
 	method: "post",
 	path: "/",
-	request: {},
+	request: {
+		body: {
+			content: {
+				"multipart/form-data": {
+					schema: z.object({
+						file: z.any().openapi({
+							type: "string",
+							format: "binary",
+							description:
+								"アップロードする画像ファイル（JPEG/PNG/GIF/WebP、最大10MB）",
+						}),
+					}),
+				},
+			},
+		},
+	},
 	responses: {
 		200: {
 			content: {
