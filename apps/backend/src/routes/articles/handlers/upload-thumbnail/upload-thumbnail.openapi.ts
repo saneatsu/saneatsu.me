@@ -68,6 +68,20 @@ export const uploadThumbnailRoute = createRoute({
 					description: "記事ID",
 				}),
 		}),
+		body: {
+			content: {
+				"multipart/form-data": {
+					schema: z.object({
+						file: z.any().openapi({
+							type: "string",
+							format: "binary",
+							description:
+								"アップロードする画像ファイル（JPEG/PNG/GIF/WebP、最大10MB）",
+						}),
+					}),
+				},
+			},
+		},
 	},
 	responses: {
 		200: {
