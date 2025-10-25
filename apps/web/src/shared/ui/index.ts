@@ -1,3 +1,5 @@
+import { Lightbox } from "./lightbox/lightbox";
+
 // Shared UI Segment Public API
 
 // Alert
@@ -155,6 +157,8 @@ export {
 export { Input } from "./input/input";
 // Label
 export { Label } from "./label/label";
+// Lightbox
+export { Lightbox } from "./lightbox/lightbox";
 // Locale Switcher
 export { LocaleSwitcher } from "./locale-switcher/locale-switcher";
 // Markdown Preview
