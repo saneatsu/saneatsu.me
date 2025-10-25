@@ -1,3 +1,5 @@
+import { env } from "@/env";
+
 /**
  * Cloudflare Images URL生成ユーティリティ
  *
@@ -7,26 +9,15 @@
  */
 
 /**
- * Cloudflare Imagesのアカウントハッシュをチェックする
+ * Cloudflare Imagesのアカウントハッシュを取得する
  *
  * @description
  * 環境変数からCloudflare Imagesのアカウントハッシュを取得する。
- * 設定されていない場合はエラーを投げる。
  *
  * @returns Cloudflare Imagesのアカウントハッシュ
  */
 function getCloudflareAccountHash(): string {
-	// 動的インポートを避けるため、直接process.envを使用
-	// env.tsで型安全性は保証されている
-	const accountHash = process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH;
-
-	if (!accountHash) {
-		throw new Error(
-			"環境変数 NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH が設定されていません。.envファイルを確認してください。"
-		);
-	}
-
-	return accountHash;
+	return env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH;
 }
 
 /**
