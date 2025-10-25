@@ -3,6 +3,7 @@ import { vi } from "vitest";
 
 // 環境変数の設定（テスト用）
 process.env.NEXT_PUBLIC_API_URL = "http://localhost:8888/api";
+process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH = "test-account-hash";
 
 // next-authのモック
 vi.mock("next-auth", () => ({

@@ -1,3 +1,5 @@
+import { env } from "@/env";
+
 /**
  * Cloudflare Images Variant型
  */
@@ -24,16 +26,7 @@ export type ImageVariant = "small" | "medium" | "large" | "xlarge";
  * ```
  */
 export function getImageUrl(imageId: string, variant: ImageVariant): string {
-	// 動的インポートを避けるため、直接process.envを使用
-	// env.tsで型安全性は保証されている
-	const accountHash = process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH;
-
-	if (!accountHash) {
-		throw new Error(
-			"環境変数 NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH が設定されていません。.envファイルを確認してください。"
-		);
-	}
-
+	const accountHash = env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH;
 	return `https://imagedelivery.net/${accountHash}/${imageId}/${variant}`;
 }
 
