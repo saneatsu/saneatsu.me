@@ -1,6 +1,7 @@
 import {
 	type CustomImageId,
 	createCustomImageId,
+	type Environment,
 	type ImageIdPrefix,
 	isCustomImageId,
 } from "@/lib/cloudflare-image-types/cloudflare-image-types";
@@ -34,21 +35,29 @@ type CloudflareImagesDeleteResponse = {
  *
  * @description
  * 画像ファイルをマルチパート形式でCloudflare Imagesにアップロードする。
- * prefixを指定すると、カスタムImage ID形式（saneatsu-me_<prefix>_<uuid>）で生成される。
+ * prefixを指定すると、環境に応じたカスタムImage ID形式で生成される。
+ *
+ * 本番環境: `saneatsu-me_<prefix>_<uuid>`
+ * 開発/プレビュー環境: `saneatsu-me_<environment>_<prefix>_<uuid>`
  *
  * @param file - アップロードする画像ファイル
- * @param env - 環境変数（Account ID、API Token）
+ * @param env - 環境変数（Account ID、API Token、NODE_ENV）
  * @param options - アップロードオプション（prefix必須）
  * @returns アップロードされた画像のカスタムID
  * @throws Cloudflare Images APIからエラーが返された場合
  *
  * @example
+ * // 本番環境
  * const result = await uploadImage(file, env, { prefix: "thumbnail" });
  * // result.imageId: "saneatsu-me_thumbnail_2cdc28f0-017a-49c4-9ed7-87056c83901f"
+ *
+ * // 開発環境
+ * const result = await uploadImage(file, env, { prefix: "thumbnail" });
+ * // result.imageId: "saneatsu-me_development_thumbnail_2cdc28f0-017a-49c4-9ed7-87056c83901f"
  */
 export async function uploadImage(
 	file: File,
-	env: Pick<Env, "CLOUDFLARE_ACCOUNT_ID" | "CLOUDFLARE_API_TOKEN">,
+	env: Pick<Env, "CLOUDFLARE_ACCOUNT_ID" | "CLOUDFLARE_API_TOKEN" | "NODE_ENV">,
 	options: { prefix: ImageIdPrefix }
 ): Promise<{ imageId: CustomImageId }>;
 
@@ -60,7 +69,7 @@ export async function uploadImage(
  * Image IDは自動生成される（UUIDv4形式）。
  *
  * @param file - アップロードする画像ファイル
- * @param env - 環境変数（Account ID、API Token）
+ * @param env - 環境変数（Account ID、API Token、NODE_ENV）
  * @param options - アップロードオプション（省略可）
  * @returns アップロードされた画像のID
  * @throws Cloudflare Images APIからエラーが返された場合
@@ -71,7 +80,7 @@ export async function uploadImage(
  */
 export async function uploadImage(
 	file: File,
-	env: Pick<Env, "CLOUDFLARE_ACCOUNT_ID" | "CLOUDFLARE_API_TOKEN">,
+	env: Pick<Env, "CLOUDFLARE_ACCOUNT_ID" | "CLOUDFLARE_API_TOKEN" | "NODE_ENV">,
 	options?: { prefix?: never }
 ): Promise<{ imageId: string }>;
 
@@ -81,7 +90,7 @@ export async function uploadImage(
  * @description
  * 処理フロー:
  * 1. FormDataを作成してファイルを追加
- * 2. prefixが指定されている場合、カスタムImage IDを生成してFormDataに追加
+ * 2. prefixが指定されている場合、環境に応じたカスタムImage IDを生成してFormDataに追加
  * 3. Cloudflare Images APIにPOSTリクエスト
  * 4. レスポンスのエラーチェック
  * 5. prefixが指定されている場合、レスポンスのImage IDがCustomImageId形式かチェック
@@ -89,16 +98,19 @@ export async function uploadImage(
  */
 export async function uploadImage(
 	file: File,
-	env: Pick<Env, "CLOUDFLARE_ACCOUNT_ID" | "CLOUDFLARE_API_TOKEN">,
+	env: Pick<Env, "CLOUDFLARE_ACCOUNT_ID" | "CLOUDFLARE_API_TOKEN" | "NODE_ENV">,
 	options?: { prefix?: ImageIdPrefix }
 ): Promise<{ imageId: string } | { imageId: CustomImageId }> {
 	// 1. FormDataを作成してファイルを追加
 	const formData = new FormData();
 	formData.append("file", file);
 
-	// 2. prefixが指定されている場合、カスタムImage IDを生成してFormDataに追加
+	// 2. prefixが指定されている場合、環境に応じたカスタムImage IDを生成してFormDataに追加
 	if (options?.prefix) {
-		const customId = createCustomImageId(options.prefix);
+		// NODE_ENVからEnvironment型の値を取得（未設定の場合はproductionとして扱う）
+		const environment: Environment =
+			(env.NODE_ENV as Environment) || "production";
+		const customId = createCustomImageId(options.prefix, environment);
 		formData.append("id", customId);
 	}
 

@@ -20,6 +20,7 @@ const mockEnv: Env = {
 	CLOUDFLARE_ACCOUNT_ID: "test-account-id",
 	CLOUDFLARE_API_TOKEN: "test-token",
 	CLOUDFLARE_ACCOUNT_HASH: "test-hash",
+	NODE_ENV: "development",
 };
 
 describe("ユニットテスト", () => {
@@ -31,7 +32,7 @@ describe("ユニットテスト", () => {
 		it("画像を正常にアップロードできる", async () => {
 			// Arrange（CustomImageId形式）
 			const mockCustomId =
-				"saneatsu-me_content_2cdc28f0-017a-49c4-9ed7-87056c83901f";
+				"saneatsu-me_development_content_2cdc28f0-017a-49c4-9ed7-87056c83901f";
 			mockUploadImage.mockResolvedValue({
 				imageId: mockCustomId,
 			});
@@ -60,12 +61,13 @@ describe("ユニットテスト", () => {
 				message: "画像が正常にアップロードされました",
 			});
 
-			// Upload should be called（contentプレフィックス付き）
+			// Upload should be called（contentプレフィックス付き、環境変数含む）
 			expect(mockUploadImage).toHaveBeenCalledWith(
 				expect.any(File),
 				expect.objectContaining({
 					CLOUDFLARE_ACCOUNT_ID: "test-account-id",
 					CLOUDFLARE_API_TOKEN: "test-token",
+					NODE_ENV: "development",
 				}),
 				{ prefix: "content" }
 			);
@@ -201,7 +203,7 @@ describe("ユニットテスト", () => {
 		it("PNG形式を受け入れる", async () => {
 			// Arrange（CustomImageId形式）
 			const mockPngCustomId =
-				"saneatsu-me_content_3edd39f1-128b-40d5-9fe8-98167d94012f";
+				"saneatsu-me_development_content_3edd39f1-128b-40d5-9fe8-98167d94012f";
 			mockUploadImage.mockResolvedValue({
 				imageId: mockPngCustomId,
 			});
@@ -229,7 +231,7 @@ describe("ユニットテスト", () => {
 		it("GIF形式を受け入れる", async () => {
 			// Arrange（CustomImageId形式）
 			const mockGifCustomId =
-				"saneatsu-me_content_4fee40a2-239c-41e6-8af9-09278e05013a";
+				"saneatsu-me_development_content_4fee40a2-239c-41e6-8af9-09278e05013a";
 			mockUploadImage.mockResolvedValue({
 				imageId: mockGifCustomId,
 			});

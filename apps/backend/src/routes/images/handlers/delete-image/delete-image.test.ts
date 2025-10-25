@@ -18,6 +18,7 @@ const mockEnv: Env = {
 	CLOUDFLARE_ACCOUNT_ID: "test-account-id",
 	CLOUDFLARE_API_TOKEN: "test-token",
 	CLOUDFLARE_ACCOUNT_HASH: "test-hash",
+	NODE_ENV: "development",
 };
 
 describe("ユニットテスト", () => {

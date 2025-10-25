@@ -6,6 +6,7 @@ describe("Cloudflare Images APIクライアント", () => {
 		CLOUDFLARE_ACCOUNT_ID: "test-account-id",
 		CLOUDFLARE_API_TOKEN: "test-token",
 		CLOUDFLARE_ACCOUNT_HASH: "test-hash",
+		NODE_ENV: "development" as const,
 	};
 
 	let mockFetch: ReturnType<typeof vi.fn>;
@@ -102,9 +103,9 @@ describe("Cloudflare Images APIクライアント", () => {
 						type: "image/jpeg",
 					});
 
-					// モックのCustomImageId（実際の形式に従う）
+					// モックのCustomImageId（開発環境形式）
 					const mockCustomId =
-						"saneatsu-me_thumbnail_2cdc28f0-017a-49c4-9ed7-87056c83901f";
+						"saneatsu-me_development_thumbnail_2cdc28f0-017a-49c4-9ed7-87056c83901f";
 
 					mockFetch.mockResolvedValue({
 						ok: true,
@@ -130,7 +131,7 @@ describe("Cloudflare Images APIクライアント", () => {
 
 					// 戻り値のimageIdがCustomImageId形式であることを確認
 					expect(result.imageId).toMatch(
-						/^saneatsu-me_thumbnail_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+						/^saneatsu-me_development_thumbnail_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 					);
 
 					// fetchが呼ばれたことを確認
@@ -149,7 +150,7 @@ describe("Cloudflare Images APIクライアント", () => {
 					const formData = callArgs?.[1]?.body as FormData;
 					const customIdInFormData = formData.get("id");
 					expect(customIdInFormData).toMatch(
-						/^saneatsu-me_thumbnail_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+						/^saneatsu-me_development_thumbnail_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 					);
 				});
 
@@ -158,9 +159,9 @@ describe("Cloudflare Images APIクライアント", () => {
 						type: "image/jpeg",
 					});
 
-					// モックのCustomImageId（実際の形式に従う）
+					// モックのCustomImageId（開発環境形式）
 					const mockCustomId =
-						"saneatsu-me_content_3edd39f1-128b-40d5-9fe8-98167d94012f";
+						"saneatsu-me_development_content_3edd39f1-128b-40d5-9fe8-98167d94012f";
 
 					mockFetch.mockResolvedValue({
 						ok: true,
@@ -186,7 +187,7 @@ describe("Cloudflare Images APIクライアント", () => {
 
 					// 戻り値のimageIdがCustomImageId形式であることを確認
 					expect(result.imageId).toMatch(
-						/^saneatsu-me_content_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+						/^saneatsu-me_development_content_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 					);
 				});
 

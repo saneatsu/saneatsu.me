@@ -20,16 +20,48 @@ export type UUID = string & { readonly __brand: "UUID" };
 export type ImageIdPrefix = "thumbnail" | "content";
 
 /**
+ * 環境名
+ *
+ * @description
+ * デプロイ環境を表す。
+ * 開発環境とプレビュー環境では環境プレフィックスが付く。
+ *
+ * - development: ローカル開発環境
+ * - preview: プレビュー環境
+ * - production: 本番環境（プレフィックスなし）
+ */
+export type Environment = "development" | "preview" | "production";
+
+/**
  * カスタムImage ID型
  *
  * @description
- * `saneatsu-me_<prefix>_<uuid>` の厳密な形式
+ * 環境に応じた形式のカスタムImage ID。
+ *
+ * 本番環境:
+ * - `saneatsu-me_<prefix>_<uuid>`
+ *
+ * 開発・プレビュー環境:
+ * - `saneatsu-me_development_<prefix>_<uuid>`
+ * - `saneatsu-me_preview_<prefix>_<uuid>`
  *
  * @example
+ * // 本番環境
  * - "saneatsu-me_thumbnail_2cdc28f0-017a-49c4-9ed7-87056c83901f"
  * - "saneatsu-me_content_3edd39g1-128b-50d5-0fe8-98167d94012g"
+ *
+ * // 開発環境
+ * - "saneatsu-me_development_thumbnail_2cdc28f0-017a-49c4-9ed7-87056c83901f"
+ * - "saneatsu-me_development_content_3edd39g1-128b-50d5-0fe8-98167d94012g"
+ *
+ * // プレビュー環境
+ * - "saneatsu-me_preview_thumbnail_2cdc28f0-017a-49c4-9ed7-87056c83901f"
+ * - "saneatsu-me_preview_content_3edd39g1-128b-50d5-0fe8-98167d94012g"
  */
-export type CustomImageId = `saneatsu-me_${ImageIdPrefix}_${UUID}`;
+export type CustomImageId =
+	| `saneatsu-me_${ImageIdPrefix}_${UUID}` // production
+	| `saneatsu-me_development_${ImageIdPrefix}_${UUID}` // development
+	| `saneatsu-me_preview_${ImageIdPrefix}_${UUID}`; // preview
 
 /**
  * 文字列がUUID形式かチェックする型ガード
@@ -95,15 +127,25 @@ export function generateUUID(): UUID {
  * @returns CustomImageId形式の場合true
  *
  * @example
- * const str = "saneatsu-me_thumbnail_2cdc28f0-017a-49c4-9ed7-87056c83901f";
- * if (isCustomImageId(str)) {
- *   // この時点でstrの型はCustomImageId
- *   const id: CustomImageId = str;
+ * // 本番環境
+ * const str1 = "saneatsu-me_thumbnail_2cdc28f0-017a-49c4-9ed7-87056c83901f";
+ * if (isCustomImageId(str1)) {
+ *   // この時点でstr1の型はCustomImageId
+ *   const id: CustomImageId = str1;
+ * }
+ *
+ * // 開発環境
+ * const str2 = "saneatsu-me_development_thumbnail_2cdc28f0-017a-49c4-9ed7-87056c83901f";
+ * if (isCustomImageId(str2)) {
+ *   // この時点でstr2の型はCustomImageId
+ *   const id: CustomImageId = str2;
  * }
  */
 export function isCustomImageId(value: string): value is CustomImageId {
+	// 本番環境: saneatsu-me_(thumbnail|content)_<uuid>
+	// 開発/プレビュー環境: saneatsu-me_(development|preview)_(thumbnail|content)_<uuid>
 	const regex =
-		/^saneatsu-me_(thumbnail|content)_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+		/^saneatsu-me_(?:(development|preview)_)?(thumbnail|content)_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 	return regex.test(value);
 }
 
@@ -111,19 +153,34 @@ export function isCustomImageId(value: string): value is CustomImageId {
  * カスタムImage IDを生成
  *
  * @param prefix - Image IDのプレフィックス（'thumbnail' または 'content'）
+ * @param environment - 環境名（省略時は 'production'）
  * @returns バリデーション済みカスタムImage ID
  * @throws {Error} 生成されたIDが不正な形式の場合（理論上到達不可能）
  *
  * @example
- * const thumbnailId = createCustomImageId('thumbnail');
+ * // 本番環境
+ * const thumbnailId = createCustomImageId('thumbnail', 'production');
  * // thumbnailId: "saneatsu-me_thumbnail_2cdc28f0-017a-49c4-9ed7-87056c83901f"
  *
- * const contentId = createCustomImageId('content');
- * // contentId: "saneatsu-me_content_3edd39g1-128b-50d5-0fe8-98167d94012g"
+ * // 開発環境
+ * const devThumbnailId = createCustomImageId('thumbnail', 'development');
+ * // devThumbnailId: "saneatsu-me_development_thumbnail_2cdc28f0-017a-49c4-9ed7-87056c83901f"
+ *
+ * // プレビュー環境
+ * const previewContentId = createCustomImageId('content', 'preview');
+ * // previewContentId: "saneatsu-me_preview_content_3edd39g1-128b-50d5-0fe8-98167d94012g"
  */
-export function createCustomImageId(prefix: ImageIdPrefix): CustomImageId {
+export function createCustomImageId(
+	prefix: ImageIdPrefix,
+	environment: Environment = "production"
+): CustomImageId {
 	const uuid = generateUUID();
-	const customId = `saneatsu-me_${prefix}_${uuid}`;
+
+	// 本番環境の場合は環境プレフィックスなし
+	const customId =
+		environment === "production"
+			? `saneatsu-me_${prefix}_${uuid}`
+			: `saneatsu-me_${environment}_${prefix}_${uuid}`;
 
 	// 型ガードで検証
 	if (!isCustomImageId(customId)) {
@@ -142,13 +199,23 @@ export function createCustomImageId(prefix: ImageIdPrefix): CustomImageId {
  * @throws {Error} 不正なCustomImageId形式の場合
  *
  * @example
- * const customId: CustomImageId = "saneatsu-me_thumbnail_2cdc28f0-017a-49c4-9ed7-87056c83901f";
- * const uuid = extractUUIDFromCustomId(customId);
- * // uuid: "2cdc28f0-017a-49c4-9ed7-87056c83901f" (型: UUID)
+ * // 本番環境
+ * const customId1: CustomImageId = "saneatsu-me_thumbnail_2cdc28f0-017a-49c4-9ed7-87056c83901f";
+ * const uuid1 = extractUUIDFromCustomId(customId1);
+ * // uuid1: "2cdc28f0-017a-49c4-9ed7-87056c83901f" (型: UUID)
+ *
+ * // 開発環境
+ * const customId2: CustomImageId = "saneatsu-me_development_content_2cdc28f0-017a-49c4-9ed7-87056c83901f";
+ * const uuid2 = extractUUIDFromCustomId(customId2);
+ * // uuid2: "2cdc28f0-017a-49c4-9ed7-87056c83901f" (型: UUID)
  */
 export function extractUUIDFromCustomId(customId: CustomImageId): UUID {
 	const parts = customId.split("_");
-	const uuidPart = parts[2];
+
+	// 環境プレフィックスがある場合（development/preview）: parts[3]
+	// 環境プレフィックスがない場合（production）: parts[2]
+	const uuidPart =
+		parts[1] === "development" || parts[1] === "preview" ? parts[3] : parts[2];
 
 	if (!uuidPart) {
 		throw new Error(`Invalid CustomImageId format: ${customId}`);
@@ -165,17 +232,27 @@ export function extractUUIDFromCustomId(customId: CustomImageId): UUID {
  * @throws {Error} 不正なCustomImageId形式の場合
  *
  * @example
- * const customId: CustomImageId = "saneatsu-me_thumbnail_2cdc28f0-017a-49c4-9ed7-87056c83901f";
- * const prefix = extractPrefixFromCustomId(customId);
- * // prefix: "thumbnail"
+ * // 本番環境
+ * const customId1: CustomImageId = "saneatsu-me_thumbnail_2cdc28f0-017a-49c4-9ed7-87056c83901f";
+ * const prefix1 = extractPrefixFromCustomId(customId1);
+ * // prefix1: "thumbnail"
+ *
+ * // 開発環境
+ * const customId2: CustomImageId = "saneatsu-me_development_content_2cdc28f0-017a-49c4-9ed7-87056c83901f";
+ * const prefix2 = extractPrefixFromCustomId(customId2);
+ * // prefix2: "content"
  */
 export function extractPrefixFromCustomId(
 	customId: CustomImageId
 ): ImageIdPrefix {
 	const parts = customId.split("_");
-	const prefix = parts[1];
 
-	if (prefix !== "thumbnail" && prefix !== "content") {
+	// 環境プレフィックスがある場合（development/preview）: parts[2]
+	// 環境プレフィックスがない場合（production）: parts[1]
+	const prefix =
+		parts[1] === "development" || parts[1] === "preview" ? parts[2] : parts[1];
+
+	if (!prefix || (prefix !== "thumbnail" && prefix !== "content")) {
 		throw new Error(`Invalid CustomImageId prefix: ${prefix}`);
 	}
 
