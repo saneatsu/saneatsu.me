@@ -1,9 +1,8 @@
 import type { RouteHandler } from "@hono/zod-openapi";
 import type { DashboardOverviewResponse } from "@saneatsu/schemas";
 import { and, count, desc, eq, gte, sql } from "drizzle-orm";
-
+import type { Env } from "@/env";
 import { getDatabase } from "@/lib/database";
-import type { Env } from "@/types/env";
 
 import type { getDashboardOverviewRoute } from "./get-overview.openapi";
 

@@ -1,7 +1,6 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
-
+import type { Env } from "@/env";
 import { createDbClient } from "../../../lib/db";
-import type { Env } from "../../../types/env";
 import {
 	AuthErrorSchema,
 	UpsertUserSchema,

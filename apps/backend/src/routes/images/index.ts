@@ -1,6 +1,6 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 
-import type { Env } from "@/types/env";
+import type { Env } from "@/env";
 
 // ハンドラーをimport
 import { deleteImageHandler } from "./handlers/delete-image/delete-image";

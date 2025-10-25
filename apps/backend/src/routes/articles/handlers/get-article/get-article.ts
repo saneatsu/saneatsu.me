@@ -1,8 +1,8 @@
 import type { RouteHandler } from "@hono/zod-openapi";
 import { and, eq, sql } from "drizzle-orm";
 
-import { getDatabase } from "@/lib/database";
-import type { Env } from "@/types/env";
+import type { Env } from "@/env";
+import { getDatabase } from "@/lib";
 import { convertWikiLinks } from "@/utils/wiki-link/wiki-link";
 
 import type { getArticleRoute } from "./get-article.openapi";

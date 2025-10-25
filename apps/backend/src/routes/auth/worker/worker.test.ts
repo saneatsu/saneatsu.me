@@ -1,7 +1,7 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { Env } from "../../../types/env";
+import type { Env } from "@/env";
 import { authRoute } from "./worker";
 
 // モックの設定

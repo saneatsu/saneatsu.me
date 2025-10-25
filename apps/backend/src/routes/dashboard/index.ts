@@ -1,6 +1,6 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 
-import type { Env } from "@/types/env";
+import type { Env } from "@/env";
 
 import { getDashboardOverview } from "./handlers/get-overview/get-overview";
 import { getDashboardOverviewRoute } from "./handlers/get-overview/get-overview.openapi";

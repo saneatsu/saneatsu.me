@@ -2,8 +2,8 @@ import type { RouteHandler } from "@hono/zod-openapi";
 import { articleListQuerySchema, type SortOrder } from "@saneatsu/schemas";
 import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
 
-import { getDatabase } from "@/lib/database";
-import type { Env } from "@/types/env";
+import type { Env } from "@/env";
+import { getDatabase } from "@/lib";
 
 import type { getAllArticlesRoute } from "./get-all-articles.openapi";
 

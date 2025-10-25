@@ -2,8 +2,8 @@ import type { RouteHandler } from "@hono/zod-openapi";
 import { and, eq, sql } from "drizzle-orm";
 import type { z } from "zod";
 
-import { getDatabase } from "@/lib/database";
-import type { Env } from "@/types/env";
+import type { Env } from "@/env";
+import { getDatabase } from "@/lib";
 import { extractHeadings } from "@/utils/markdown";
 
 import type {

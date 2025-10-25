@@ -2,9 +2,8 @@ import type { RouteHandler } from "@hono/zod-openapi";
 import type { ViewsTrendResponse } from "@saneatsu/schemas";
 import { viewsTrendQuerySchema } from "@saneatsu/schemas";
 import { and, gte, sql } from "drizzle-orm";
-
+import type { Env } from "@/env";
 import { getDatabase } from "@/lib/database";
-import type { Env } from "@/types/env";
 
 import type { getViewsTrendRoute } from "./get-views-trend.openapi";
 
