@@ -1,0 +1,129 @@
+import { createEnv } from "@t3-oss/env-core";
+import { z } from "zod";
+
+/**
+ * 環境変数スキーマ定義
+ *
+ * @description
+ * すべての環境変数のZodスキーマを定義する。
+ * このスキーマから型が自動生成され、開発環境ではバリデーションに使用される。
+ */
+export const envSchema = z.object({
+	/**
+	 * 環境名
+	 * - development: ローカル開発環境、Cloudflare Workers開発環境
+	 * - preview: Cloudflare Workersプレビュー環境
+	 * - production: Cloudflare Workers本番環境
+	 */
+	NODE_ENV: z.enum(["development", "preview", "production"]),
+
+	/**
+	 * Turso Database URL
+	 */
+	TURSO_DATABASE_URL: z.string().min(1),
+
+	/**
+	 * Turso認証トークン
+	 * ローカル開発では空文字列でOK（file: URLを使用する場合）
+	 * Cloudflare Workersでは必須
+	 */
+	TURSO_AUTH_TOKEN: z.string(),
+
+	/**
+	 * Cloudflare Account ID
+	 */
+	CLOUDFLARE_ACCOUNT_ID: z.string().min(1),
+
+	/**
+	 * Cloudflare Account Hash（画像配信URL用）
+	 */
+	CLOUDFLARE_ACCOUNT_HASH: z.string().min(1),
+
+	/**
+	 * Cloudflare API Token
+	 */
+	CLOUDFLARE_API_TOKEN: z.string().min(1),
+
+	/**
+	 * Gemini API Key（オプショナル）
+	 *
+	 * @description
+	 * 記事の自動翻訳機能で使用する。
+	 * 未設定の場合は翻訳機能が動作しない。
+	 * プレースホルダー値（"your-"で始まる値）は起動時にエラーになる。
+	 *
+	 * API keyの取得方法: https://makersuite.google.com/app/apikey
+	 */
+	GEMINI_API_KEY: z
+		.string()
+		.refine(
+			(val) => {
+				// 未設定または空文字列はOK（optional）
+				if (!val) return true;
+				// プレースホルダー値を拒否
+				if (val.includes("your-")) return false;
+				// Gemini API keyは "AI" で始まる（形式チェック）
+				return val.startsWith("AI") && val.length > 30;
+			},
+			{
+				message:
+					"GEMINI_API_KEY must be a valid Gemini API key (starts with 'AI') or left empty. Get your API key from: https://makersuite.google.com/app/apikey",
+			}
+		)
+		.optional(),
+
+	/**
+	 * CORS許可オリジン（オプショナル）
+	 */
+	CORS_ORIGIN: z.string().optional(),
+
+	/**
+	 * 管理者メールアドレス（カンマ区切り）（オプショナル）
+	 */
+	ADMIN_EMAILS: z.string().optional(),
+});
+
+/**
+ * 環境変数の型定義
+ *
+ * @description
+ * envSchemaから自動生成される型。
+ * すべてのハンドラーで `c.env` の型として使用される。
+ */
+export type Env = z.infer<typeof envSchema>;
+
+/**
+ * 環境変数の型安全な定義（開発環境用）
+ *
+ * @description
+ * @t3-oss/env-coreを使用して環境変数を型安全に管理する。
+ * 環境変数が正しく設定されていない場合、起動時にエラーを投げる。
+ *
+ * 使用方法:
+ * ```typescript
+ * // dev.ts（開発環境）でのみインポート
+ * import { env } from "@/env";
+ * // これでバリデーションが実行される
+ * ```
+ *
+ * 注意:
+ * - このファイルは開発環境（Node.js）でのみ使用される
+ * - Cloudflare Workers本番環境では、wrangler.tomlで環境変数を設定する
+ * - 各ハンドラーでは `c.env` を使って環境変数にアクセスする
+ */
+export const env = createEnv({
+	/**
+	 * サーバーサイドの環境変数
+	 */
+	server: envSchema.shape,
+
+	/**
+	 * 実際の環境変数とのマッピング
+	 */
+	runtimeEnv: process.env,
+
+	/**
+	 * 空文字列をundefinedとして扱う
+	 */
+	emptyStringAsUndefined: true,
+});

@@ -24,7 +24,7 @@ const mockSetValue = (name: string, value: string) => {
 /**
  * 基本表示（ライブモード）
  */
-export const 基本表示: Story = {
+export const Default: Story = {
 	name: "基本表示（ライブモード）",
 	tags: ["code-only"],
 	args: {},
@@ -70,7 +70,7 @@ console.log(greeting);
 /**
  * プレビューモード
  */
-export const プレビューモード: Story = {
+export const PreviewMode: Story = {
 	name: "プレビューモード（プレビューのみ）",
 	tags: ["code-only"],
 	args: {},
@@ -108,7 +108,7 @@ export const プレビューモード: Story = {
 /**
  * 編集モード
  */
-export const 編集モード: Story = {
+export const EditMode: Story = {
 	name: "編集モード（エディタのみ）",
 	tags: ["code-only"],
 	args: {},
@@ -180,7 +180,7 @@ export const WikiLinkのプレビュー: Story = {
 /**
  * タグのプレビュー
  */
-export const タグのプレビュー: Story = {
+export const TagsPreview: Story = {
 	name: "タグのプレビュー",
 	tags: ["validation"],
 	args: {},
@@ -227,7 +227,7 @@ export const タグのプレビュー: Story = {
 /**
  * コードブロックのプレビュー
  */
-export const コードブロックのプレビュー: Story = {
+export const CodeBlockPreview: Story = {
 	name: "コードブロックのプレビュー",
 	tags: ["validation"],
 	args: {},
@@ -291,7 +291,7 @@ npm start
 /**
  * ダークモード表示
  */
-export const ダークモード表示: Story = {
+export const DarkModeDisplay: Story = {
 	name: "ダークモード表示",
 	tags: ["code-only"],
 	args: {},
@@ -330,7 +330,7 @@ console.log("Dark mode is enabled");
 /**
  * カスタム高さ指定
  */
-export const カスタム高さ指定: Story = {
+export const CustomHeight: Story = {
 	name: "カスタム高さ指定（300px）",
 	tags: ["code-only"],
 	args: {},
@@ -357,7 +357,7 @@ export const カスタム高さ指定: Story = {
 /**
  * 長いコンテンツ
  */
-export const 長いコンテンツ: Story = {
+export const LongContent: Story = {
 	name: "長いコンテンツ",
 	tags: ["code-only"],
 	args: {},
@@ -399,7 +399,7 @@ const example = "code block";
 /**
  * 空の状態
  */
-export const 空の状態: Story = {
+export const EmptyState: Story = {
 	name: "空の状態",
 	tags: ["validation"],
 	args: {},
@@ -431,7 +431,7 @@ export const 空の状態: Story = {
 /**
  * 英語ロケール
  */
-export const 英語ロケール: Story = {
+export const EnglishLocale: Story = {
 	name: "英語ロケール",
 	tags: ["code-only"],
 	args: {},

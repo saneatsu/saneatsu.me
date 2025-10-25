@@ -10,6 +10,8 @@ import remarkGfm from "remark-gfm";
 import { remarkTag } from "@/shared/lib/remark-tag";
 import { remarkWikiLink } from "@/shared/lib/remark-wiki-link";
 
+import { ArticleImage } from "../article-image/article-image";
+
 // Wiki Linkコンポーネントを動的インポート（クライアントサイドのみ）
 const WikiLink = dynamic(
 	() => import("@/entities/article").then((mod) => mod.WikiLink),
@@ -88,6 +90,17 @@ export function MarkdownPreview({
 					{children}
 				</a>
 			);
+		},
+		// 画像のカスタムレンダリング
+		img: ({ src, alt, ...props }) => {
+			// Cloudflare Images URLの場合はArticleImageを使用
+			if (src?.includes("imagedelivery.net")) {
+				return <ArticleImage src={src} alt={alt} />;
+			}
+
+			// 通常の画像（外部URL）
+			// biome-ignore lint/performance/noImgElement: 外部画像URLはNext.js Imageで最適化できないため<img>を使用
+			return <img src={src} alt={alt} {...props} />;
 		},
 	};
 

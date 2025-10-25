@@ -1,8 +1,8 @@
 import type { RouteHandler } from "@hono/zod-openapi";
 import { and, eq } from "drizzle-orm";
 
-import { getDatabase } from "@/lib/database";
-import type { Env } from "@/types/env";
+import type { Env } from "@/env";
+import { getDatabase } from "@/lib";
 
 import type { getArticleByIdRoute } from "./get-article-by-id.openapi";
 
@@ -30,10 +30,7 @@ export const getArticleById: Handler = async (c) => {
 			tagTranslations,
 			tags,
 		} = await getDatabase();
-		const db = createDatabaseClient({
-			TURSO_DATABASE_URL: c.env.TURSO_DATABASE_URL,
-			TURSO_AUTH_TOKEN: c.env.TURSO_AUTH_TOKEN,
-		});
+		const db = createDatabaseClient(c.env);
 
 		// 2. パラメータを取得・検証
 		const { id } = c.req.valid("param");

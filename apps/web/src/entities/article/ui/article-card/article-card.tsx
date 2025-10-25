@@ -1,8 +1,13 @@
+import Image from "next/image";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 
 import type { Article } from "@/shared";
-import { formatRelativeDate } from "@/shared/lib";
+import {
+	formatRelativeDate,
+	getArticleEmoji,
+	getCloudflareImageUrl,
+} from "@/shared/lib";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui";
 
 interface ArticleCardProps {
@@ -29,7 +34,24 @@ export function ArticleCard({ article }: ArticleCardProps) {
 
 	return (
 		<Link href={`/articles/${article.slug}`}>
-			<Card className="group hover:shadow-md transition-shadow cursor-pointer">
+			<Card className="group hover:shadow-md transition-shadow cursor-pointer overflow-hidden">
+				{/* サムネイル画像またはフォールバック */}
+				<div className="relative w-full aspect-video overflow-hidden">
+					{article.cfImageId ? (
+						<Image
+							src={getCloudflareImageUrl(article.cfImageId, "medium") ?? ""}
+							alt={article.title ?? ""}
+							fill
+							className="object-cover transition-transform group-hover:scale-105"
+							sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+						/>
+					) : (
+						<div className="w-full h-full bg-muted flex items-center justify-center">
+							<span className="text-8xl">{getArticleEmoji(article.id)}</span>
+						</div>
+					)}
+				</div>
+
 				<CardHeader>
 					<div className="flex items-center justify-between mb-2 text-sm text-muted-foreground">
 						{updatedDateInfo && (
@@ -42,6 +64,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
 									: updatedDateInfo.formatted}
 							</time>
 						)}
+						{/* 閲覧数表示（一時的にコメントアウト）
 						<div className="flex items-center space-x-1">
 							<svg
 								className="h-3 w-3"
@@ -67,6 +90,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
 							</svg>
 							<span>{t("viewCount", { count: article.viewCount })}</span>
 						</div>
+						*/}
 					</div>
 					<CardTitle className="line-clamp-2">
 						<span className="group-hover:underline transition-all">

@@ -1,9 +1,9 @@
 import type { RouteHandler } from "@hono/zod-openapi";
 import { and, eq, not } from "drizzle-orm";
 
-import { getDatabase } from "@/lib/database";
+import type { Env } from "@/env";
+import { getDatabase } from "@/lib";
 import { createTranslationService } from "@/services/gemini-translation/gemini-translation";
-import type { Env } from "@/types/env";
 
 import type { updateTagRoute } from "./update-tag.openapi";
 
@@ -29,10 +29,7 @@ export const updateTag: Handler = async (c) => {
 	try {
 		// 1. DBクライアントを作成
 		const { createDatabaseClient, tags, tagTranslations } = await getDatabase();
-		const db = createDatabaseClient({
-			TURSO_DATABASE_URL: c.env.TURSO_DATABASE_URL,
-			TURSO_AUTH_TOKEN: c.env.TURSO_AUTH_TOKEN,
-		});
+		const db = createDatabaseClient(c.env);
 
 		// 2. パラメータとリクエストボディを取得
 		const { id } = c.req.valid("param");

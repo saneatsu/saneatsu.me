@@ -18,7 +18,6 @@ export {
 
 // Cloudflare Images
 export { getCloudflareImageUrl, getOgImageUrl } from "./cloudflare-images";
-
 // Extract Headings
 export {
 	createNestedHeadings,
@@ -33,6 +32,13 @@ export {
 	formatRelativeDate,
 	type RelativeDateResult,
 } from "./format-date/format-date";
+// Get Article Emoji
+export { getArticleEmoji } from "./get-article-emoji";
+export {
+	extractImageId,
+	getImageUrl,
+	type ImageVariant,
+} from "./get-image-url";
 // Hono Hook
 export { type HonoClient, useHonoClient } from "./hono/use-client";
 // Hono Client

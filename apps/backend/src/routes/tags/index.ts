@@ -1,6 +1,6 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 
-import type { Env } from "@/types/env";
+import type { Env } from "@/env";
 
 import { createTag } from "./handlers/create-tag/create-tag";
 import { createTagRoute } from "./handlers/create-tag/create-tag.openapi";
