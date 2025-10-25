@@ -1,8 +1,7 @@
 import type { RouteHandler } from "@hono/zod-openapi";
 import { eq } from "drizzle-orm";
 
-import { deleteImage, getImageUrl, uploadImage } from "@/lib/cloudflare-images";
-import { getDatabase } from "@/lib/database";
+import { deleteImage, getDatabase, getImageUrl, uploadImage } from "@/lib";
 import type { Env } from "@/types/env";
 
 import type { uploadThumbnailRoute } from "./upload-thumbnail.openapi";
@@ -99,11 +98,15 @@ export const uploadThumbnail: Handler = async (c) => {
 			}
 		}
 
-		// 8. Cloudflare Imagesにアップロード
-		const { imageId } = await uploadImage(file, {
-			CLOUDFLARE_ACCOUNT_ID: c.env.CLOUDFLARE_ACCOUNT_ID,
-			CLOUDFLARE_IMAGES_TOKEN: c.env.CLOUDFLARE_IMAGES_TOKEN,
-		});
+		// 8. Cloudflare Imagesにアップロード（thumbnailプレフィックス付き）
+		const { imageId } = await uploadImage(
+			file,
+			{
+				CLOUDFLARE_ACCOUNT_ID: c.env.CLOUDFLARE_ACCOUNT_ID,
+				CLOUDFLARE_IMAGES_TOKEN: c.env.CLOUDFLARE_IMAGES_TOKEN,
+			},
+			{ prefix: "thumbnail" }
+		);
 
 		// 9. DBのcfImageIdを更新
 		await db
