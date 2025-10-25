@@ -61,33 +61,13 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 
 	return (
 		<main className="container mx-auto px-4 py-8">
-			<div className="max-w-4xl mx-auto">
+			<div className="max-w-6xl mx-auto">
 				{/* Article Header */}
 				<header className="mb-12 space-y-6">
 					<div className="space-y-4">
 						<h1 className="text-4xl font-bold tracking-tight">
 							{article.title}
 						</h1>
-
-						{/* サムネイル画像またはフォールバック */}
-						<div className="relative w-full aspect-video rounded-lg overflow-hidden bg-muted">
-							{article.cfImageId ? (
-								<Image
-									src={getImageUrl(article.cfImageId, "large")}
-									alt={article.title || "記事のサムネイル"}
-									fill
-									className="object-cover"
-									sizes="(max-width: 768px) 100vw, (max-width: 1200px) 800px, 1200px"
-									priority
-								/>
-							) : (
-								<div className="w-full h-full flex items-center justify-center">
-									<span className="text-9xl">
-										{getArticleEmoji(article.id)}
-									</span>
-								</div>
-							)}
-						</div>
 
 						{/* タグ表示 */}
 						{article.tags && article.tags.length > 0 && (
@@ -143,6 +123,26 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 								<span>{t("viewCount", { count: article.viewCount })}</span>
 							</span>
 							*/}
+						</div>
+
+						{/* サムネイル画像またはフォールバック */}
+						<div className="relative max-w-lg aspect-video rounded-lg overflow-hidden bg-muted">
+							{article.cfImageId ? (
+								<Image
+									src={getImageUrl(article.cfImageId, "large")}
+									alt={article.title || "記事のサムネイル"}
+									fill
+									className="object-cover"
+									sizes="(max-width: 768px) 100vw, (max-width: 1200px) 800px, 1200px"
+									priority
+								/>
+							) : (
+								<div className="w-full h-full flex items-center justify-center">
+									<span className="text-9xl">
+										{getArticleEmoji(article.id)}
+									</span>
+								</div>
+							)}
 						</div>
 					</div>
 				</header>
