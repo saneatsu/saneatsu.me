@@ -80,14 +80,14 @@ export const columns: ColumnDef<Article>[] = [
 			const article = row.original;
 
 			return (
-				<div className="relative h-12 w-12 overflow-hidden rounded-md bg-muted flex-shrink-0">
+				<div className="relative w-20 aspect-video overflow-hidden rounded-md bg-muted flex-shrink-0">
 					{article.cfImageId ? (
 						<Image
 							src={getImageUrl(article.cfImageId, "small")}
 							alt={article.title || "記事のサムネイル"}
 							fill
 							className="object-cover"
-							sizes="48px"
+							sizes="80px"
 						/>
 					) : (
 						<div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
