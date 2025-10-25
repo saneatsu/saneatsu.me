@@ -12,6 +12,7 @@ import {
 	cn,
 	extractHeadings,
 	formatRelativeDate,
+	getImageUrl,
 	remarkTag,
 	remarkWikiLink,
 } from "@/shared/lib";
@@ -68,19 +69,18 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 						</h1>
 
 						{/* サムネイル画像 */}
-						{article.cfImageId &&
-							process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH && (
-								<div className="relative w-full aspect-video rounded-lg overflow-hidden bg-muted">
-									<Image
-										src={`https://imagedelivery.net/${process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH}/${article.cfImageId}/large`}
-										alt={article.title || "記事のサムネイル"}
-										fill
-										className="object-cover"
-										sizes="(max-width: 768px) 100vw, (max-width: 1200px) 800px, 1200px"
-										priority
-									/>
-								</div>
-							)}
+						{article.cfImageId && (
+							<div className="relative w-full aspect-video rounded-lg overflow-hidden bg-muted">
+								<Image
+									src={getImageUrl(article.cfImageId, "large")}
+									alt={article.title || "記事のサムネイル"}
+									fill
+									className="object-cover"
+									sizes="(max-width: 768px) 100vw, (max-width: 1200px) 800px, 1200px"
+									priority
+								/>
+							</div>
+						)}
 
 						{/* タグ表示 */}
 						{article.tags && article.tags.length > 0 && (

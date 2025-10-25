@@ -5,6 +5,7 @@ import { ArrowUpDown } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
+import { getImageUrl } from "@/shared/lib";
 import { ARTICLE_STATUS_CONFIG, type Article } from "@/shared/model";
 import { Badge, Button } from "@/shared/ui";
 
@@ -77,13 +78,12 @@ export const columns: ColumnDef<Article>[] = [
 		header: "画像",
 		cell: ({ row }) => {
 			const article = row.original;
-			const accountHash = process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH;
 
 			return (
 				<div className="relative h-12 w-12 overflow-hidden rounded-md bg-muted flex-shrink-0">
-					{article.cfImageId && accountHash ? (
+					{article.cfImageId ? (
 						<Image
-							src={`https://imagedelivery.net/${accountHash}/${article.cfImageId}/small`}
+							src={getImageUrl(article.cfImageId, "small")}
 							alt={article.title || "記事のサムネイル"}
 							fill
 							className="object-cover"

@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle, Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -10,7 +10,7 @@ import { z } from "zod";
 import { useCheckSlug, useUpdate } from "@/entities/article";
 import { useGetAllTags } from "@/entities/tag";
 import { ArticleMarkdownEditor } from "@/features/article-editor";
-import { useDebounce } from "@/shared/lib";
+import { getImageUrl, useDebounce } from "@/shared/lib";
 import {
 	Alert,
 	AlertDescription,
@@ -100,14 +100,20 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 	const [publishedAtDate, setPublishedAtDate] = useState<Date | undefined>(
 		article.publishedAt ? new Date(article.publishedAt) : undefined
 	);
-	const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(() => {
-		// 初期サムネイルURLを生成
-		if (article.cfImageId) {
-			const accountHash = process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH;
-			return `https://imagedelivery.net/${accountHash}/${article.cfImageId}/medium`;
+
+	/**
+	 * サムネイルURLを生成
+	 *
+	 * @description
+	 * article.cfImageIdが変更されると自動的に再計算される。
+	 * React Queryのキャッシュ無効化により最新のcfImageIdが反映される。
+	 */
+	const thumbnailUrl = useMemo(() => {
+		if (!article.cfImageId) {
+			return null;
 		}
-		return null;
-	});
+		return getImageUrl(article.cfImageId, "medium");
+	}, [article.cfImageId]);
 
 	const {
 		register,
@@ -217,12 +223,6 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 			<ArticleThumbnailUploader
 				articleId={article.id}
 				thumbnailUrl={thumbnailUrl}
-				onUploadSuccess={(imageUrl) => {
-					setThumbnailUrl(imageUrl);
-				}}
-				onDeleteSuccess={() => {
-					setThumbnailUrl(null);
-				}}
 				onError={setThumbnailError}
 			/>
 
