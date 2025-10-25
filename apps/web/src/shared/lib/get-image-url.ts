@@ -24,13 +24,14 @@ export type ImageVariant = "small" | "medium" | "large" | "xlarge";
  * ```
  */
 export function getImageUrl(imageId: string, variant: ImageVariant): string {
+	// 動的インポートを避けるため、直接process.envを使用
+	// env.tsで型安全性は保証されている
 	const accountHash = process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH;
 
 	if (!accountHash) {
-		console.error(
-			"NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH is not defined in environment variables"
+		throw new Error(
+			"環境変数 NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH が設定されていません。.envファイルを確認してください。"
 		);
-		return "";
 	}
 
 	return `https://imagedelivery.net/${accountHash}/${imageId}/${variant}`;

@@ -11,18 +11,19 @@
  *
  * @description
  * 環境変数からCloudflare Imagesのアカウントハッシュを取得する。
- * 設定されていない場合は警告を出力し、プレースホルダーを返す。
+ * 設定されていない場合はエラーを投げる。
  *
  * @returns Cloudflare Imagesのアカウントハッシュ
  */
 function getCloudflareAccountHash(): string {
+	// 動的インポートを避けるため、直接process.envを使用
+	// env.tsで型安全性は保証されている
 	const accountHash = process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH;
 
 	if (!accountHash) {
-		console.warn(
-			"⚠️ NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH is not set. Using placeholder."
+		throw new Error(
+			"環境変数 NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH が設定されていません。.envファイルを確認してください。"
 		);
-		return "placeholder";
 	}
 
 	return accountHash;
