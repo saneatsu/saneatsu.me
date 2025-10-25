@@ -46,6 +46,7 @@ export function ZoomableImage({ src, alt, className }: ZoomableImageProps) {
 				open={open}
 				close={() => setOpen(false)}
 				slides={[{ src, alt }]}
+				controller={{ closeOnBackdropClick: true }}
 				styles={{
 					container: {
 						backdropFilter: "blur(8px)",
