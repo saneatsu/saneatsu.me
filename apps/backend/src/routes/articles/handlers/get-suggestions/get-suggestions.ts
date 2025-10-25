@@ -34,10 +34,7 @@ export const getSuggestions: Handler = async (c) => {
 		// 1. DBクライアントを作成
 		const { createDatabaseClient, articles, articleTranslations } =
 			await getDatabase();
-		const db = createDatabaseClient({
-			TURSO_DATABASE_URL: c.env.TURSO_DATABASE_URL,
-			TURSO_AUTH_TOKEN: c.env.TURSO_AUTH_TOKEN,
-		});
+		const db = createDatabaseClient(c.env);
 
 		// 2. クエリパラメータを取得
 		const query = c.req.query();

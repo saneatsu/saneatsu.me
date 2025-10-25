@@ -36,10 +36,7 @@ export const getArticle: Handler = async (c) => {
 			tagTranslations,
 			tags,
 		} = await getDatabase();
-		const db = createDatabaseClient({
-			TURSO_DATABASE_URL: c.env.TURSO_DATABASE_URL,
-			TURSO_AUTH_TOKEN: c.env.TURSO_AUTH_TOKEN,
-		});
+		const db = createDatabaseClient(c.env);
 
 		// 2. パラメータを取得
 		const { slug } = c.req.valid("param");
