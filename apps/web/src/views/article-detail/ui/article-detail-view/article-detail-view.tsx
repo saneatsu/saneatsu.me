@@ -109,6 +109,7 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 										: updatedDateInfo.formatted}
 								</time>
 							)}
+							{/* 閲覧数表示（一時的にコメントアウト）
 							<span className="flex items-center space-x-1">
 								<svg
 									className="h-3 w-3"
@@ -134,6 +135,7 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 								</svg>
 								<span>{t("viewCount", { count: article.viewCount })}</span>
 							</span>
+							*/}
 						</div>
 					</div>
 				</header>

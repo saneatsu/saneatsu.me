@@ -56,6 +56,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
 									: updatedDateInfo.formatted}
 							</time>
 						)}
+						{/* 閲覧数表示（一時的にコメントアウト）
 						<div className="flex items-center space-x-1">
 							<svg
 								className="h-3 w-3"
@@ -81,6 +82,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
 							</svg>
 							<span>{t("viewCount", { count: article.viewCount })}</span>
 						</div>
+						*/}
 					</div>
 					<CardTitle className="line-clamp-2">
 						<span className="group-hover:underline transition-all">
