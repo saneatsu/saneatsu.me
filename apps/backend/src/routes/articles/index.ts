@@ -7,6 +7,8 @@ import { checkSlug } from "./handlers/check-slug/check-slug";
 import { checkSlugRoute } from "./handlers/check-slug/check-slug.openapi";
 import { createArticle } from "./handlers/create-article/create-article";
 import { createArticleRoute } from "./handlers/create-article/create-article.openapi";
+import { deleteArticle } from "./handlers/delete-article/delete-article";
+import { deleteArticleRoute } from "./handlers/delete-article/delete-article.openapi";
 import { deleteThumbnail } from "./handlers/delete-thumbnail/delete-thumbnail";
 import { deleteThumbnailRoute } from "./handlers/delete-thumbnail/delete-thumbnail.openapi";
 import { getAllArticles } from "./handlers/get-all-articles/get-all-articles";
@@ -27,34 +29,26 @@ import { uploadThumbnailRoute } from "./handlers/upload-thumbnail/upload-thumbna
 /**
  * 記事関連のAPIルート
  */
-export const articlesRoute = new OpenAPIHono<{ Bindings: Env }>();
-
-// 記事一覧取得
-articlesRoute.openapi(getAllArticlesRoute, getAllArticles);
-
-// スラッグ重複チェック
-articlesRoute.openapi(checkSlugRoute, checkSlug);
-
-// サジェスト取得
-articlesRoute.openapi(getSuggestionsRoute, getSuggestions);
-
-// 記事詳細取得（公開用）
-articlesRoute.openapi(getArticleRoute, getArticle);
-
-// 管理画面用記事詳細取得
-articlesRoute.openapi(getArticleByIdRoute, getArticleById);
-
-// 記事作成
-articlesRoute.openapi(createArticleRoute, createArticle);
-
-// 記事更新
-articlesRoute.openapi(updateArticleRoute, updateArticle);
-
-// 記事ステータス更新
-articlesRoute.openapi(updateStatusRoute, updateStatus);
-
-// サムネイル画像アップロード
-articlesRoute.openapi(uploadThumbnailRoute, uploadThumbnail);
-
-// サムネイル画像削除
-articlesRoute.openapi(deleteThumbnailRoute, deleteThumbnail);
+export const articlesRoute = new OpenAPIHono<{ Bindings: Env }>()
+	// 記事一覧取得
+	.openapi(getAllArticlesRoute, getAllArticles)
+	// スラッグ重複チェック
+	.openapi(checkSlugRoute, checkSlug)
+	// サジェスト取得
+	.openapi(getSuggestionsRoute, getSuggestions)
+	// 記事詳細取得（公開用）
+	.openapi(getArticleRoute, getArticle)
+	// 管理画面用記事詳細取得
+	.openapi(getArticleByIdRoute, getArticleById)
+	// 記事作成
+	.openapi(createArticleRoute, createArticle)
+	// 記事更新
+	.openapi(updateArticleRoute, updateArticle)
+	// 記事削除
+	.openapi(deleteArticleRoute, deleteArticle)
+	// 記事ステータス更新
+	.openapi(updateStatusRoute, updateStatus)
+	// サムネイル画像アップロード
+	.openapi(uploadThumbnailRoute, uploadThumbnail)
+	// サムネイル画像削除
+	.openapi(deleteThumbnailRoute, deleteThumbnail);

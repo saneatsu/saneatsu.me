@@ -13,7 +13,7 @@ const { mockUploadImage, mockDeleteImage, mockGetImageUrl } = vi.hoisted(
 	})
 );
 
-vi.mock("@/lib/cloudflare-images", () => ({
+vi.mock("@/lib/cloudflare-images/cloudflare-images", () => ({
 	uploadImage: mockUploadImage,
 	deleteImage: mockDeleteImage,
 	getImageUrl: mockGetImageUrl,
@@ -85,12 +85,14 @@ describe("ユニットテスト", () => {
 			mockDb.select.mockReturnValue(selectArticleMock as any);
 			mockDb.update.mockReturnValue(updateArticleMock as any);
 
-			// Cloudflare Imagesのモック
+			// Cloudflare Imagesのモック（CustomImageId形式）
+			const mockCustomId =
+				"saneatsu-me_thumbnail_2cdc28f0-017a-49c4-9ed7-87056c83901f";
 			mockUploadImage.mockResolvedValue({
-				imageId: "test-image-id-123",
+				imageId: mockCustomId,
 			});
 			mockGetImageUrl.mockReturnValue(
-				"https://imagedelivery.net/test-hash/test-image-id-123/medium"
+				`https://imagedelivery.net/test-hash/${mockCustomId}/medium`
 			);
 
 			// Act
@@ -109,27 +111,27 @@ describe("ユニットテスト", () => {
 			expect(res.status).toBe(200);
 			const data = await res.json();
 			expect(data).toEqual({
-				imageId: "test-image-id-123",
-				imageUrl:
-					"https://imagedelivery.net/test-hash/test-image-id-123/medium",
+				imageId: mockCustomId,
+				imageUrl: `https://imagedelivery.net/test-hash/${mockCustomId}/medium`,
 				message: "サムネイル画像が正常にアップロードされました",
 			});
 
 			// 古い画像の削除は呼ばれない
 			expect(mockDeleteImage).not.toHaveBeenCalled();
 
-			// アップロードが呼ばれる
+			// アップロードが呼ばれる（thumbnailプレフィックス付き）
 			expect(mockUploadImage).toHaveBeenCalledWith(
 				expect.any(File),
 				expect.objectContaining({
 					CLOUDFLARE_ACCOUNT_ID: "test-account-id",
 					CLOUDFLARE_IMAGES_TOKEN: "test-token",
-				})
+				}),
+				{ prefix: "thumbnail" }
 			);
 
 			// DBの更新が呼ばれる
 			expect(updateArticleMock.set).toHaveBeenCalledWith({
-				cfImageId: "test-image-id-123",
+				cfImageId: mockCustomId,
 				updatedAt: expect.any(String),
 			});
 		});
@@ -165,13 +167,15 @@ describe("ユニットテスト", () => {
 			mockDb.select.mockReturnValue(selectArticleMock as any);
 			mockDb.update.mockReturnValue(updateArticleMock as any);
 
-			// Cloudflare Imagesのモック
+			// Cloudflare Imagesのモック（CustomImageId形式）
+			const mockNewCustomId =
+				"saneatsu-me_thumbnail_3edd39f1-128b-40d5-9fe8-98167d94012f";
 			mockDeleteImage.mockResolvedValue({ success: true });
 			mockUploadImage.mockResolvedValue({
-				imageId: "new-image-id-456",
+				imageId: mockNewCustomId,
 			});
 			mockGetImageUrl.mockReturnValue(
-				"https://imagedelivery.net/test-hash/new-image-id-456/medium"
+				`https://imagedelivery.net/test-hash/${mockNewCustomId}/medium`
 			);
 
 			// Act
@@ -190,8 +194,8 @@ describe("ユニットテスト", () => {
 			expect(res.status).toBe(200);
 			const data = await res.json();
 			expect(data).toEqual({
-				imageId: "new-image-id-456",
-				imageUrl: "https://imagedelivery.net/test-hash/new-image-id-456/medium",
+				imageId: mockNewCustomId,
+				imageUrl: `https://imagedelivery.net/test-hash/${mockNewCustomId}/medium`,
 				message: "サムネイル画像が正常にアップロードされました",
 			});
 
@@ -201,13 +205,14 @@ describe("ユニットテスト", () => {
 				CLOUDFLARE_IMAGES_TOKEN: "test-token",
 			});
 
-			// 新しい画像のアップロードが呼ばれる
+			// 新しい画像のアップロードが呼ばれる（thumbnailプレフィックス付き）
 			expect(mockUploadImage).toHaveBeenCalledWith(
 				expect.any(File),
 				expect.objectContaining({
 					CLOUDFLARE_ACCOUNT_ID: "test-account-id",
 					CLOUDFLARE_IMAGES_TOKEN: "test-token",
-				})
+				}),
+				{ prefix: "thumbnail" }
 			);
 		});
 
