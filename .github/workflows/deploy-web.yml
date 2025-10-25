@@ -6,19 +6,19 @@ on:
     branches:
       - main
     paths:
-      - 'apps/web/**'
-      - 'packages/**'
-      - '.github/workflows/deploy-web.yml'
-      - '.github/workflows/_deploy-web.yml'
-      - '.github/workflows/_create-web-env-file.yml'
+      - "apps/web/**"
+      - "packages/**"
+      - ".github/workflows/deploy-web.yml"
+      - ".github/workflows/_deploy-web.yml"
+      - ".github/workflows/_create-web-env-file.yml"
   pull_request:
     types: [opened, reopened, synchronize, ready_for_review]
     paths:
-      - 'apps/web/**'
-      - 'packages/**'
-      - '.github/workflows/deploy-web.yml'
-      - '.github/workflows/_deploy-web.yml'
-      - '.github/workflows/_create-web-env-file.yml'
+      - "apps/web/**"
+      - "packages/**"
+      - ".github/workflows/deploy-web.yml"
+      - ".github/workflows/_deploy-web.yml"
+      - ".github/workflows/_create-web-env-file.yml"
 
 # deploy-web で必要になる権限
 permissions:
