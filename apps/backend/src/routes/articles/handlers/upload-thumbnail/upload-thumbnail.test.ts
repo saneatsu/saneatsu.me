@@ -46,6 +46,7 @@ const mockEnv: Env = {
 	CLOUDFLARE_ACCOUNT_ID: "test-account-id",
 	CLOUDFLARE_API_TOKEN: "test-token",
 	CLOUDFLARE_ACCOUNT_HASH: "test-hash",
+	NODE_ENV: "development",
 };
 
 describe("ユニットテスト", () => {
@@ -85,9 +86,9 @@ describe("ユニットテスト", () => {
 			mockDb.select.mockReturnValue(selectArticleMock as any);
 			mockDb.update.mockReturnValue(updateArticleMock as any);
 
-			// Cloudflare Imagesのモック（CustomImageId形式）
+			// Cloudflare Imagesのモック（CustomImageId形式、開発環境）
 			const mockCustomId =
-				"saneatsu-me_thumbnail_2cdc28f0-017a-49c4-9ed7-87056c83901f";
+				"saneatsu-me_development_thumbnail_2cdc28f0-017a-49c4-9ed7-87056c83901f";
 			mockUploadImage.mockResolvedValue({
 				imageId: mockCustomId,
 			});
@@ -119,12 +120,13 @@ describe("ユニットテスト", () => {
 			// 古い画像の削除は呼ばれない
 			expect(mockDeleteImage).not.toHaveBeenCalled();
 
-			// アップロードが呼ばれる（thumbnailプレフィックス付き）
+			// アップロードが呼ばれる（thumbnailプレフィックス付き、環境変数含む）
 			expect(mockUploadImage).toHaveBeenCalledWith(
 				expect.any(File),
 				expect.objectContaining({
 					CLOUDFLARE_ACCOUNT_ID: "test-account-id",
 					CLOUDFLARE_API_TOKEN: "test-token",
+					NODE_ENV: "development",
 				}),
 				{ prefix: "thumbnail" }
 			);
@@ -167,9 +169,9 @@ describe("ユニットテスト", () => {
 			mockDb.select.mockReturnValue(selectArticleMock as any);
 			mockDb.update.mockReturnValue(updateArticleMock as any);
 
-			// Cloudflare Imagesのモック（CustomImageId形式）
+			// Cloudflare Imagesのモック（CustomImageId形式、開発環境）
 			const mockNewCustomId =
-				"saneatsu-me_thumbnail_3edd39f1-128b-40d5-9fe8-98167d94012f";
+				"saneatsu-me_development_thumbnail_3edd39f1-128b-40d5-9fe8-98167d94012f";
 			mockDeleteImage.mockResolvedValue({ success: true });
 			mockUploadImage.mockResolvedValue({
 				imageId: mockNewCustomId,
@@ -205,12 +207,13 @@ describe("ユニットテスト", () => {
 				CLOUDFLARE_API_TOKEN: "test-token",
 			});
 
-			// 新しい画像のアップロードが呼ばれる（thumbnailプレフィックス付き）
+			// 新しい画像のアップロードが呼ばれる（thumbnailプレフィックス付き、環境変数含む）
 			expect(mockUploadImage).toHaveBeenCalledWith(
 				expect.any(File),
 				expect.objectContaining({
 					CLOUDFLARE_ACCOUNT_ID: "test-account-id",
 					CLOUDFLARE_API_TOKEN: "test-token",
+					NODE_ENV: "development",
 				}),
 				{ prefix: "thumbnail" }
 			);

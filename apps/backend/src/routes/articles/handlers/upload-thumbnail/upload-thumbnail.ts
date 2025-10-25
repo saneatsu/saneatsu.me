@@ -98,12 +98,13 @@ export const uploadThumbnail: Handler = async (c) => {
 			}
 		}
 
-		// 8. Cloudflare Imagesにアップロード（thumbnailプレフィックス付き）
+		// 8. Cloudflare Imagesにアップロード（thumbnailプレフィックス付き、環境別（NODE_ENV））
 		const { imageId } = await uploadImage(
 			file,
 			{
 				CLOUDFLARE_ACCOUNT_ID: c.env.CLOUDFLARE_ACCOUNT_ID,
 				CLOUDFLARE_API_TOKEN: c.env.CLOUDFLARE_API_TOKEN,
+				NODE_ENV: c.env.NODE_ENV,
 			},
 			{ prefix: "thumbnail" }
 		);
