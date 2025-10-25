@@ -2,9 +2,9 @@ import { describe, expect, it } from "vitest";
 
 import { extractImageIdsFromMarkdown } from "./extract-image-ids";
 
-describe("Unit Test", () => {
+describe("ユニットテスト", () => {
 	describe("extractImageIdsFromMarkdown", () => {
-		it("should extract single image ID from Markdown", () => {
+		it("Markdownから単一の画像IDを抽出する", () => {
 			// Arrange
 			const markdown = `
 # タイトル
@@ -23,7 +23,7 @@ describe("Unit Test", () => {
 			expect(imageIds).toEqual(["test-image-id-1"]);
 		});
 
-		it("should extract multiple image IDs from Markdown", () => {
+		it("Markdownから複数の画像IDを抽出する", () => {
 			// Arrange
 			const markdown = `
 # タイトル
@@ -48,7 +48,7 @@ describe("Unit Test", () => {
 			]);
 		});
 
-		it("should remove duplicate image IDs", () => {
+		it("重複する画像IDを除去する", () => {
 			// Arrange
 			const markdown = `
 ![画像1](https://imagedelivery.net/abc123/test-image-id-1/medium)
@@ -67,7 +67,7 @@ describe("Unit Test", () => {
 			expect(imageIds).toEqual(["test-image-id-1", "test-image-id-2"]);
 		});
 
-		it("should return empty array when no images in Markdown", () => {
+		it("Markdown内に画像がない場合、空配列を返す", () => {
 			// Arrange
 			const markdown = `
 # タイトル
@@ -82,7 +82,7 @@ describe("Unit Test", () => {
 			expect(imageIds).toEqual([]);
 		});
 
-		it("should ignore external image URLs", () => {
+		it("外部の画像URLを無視する", () => {
 			// Arrange
 			const markdown = `
 ![Cloudflare Images](https://imagedelivery.net/abc123/test-image-id-1/medium)
@@ -100,7 +100,7 @@ describe("Unit Test", () => {
 			expect(imageIds).toEqual(["test-image-id-1"]);
 		});
 
-		it("should handle empty Markdown", () => {
+		it("空のMarkdownを処理する", () => {
 			// Arrange
 			const markdown = "";
 
@@ -111,7 +111,7 @@ describe("Unit Test", () => {
 			expect(imageIds).toEqual([]);
 		});
 
-		it("should extract image IDs with different variants", () => {
+		it("異なるバリアントの画像IDを抽出する", () => {
 			// Arrange
 			const markdown = `
 ![Small](https://imagedelivery.net/hash1/id-1/small)
@@ -127,7 +127,7 @@ describe("Unit Test", () => {
 			expect(imageIds).toEqual(["id-1", "id-2", "id-3", "id-4"]);
 		});
 
-		it("should extract image IDs from complex Markdown with code blocks", () => {
+		it("コードブロックを含む複雑なMarkdownから画像IDを抽出する", () => {
 			// Arrange
 			const markdown = `
 # タイトル
