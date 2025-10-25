@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
-import { Dialog, DialogContent } from "../dialog/dialog";
+import { Dialog, DialogContent, DialogTitle } from "../dialog/dialog";
 
 /**
  * Lightboxのプロパティ
@@ -70,7 +70,15 @@ export function Lightbox({
 
 	return (
 		<Dialog open={open} onOpenChange={onClose}>
-			<DialogContent className="p-0 border-0 flex items-center justify-center max-w-dvw">
+			<DialogContent
+				className="p-0 border-0 flex items-center justify-center max-w-dvw"
+				// 以下のWarningを回避
+				// Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+				aria-describedby={undefined}
+			>
+				{/* 以下のWarningを回避 */}
+				{/* `DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users. */}
+				<DialogTitle className="sr-only">{alt || "image"}</DialogTitle>
 				{showLoading && (
 					<div className="absolute inset-0 flex items-center justify-center bg-background z-10">
 						<div className="animate-pulse text-muted-foreground">
