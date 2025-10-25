@@ -18,7 +18,7 @@ type Story = StoryObj<typeof meta>;
 /**
  * 基本的なMarkdown要素の表示確認
  */
-export const 基本的なMarkdown要素: Story = {
+export const BasicMarkdownElements: Story = {
 	name: "基本的なMarkdown要素",
 	tags: ["validation"],
 	args: {
@@ -66,7 +66,7 @@ export const 基本的なMarkdown要素: Story = {
 /**
  * コードブロックのテスト
  */
-export const コードブロック: Story = {
+export const CodeBlock: Story = {
 	name: "コードブロック",
 	tags: ["validation"],
 	args: {
@@ -119,7 +119,7 @@ console.log(sum(1, 2)); // 3
 /**
  * インラインコードのテスト
  */
-export const インラインコード: Story = {
+export const InlineCode: Story = {
 	name: "インラインコード",
 	tags: ["validation"],
 	args: {
@@ -151,7 +151,7 @@ export const インラインコード: Story = {
 /**
  * ブロッククォートのテスト
  */
-export const ブロッククォート: Story = {
+export const Blockquote: Story = {
 	name: "ブロッククォート",
 	tags: ["validation"],
 	args: {
@@ -194,7 +194,7 @@ export const ブロッククォート: Story = {
 /**
  * 表のテスト
  */
-export const 表: Story = {
+export const Table: Story = {
 	name: "表",
 	tags: ["validation"],
 	args: {
@@ -278,7 +278,7 @@ export const WikiLink: Story = {
 /**
  * タグのテスト
  */
-export const タグ: Story = {
+export const Tags: Story = {
 	name: "タグ",
 	tags: ["code-only"],
 	args: {
@@ -300,8 +300,8 @@ export const タグ: Story = {
 /**
  * GFM機能のテスト
  */
-export const GFM機能: Story = {
-	name: "GFM機能（取り消し線・タスクリスト・自動リンク）",
+export const GfmFeatures: Story = {
+	name: "GFM機能（取り消し線、タスクリスト、自動リンク）",
 	tags: ["validation"],
 	args: {
 		content: `# GitHub Flavored Markdownの機能
@@ -358,7 +358,7 @@ URLを直接書くと自動リンクになります：https://example.com
 /**
  * 複雑なネスト構造のテスト
  */
-export const 複雑なネスト構造: Story = {
+export const ComplexNestedStructure: Story = {
 	name: "複雑なネスト構造",
 	tags: ["validation"],
 	args: {
@@ -423,7 +423,7 @@ export const 複雑なネスト構造: Story = {
 /**
  * 空のコンテンツのテスト
  */
-export const 空のコンテンツ: Story = {
+export const EmptyContent: Story = {
 	name: "空のコンテンツ",
 	tags: ["validation"],
 	args: {
@@ -444,7 +444,7 @@ export const 空のコンテンツ: Story = {
 /**
  * ダークモード表示のテスト
  */
-export const ダークモード表示: Story = {
+export const DarkModeDisplay: Story = {
 	name: "ダークモード表示",
 	tags: ["code-only"],
 	args: {
@@ -480,7 +480,7 @@ console.log("Dark mode is enabled");
 /**
  * 英語ロケールのテスト
  */
-export const 英語ロケール: Story = {
+export const EnglishLocale: Story = {
 	name: "英語ロケール",
 	tags: ["validation"],
 	args: {
@@ -528,4 +528,83 @@ This article is tagged with #React #TypeScript #English`,
 		const wikiLink = canvas.getByText("react-hooks-guide");
 		expect(wikiLink).toBeInTheDocument();
 	},
+};
+
+/**
+ * Cloudflare Images（ArticleImageコンポーネント）のテスト
+ */
+export const CloudflareImages: Story = {
+	name: "Cloudflare Images（ArticleImage統合）",
+	tags: ["code-only"],
+	args: {
+		content: `# Cloudflare Imagesを使った画像表示
+
+Cloudflare Images URLを含む画像は、ArticleImageコンポーネントでレンダリングされ、クリックでLightbox表示されます。
+
+![記事内画像1](https://imagedelivery.net/abc123/image-id-1/medium)
+
+テキストを挟んで複数の画像：
+
+![記事内画像2](https://imagedelivery.net/abc123/image-id-2/medium)
+
+## 画像とテキストの組み合わせ
+
+![サンプル画像](https://imagedelivery.net/abc123/sample-image/medium)
+
+画像の後にテキストが続きます。画像をクリックするとLightboxで拡大表示されます。`,
+		language: "ja",
+	},
+	parameters: {},
+};
+
+/**
+ * 通常の画像URLのテスト
+ */
+export const RegularImages: Story = {
+	name: "通常の画像URL（imgタグ）",
+	tags: ["code-only"],
+	args: {
+		content: `# 通常の画像URL
+
+Cloudflare Images以外の画像URLは、通常のimgタグでレンダリングされます。
+
+![外部画像1](https://picsum.photos/800/600)
+
+テキストを挟んで：
+
+![外部画像2](https://via.placeholder.com/600x400)
+
+## 複数の画像
+
+![サンプル1](https://picsum.photos/400/300)
+![サンプル2](https://picsum.photos/500/350)`,
+		language: "ja",
+	},
+	parameters: {},
+};
+
+/**
+ * Cloudflare Imagesと通常画像の混在
+ */
+export const MixedImages: Story = {
+	name: "Cloudflare Imagesと通常画像の混在",
+	tags: ["code-only"],
+	args: {
+		content: `# 異なる画像タイプの混在
+
+## Cloudflare Images
+
+![記事画像](https://imagedelivery.net/abc123/article-image/medium)
+
+## 通常の外部画像
+
+![外部画像](https://picsum.photos/800/600)
+
+両方のタイプの画像が同一記事内に存在する場合でも、正しくレンダリングされます。
+
+- Cloudflare Images → ArticleImageコンポーネント（Lightbox対応）
+- 通常の画像URL → 通常のimgタグ`,
+		language: "ja",
+	},
+	parameters: {},
 };

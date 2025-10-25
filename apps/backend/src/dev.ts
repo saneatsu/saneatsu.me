@@ -26,6 +26,11 @@ import { createApp } from "./index";
 // .envファイルを読み込み
 dotenv.config();
 
+// 環境変数のバリデーション（開発環境用）
+// 動的インポートを使用することで、dotenv.config()の後に確実にバリデーションが実行される
+// 必須の環境変数が設定されていない場合はエラーが投げられる
+await import("./env");
+
 // 開発環境専用の設定（localhost全ポートとngrok-free.appを許可）
 const app = createApp({ isDevelopment: true });
 

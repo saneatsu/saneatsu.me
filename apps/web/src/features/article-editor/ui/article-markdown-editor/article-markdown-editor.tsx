@@ -15,9 +15,14 @@ import {
 import { type TagSuggestionItem, TagSuggestionsPopover } from "@/entities/tag";
 import { remarkTag } from "@/shared/lib/remark-tag";
 import { remarkWikiLink } from "@/shared/lib/remark-wiki-link";
+import { ArticleImage } from "@/shared/ui";
 
-import { useClickExpansion } from "../../lib/use-click-expansion";
-import { useKeyboardShortcuts } from "../../lib/use-keyboard-shortcuts";
+import { createImageUploadCommand } from "../../lib/image-upload-command/image-upload-command";
+import { useClickExpansion } from "../../lib/use-click-expansion/use-click-expansion";
+import { useDropImage } from "../../lib/use-drop-image/use-drop-image";
+import { useImageUpload } from "../../lib/use-image-upload/use-image-upload";
+import { useKeyboardShortcuts } from "../../lib/use-keyboard-shortcuts/use-keyboard-shortcuts";
+import { usePasteImage } from "../../lib/use-paste-image/use-paste-image";
 import { useTagDetection } from "../../model/use-tag-detection";
 import { useWikiLinkDetection } from "../../model/use-wiki-link-detection";
 import type { CursorPosition } from "./types";
@@ -118,6 +123,11 @@ export function ArticleMarkdownEditor({
 
 	useClickExpansion();
 
+	// 画像アップロード機能
+	const { uploadImage } = useImageUpload();
+	usePasteImage(editorRef, uploadImage, onChange);
+	useDropImage(editorRef, uploadImage, onChange);
+
 	// カスタムboldコマンド（Cmd+Bを使用）
 	const customBold: ICommand = {
 		...commands.bold,
@@ -138,7 +148,10 @@ export function ArticleMarkdownEditor({
 		shortcuts: undefined, // ショートカットを無効化
 	};
 
-	// カスタムコマンドリスト（bold、hr、linkを置き換え）
+	// カスタム画像アップロードコマンド
+	const uploadImageCommand = createImageUploadCommand(uploadImage);
+
+	// カスタムコマンドリスト（bold、hr、link、imageを置き換え）
 	const customCommands = [
 		customBold, // カスタムboldコマンドを使用（Cmd+Bに変更）
 		commands.italic,
@@ -148,7 +161,7 @@ export function ArticleMarkdownEditor({
 		commands.quote,
 		commands.codeBlock,
 		commands.comment,
-		commands.image,
+		uploadImageCommand, // カスタム画像アップロードコマンドを使用
 		commands.table,
 		customHr, // カスタムhrコマンドを使用
 		commands.checkedListCommand,
@@ -315,6 +328,17 @@ export function ArticleMarkdownEditor({
 										{children}
 									</a>
 								);
+							},
+							// 画像のカスタムレンダリング
+							img: ({ src, alt, ...props }) => {
+								// Cloudflare Images URLの場合はArticleImageを使用
+								if (src?.includes("imagedelivery.net")) {
+									return <ArticleImage src={src} alt={alt} />;
+								}
+
+								// 通常の画像（外部URL）
+								// biome-ignore lint/performance/noImgElement: 外部画像URLはNext.js Imageで最適化できないため<img>を使用
+								return <img src={src} alt={alt} {...props} />;
 							},
 						},
 					}}

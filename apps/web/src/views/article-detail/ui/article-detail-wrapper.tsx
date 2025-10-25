@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { fetchArticle } from "@/shared/lib";
-import { ArticleDetailView } from "./article-detail-view";
+import { ArticleDetailView } from "./article-detail-view/article-detail-view";
 
 interface ArticleDetailWrapperProps {
 	slug: string;

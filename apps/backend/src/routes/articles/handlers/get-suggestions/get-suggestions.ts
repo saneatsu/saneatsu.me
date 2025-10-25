@@ -2,8 +2,8 @@ import type { RouteHandler } from "@hono/zod-openapi";
 import { and, eq, sql } from "drizzle-orm";
 import type { z } from "zod";
 
-import { getDatabase } from "@/lib/database";
-import type { Env } from "@/types/env";
+import type { Env } from "@/env";
+import { getDatabase } from "@/lib";
 import { extractHeadings } from "@/utils/markdown";
 
 import type {
@@ -34,10 +34,7 @@ export const getSuggestions: Handler = async (c) => {
 		// 1. DBクライアントを作成
 		const { createDatabaseClient, articles, articleTranslations } =
 			await getDatabase();
-		const db = createDatabaseClient({
-			TURSO_DATABASE_URL: c.env.TURSO_DATABASE_URL,
-			TURSO_AUTH_TOKEN: c.env.TURSO_AUTH_TOKEN,
-		});
+		const db = createDatabaseClient(c.env);
 
 		// 2. クエリパラメータを取得
 		const query = c.req.query();

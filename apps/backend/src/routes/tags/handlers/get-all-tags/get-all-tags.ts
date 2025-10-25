@@ -1,8 +1,8 @@
 import type { RouteHandler } from "@hono/zod-openapi";
 import { desc, eq, inArray, sql } from "drizzle-orm";
 
-import { getDatabase } from "@/lib/database";
-import type { Env } from "@/types/env";
+import type { Env } from "@/env";
+import { getDatabase } from "@/lib";
 
 import type { getAllTagsRoute } from "./get-all-tags.openapi";
 
@@ -23,10 +23,7 @@ export const getAllTags: Handler = async (c) => {
 		// 1. DBクライアントを作成
 		const { createDatabaseClient, articleTags, tags, tagTranslations } =
 			await getDatabase();
-		const db = createDatabaseClient({
-			TURSO_DATABASE_URL: c.env.TURSO_DATABASE_URL,
-			TURSO_AUTH_TOKEN: c.env.TURSO_AUTH_TOKEN,
-		});
+		const db = createDatabaseClient(c.env);
 
 		// 2. タグ一覧を取得（記事数も含める）
 		// 更新日の降順でソート（最新のものが上に来る）

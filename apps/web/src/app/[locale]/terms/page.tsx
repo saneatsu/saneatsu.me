@@ -13,7 +13,7 @@ export default async function TermsPage() {
 		<div className="container mx-auto py-8 px-4 max-w-4xl">
 			<h1 className="text-3xl font-bold mb-8">{t("title")}</h1>
 
-			<div className="prose prose-lg dark:prose-invert max-w-none">
+			<div className="prose prose-lg dark:prose-invert max-w-none text-base">
 				<section className="mb-8">
 					<h2 className="text-2xl font-semibold mb-4">
 						{t("acceptance.title")}

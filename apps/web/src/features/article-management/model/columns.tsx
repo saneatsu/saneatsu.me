@@ -2,12 +2,14 @@
 
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
+import { getArticleEmoji, getImageUrl } from "@/shared/lib";
 import { ARTICLE_STATUS_CONFIG, type Article } from "@/shared/model";
 import { Badge, Button } from "@/shared/ui";
 
-import { ArticleActions } from "../ui/article-actions";
+import { ArticleActions } from "../ui/article-actions/article-actions";
 
 /**
  * 記事ステータスフィルター用のオプション定義
@@ -76,18 +78,20 @@ export const columns: ColumnDef<Article>[] = [
 		header: "画像",
 		cell: ({ row }) => {
 			const article = row.original;
+
 			return (
-				<div className="relative h-12 w-12 overflow-hidden rounded-md bg-muted">
+				<div className="relative w-20 aspect-video overflow-hidden rounded-md bg-muted flex-shrink-0">
 					{article.cfImageId ? (
-						<div
-							className="h-full w-full bg-cover bg-center"
-							style={{
-								backgroundImage: `url(https://imagedelivery.net/placeholder/${article.cfImageId}/public)`,
-							}}
+						<Image
+							src={getImageUrl(article.cfImageId, "small")}
+							alt={article.title || "記事のサムネイル"}
+							fill
+							className="object-cover"
+							sizes="80px"
 						/>
 					) : (
-						<div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
-							NoImage
+						<div className="flex h-full w-full items-center justify-center">
+							<span className="text-3xl">{getArticleEmoji(article.id)}</span>
 						</div>
 					)}
 				</div>

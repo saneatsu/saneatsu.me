@@ -7,7 +7,6 @@ export {
 	AlertTitle,
 	alertVariants,
 } from "./alert/alert";
-
 // Alert Dialog
 export {
 	AlertDialog,
@@ -22,6 +21,11 @@ export {
 	AlertDialogTitle,
 	AlertDialogTrigger,
 } from "./alert-dialog/alert-dialog";
+// Article Image
+export {
+	ArticleImage,
+	type ArticleImageProps,
+} from "./article-image/article-image";
 
 // Avatar
 export { Avatar, AvatarFallback, AvatarImage } from "./avatar/avatar";
@@ -240,6 +244,8 @@ export {
 } from "./sidebar/sidebar";
 // Skeleton
 export { Skeleton } from "./skeleton/skeleton";
+// Toaster
+export { Toaster } from "./sonner/sonner";
 // Switch
 export { Switch } from "./switch/switch";
 // Table
@@ -278,3 +284,6 @@ export {
 	TooltipProvider,
 	TooltipTrigger,
 } from "./tooltip/tooltip";
+
+// Zoomable Image
+export { ZoomableImage } from "./zoomable-image/zoomable-image";

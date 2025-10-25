@@ -14,6 +14,14 @@ vi.mock("@/entities/article", () => ({
 		data: { available: true },
 		isLoading: false,
 	})),
+	useUploadThumbnail: vi.fn(() => ({
+		mutateAsync: vi.fn(),
+		isPending: false,
+	})),
+	useDeleteThumbnail: vi.fn(() => ({
+		mutateAsync: vi.fn(),
+		isPending: false,
+	})),
 }));
 
 vi.mock("@/entities/tag", () => ({
@@ -47,6 +55,12 @@ vi.mock("@/features/article-editor", () => ({
 			value={value}
 			onChange={(e) => onChange(e.target.value)}
 		/>
+	),
+}));
+
+vi.mock("../article-thumbnail-uploader/article-thumbnail-uploader", () => ({
+	ArticleThumbnailUploader: () => (
+		<div data-testid="thumbnail-uploader">Thumbnail Uploader</div>
 	),
 }));
 
@@ -121,6 +135,7 @@ describe("ArticleEditForm", () => {
 					content: "Test content",
 					status: "published",
 					publishedAt: "2024-01-15T10:30:00.000Z", // ISO 8601形式
+					cfImageId: null,
 					tags: [],
 				};
 
@@ -148,6 +163,7 @@ describe("ArticleEditForm", () => {
 					content: "Draft content",
 					status: "published",
 					publishedAt: null,
+					cfImageId: null,
 					tags: [],
 				};
 

@@ -30,7 +30,7 @@ import {
 	Input,
 } from "@/shared/ui";
 
-import { articleStatusOptions, columns } from "../model/columns";
+import { articleStatusOptions, columns } from "../../model/columns";
 
 /**
  * カンマ区切り文字列を配列として扱うカスタムパーサー（ステータス用）
