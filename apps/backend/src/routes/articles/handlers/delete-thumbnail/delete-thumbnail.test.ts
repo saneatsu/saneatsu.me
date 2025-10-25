@@ -9,7 +9,7 @@ const { mockDeleteImage } = vi.hoisted(() => ({
 	mockDeleteImage: vi.fn(),
 }));
 
-vi.mock("@/lib/cloudflare-images", () => ({
+vi.mock("@/lib/cloudflare-images/cloudflare-images", () => ({
 	deleteImage: mockDeleteImage,
 }));
 

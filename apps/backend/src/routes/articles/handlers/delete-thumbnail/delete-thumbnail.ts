@@ -1,8 +1,7 @@
 import type { RouteHandler } from "@hono/zod-openapi";
 import { eq } from "drizzle-orm";
 
-import { deleteImage } from "@/lib/cloudflare-images";
-import { getDatabase } from "@/lib/database";
+import { deleteImage, getDatabase } from "@/lib";
 import type { Env } from "@/types/env";
 
 import type { deleteThumbnailRoute } from "./delete-thumbnail.openapi";
