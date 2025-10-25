@@ -73,7 +73,7 @@ export const deleteArticle: Handler = async (c) => {
 			try {
 				await deleteImage(article.cfImageId, {
 					CLOUDFLARE_ACCOUNT_ID: c.env.CLOUDFLARE_ACCOUNT_ID,
-					CLOUDFLARE_IMAGES_TOKEN: c.env.CLOUDFLARE_IMAGES_TOKEN,
+					CLOUDFLARE_API_TOKEN: c.env.CLOUDFLARE_API_TOKEN,
 				});
 				console.log(
 					`Deleted thumbnail image: ${article.cfImageId} for article ${articleId}`
@@ -103,7 +103,7 @@ export const deleteArticle: Handler = async (c) => {
 			try {
 				await deleteImage(imageId, {
 					CLOUDFLARE_ACCOUNT_ID: c.env.CLOUDFLARE_ACCOUNT_ID,
-					CLOUDFLARE_IMAGES_TOKEN: c.env.CLOUDFLARE_IMAGES_TOKEN,
+					CLOUDFLARE_API_TOKEN: c.env.CLOUDFLARE_API_TOKEN,
 				});
 				console.log(
 					`Deleted content image: ${imageId} for article ${articleId}`

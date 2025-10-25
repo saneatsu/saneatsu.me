@@ -48,7 +48,7 @@ type CloudflareImagesDeleteResponse = {
  */
 export async function uploadImage(
 	file: File,
-	env: Pick<Env, "CLOUDFLARE_ACCOUNT_ID" | "CLOUDFLARE_IMAGES_TOKEN">,
+	env: Pick<Env, "CLOUDFLARE_ACCOUNT_ID" | "CLOUDFLARE_API_TOKEN">,
 	options: { prefix: ImageIdPrefix }
 ): Promise<{ imageId: CustomImageId }>;
 
@@ -71,7 +71,7 @@ export async function uploadImage(
  */
 export async function uploadImage(
 	file: File,
-	env: Pick<Env, "CLOUDFLARE_ACCOUNT_ID" | "CLOUDFLARE_IMAGES_TOKEN">,
+	env: Pick<Env, "CLOUDFLARE_ACCOUNT_ID" | "CLOUDFLARE_API_TOKEN">,
 	options?: { prefix?: never }
 ): Promise<{ imageId: string }>;
 
@@ -89,7 +89,7 @@ export async function uploadImage(
  */
 export async function uploadImage(
 	file: File,
-	env: Pick<Env, "CLOUDFLARE_ACCOUNT_ID" | "CLOUDFLARE_IMAGES_TOKEN">,
+	env: Pick<Env, "CLOUDFLARE_ACCOUNT_ID" | "CLOUDFLARE_API_TOKEN">,
 	options?: { prefix?: ImageIdPrefix }
 ): Promise<{ imageId: string } | { imageId: CustomImageId }> {
 	// 1. FormDataを作成してファイルを追加
@@ -108,7 +108,7 @@ export async function uploadImage(
 		{
 			method: "POST",
 			headers: {
-				Authorization: `Bearer ${env.CLOUDFLARE_IMAGES_TOKEN}`,
+				Authorization: `Bearer ${env.CLOUDFLARE_API_TOKEN}`,
 			},
 			body: formData,
 		}
@@ -163,14 +163,14 @@ export async function uploadImage(
  */
 export async function deleteImage(
 	imageId: string,
-	env: Pick<Env, "CLOUDFLARE_ACCOUNT_ID" | "CLOUDFLARE_IMAGES_TOKEN">
+	env: Pick<Env, "CLOUDFLARE_ACCOUNT_ID" | "CLOUDFLARE_API_TOKEN">
 ): Promise<{ success: boolean }> {
 	const response = await fetch(
 		`https://api.cloudflare.com/client/v4/accounts/${env.CLOUDFLARE_ACCOUNT_ID}/images/v1/${imageId}`,
 		{
 			method: "DELETE",
 			headers: {
-				Authorization: `Bearer ${env.CLOUDFLARE_IMAGES_TOKEN}`,
+				Authorization: `Bearer ${env.CLOUDFLARE_API_TOKEN}`,
 			},
 		}
 	);

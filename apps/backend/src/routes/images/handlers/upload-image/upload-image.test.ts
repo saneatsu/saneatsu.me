@@ -18,7 +18,7 @@ const mockEnv: Env = {
 	TURSO_DATABASE_URL: "test-db-url",
 	TURSO_AUTH_TOKEN: "test-auth-token",
 	CLOUDFLARE_ACCOUNT_ID: "test-account-id",
-	CLOUDFLARE_IMAGES_TOKEN: "test-token",
+	CLOUDFLARE_API_TOKEN: "test-token",
 	CLOUDFLARE_ACCOUNT_HASH: "test-hash",
 };
 
@@ -65,7 +65,7 @@ describe("ユニットテスト", () => {
 				expect.any(File),
 				expect.objectContaining({
 					CLOUDFLARE_ACCOUNT_ID: "test-account-id",
-					CLOUDFLARE_IMAGES_TOKEN: "test-token",
+					CLOUDFLARE_API_TOKEN: "test-token",
 				}),
 				{ prefix: "content" }
 			);

@@ -24,7 +24,7 @@ export const deleteImageHandler: Handler = async (c) => {
 		// 2. Cloudflare Imagesから画像を削除
 		await deleteImage(imageId, {
 			CLOUDFLARE_ACCOUNT_ID: c.env.CLOUDFLARE_ACCOUNT_ID,
-			CLOUDFLARE_IMAGES_TOKEN: c.env.CLOUDFLARE_IMAGES_TOKEN,
+			CLOUDFLARE_API_TOKEN: c.env.CLOUDFLARE_API_TOKEN,
 		});
 
 		// 3. レスポンスを返す

@@ -47,7 +47,7 @@ const mockEnv: Env = {
 	TURSO_DATABASE_URL: "test-db-url",
 	TURSO_AUTH_TOKEN: "test-auth-token",
 	CLOUDFLARE_ACCOUNT_ID: "test-account-id",
-	CLOUDFLARE_IMAGES_TOKEN: "test-token",
+	CLOUDFLARE_API_TOKEN: "test-token",
 	CLOUDFLARE_ACCOUNT_HASH: "test-hash",
 };
 
@@ -179,7 +179,7 @@ describe("ユニットテスト", () => {
 				"saneatsu-me_thumbnail_2cdc28f0-017a-49c4-9ed7-87056c83901f",
 				{
 					CLOUDFLARE_ACCOUNT_ID: "test-account-id",
-					CLOUDFLARE_IMAGES_TOKEN: "test-token",
+					CLOUDFLARE_API_TOKEN: "test-token",
 				}
 			);
 			// 1回だけ呼ばれる
@@ -266,7 +266,7 @@ describe("ユニットテスト", () => {
 				"saneatsu-me_content_3edd39f1-128b-40d5-9fe8-98167d94012f",
 				{
 					CLOUDFLARE_ACCOUNT_ID: "test-account-id",
-					CLOUDFLARE_IMAGES_TOKEN: "test-token",
+					CLOUDFLARE_API_TOKEN: "test-token",
 				}
 			);
 			// 1回だけ呼ばれる（サムネイルなし、コンテンツ画像1つ）
@@ -360,7 +360,7 @@ describe("ユニットテスト", () => {
 				"saneatsu-me_thumbnail_2cdc28f0-017a-49c4-9ed7-87056c83901f",
 				{
 					CLOUDFLARE_ACCOUNT_ID: "test-account-id",
-					CLOUDFLARE_IMAGES_TOKEN: "test-token",
+					CLOUDFLARE_API_TOKEN: "test-token",
 				}
 			);
 
@@ -369,21 +369,21 @@ describe("ユニットテスト", () => {
 				"saneatsu-me_content_3edd39f1-128b-40d5-9fe8-98167d94012f",
 				{
 					CLOUDFLARE_ACCOUNT_ID: "test-account-id",
-					CLOUDFLARE_IMAGES_TOKEN: "test-token",
+					CLOUDFLARE_API_TOKEN: "test-token",
 				}
 			);
 			expect(mockDeleteImage).toHaveBeenCalledWith(
 				"saneatsu-me_content_4fee40a2-239c-41e6-8af9-09278e05013a",
 				{
 					CLOUDFLARE_ACCOUNT_ID: "test-account-id",
-					CLOUDFLARE_IMAGES_TOKEN: "test-token",
+					CLOUDFLARE_API_TOKEN: "test-token",
 				}
 			);
 			expect(mockDeleteImage).toHaveBeenCalledWith(
 				"saneatsu-me_content_5aff51b3-340d-42f7-9ba0-10389f16024b",
 				{
 					CLOUDFLARE_ACCOUNT_ID: "test-account-id",
-					CLOUDFLARE_IMAGES_TOKEN: "test-token",
+					CLOUDFLARE_API_TOKEN: "test-token",
 				}
 			);
 
@@ -502,7 +502,7 @@ describe("ユニットテスト", () => {
 				"saneatsu-me_thumbnail_2cdc28f0-017a-49c4-9ed7-87056c83901f",
 				{
 					CLOUDFLARE_ACCOUNT_ID: "test-account-id",
-					CLOUDFLARE_IMAGES_TOKEN: "test-token",
+					CLOUDFLARE_API_TOKEN: "test-token",
 				}
 			);
 
@@ -600,7 +600,7 @@ describe("ユニットテスト", () => {
 				"saneatsu-me_content_3edd39f1-128b-40d5-9fe8-98167d94012f",
 				{
 					CLOUDFLARE_ACCOUNT_ID: "test-account-id",
-					CLOUDFLARE_IMAGES_TOKEN: "test-token",
+					CLOUDFLARE_API_TOKEN: "test-token",
 				}
 			);
 

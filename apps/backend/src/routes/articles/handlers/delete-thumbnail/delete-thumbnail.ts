@@ -74,7 +74,7 @@ export const deleteThumbnail: Handler = async (c) => {
 		// 6. Cloudflare Imagesから画像を削除
 		await deleteImage(article.cfImageId, {
 			CLOUDFLARE_ACCOUNT_ID: c.env.CLOUDFLARE_ACCOUNT_ID,
-			CLOUDFLARE_IMAGES_TOKEN: c.env.CLOUDFLARE_IMAGES_TOKEN,
+			CLOUDFLARE_API_TOKEN: c.env.CLOUDFLARE_API_TOKEN,
 		});
 
 		// 7. DBのcfImageIdをnullに更新

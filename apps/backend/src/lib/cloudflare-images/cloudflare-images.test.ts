@@ -4,7 +4,7 @@ import { deleteImage, getImageUrl, uploadImage } from "./cloudflare-images";
 describe("Cloudflare Images APIクライアント", () => {
 	const mockEnv = {
 		CLOUDFLARE_ACCOUNT_ID: "test-account-id",
-		CLOUDFLARE_IMAGES_TOKEN: "test-token",
+		CLOUDFLARE_API_TOKEN: "test-token",
 		CLOUDFLARE_ACCOUNT_HASH: "test-hash",
 	};
 
