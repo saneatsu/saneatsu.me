@@ -82,6 +82,7 @@
 		"tailwindcss": "^4.1.11",
 		"unified": "^11.0.5",
 		"unist-util-visit": "^5.0.0",
+		"yet-another-react-lightbox": "^3.25.0",
 		"zod": "^4.0.10"
 	},
 	"devDependencies": {
