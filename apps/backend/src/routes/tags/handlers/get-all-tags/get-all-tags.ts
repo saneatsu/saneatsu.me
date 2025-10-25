@@ -1,8 +1,8 @@
 import type { RouteHandler } from "@hono/zod-openapi";
 import { desc, eq, inArray, sql } from "drizzle-orm";
 
-import { getDatabase } from "@/lib/database";
-import type { Env } from "@/types/env";
+import type { Env } from "@/env";
+import { getDatabase } from "@/lib";
 
 import type { getAllTagsRoute } from "./get-all-tags.openapi";
 

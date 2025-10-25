@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-
+import type { Env } from "@/env";
 import { imagesRoute } from "@/routes/images";
-import type { Env } from "@/types/env";
 
 // Cloudflare Imagesモジュールのモック
 const { mockDeleteImage } = vi.hoisted(() => ({

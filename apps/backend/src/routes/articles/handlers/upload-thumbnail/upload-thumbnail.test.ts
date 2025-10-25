@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { Env } from "@/env";
 import { articlesRoute } from "@/routes/articles";
-import type { Env } from "@/types/env";
 import { setupDbMocks } from "@/utils/drizzle-test";
 
 // Cloudflare Imagesモジュールのモック

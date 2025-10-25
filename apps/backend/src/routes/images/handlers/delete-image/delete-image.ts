@@ -1,7 +1,6 @@
 import type { RouteHandler } from "@hono/zod-openapi";
-
+import type { Env } from "@/env";
 import { deleteImage } from "@/lib";
-import type { Env } from "@/types/env";
 
 import type { deleteImageRoute } from "./delete-image.openapi";
 

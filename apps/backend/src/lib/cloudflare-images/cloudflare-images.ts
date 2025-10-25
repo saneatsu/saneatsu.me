@@ -1,11 +1,6 @@
-import {
-	type CustomImageId,
-	createCustomImageId,
-	type Environment,
-	type ImageIdPrefix,
-	isCustomImageId,
-} from "@/lib/cloudflare-image-types/cloudflare-image-types";
-import type { Env } from "@/types/env";
+import type { Env } from "@/env";
+import type { CustomImageId, Environment, ImageIdPrefix } from "@/lib";
+import { createCustomImageId, isCustomImageId } from "@/lib";
 
 /**
  * Cloudflare Images APIのレスポンス型

@@ -3,7 +3,7 @@ import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 
-import type { Env } from "@/types/env";
+import type { Env } from "@/env";
 
 import { articlesRoute } from "./routes/articles";
 import { authRoute } from "./routes/auth/worker/worker";

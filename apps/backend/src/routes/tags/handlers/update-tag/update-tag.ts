@@ -1,9 +1,9 @@
 import type { RouteHandler } from "@hono/zod-openapi";
 import { and, eq, not } from "drizzle-orm";
 
-import { getDatabase } from "@/lib/database";
+import type { Env } from "@/env";
+import { getDatabase } from "@/lib";
 import { createTranslationService } from "@/services/gemini-translation/gemini-translation";
-import type { Env } from "@/types/env";
 
 import type { updateTagRoute } from "./update-tag.openapi";
 
