@@ -64,7 +64,9 @@ jobs:
           fi
 
       - name: Build for Cloudflare
-        run: pnpm --filter @saneatsu/web build:cloudflare
+        run: |
+          export $(cat apps/web/.env | xargs)
+          pnpm --filter @saneatsu/web build:cloudflare
         env:
           NODE_ENV: production
 

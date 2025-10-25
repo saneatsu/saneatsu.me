@@ -55,6 +55,8 @@ jobs:
     secrets:
       # Web用環境変数
       NEXT_PUBLIC_API_URL: ${{ needs.set-environment.outputs.environment == 'production' && 'https://api.saneatsu.me' || 'https://saneatsu-backend-preview.w-saneatsu-e8c.workers.dev' }}
+      # Cloudflare Images
+      CLOUDFLARE_ACCOUNT_HASH: ${{ secrets.CLOUDFLARE_ACCOUNT_HASH }}
       # NextAuth.js関連
       NEXTAUTH_URL: ${{ needs.set-environment.outputs.environment == 'production' && 'https://saneatsu.me' || 'https://saneatsu-web-preview.w-saneatsu-e8c.workers.dev' }}
       NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
