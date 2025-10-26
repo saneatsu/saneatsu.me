@@ -100,7 +100,7 @@ export function ArticlesList({ limit }: ArticlesListProps) {
 
 	return (
 		<div className="space-y-6">
-			<div className="grid gap-6 md:grid-cols-2">
+			<div className="grid gap-8 md:grid-cols-2">
 				{articles.map((article) => (
 					<ArticleCard key={article.id} article={article} />
 				))}
