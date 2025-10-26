@@ -162,7 +162,7 @@ export function PopularArticles({
 											{article.title}
 										</h3>
 										<Link
-											href={`/articles/${article.slug}`}
+											href={`/blog/${article.slug}`}
 											target="_blank"
 											rel="noopener noreferrer"
 											className="text-muted-foreground hover:text-primary flex-shrink-0"

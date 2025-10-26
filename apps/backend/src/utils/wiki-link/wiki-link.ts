@@ -89,14 +89,14 @@ export async function fetchArticleInfoBySlugs(
 			linkInfoMap.set(slug, {
 				slug,
 				title: articleInfo.title,
-				url: `/${language}/articles/${slug}`,
+				url: `/${language}/blog/${slug}`,
 			});
 		} else {
 			// 記事が存在しない、または未公開の場合
 			linkInfoMap.set(slug, {
 				slug,
 				title: null,
-				url: `/${language}/articles/${slug}`,
+				url: `/${language}/blog/${slug}`,
 			});
 		}
 	}
@@ -108,7 +108,7 @@ export async function fetchArticleInfoBySlugs(
  * コンテンツ内のWiki LinkをMarkdownリンクに変換
  *
  * @description
- * [[slug]]形式のテキストを[タイトル](/locale/articles/slug)形式に変換する。
+ * [[slug]]形式のテキストを[タイトル](/locale/blog/slug)形式に変換する。
  * 記事が存在しない場合は[[slug]]のまま残す。
  *
  * @param db - データベースクライアント

@@ -69,7 +69,7 @@ export function getCloudflareImageUrl(
  * // => "https://imagedelivery.net/<account-hash>/abc123/ogp"
  *
  * const defaultOgImageUrl = getOgImageUrl(null, "ja", "article-001");
- * // => "https://saneatsu.me/ja/articles/article-001/opengraph-image"
+ * // => "https://saneatsu.me/ja/blog/article-001/opengraph-image"
  * ```
  */
 export function getOgImageUrl(
@@ -88,5 +88,5 @@ export function getOgImageUrl(
 	}
 
 	// 動的OG画像のURLを返す
-	return `${baseUrl}/${locale}/articles/${slug}/opengraph-image`;
+	return `${baseUrl}/${locale}/blog/${slug}/opengraph-image`;
 }

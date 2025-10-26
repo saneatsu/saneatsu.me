@@ -8,3 +8,7 @@ export {
 } from "./ui/article-thumbnail-uploader/article-thumbnail-uploader";
 export { ArticlesFilter } from "./ui/articles-filter/articles-filter";
 export { ArticlesTable } from "./ui/articles-table/articles-table";
+export {
+	RelatedArticles,
+	type RelatedArticlesProps,
+} from "./ui/related-articles/related-articles";

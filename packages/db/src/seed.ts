@@ -195,21 +195,52 @@ function getEnglishTitleTemplates() {
 
 /**
  * ランダムなコンテンツを生成
+ * 階層的な見出し構造（h2-h5）を含む
  */
 function generateRandomContent(title: string, isJapanese: boolean): string {
 	const sections = isJapanese
 		? [
 				"## はじめに\n\nこの記事では、{title}について詳しく解説します。",
+				"### 背景\n\n現代の開発において、この技術が注目される背景を説明します。",
+				"### 目的\n\nこの記事を通じて、実践的なスキルを身につけることを目指します。",
 				"## 基本的な概念\n\n基礎となる概念から理解を深めていきましょう。",
-				"## 実践的な例\n\n```typescript\n// サンプルコード\nconst example = 'Hello World';\nconsole.log(example);\n```",
-				"## ベストプラクティス\n\n- 適切な設計パターンを選択する\n- パフォーマンスを考慮した実装\n- 保守性の高いコードを書く",
+				"### 主要な概念\n\nまず押さえておくべき重要な概念について説明します。",
+				"#### 概念の詳細\n\nこの概念がなぜ重要なのか、具体的に見ていきます。",
+				"#### 関連する技術\n\n他の技術との関連性についても理解を深めます。",
+				"### 応用的な考え方\n\n基本概念を応用する際のポイントを解説します。",
+				"## 実践的な例\n\n実際のコード例を見ながら学んでいきましょう。\n\n![実践例のイメージ](https://imagedelivery.net/pQeNXC1P5ZVO1IiycNeISQ/saneatsu-me_content_94f5631a-0a6e-4f0f-a6a3-ddcb09d3d1d2/medium)",
+				"### サンプルコード\n\n```typescript\n// サンプルコード\nconst example = 'Hello World';\nconsole.log(example);\n```",
+				"#### コードの解説\n\nこのコードが何をしているのか、詳しく見ていきます。",
+				"##### ポイント1\n\n最初に押さえるべき重要なポイントです。",
+				"##### ポイント2\n\n次に理解すべき重要な要素について説明します。",
+				"### 実装のバリエーション\n\n異なるアプローチでの実装例も紹介します。",
+				"## ベストプラクティス\n\n実践で活用できるベストプラクティスを紹介します。",
+				"### 設計パターン\n\n- 適切な設計パターンを選択する\n- 拡張性を考慮した設計\n- 保守性の高いコードを書く",
+				"### パフォーマンス最適化\n\nパフォーマンスを向上させるためのテクニックを解説します。",
+				"#### キャッシング戦略\n\n効果的なキャッシング戦略について説明します。",
+				"#### レンダリング最適化\n\nレンダリングパフォーマンスを改善する方法を紹介します。",
 				"## まとめ\n\n{title}について学んだ内容をまとめると、効率的な開発が可能になります。",
 			]
 		: [
 				"## Introduction\n\nThis article provides a comprehensive guide to {title}.",
+				"### Background\n\nLet's explore why this technology has gained attention in modern development.",
+				"### Objectives\n\nThrough this article, we aim to help you acquire practical skills.",
 				"## Basic Concepts\n\nLet's start with the fundamental concepts you need to understand.",
-				"## Practical Examples\n\n```typescript\n// Sample code\nconst example = 'Hello World';\nconsole.log(example);\n```",
-				"## Best Practices\n\n- Choose appropriate design patterns\n- Consider performance in implementation\n- Write maintainable code",
+				"### Core Concepts\n\nWe'll begin with the essential concepts you should know.",
+				"#### Concept Details\n\nLet's examine why this concept is important in detail.",
+				"#### Related Technologies\n\nWe'll also explore connections with other technologies.",
+				"### Advanced Thinking\n\nKey points for applying basic concepts in practice.",
+				"## Practical Examples\n\nLet's learn through actual code examples.\n\n![Practical example image](https://imagedelivery.net/pQeNXC1P5ZVO1IiycNeISQ/saneatsu-me_content_94f5631a-0a6e-4f0f-a6a3-ddcb09d3d1d2/medium)",
+				"### Sample Code\n\n```typescript\n// Sample code\nconst example = 'Hello World';\nconsole.log(example);\n```",
+				"#### Code Explanation\n\nLet's take a detailed look at what this code does.",
+				"##### Key Point 1\n\nThis is the first important point to understand.",
+				"##### Key Point 2\n\nHere's another crucial element you need to grasp.",
+				"### Implementation Variations\n\nWe'll also introduce alternative implementation approaches.",
+				"## Best Practices\n\nLet's explore best practices you can apply in real-world scenarios.",
+				"### Design Patterns\n\n- Choose appropriate design patterns\n- Design with extensibility in mind\n- Write maintainable code",
+				"### Performance Optimization\n\nTechniques for improving performance will be explained.",
+				"#### Caching Strategies\n\nEffective caching strategies are discussed here.",
+				"#### Rendering Optimization\n\nMethods to improve rendering performance are introduced.",
 				"## Conclusion\n\nBy learning about {title}, you can achieve more efficient development.",
 			];
 

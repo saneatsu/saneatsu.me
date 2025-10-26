@@ -43,7 +43,7 @@ export function ArticlesList({ limit }: ArticlesListProps) {
 
 	if (loading) {
 		return (
-			<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+			<div className="grid gap-6 md:grid-cols-2">
 				{Array.from({ length: limit || 6 }).map((_, index) => (
 					<div
 						// biome-ignore lint/suspicious/noArrayIndexKey: Loading skeleton doesn't require stable keys
@@ -100,7 +100,7 @@ export function ArticlesList({ limit }: ArticlesListProps) {
 
 	return (
 		<div className="space-y-6">
-			<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+			<div className="grid gap-8 md:grid-cols-2">
 				{articles.map((article) => (
 					<ArticleCard key={article.id} article={article} />
 				))}
@@ -110,7 +110,7 @@ export function ArticlesList({ limit }: ArticlesListProps) {
 			{limit && articles.length >= limit && (
 				<div className="text-center mt-8">
 					<a
-						href="/articles"
+						href="/blog"
 						className="text-primary hover:text-primary/80 underline font-medium inline-flex items-center gap-1"
 					>
 						{t("viewAllArticles")}
@@ -119,7 +119,7 @@ export function ArticlesList({ limit }: ArticlesListProps) {
 				</div>
 			)}
 
-			{/* /articlesページ（limitが指定されていない場合）はページネーションを表示 */}
+			{/* /blogページ（limitが指定されていない場合）はページネーションを表示 */}
 			{!limit && pagination && pagination.totalPages > 1 && (
 				<div className="flex items-center justify-center gap-4 mt-8">
 					<Button

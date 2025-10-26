@@ -5,6 +5,7 @@ import type { Mock } from "vitest";
  */
 export interface MockDb {
 	select: Mock;
+	selectDistinct: Mock;
 	insert: Mock;
 	delete: Mock;
 	update: Mock;
