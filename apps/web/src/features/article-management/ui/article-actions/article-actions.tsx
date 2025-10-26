@@ -83,7 +83,7 @@ export function ArticleActions({ article, onAction }: ArticleActionsProps) {
 	 */
 	const handlePreview = () => {
 		// 日本語版の記事詳細ページを新しいタブで開く
-		window.open(`/ja/articles/${article.slug}`, "_blank");
+		window.open(`/ja/blog/${article.slug}`, "_blank");
 	};
 
 	return (

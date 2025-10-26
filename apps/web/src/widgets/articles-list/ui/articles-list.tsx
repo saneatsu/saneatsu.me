@@ -110,7 +110,7 @@ export function ArticlesList({ limit }: ArticlesListProps) {
 			{limit && articles.length >= limit && (
 				<div className="text-center mt-8">
 					<a
-						href="/articles"
+						href="/blog"
 						className="text-primary hover:text-primary/80 underline font-medium inline-flex items-center gap-1"
 					>
 						{t("viewAllArticles")}
@@ -119,7 +119,7 @@ export function ArticlesList({ limit }: ArticlesListProps) {
 				</div>
 			)}
 
-			{/* /articlesページ（limitが指定されていない場合）はページネーションを表示 */}
+			{/* /blogページ（limitが指定されていない場合）はページネーションを表示 */}
 			{!limit && pagination && pagination.totalPages > 1 && (
 				<div className="flex items-center justify-center gap-4 mt-8">
 					<Button
