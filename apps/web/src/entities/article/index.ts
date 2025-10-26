@@ -6,6 +6,7 @@ export { useDeleteThumbnail } from "./api/use-delete-thumbnail/use-delete-thumbn
 export { useGetAllArticles } from "./api/use-get-all/use-get-all";
 export { useGetById } from "./api/use-get-by-id/use-get-by-id";
 export { useGetBySlug } from "./api/use-get-by-slug/use-get-by-slug";
+export { useGetRelated } from "./api/use-get-related/use-get-related";
 export {
 	type SuggestionItem,
 	useArticleSuggestions,

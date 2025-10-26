@@ -1,18 +1,19 @@
 // @ts-nocheck - React 19 compatibility issue with react-markdown
+"use client";
 
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
 
 import { WikiLink } from "@/entities/article";
+import { RelatedArticles } from "@/features/article-management";
 import type { Article } from "@/shared";
 import {
 	cn,
 	extractHeadings,
 	formatRelativeDate,
-	getArticleEmoji,
 	getImageUrl,
 	remarkTag,
 	remarkWikiLink,
@@ -34,9 +35,13 @@ export interface ArticleDetailViewProps {
  * 記事のヘッダー、本文、フッターを含む。
  *
  * @param props.article - 表示する記事データ
- * @param props.locale - 現在のロケール（日付表示等で使用）
+ * @param props.locale - 現在のロケール（後方互換性のため残しているが、内部では useLocale() を使用）
  */
-export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
+export function ArticleDetailView({
+	article,
+	locale: _locale,
+}: ArticleDetailViewProps) {
+	const locale = useLocale();
 	const t = useTranslations("article");
 
 	const publishedDate = article.publishedAt
@@ -65,7 +70,7 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 				{/* Article Header */}
 				<header className="mb-12 space-y-6">
 					<div className="space-y-4">
-						<h1 className="text-4xl font-bold tracking-tight">
+						<h1 className="text-2xl font-bold tracking-tight">
 							{article.title}
 						</h1>
 
@@ -125,9 +130,9 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 							*/}
 						</div>
 
-						{/* サムネイル画像またはフォールバック */}
-						<div className="relative max-w-lg aspect-video rounded-lg overflow-hidden bg-muted">
-							{article.cfImageId ? (
+						{/* サムネイル画像 */}
+						{article.cfImageId && (
+							<div className="relative max-w-lg aspect-video rounded-lg overflow-hidden bg-muted">
 								<Image
 									src={getImageUrl(article.cfImageId, "large")}
 									alt={article.title || "記事のサムネイル"}
@@ -136,14 +141,8 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 									sizes="(max-width: 768px) 100vw, (max-width: 1200px) 800px, 1200px"
 									priority
 								/>
-							) : (
-								<div className="w-full h-full flex items-center justify-center">
-									<span className="text-9xl">
-										{getArticleEmoji(article.id)}
-									</span>
-								</div>
-							)}
-						</div>
+							</div>
+						)}
 					</div>
 				</header>
 
@@ -163,7 +162,7 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 													(h) => h.text === children?.toString()
 												)?.id
 											}
-											className="text-3xl font-bold mt-8 mb-4 scroll-mt-8"
+											className="text-2xl font-semibold mt-6 mb-3 border-b-4 border-double border-border pb-2 scroll-mt-8"
 										>
 											{children}
 										</h1>
@@ -175,7 +174,7 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 													(h) => h.text === children?.toString()
 												)?.id
 											}
-											className="text-2xl font-semibold mt-6 mb-3 scroll-mt-8"
+											className="text-2xl font-bold mt-6 mb-3 border-b-4 border-double border-border pb-2 scroll-mt-8"
 										>
 											{children}
 										</h2>
@@ -187,7 +186,7 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 													(h) => h.text === children?.toString()
 												)?.id
 											}
-											className="text-xl font-medium mt-4 mb-2 scroll-mt-8"
+											className="text-xl font-semibold mt-4 mb-2 border-b border-border pb-1 scroll-mt-8"
 										>
 											{children}
 										</h3>
@@ -199,7 +198,7 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 													(h) => h.text === children?.toString()
 												)?.id
 											}
-											className="text-lg font-medium mt-3 mb-2 scroll-mt-8"
+											className="text-lg font-semibold mt-3 mb-2 border-b border-dashed border-border pb-1 scroll-mt-8"
 										>
 											{children}
 										</h4>
@@ -211,7 +210,7 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 													(h) => h.text === children?.toString()
 												)?.id
 											}
-											className="text-base font-medium mt-2 mb-1 scroll-mt-8"
+											className="text-base font-semibold mt-2 mb-1 scroll-mt-8"
 										>
 											{children}
 										</h5>
@@ -223,7 +222,7 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 													(h) => h.text === children?.toString()
 												)?.id
 											}
-											className="text-sm font-medium mt-2 mb-1 scroll-mt-8"
+											className="text-sm font-semibold mt-2 mb-1 scroll-mt-8"
 										>
 											{children}
 										</h6>
@@ -327,17 +326,15 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 					</aside>
 				</div>
 
-				{/* Article Footer */}
-				<footer className="mt-12 pt-8 border-t">
-					<div className="flex items-center justify-center">
-						<a
-							href={`/${locale}`}
-							className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2"
-						>
-							← {t("backToList")}
-						</a>
+				{/* Related Articles Section */}
+				<section className="mt-16 pt-8 border-t">
+					<div className="max-w-4xl mx-auto">
+						<h2 className="text-xl font-bold mb-6">
+							{t("relatedArticles.title")}
+						</h2>
+						<RelatedArticles slug={article.slug} limit={6} />
 					</div>
-				</footer>
+				</section>
 			</div>
 		</main>
 	);

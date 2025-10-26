@@ -34,8 +34,8 @@ interface ParentNode extends Node {
  * 通常のMarkdownリンクに変換する
  *
  * @example
- * [[nextjs-basics]] -> [nextjs-basics](/articles/nextjs-basics)
- * [[nextjs-basics#routing]] -> [nextjs-basics#routing](/articles/nextjs-basics#routing)
+ * [[nextjs-basics]] -> [nextjs-basics](/blog/nextjs-basics)
+ * [[nextjs-basics#routing]] -> [nextjs-basics#routing](/blog/nextjs-basics#routing)
  */
 export const remarkWikiLink: Plugin = () => {
 	return (tree: Node) => {
@@ -87,7 +87,7 @@ export const remarkWikiLink: Plugin = () => {
 					// Wiki Linkをリンクノードに変換
 					const linkNode: LinkNode = {
 						type: "link",
-						url: `/articles/${slug}${anchor}`,
+						url: `/blog/${slug}${anchor}`,
 						children: [
 							{
 								type: "text",

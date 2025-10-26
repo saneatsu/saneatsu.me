@@ -17,6 +17,8 @@ import { getArticle } from "./handlers/get-article/get-article";
 import { getArticleRoute } from "./handlers/get-article/get-article.openapi";
 import { getArticleById } from "./handlers/get-article-by-id/get-article-by-id";
 import { getArticleByIdRoute } from "./handlers/get-article-by-id/get-article-by-id.openapi";
+import { getRelatedArticles } from "./handlers/get-related-articles/get-related-articles";
+import { getRelatedArticlesRoute } from "./handlers/get-related-articles/get-related-articles.openapi";
 import { getSuggestions } from "./handlers/get-suggestions/get-suggestions";
 import { getSuggestionsRoute } from "./handlers/get-suggestions/get-suggestions.openapi";
 import { updateArticle } from "./handlers/update-article/update-article";
@@ -40,6 +42,8 @@ export const articlesRoute = new OpenAPIHono<{ Bindings: Env }>()
 	.openapi(getArticleRoute, getArticle)
 	// 管理画面用記事詳細取得
 	.openapi(getArticleByIdRoute, getArticleById)
+	// 関連記事取得
+	.openapi(getRelatedArticlesRoute, getRelatedArticles)
 	// 記事作成
 	.openapi(createArticleRoute, createArticle)
 	// 記事更新

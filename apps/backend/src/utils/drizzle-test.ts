@@ -10,10 +10,11 @@ export function setupDbMocks() {
 	// 直接インポートせず、グローバルなモックを使用
 	const mockDb = {} as unknown as MockDb;
 
-	// insertとupdateとselectとdeleteのメソッドを追加
+	// insertとupdateとselectとdeleteとselectDistinctのメソッドを追加
 	mockDb.insert = vi.fn();
 	mockDb.update = vi.fn();
 	mockDb.select = vi.fn();
+	mockDb.selectDistinct = vi.fn();
 	mockDb.delete = vi.fn();
 
 	/**

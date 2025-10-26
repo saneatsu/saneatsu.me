@@ -29,6 +29,9 @@
 			"title": "Latest Articles"
 		}
 	},
+	"blog": {
+		"title": "Blog"
+	},
 	"about": {
 		"title": "About",
 		"tech": {
@@ -93,6 +96,11 @@
 		"notFound": {
 			"title": "Article not found",
 			"message": "The article you're looking for doesn't exist or may have been deleted."
+		},
+		"relatedArticles": {
+			"title": "Related Articles",
+			"loading": "Loading...",
+			"error": "Failed to load related articles"
 		}
 	},
 	"common": {
