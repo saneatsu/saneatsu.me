@@ -556,7 +556,7 @@ export const CursorPositionCheck: Story = {
 			</div>
 		);
 	},
-	play: async ({ canvasElement, args }) => {
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 
 		// textareaを取得
