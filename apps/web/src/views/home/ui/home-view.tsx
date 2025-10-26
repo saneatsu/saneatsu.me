@@ -16,9 +16,9 @@ export function HomeView() {
 		<main className="container mx-auto px-4 py-8">
 			<div className="max-w-5xl mx-auto space-y-12">
 				{/* Hero Section */}
-				<section className="text-center space-y-4">
+				{/* <section className="text-center space-y-4">
 					<h1 className="text-3xl font-bold">{t("hero.title")}</h1>
-				</section>
+				</section> */}
 
 				{/* Articles Section */}
 				<section>
