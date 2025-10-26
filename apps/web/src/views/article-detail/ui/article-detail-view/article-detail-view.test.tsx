@@ -29,6 +29,15 @@ vi.mock("react-markdown", () => ({
 vi.mock("remark-gfm", () => ({ default: {} }));
 vi.mock("rehype-highlight", () => ({ default: {} }));
 
+// RelatedArticlesのモック
+vi.mock("@/features/article-management", () => ({
+	RelatedArticles: ({ slug, limit }: { slug: string; limit: number }) => (
+		<div data-testid="related-articles">
+			Related articles for {slug} (limit: {limit})
+		</div>
+	),
+}));
+
 describe("Unit Test", () => {
 	describe("ArticleDetailView", () => {
 		const mockArticle: Article = {
