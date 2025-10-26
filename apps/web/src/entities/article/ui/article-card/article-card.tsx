@@ -53,11 +53,11 @@ export function ArticleCard({ article }: ArticleCardProps) {
 
 				{/* コンテンツ部分 */}
 				<div className="flex-1 flex flex-col py-0 min-w-0">
-					<h3 className="text-sm md:text-base font-semibold line-clamp-3 mb-2 group-hover:underline transition-all">
+					<h3 className="text-sm md:text-base font-semibold line-clamp-3 mb-2 group-hover:underline transition-all break-words">
 						{article.title}
 					</h3>
 
-					<p className="text-xs text-muted-foreground line-clamp-2 mb-2">
+					<p className="text-xs text-muted-foreground line-clamp-2 mb-2 break-words">
 						{excerpt}...
 					</p>
 
