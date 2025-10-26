@@ -64,7 +64,7 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 				{/* Article Header */}
 				<header className="mb-12 space-y-6">
 					<div className="space-y-4">
-						<h1 className="text-4xl font-bold tracking-tight">
+						<h1 className="text-2xl font-bold tracking-tight">
 							{article.title}
 						</h1>
 
@@ -156,7 +156,7 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 													(h) => h.text === children?.toString()
 												)?.id
 											}
-											className="text-3xl font-bold mt-8 mb-4 scroll-mt-8"
+											className="text-2xl font-semibold mt-6 mb-3 border-b-4 border-double border-border pb-2 scroll-mt-8"
 										>
 											{children}
 										</h1>
@@ -168,7 +168,7 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 													(h) => h.text === children?.toString()
 												)?.id
 											}
-											className="text-2xl font-semibold mt-6 mb-3 scroll-mt-8"
+											className="text-2xl font-bold mt-6 mb-3 border-b-4 border-double border-border pb-2 scroll-mt-8"
 										>
 											{children}
 										</h2>
@@ -180,7 +180,7 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 													(h) => h.text === children?.toString()
 												)?.id
 											}
-											className="text-xl font-medium mt-4 mb-2 scroll-mt-8"
+											className="text-xl font-semibold mt-4 mb-2 border-b border-border pb-1 scroll-mt-8"
 										>
 											{children}
 										</h3>
@@ -192,7 +192,7 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 													(h) => h.text === children?.toString()
 												)?.id
 											}
-											className="text-lg font-medium mt-3 mb-2 scroll-mt-8"
+											className="text-lg font-semibold mt-3 mb-2 border-b border-dashed border-border pb-1 scroll-mt-8"
 										>
 											{children}
 										</h4>
@@ -204,7 +204,7 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 													(h) => h.text === children?.toString()
 												)?.id
 											}
-											className="text-base font-medium mt-2 mb-1 scroll-mt-8"
+											className="text-base font-semibold mt-2 mb-1 scroll-mt-8"
 										>
 											{children}
 										</h5>
@@ -216,7 +216,7 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 													(h) => h.text === children?.toString()
 												)?.id
 											}
-											className="text-sm font-medium mt-2 mb-1 scroll-mt-8"
+											className="text-sm font-semibold mt-2 mb-1 scroll-mt-8"
 										>
 											{children}
 										</h6>
