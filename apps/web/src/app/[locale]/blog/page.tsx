@@ -15,7 +15,9 @@ export default function ArticlesPage() {
 	return (
 		<main className="container mx-auto px-4 py-8">
 			<div className="max-w-4xl mx-auto space-y-6">
-				<h1 className="text-4xl font-bold">{t("navigation.blog")}</h1>
+				<section className="text-center">
+					<h1 className="text-4xl font-bold">{t("blog.title")}</h1>
+				</section>
 				<ArticlesList />
 			</div>
 		</main>
