@@ -319,18 +319,6 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 						</div>
 					</aside>
 				</div>
-
-				{/* Article Footer */}
-				<footer className="mt-12 pt-8 border-t">
-					<div className="flex items-center justify-center">
-						<a
-							href={`/${locale}`}
-							className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2"
-						>
-							← {t("backToList")}
-						</a>
-					</div>
-				</footer>
 			</div>
 		</main>
 	);
