@@ -38,6 +38,9 @@ export const queryKeys = {
 			limit?: number;
 			targetSlug?: string;
 		}) => ["articles", "suggestions", params] as const,
+		// 関連記事
+		related: (slug: string, lang?: string, limit?: number) =>
+			["articles", "related", { slug, lang, limit }] as const,
 	},
 
 	/**
