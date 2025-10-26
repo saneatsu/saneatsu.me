@@ -32,12 +32,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 	// 現在のロケールに応じたタイトルと説明
 	const metadata: Record<Locale, { title: string; description: string }> = {
 		ja: {
-			title: "saneatsu.me - 技術とライフスタイルのブログ",
+			title: "saneatsu.me",
 			description:
 				"プログラミング、開発ツール、日常の気づきなど、技術とライフスタイルに関する記事を発信しています。",
 		},
 		en: {
-			title: "saneatsu.me - Tech & Lifestyle Blog",
+			title: "saneatsu.me",
 			description:
 				"Articles about programming, development tools, and daily insights on technology and lifestyle.",
 		},
