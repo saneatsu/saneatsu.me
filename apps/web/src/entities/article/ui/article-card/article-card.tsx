@@ -34,7 +34,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
 
 	return (
 		<Link href={`/blog/${article.slug}`}>
-			<Card className="group hover:shadow-md transition-shadow cursor-pointer overflow-hidden">
+			<Card className="group hover:shadow-md transition-shadow cursor-pointer overflow-hidden pt-0">
 				{/* サムネイル画像またはフォールバック */}
 				<div className="relative w-full aspect-video overflow-hidden">
 					{article.cfImageId ? (
@@ -47,7 +47,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
 						/>
 					) : (
 						<div className="w-full h-full bg-muted flex items-center justify-center">
-							<span className="text-8xl">{getArticleEmoji(article.id)}</span>
+							<span className="text-6xl">{getArticleEmoji(article.id)}</span>
 						</div>
 					)}
 				</div>
