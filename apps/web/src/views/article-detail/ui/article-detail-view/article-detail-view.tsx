@@ -1,7 +1,8 @@
 // @ts-nocheck - React 19 compatibility issue with react-markdown
+"use client";
 
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
@@ -33,9 +34,13 @@ export interface ArticleDetailViewProps {
  * 記事のヘッダー、本文、フッターを含む。
  *
  * @param props.article - 表示する記事データ
- * @param props.locale - 現在のロケール（日付表示等で使用）
+ * @param props.locale - 現在のロケール（後方互換性のため残しているが、内部では useLocale() を使用）
  */
-export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
+export function ArticleDetailView({
+	article,
+	locale: _locale,
+}: ArticleDetailViewProps) {
+	const locale = useLocale();
 	const t = useTranslations("article");
 
 	const publishedDate = article.publishedAt
