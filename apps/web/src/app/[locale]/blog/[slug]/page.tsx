@@ -48,7 +48,7 @@ export async function generateMetadata({
 		const baseUrl = host
 			? `${protocol}://${host}`
 			: process.env.NEXT_PUBLIC_SITE_URL || "https://saneatsu.me";
-		const articleUrl = `${baseUrl}/${locale}/articles/${slug}`;
+		const articleUrl = `${baseUrl}/${locale}/blog/${slug}`;
 
 		// OGP画像URLを取得
 		const ogImageUrl = getOgImageUrl(article.cfImageId, locale, slug, baseUrl);
