@@ -43,13 +43,35 @@ export function ArticlesList({ limit }: ArticlesListProps) {
 
 	if (loading) {
 		return (
-			<div className="grid gap-6 md:grid-cols-2">
+			<div className="grid gap-8 md:grid-cols-2">
 				{Array.from({ length: limit || 6 }).map((_, index) => (
 					<div
 						// biome-ignore lint/suspicious/noArrayIndexKey: Loading skeleton doesn't require stable keys
 						key={`skeleton-${index}`}
-						className="h-64 bg-muted rounded-lg animate-pulse"
-					/>
+						className="flex flex-row items-start gap-4"
+					>
+						{/* サムネイル用スケルトン */}
+						<div className="w-28 md:w-40 aspect-video bg-muted rounded-md flex-shrink-0 animate-pulse" />
+
+						{/* コンテンツ用スケルトン */}
+						<div className="flex-1 flex flex-col gap-2 min-w-0">
+							{/* タイトル用スケルトン（3行） */}
+							<div className="space-y-2">
+								<div className="h-4 bg-muted rounded animate-pulse w-full" />
+								<div className="h-4 bg-muted rounded animate-pulse w-full" />
+								<div className="h-4 bg-muted rounded animate-pulse w-3/4" />
+							</div>
+
+							{/* 抜粋用スケルトン（2行） */}
+							<div className="space-y-1">
+								<div className="h-3 bg-muted rounded animate-pulse w-full" />
+								<div className="h-3 bg-muted rounded animate-pulse w-5/6" />
+							</div>
+
+							{/* 更新日時用スケルトン */}
+							<div className="h-3 bg-muted rounded animate-pulse w-32" />
+						</div>
+					</div>
 				))}
 			</div>
 		);
