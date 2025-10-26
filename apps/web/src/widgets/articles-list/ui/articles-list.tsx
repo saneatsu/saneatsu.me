@@ -43,7 +43,7 @@ export function ArticlesList({ limit }: ArticlesListProps) {
 
 	if (loading) {
 		return (
-			<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+			<div className="grid gap-6 md:grid-cols-2">
 				{Array.from({ length: limit || 6 }).map((_, index) => (
 					<div
 						// biome-ignore lint/suspicious/noArrayIndexKey: Loading skeleton doesn't require stable keys
@@ -100,7 +100,7 @@ export function ArticlesList({ limit }: ArticlesListProps) {
 
 	return (
 		<div className="space-y-6">
-			<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+			<div className="grid gap-6 md:grid-cols-2">
 				{articles.map((article) => (
 					<ArticleCard key={article.id} article={article} />
 				))}
