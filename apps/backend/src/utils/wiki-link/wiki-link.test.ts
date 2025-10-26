@@ -232,12 +232,8 @@ describe("wiki-link utilities", () => {
 
 				const converted = await convertWikiLinks(mockDb.db, content, "ja");
 
-				expect(converted).toContain(
-					"[記事1のタイトル](/ja/blog/article-1)"
-				);
-				expect(converted).toContain(
-					"[記事2のタイトル](/ja/blog/article-2)"
-				);
+				expect(converted).toContain("[記事1のタイトル](/ja/blog/article-1)");
+				expect(converted).toContain("[記事2のタイトル](/ja/blog/article-2)");
 				expect(converted).not.toContain("[[article-1]]");
 				expect(converted).not.toContain("[[article-2]]");
 			});
