@@ -52,6 +52,10 @@ export function ArticleCard({ article }: ArticleCardProps) {
 				</div>
 
 				{/* コンテンツ部分 */}
+				{/*
+					break-all: モバイルで長いURL・英数字の連続が右にはみ出さないように強制改行
+					break-words（単語境界のみ改行）では不十分なため、任意の文字で改行するbreak-allを使用
+				*/}
 				<div className="flex-1 flex flex-col py-0 min-w-0">
 					<h3 className="text-sm md:text-base font-semibold line-clamp-3 mb-2 group-hover:underline transition-all break-all">
 						{article.title}
