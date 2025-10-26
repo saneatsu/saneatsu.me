@@ -26,8 +26,8 @@ export interface WikiLinkProps extends ComponentPropsWithoutRef<"a"> {
  *
  * @example
  * ```tsx
- * <WikiLink href="/articles/nextjs-basics">nextjs-basics</WikiLink>
- * <WikiLink href="/articles/nextjs-basics#routing">nextjs-basics#routing</WikiLink>
+ * <WikiLink href="/blog/nextjs-basics">nextjs-basics</WikiLink>
+ * <WikiLink href="/blog/nextjs-basics#routing">nextjs-basics#routing</WikiLink>
  * ```
  */
 export function WikiLink({
@@ -38,7 +38,7 @@ export function WikiLink({
 	...props
 }: WikiLinkProps) {
 	// URLからスラッグとアンカーを抽出
-	const match = href.match(/^\/articles\/([^#]+)(#.*)?$/);
+	const match = href.match(/^\/blog\/([^#]+)(#.*)?$/);
 	const slug = match?.[1];
 	const anchor = match?.[2] || "";
 
