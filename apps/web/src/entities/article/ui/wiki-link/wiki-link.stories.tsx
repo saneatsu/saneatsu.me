@@ -23,7 +23,7 @@ export const BasicArticleLink: Story = {
 	name: "基本的な記事リンク",
 	tags: ["code-only"],
 	args: {
-		href: "/articles/nextjs-basics",
+		href: "/blog/nextjs-basics",
 		children: "nextjs-basics",
 	},
 	parameters: {
@@ -55,7 +55,7 @@ export const JapaneseAnchorLink: Story = {
 	name: "日本語アンカー付きリンク",
 	tags: ["validation"],
 	args: {
-		href: "/articles/nextjs-performance#基本的な概念",
+		href: "/blog/nextjs-performance#基本的な概念",
 		children: "nextjs-performance#基本的な概念",
 	},
 	parameters: {
@@ -99,7 +99,7 @@ export const EncodedAnchorLink: Story = {
 	name: "URLエンコードされたアンカー付きリンク",
 	tags: ["validation"],
 	args: {
-		href: "/articles/web-optimization#%E5%9F%BA%E6%9C%AC%E7%9A%84%E3%81%AA%E6%A6%82%E5%BF%B5",
+		href: "/blog/web-optimization#%E5%9F%BA%E6%9C%AC%E7%9A%84%E3%81%AA%E6%A6%82%E5%BF%B5",
 		children: "web-optimization#基本的な概念",
 	},
 	parameters: {
@@ -144,7 +144,7 @@ export const EnglishAnchorLink: Story = {
 	name: "英語のアンカー付きリンク",
 	tags: ["code-only"],
 	args: {
-		href: "/articles/react-hooks#useEffect",
+		href: "/blog/react-hooks#useEffect",
 		children: "react-hooks#useEffect",
 	},
 	parameters: {
@@ -175,7 +175,7 @@ export const ArticleNotFound: Story = {
 	name: "記事が見つからない場合",
 	tags: ["code-only"],
 	args: {
-		href: "/articles/non-existent-article",
+		href: "/blog/non-existent-article",
 		children: "non-existent-article",
 	},
 	parameters: {
@@ -199,7 +199,7 @@ export const LoadingState: Story = {
 	name: "ローディング状態",
 	tags: ["code-only"],
 	args: {
-		href: "/articles/slow-loading",
+		href: "/blog/slow-loading",
 		children: "slow-loading",
 	},
 	parameters: {
@@ -231,7 +231,7 @@ export const ComplexJapaneseAnchor: Story = {
 	name: "複雑な日本語アンカー",
 	tags: ["validation"],
 	args: {
-		href: "/articles/javascript-es2024#新機能：配列のグループ化",
+		href: "/blog/javascript-es2024#新機能：配列のグループ化",
 		children: "javascript-es2024#新機能：配列のグループ化",
 	},
 	parameters: {

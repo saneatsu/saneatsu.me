@@ -112,12 +112,12 @@ describe("wiki-link utilities", () => {
 				expect(result.get("article-1")).toEqual({
 					slug: "article-1",
 					title: "記事1のタイトル",
-					url: "/ja/articles/article-1",
+					url: "/ja/blog/article-1",
 				});
 				expect(result.get("article-2")).toEqual({
 					slug: "article-2",
 					title: "記事2のタイトル",
-					url: "/ja/articles/article-2",
+					url: "/ja/blog/article-2",
 				});
 			});
 
@@ -149,12 +149,12 @@ describe("wiki-link utilities", () => {
 				expect(result.get("existing-article")).toEqual({
 					slug: "existing-article",
 					title: "存在する記事",
-					url: "/ja/articles/existing-article",
+					url: "/ja/blog/existing-article",
 				});
 				expect(result.get("non-existent-article")).toEqual({
 					slug: "non-existent-article",
 					title: null,
-					url: "/ja/articles/non-existent-article",
+					url: "/ja/blog/non-existent-article",
 				});
 			});
 
@@ -186,7 +186,7 @@ describe("wiki-link utilities", () => {
 				expect(result.get("draft-article")).toEqual({
 					slug: "draft-article",
 					title: null,
-					url: "/ja/articles/draft-article",
+					url: "/ja/blog/draft-article",
 				});
 			});
 
@@ -233,10 +233,10 @@ describe("wiki-link utilities", () => {
 				const converted = await convertWikiLinks(mockDb.db, content, "ja");
 
 				expect(converted).toContain(
-					"[記事1のタイトル](/ja/articles/article-1)"
+					"[記事1のタイトル](/ja/blog/article-1)"
 				);
 				expect(converted).toContain(
-					"[記事2のタイトル](/ja/articles/article-2)"
+					"[記事2のタイトル](/ja/blog/article-2)"
 				);
 				expect(converted).not.toContain("[[article-1]]");
 				expect(converted).not.toContain("[[article-2]]");
@@ -286,7 +286,7 @@ describe("wiki-link utilities", () => {
 
 				const converted = await convertWikiLinks(mockDb.db, content, "ja");
 
-				expect(converted).toContain("[存在する記事](/ja/articles/existing)");
+				expect(converted).toContain("[存在する記事](/ja/blog/existing)");
 				expect(converted).toContain("[[non-existing]]");
 			});
 
