@@ -60,8 +60,8 @@ export function Header() {
 						</Link>
 						<nav className="flex items-center space-x-6 text-sm font-medium">
 							<Link
-								href={`/${locale}/articles`}
-								className={getNavLinkClassName(`/${locale}/articles`)}
+								href={`/${locale}/blog`}
+								className={getNavLinkClassName(`/${locale}/blog`)}
 							>
 								Blog
 							</Link>

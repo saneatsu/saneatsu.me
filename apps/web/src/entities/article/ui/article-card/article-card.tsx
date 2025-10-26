@@ -33,7 +33,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
 		.slice(0, 150);
 
 	return (
-		<Link href={`/articles/${article.slug}`}>
+		<Link href={`/blog/${article.slug}`}>
 			<Card className="group hover:shadow-md transition-shadow cursor-pointer overflow-hidden">
 				{/* サムネイル画像またはフォールバック */}
 				<div className="relative w-full aspect-video overflow-hidden">
