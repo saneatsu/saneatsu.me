@@ -24,7 +24,7 @@ interface OgImageProps {
  * 記事ページ用のOG画像生成
  *
  * @description
- * 記事ページ（`/ja/articles/[slug]`, `/en/articles/[slug]`）のOGP画像を生成する。
+ * 記事ページ（`/ja/blog/[slug]`, `/en/blog/[slug]`）のOGP画像を生成する。
  * 記事タイトルから動的に画像を生成し、SNSでシェアされた時に表示される。
  *
  * @param params - ページパラメータ（locale, slug）
