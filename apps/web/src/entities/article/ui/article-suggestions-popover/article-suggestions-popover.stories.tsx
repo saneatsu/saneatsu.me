@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { expect, fn, userEvent, waitFor, within } from "@storybook/test";
 import { HttpResponse, http } from "msw";
 import React from "react";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 import type { SuggestionItem } from "@/entities/article";
 
@@ -264,7 +264,7 @@ export const CloseWithEscKey: Story = {
 		onOpenChange: fn(),
 	},
 	parameters: {},
-	play: async ({ canvasElement, args }) => {
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 
 		// サジェストが表示されるまで待つ
@@ -303,7 +303,7 @@ export const ItemSelection: Story = {
 		onOpenChange: fn(),
 	},
 	parameters: {},
-	play: async ({ canvasElement, args }) => {
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 
 		// サジェストが表示されるまで待つ
@@ -356,7 +356,7 @@ export const SelectWithEnterKey: Story = {
 			</div>
 		);
 	},
-	play: async ({ canvasElement, args }) => {
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 
 		// textareaにフォーカス
@@ -556,7 +556,7 @@ export const CursorPositionCheck: Story = {
 			</div>
 		);
 	},
-	play: async ({ canvasElement, args }) => {
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 
 		// textareaを取得
@@ -639,7 +639,7 @@ export const ImeInputConflictPrevention: Story = {
 			</div>
 		);
 	},
-	play: async ({ canvasElement, args }) => {
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 
 		// サジェストが表示されるまで待つ

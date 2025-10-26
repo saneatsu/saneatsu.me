@@ -15,3 +15,32 @@ updates:
       - "npm"
     commit-message:
       prefix: "chore(deps)" # コミットメッセージのプレフィックス
+    # React 19はまだ依存ライブラリ（Storybook、@radix-ui、react-markdown等）の型定義が対応していないため、
+      # React 18系に制限する。React 19への移行は、主要な依存ライブラリがReact 19に対応してから行う。
+      # 参考: https://github.com/storybookjs/storybook/issues/26741
+      ignore:
+        - dependency-name: "react"
+          update-types: ["version-update:semver-major"]
+        - dependency-name: "react-dom"
+          update-types: ["version-update:semver-major"]
+        - dependency-name: "@types/react"
+          update-types: ["version-update:semver-major"]
+        - dependency-name: "@types/react-dom"
+          update-types: ["version-update:semver-major"]
+      groups:
+        # React関連のパッケージをまとめて更新
+        # react, react-dom, @types/react, @types/react-domを同時に更新することで
+        # バージョン不一致を防ぐ
+        react:
+          patterns:
+            - "react"
+            - "react-dom"
+            - "@types/react"
+            - "@types/react-dom"
+        # Storybook関連のパッケージをまとめて更新
+        # すべての@storybook/*パッケージを同時に更新することで
+        # バージョン不一致を防ぐ
+        storybook:
+          patterns:
+            - "storybook"
+            - "@storybook/*"

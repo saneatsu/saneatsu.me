@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { expect, within } from "@storybook/test";
 import { useState } from "react";
+import { expect, within } from "storybook/test";
 
 import { ArticleMarkdownEditor } from "./article-markdown-editor";
 
