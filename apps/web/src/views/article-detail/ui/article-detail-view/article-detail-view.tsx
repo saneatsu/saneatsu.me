@@ -12,7 +12,6 @@ import {
 	cn,
 	extractHeadings,
 	formatRelativeDate,
-	getArticleEmoji,
 	getImageUrl,
 	remarkTag,
 	remarkWikiLink,
@@ -125,9 +124,9 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 							*/}
 						</div>
 
-						{/* サムネイル画像またはフォールバック */}
-						<div className="relative max-w-lg aspect-video rounded-lg overflow-hidden bg-muted">
-							{article.cfImageId ? (
+						{/* サムネイル画像 */}
+						{article.cfImageId && (
+							<div className="relative max-w-lg aspect-video rounded-lg overflow-hidden bg-muted">
 								<Image
 									src={getImageUrl(article.cfImageId, "large")}
 									alt={article.title || "記事のサムネイル"}
@@ -136,14 +135,8 @@ export function ArticleDetailView({ article, locale }: ArticleDetailViewProps) {
 									sizes="(max-width: 768px) 100vw, (max-width: 1200px) 800px, 1200px"
 									priority
 								/>
-							) : (
-								<div className="w-full h-full flex items-center justify-center">
-									<span className="text-9xl">
-										{getArticleEmoji(article.id)}
-									</span>
-								</div>
-							)}
-						</div>
+							</div>
+						)}
 					</div>
 				</header>
 
