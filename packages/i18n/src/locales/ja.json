@@ -29,6 +29,9 @@
 			"title": "最新の記事"
 		}
 	},
+	"blog": {
+		"title": "Blog"
+	},
 	"about": {
 		"title": "About",
 		"tech": {
