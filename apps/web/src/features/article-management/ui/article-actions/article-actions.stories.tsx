@@ -139,7 +139,7 @@ export const PreviewClick: Story = {
 
 		// window.openが呼ばれたことを確認
 		await expect(mockWindowOpen).toHaveBeenCalledWith(
-			"/ja/articles/test-article",
+			"/ja/blog/test-article",
 			"_blank"
 		);
 	},
