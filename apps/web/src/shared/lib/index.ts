@@ -18,6 +18,8 @@ export {
 
 // Cloudflare Images
 export { getCloudflareImageUrl, getOgImageUrl } from "./cloudflare-images";
+// Extract Error Message
+export { extractErrorMessage } from "./extract-error-message";
 // Extract Headings
 export {
 	createNestedHeadings,
