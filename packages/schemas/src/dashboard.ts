@@ -23,6 +23,15 @@ export const articleStatsSchema = z.object({
 	thisMonthViews: z.number().int().min(0),
 });
 
+/** 人気記事用のタグスキーマ（最小限の情報） */
+export const popularArticleTagSchema = z.object({
+	id: idSchema,
+	translations: z.object({
+		ja: z.string(),
+		en: z.string(),
+	}),
+});
+
 /** 人気記事スキーマ */
 export const popularArticleSchema = z.object({
 	id: idSchema,
@@ -30,6 +39,9 @@ export const popularArticleSchema = z.object({
 	title: z.string(),
 	viewCount: z.number().int().min(0),
 	publishedAt: z.string().datetime().nullable(),
+	cfImageId: z.string().nullable(),
+	updatedAt: z.string().datetime().nullable(),
+	tags: z.array(popularArticleTagSchema),
 });
 
 /** 人気記事一覧スキーマ */
