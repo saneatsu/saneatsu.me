@@ -239,12 +239,12 @@ export function ArticleDetailView({
 										</p>
 									),
 									ul: ({ children }) => (
-										<ul className="mb-4 ml-6 list-disc space-y-1">
+										<ul className="mb-0 ml-0 list-disc space-y-0">
 											{children}
 										</ul>
 									),
 									ol: ({ children }) => (
-										<ol className="mb-4 ml-6 list-decimal space-y-1">
+										<ol className="mb-0 ml-0 list-decimal space-y-0">
 											{children}
 										</ol>
 									),
