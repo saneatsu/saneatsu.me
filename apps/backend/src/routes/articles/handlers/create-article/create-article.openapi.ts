@@ -37,6 +37,11 @@ const ArticleCreateSchema = z.object({
 			example: [1, 2, 3],
 			description: "記事に関連付けるタグのID配列（最大10個、省略可能）",
 		}),
+	cfImageId: z.string().optional().openapi({
+		example: "2cdc28f0-017a-49c4-9ed7-87056c83901f",
+		description:
+			"記事のサムネイル画像のCloudflare Image ID（オプション、事前に /api/images でアップロード済みのもの）",
+	}),
 });
 
 /**
