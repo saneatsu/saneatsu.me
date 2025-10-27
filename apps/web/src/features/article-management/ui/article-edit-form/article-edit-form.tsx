@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -101,6 +102,8 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 		article.publishedAt ? new Date(article.publishedAt) : undefined
 	);
 
+	const router = useRouter();
+
 	/**
 	 * サムネイルURLを生成
 	 *
@@ -181,6 +184,7 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 			});
 
 			toast.success("記事を更新しました");
+			router.push("/admin/articles");
 		} catch (error) {
 			// エラーメッセージを表示
 			const errorMessage =
