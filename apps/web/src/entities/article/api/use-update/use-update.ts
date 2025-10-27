@@ -1,8 +1,6 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 
 import { extractErrorMessage, honoClient } from "@/shared/lib";
 
@@ -11,12 +9,10 @@ import { extractErrorMessage, honoClient } from "@/shared/lib";
  *
  * @description
  * 記事を更新するフック。
- * 成功時は記事一覧へリダイレクトし、
- * キャッシュをクリアして最新データを取得する。
+ * 成功時はキャッシュをクリアして最新データを取得する。
  */
 export const useUpdate = () => {
 	const queryClient = useQueryClient();
-	const router = useRouter();
 
 	return useMutation({
 		mutationFn: async ({
@@ -50,15 +46,12 @@ export const useUpdate = () => {
 			return response.json();
 		},
 		onSuccess: () => {
-			toast.success("記事を更新しました");
 			// 記事一覧と記事詳細のキャッシュをクリア
 			queryClient.invalidateQueries({ queryKey: ["articles"] });
 			queryClient.invalidateQueries({ queryKey: ["article"] });
-			// 記事一覧ページへリダイレクト
-			router.push("/admin/articles");
 		},
 		onError: (error: Error) => {
-			toast.error(error.message || "記事の更新に失敗しました");
+			console.error("Failed to update article:", error);
 		},
 	});
 };
