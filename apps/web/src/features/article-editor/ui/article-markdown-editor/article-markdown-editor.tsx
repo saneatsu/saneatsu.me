@@ -13,7 +13,12 @@ import {
 	type SuggestionItem,
 } from "@/entities/article";
 import { type TagSuggestionItem, TagSuggestionsPopover } from "@/entities/tag";
-import { remarkTag, remarkTweet, remarkWikiLink } from "@/shared/lib";
+import {
+	remarkTag,
+	remarkTweet,
+	remarkUrlCard,
+	remarkWikiLink,
+} from "@/shared/lib";
 import { ArticleImage, TweetEmbed } from "@/shared/ui";
 
 import { createImageUploadCommand } from "../../lib/image-upload-command/image-upload-command";
@@ -29,6 +34,17 @@ import type { CursorPosition } from "./types";
 // Wiki Linkコンポーネントを動的インポート（クライアントサイドのみ）
 const WikiLink = dynamic(
 	() => import("@/entities/article").then((mod) => mod.WikiLink),
+	{
+		ssr: false,
+	}
+);
+
+// URL Cardコンポーネントを動的インポート（クライアントサイドのみ）
+const UrlCard = dynamic(
+	() =>
+		import("@/entities/article/ui/url-card/url-card").then(
+			(mod) => mod.UrlCard
+		),
 	{
 		ssr: false,
 	}
@@ -293,6 +309,7 @@ export function ArticleMarkdownEditor({
 					previewOptions={{
 						remarkPlugins: [
 							[remarkGfm],
+							[remarkUrlCard],
 							[remarkWikiLink],
 							[remarkTag],
 							[remarkTweet],
@@ -308,8 +325,16 @@ export function ArticleMarkdownEditor({
 								href?: string;
 								className?: string;
 							}) => {
-								// Wiki Linkの判定
 								const className = props.className as string;
+
+								// URL Cardの判定
+								const isUrlCard = className?.includes("url-card-link");
+								if (isUrlCard && href) {
+									console.log("Rendering URL card for:", href);
+									return <UrlCard url={href} />;
+								}
+
+								// Wiki Linkの判定
 								const isWikiLink = className?.includes("wiki-link");
 
 								// Wiki Linkの場合はカスタムコンポーネントを使用
