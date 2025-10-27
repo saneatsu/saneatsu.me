@@ -182,6 +182,8 @@ export interface ArticleCreateRequest {
 	publishedAt?: string;
 	/** タグIDの配列（オプショナル） */
 	tagIds?: number[];
+	/** Cloudflare Image ID（オプショナル） */
+	cfImageId?: string;
 }
 
 /**

@@ -16,9 +16,10 @@ import {
 	formatRelativeDate,
 	getImageUrl,
 	remarkTag,
+	remarkTweet,
 	remarkWikiLink,
 } from "@/shared/lib";
-import { Badge, TableOfContents, ZoomableImage } from "@/shared/ui";
+import { Badge, TableOfContents, TweetEmbed, ZoomableImage } from "@/shared/ui";
 
 export interface ArticleDetailViewProps {
 	/** 表示する記事データ */
@@ -152,7 +153,12 @@ export function ArticleDetailView({
 					<div className="min-w-0 order-2 lg:order-1">
 						<article className="prose prose-neutral dark:prose-invert max-w-none">
 							<ReactMarkdown
-								remarkPlugins={[remarkGfm, remarkWikiLink, remarkTag]}
+								remarkPlugins={[
+									remarkGfm,
+									remarkWikiLink,
+									remarkTag,
+									remarkTweet,
+								]}
 								rehypePlugins={[rehypeHighlight]}
 								components={{
 									h1: ({ children }) => (
@@ -303,6 +309,8 @@ export function ArticleDetailView({
 									img: ({ src, alt }) => (
 										<ZoomableImage src={src || ""} alt={alt || ""} />
 									),
+									// @ts-expect-error - カスタムノードのため型定義がない
+									tweet: ({ id }) => <TweetEmbed id={id} />,
 								}}
 							>
 								{article.content}

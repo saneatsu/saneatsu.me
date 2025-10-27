@@ -13,9 +13,13 @@ import {
 	type SuggestionItem,
 } from "@/entities/article";
 import { type TagSuggestionItem, TagSuggestionsPopover } from "@/entities/tag";
-import { remarkTag } from "@/shared/lib/remark-tag";
-import { remarkWikiLink } from "@/shared/lib/remark-wiki-link";
-import { ArticleImage } from "@/shared/ui";
+import {
+	remarkTag,
+	remarkTweet,
+	remarkUrlCard,
+	remarkWikiLink,
+} from "@/shared/lib";
+import { ArticleImage, TweetEmbed } from "@/shared/ui";
 
 import { createImageUploadCommand } from "../../lib/image-upload-command/image-upload-command";
 import { useClickExpansion } from "../../lib/use-click-expansion/use-click-expansion";
@@ -30,6 +34,17 @@ import type { CursorPosition } from "./types";
 // Wiki Linkコンポーネントを動的インポート（クライアントサイドのみ）
 const WikiLink = dynamic(
 	() => import("@/entities/article").then((mod) => mod.WikiLink),
+	{
+		ssr: false,
+	}
+);
+
+// URL Cardコンポーネントを動的インポート（クライアントサイドのみ）
+const UrlCard = dynamic(
+	() =>
+		import("@/entities/article/ui/url-card/url-card").then(
+			(mod) => mod.UrlCard
+		),
 	{
 		ssr: false,
 	}
@@ -292,7 +307,13 @@ export function ArticleMarkdownEditor({
 					height={height}
 					className="prose-editor"
 					previewOptions={{
-						remarkPlugins: [[remarkGfm], [remarkWikiLink], [remarkTag]],
+						remarkPlugins: [
+							[remarkGfm],
+							[remarkUrlCard],
+							[remarkWikiLink],
+							[remarkTag],
+							[remarkTweet],
+						],
 						className: "prose dark:prose-invert max-w-none",
 						components: {
 							a: ({
@@ -304,8 +325,15 @@ export function ArticleMarkdownEditor({
 								href?: string;
 								className?: string;
 							}) => {
-								// Wiki Linkの判定
 								const className = props.className as string;
+
+								// URL Cardの判定
+								const isUrlCard = className?.includes("url-card-link");
+								if (isUrlCard && href) {
+									return <UrlCard url={href} />;
+								}
+
+								// Wiki Linkの判定
 								const isWikiLink = className?.includes("wiki-link");
 
 								// Wiki Linkの場合はカスタムコンポーネントを使用
@@ -340,6 +368,9 @@ export function ArticleMarkdownEditor({
 								// biome-ignore lint/performance/noImgElement: 外部画像URLはNext.js Imageで最適化できないため<img>を使用
 								return <img src={src} alt={alt} {...props} />;
 							},
+							// Tweet埋め込みのカスタムレンダリング
+							// @ts-expect-error - カスタムノードのため型定義がない
+							tweet: ({ id }) => <TweetEmbed id={id} />,
 						},
 					}}
 				/>

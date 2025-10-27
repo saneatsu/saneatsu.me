@@ -285,5 +285,8 @@ export {
 	TooltipTrigger,
 } from "./tooltip/tooltip";
 
+// Tweet Embed
+export { TweetEmbed, type TweetEmbedProps } from "./tweet-embed/tweet-embed";
+
 // Zoomable Image
 export { ZoomableImage } from "./zoomable-image/zoomable-image";

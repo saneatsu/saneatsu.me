@@ -29,6 +29,13 @@ export default defineConfig({
 			reporter: ["text", "json-summary", "json", "html"],
 			reportsDirectory: "./coverage",
 		},
+		server: {
+			deps: {
+				// react-tweetのCSS modulesをVitestが正しく処理できるようにinlineにする
+				// これにより "Unknown file extension .css" エラーを回避できる
+				inline: ["react-tweet"],
+			},
+		},
 	},
 	resolve: {
 		alias: {

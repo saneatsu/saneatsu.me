@@ -1,6 +1,6 @@
 import type { RouteHandler } from "@hono/zod-openapi";
 import type { DashboardOverviewResponse } from "@saneatsu/schemas";
-import { and, count, desc, eq, gte, sql } from "drizzle-orm";
+import { and, count, desc, eq, gte, inArray, sql } from "drizzle-orm";
 import type { Env } from "@/env";
 import { getDatabase } from "@/lib/database";
 
@@ -31,6 +31,9 @@ export const getDashboardOverview: Handler = async (c) => {
 			articles,
 			articleTranslations,
 			dailyArticleViews,
+			articleTags,
+			tags,
+			tagTranslations,
 		} = await getDatabase();
 		const db = createDatabaseClient(c.env);
 
@@ -88,6 +91,8 @@ export const getDashboardOverview: Handler = async (c) => {
 				title: articleTranslations.title,
 				viewCount: articles.viewCount,
 				publishedAt: articles.publishedAt,
+				cfImageId: articles.cfImageId,
+				updatedAt: articles.updatedAt,
 			})
 			.from(articles)
 			.innerJoin(
@@ -103,7 +108,69 @@ export const getDashboardOverview: Handler = async (c) => {
 			.orderBy(desc(articles.viewCount))
 			.limit(5);
 
-		// 6. 最近の活動（簡易版：最近作成された記事）
+		// 6. タグ情報を取得
+		const articleIds = topArticlesResult.map((article) => article.id);
+		let articleTagsData: Array<{
+			articleId: number;
+			tagId: number;
+			tagName: string;
+			tagLanguage: string;
+		}> = [];
+
+		if (articleIds.length > 0) {
+			articleTagsData = await db
+				.select({
+					articleId: articleTags.articleId,
+					tagId: tags.id,
+					tagName: tagTranslations.name,
+					tagLanguage: tagTranslations.language,
+				})
+				.from(articleTags)
+				.innerJoin(tags, eq(articleTags.tagId, tags.id))
+				.innerJoin(tagTranslations, eq(tags.id, tagTranslations.tagId))
+				.where(inArray(articleTags.articleId, articleIds));
+		}
+
+		// 7. 記事ごとにタグをグループ化
+		const topArticlesWithTags = topArticlesResult.map((article) => {
+			// この記事のタグデータを取得
+			const articleTagsList = articleTagsData.filter(
+				(tag) => tag.articleId === article.id
+			);
+
+			// タグIDごとにグループ化して翻訳情報をまとめる
+			const tagsMap = new Map<
+				number,
+				{
+					id: number;
+					translations: { ja: string; en: string };
+				}
+			>();
+
+			for (const tagData of articleTagsList) {
+				if (!tagsMap.has(tagData.tagId)) {
+					tagsMap.set(tagData.tagId, {
+						id: tagData.tagId,
+						translations: { ja: "", en: "" },
+					});
+				}
+
+				const tag = tagsMap.get(tagData.tagId);
+				if (!tag) continue;
+				if (tagData.tagLanguage === "ja") {
+					tag.translations.ja = tagData.tagName;
+				} else if (tagData.tagLanguage === "en") {
+					tag.translations.en = tagData.tagName;
+				}
+			}
+
+			return {
+				...article,
+				tags: Array.from(tagsMap.values()),
+			};
+		});
+
+		// 8. 最近の活動（簡易版：最近作成された記事）
 		const recentActivitiesResult = await db
 			.select({
 				id: articles.id,
@@ -134,12 +201,15 @@ export const getDashboardOverview: Handler = async (c) => {
 				thisMonthViews: Number(thisMonthViewsResult[0]?.thisMonthViews) || 0,
 			},
 			topArticles: {
-				articles: topArticlesResult.map((article) => ({
+				articles: topArticlesWithTags.map((article) => ({
 					id: article.id,
 					slug: article.slug,
 					title: article.title,
 					viewCount: article.viewCount,
 					publishedAt: article.publishedAt,
+					cfImageId: article.cfImageId,
+					updatedAt: article.updatedAt,
+					tags: article.tags,
 				})),
 			},
 			recentActivities: {
