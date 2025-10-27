@@ -2,6 +2,7 @@ export { useArticle } from "./api/use-article/use-article";
 export { useCheckSlug } from "./api/use-check-slug/use-check-slug";
 export { useCreate } from "./api/use-create/use-create";
 export { useDelete } from "./api/use-delete/use-delete";
+export { useDeleteImage } from "./api/use-delete-image/use-delete-image";
 export { useDeleteThumbnail } from "./api/use-delete-thumbnail/use-delete-thumbnail";
 export { useGetAllArticles } from "./api/use-get-all/use-get-all";
 export { useGetById } from "./api/use-get-by-id/use-get-by-id";
@@ -13,6 +14,7 @@ export {
 } from "./api/use-suggestions/use-suggestions";
 export { useUpdate } from "./api/use-update/use-update";
 export { useUpdateStatus } from "./api/use-update-status/use-update-status";
+export { useUploadImage } from "./api/use-upload-image/use-upload-image";
 export { useUploadThumbnail } from "./api/use-upload-thumbnail/use-upload-thumbnail";
 
 export { ArticleCard } from "./ui/article-card/article-card";
