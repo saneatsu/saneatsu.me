@@ -182,12 +182,15 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 
 			toast.success("記事を更新しました");
 		} catch (error) {
-			// エラーメッセージをフォーム上部に表示
-			if (error instanceof Error) {
-				setFormError(error.message);
-			} else {
-				setFormError("記事の更新中にエラーが発生しました");
-			}
+			// エラーメッセージを表示
+			const errorMessage =
+				error instanceof Error
+					? error.message
+					: "記事の更新中にエラーが発生しました";
+
+			// Alert と toast の両方で表示
+			setFormError(errorMessage);
+			toast.error(errorMessage);
 		}
 	};
 

@@ -28,6 +28,20 @@ vi.mock("@/shared/lib", () => ({
 			all: () => ["articles"],
 		},
 	},
+	extractErrorMessage: vi.fn((error: unknown, fallback: string) => {
+		// エラーオブジェクトから適切にメッセージを抽出
+		if (error && typeof error === "object" && "error" in error) {
+			const apiError = error.error;
+			if (
+				typeof apiError === "object" &&
+				apiError !== null &&
+				"message" in apiError
+			) {
+				return (apiError as { message: string }).message;
+			}
+		}
+		return fallback;
+	}),
 }));
 
 // テスト用のQueryClientプロバイダー

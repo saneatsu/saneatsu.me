@@ -80,6 +80,7 @@ export function ArticleNewForm() {
 	const [publishedAtDate, setPublishedAtDate] = useState<Date | undefined>();
 	const [thumbnailError, setThumbnailError] = useState<string>("");
 	const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+	const [validationError, setValidationError] = useState<string>("");
 	const router = useRouter();
 
 	const {
@@ -214,9 +215,13 @@ export function ArticleNewForm() {
 				}
 			}
 
+			// エラーメッセージを表示
 			const errorMessage =
 				error instanceof Error ? error.message : "記事の作成に失敗しました";
-			toast.error(`記事の作成に失敗しました: ${errorMessage}`);
+
+			// Alert と toast の両方で表示
+			setValidationError(errorMessage);
+			toast.error(errorMessage);
 		}
 	};
 
@@ -231,6 +236,15 @@ export function ArticleNewForm() {
 	return (
 		<>
 			<form onSubmit={handleSubmit(onSubmit)} className="space-y-8 max-w-4xl">
+				{/* バリデーションエラー表示 */}
+				{validationError && (
+					<Alert variant="destructive">
+						<AlertCircle className="h-4 w-4" />
+						<AlertTitle>エラーが発生しました</AlertTitle>
+						<AlertDescription>{validationError}</AlertDescription>
+					</Alert>
+				)}
+
 				{/* サムネイルエラー表示 */}
 				{thumbnailError && (
 					<Alert variant="destructive">
