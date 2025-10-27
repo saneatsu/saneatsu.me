@@ -1,6 +1,12 @@
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
+	resolve: {
+		alias: {
+			// CSSモジュールをidentity-obj-proxyでモック
+			"\\.(css|less|scss|sass)$": "identity-obj-proxy",
+		},
+	},
 	test: {
 		globals: true,
 		// Reactコンポーネントテスト用にjsdom環境を使用
