@@ -561,5 +561,442 @@ describe("PUT /articles/:id - 記事更新", () => {
 			// UPDATEは2回（記事 + 日本語翻訳のみ、英語翻訳は失敗したのでスキップ）
 			expect(mockDb.update).toHaveBeenCalledTimes(2);
 		});
+
+		describe("H1見出しバリデーション", () => {
+			describe("エラーになるケース", () => {
+				it("行頭にH1見出しがある場合、400エラーを返す", async () => {
+					// Arrange
+					const { mockDb } = setupDbMocks();
+					const { createDatabaseClient } = await import("@saneatsu/db");
+					(createDatabaseClient as any).mockReturnValue(mockDb);
+
+					// Act
+					const client = testClient(articlesRoute, {
+						TURSO_DATABASE_URL: "test://test.db",
+						TURSO_AUTH_TOKEN: "test-token",
+					}) as any;
+					const res = await client[":id"].$put({
+						param: { id: "1" },
+						json: {
+							title: "テスト記事",
+							slug: "test-article-h1-beginning",
+							content: "# H1見出し\n\n本文があります。",
+							status: "draft",
+						},
+					});
+
+					// Assert
+					expect(res.status).toBe(400);
+					expect(mockDb.update).not.toHaveBeenCalled();
+				});
+
+				it("文章途中の改行後にH1見出しがある場合、400エラーを返す", async () => {
+					// Arrange
+					const { mockDb } = setupDbMocks();
+					const { createDatabaseClient } = await import("@saneatsu/db");
+					(createDatabaseClient as any).mockReturnValue(mockDb);
+
+					// Act
+					const client = testClient(articlesRoute, {
+						TURSO_DATABASE_URL: "test://test.db",
+						TURSO_AUTH_TOKEN: "test-token",
+					}) as any;
+					const res = await client[":id"].$put({
+						param: { id: "1" },
+						json: {
+							title: "テスト記事",
+							slug: "test-article-h1-middle",
+							content: "本文があります。\n\n# H1見出し\n\n続きの本文。",
+							status: "draft",
+						},
+					});
+
+					// Assert
+					expect(res.status).toBe(400);
+					expect(mockDb.update).not.toHaveBeenCalled();
+				});
+
+				it("スペースが複数あるH1見出しの場合、400エラーを返す", async () => {
+					// Arrange
+					const { mockDb } = setupDbMocks();
+					const { createDatabaseClient } = await import("@saneatsu/db");
+					(createDatabaseClient as any).mockReturnValue(mockDb);
+
+					// Act
+					const client = testClient(articlesRoute, {
+						TURSO_DATABASE_URL: "test://test.db",
+						TURSO_AUTH_TOKEN: "test-token",
+					}) as any;
+					const res = await client[":id"].$put({
+						param: { id: "1" },
+						json: {
+							title: "テスト記事",
+							slug: "test-article-h1-multiple-spaces",
+							content: "#  H1見出し（スペース2つ）",
+							status: "draft",
+						},
+					});
+
+					// Assert
+					expect(res.status).toBe(400);
+					expect(mockDb.update).not.toHaveBeenCalled();
+				});
+
+				it("複数のH1見出しがある場合、400エラーを返す", async () => {
+					// Arrange
+					const { mockDb } = setupDbMocks();
+					const { createDatabaseClient } = await import("@saneatsu/db");
+					(createDatabaseClient as any).mockReturnValue(mockDb);
+
+					// Act
+					const client = testClient(articlesRoute, {
+						TURSO_DATABASE_URL: "test://test.db",
+						TURSO_AUTH_TOKEN: "test-token",
+					}) as any;
+					const res = await client[":id"].$put({
+						param: { id: "1" },
+						json: {
+							title: "テスト記事",
+							slug: "test-article-multiple-h1",
+							content: "# H1見出し1\n\n本文\n\n# H1見出し2",
+							status: "draft",
+						},
+					});
+
+					// Assert
+					expect(res.status).toBe(400);
+					expect(mockDb.update).not.toHaveBeenCalled();
+				});
+			});
+
+			describe("エラーにならないケース", () => {
+				it("H2以降の見出しは許可される", async () => {
+					// Arrange
+					const { mockDb } = setupDbMocks();
+					const { createDatabaseClient } = await import("@saneatsu/db");
+					(createDatabaseClient as any).mockReturnValue(mockDb);
+
+					// 既存記事のモック
+					const existingArticleMock = {
+						from: vi.fn().mockReturnValue({
+							where: vi.fn().mockReturnValue({
+								limit: vi.fn().mockResolvedValue([
+									{
+										id: 1,
+										slug: "test-article-h2",
+										cfImageId: null,
+										status: "draft",
+									},
+								]),
+							}),
+						}),
+					};
+
+					// 更新後の記事取得のモック
+					const updatedArticleMock = {
+						from: vi.fn().mockReturnValue({
+							leftJoin: vi.fn().mockReturnValue({
+								where: vi.fn().mockReturnValue({
+									limit: vi.fn().mockResolvedValue([
+										{
+											id: 1,
+											slug: "test-article-h2",
+											cfImageId: null,
+											status: "draft",
+											publishedAt: null,
+											updatedAt: "2024-01-02T00:00:00.000Z",
+											title: "テスト記事",
+											content: "## H2見出し\n### H3見出し\n#### H4見出し",
+											viewCount: 0,
+										},
+									]),
+								}),
+							}),
+						}),
+					};
+
+					// スラッグが変わっていないので、重複チェックはスキップされる
+					// したがって、selectは2回だけ呼ばれる（既存記事チェック、更新後の記事取得）
+					mockDb.select
+						.mockReturnValueOnce(existingArticleMock)
+						.mockReturnValueOnce(updatedArticleMock);
+
+					mockDb.update = vi.fn().mockReturnValue({
+						set: vi.fn().mockReturnValue({
+							where: vi.fn().mockResolvedValue({}),
+						}),
+					});
+
+					mockDb.delete = vi.fn().mockReturnValue({
+						where: vi.fn().mockResolvedValue({}),
+					});
+
+					mockDb.insert = vi.fn().mockReturnValue({
+						values: vi.fn().mockResolvedValue({}),
+					});
+
+					// Act
+					const client = testClient(articlesRoute, {
+						TURSO_DATABASE_URL: "test://test.db",
+						TURSO_AUTH_TOKEN: "test-token",
+					}) as any;
+					const res = await client[":id"].$put({
+						param: { id: "1" },
+						json: {
+							title: "テスト記事",
+							slug: "test-article-h2",
+							content: "## H2見出し\n### H3見出し\n#### H4見出し",
+							status: "draft",
+						},
+					});
+
+					// Assert
+					expect(res.status).toBe(200);
+				});
+
+				it("コードブロック内のH1は無視される", async () => {
+					// Arrange
+					const { mockDb } = setupDbMocks();
+					const { createDatabaseClient } = await import("@saneatsu/db");
+					(createDatabaseClient as any).mockReturnValue(mockDb);
+
+					const existingArticleMock = {
+						from: vi.fn().mockReturnValue({
+							where: vi.fn().mockReturnValue({
+								limit: vi.fn().mockResolvedValue([
+									{
+										id: 1,
+										slug: "test-article-code-block",
+										cfImageId: null,
+										status: "draft",
+									},
+								]),
+							}),
+						}),
+					};
+
+					const updatedArticleMock = {
+						from: vi.fn().mockReturnValue({
+							leftJoin: vi.fn().mockReturnValue({
+								where: vi.fn().mockReturnValue({
+									limit: vi.fn().mockResolvedValue([
+										{
+											id: 1,
+											slug: "test-article-code-block",
+											cfImageId: null,
+											status: "draft",
+											publishedAt: null,
+											updatedAt: "2024-01-02T00:00:00.000Z",
+											title: "テスト記事",
+											content: "```bash\n# これはコメント\n```",
+											viewCount: 0,
+										},
+									]),
+								}),
+							}),
+						}),
+					};
+
+					// スラッグが変わっていないので、重複チェックはスキップされる
+					mockDb.select
+						.mockReturnValueOnce(existingArticleMock)
+						.mockReturnValueOnce(updatedArticleMock);
+
+					mockDb.update = vi.fn().mockReturnValue({
+						set: vi.fn().mockReturnValue({
+							where: vi.fn().mockResolvedValue({}),
+						}),
+					});
+
+					mockDb.delete = vi.fn().mockReturnValue({
+						where: vi.fn().mockResolvedValue({}),
+					});
+
+					mockDb.insert = vi.fn().mockReturnValue({
+						values: vi.fn().mockResolvedValue({}),
+					});
+
+					// Act
+					const client = testClient(articlesRoute, {
+						TURSO_DATABASE_URL: "test://test.db",
+						TURSO_AUTH_TOKEN: "test-token",
+					}) as any;
+					const res = await client[":id"].$put({
+						param: { id: "1" },
+						json: {
+							title: "テスト記事",
+							slug: "test-article-code-block",
+							content: "```bash\n# これはコメント\n```",
+							status: "draft",
+						},
+					});
+
+					// Assert
+					expect(res.status).toBe(200);
+				});
+
+				it("行頭でない#は許可される", async () => {
+					// Arrange
+					const { mockDb } = setupDbMocks();
+					const { createDatabaseClient } = await import("@saneatsu/db");
+					(createDatabaseClient as any).mockReturnValue(mockDb);
+
+					const existingArticleMock = {
+						from: vi.fn().mockReturnValue({
+							where: vi.fn().mockReturnValue({
+								limit: vi.fn().mockResolvedValue([
+									{
+										id: 1,
+										slug: "test-article-inline-hash",
+										cfImageId: null,
+										status: "draft",
+									},
+								]),
+							}),
+						}),
+					};
+
+					const updatedArticleMock = {
+						from: vi.fn().mockReturnValue({
+							leftJoin: vi.fn().mockReturnValue({
+								where: vi.fn().mockReturnValue({
+									limit: vi.fn().mockResolvedValue([
+										{
+											id: 1,
+											slug: "test-article-inline-hash",
+											cfImageId: null,
+											status: "draft",
+											publishedAt: null,
+											updatedAt: "2024-01-02T00:00:00.000Z",
+											title: "テスト記事",
+											content: "text # ハッシュタグ",
+											viewCount: 0,
+										},
+									]),
+								}),
+							}),
+						}),
+					};
+
+					// スラッグが変わっていないので、重複チェックはスキップされる
+					mockDb.select
+						.mockReturnValueOnce(existingArticleMock)
+						.mockReturnValueOnce(updatedArticleMock);
+
+					mockDb.update = vi.fn().mockReturnValue({
+						set: vi.fn().mockReturnValue({
+							where: vi.fn().mockResolvedValue({}),
+						}),
+					});
+
+					mockDb.delete = vi.fn().mockReturnValue({
+						where: vi.fn().mockResolvedValue({}),
+					});
+
+					mockDb.insert = vi.fn().mockReturnValue({
+						values: vi.fn().mockResolvedValue({}),
+					});
+
+					// Act
+					const client = testClient(articlesRoute, {
+						TURSO_DATABASE_URL: "test://test.db",
+						TURSO_AUTH_TOKEN: "test-token",
+					}) as any;
+					const res = await client[":id"].$put({
+						param: { id: "1" },
+						json: {
+							title: "テスト記事",
+							slug: "test-article-inline-hash",
+							content: "text # ハッシュタグ",
+							status: "draft",
+						},
+					});
+
+					// Assert
+					expect(res.status).toBe(200);
+				});
+
+				it("スペースなしの#は許可される", async () => {
+					// Arrange
+					const { mockDb } = setupDbMocks();
+					const { createDatabaseClient } = await import("@saneatsu/db");
+					(createDatabaseClient as any).mockReturnValue(mockDb);
+
+					const existingArticleMock = {
+						from: vi.fn().mockReturnValue({
+							where: vi.fn().mockReturnValue({
+								limit: vi.fn().mockResolvedValue([
+									{
+										id: 1,
+										slug: "test-article-no-space-hash",
+										cfImageId: null,
+										status: "draft",
+									},
+								]),
+							}),
+						}),
+					};
+
+					const updatedArticleMock = {
+						from: vi.fn().mockReturnValue({
+							leftJoin: vi.fn().mockReturnValue({
+								where: vi.fn().mockReturnValue({
+									limit: vi.fn().mockResolvedValue([
+										{
+											id: 1,
+											slug: "test-article-no-space-hash",
+											cfImageId: null,
+											status: "draft",
+											publishedAt: null,
+											updatedAt: "2024-01-02T00:00:00.000Z",
+											title: "テスト記事",
+											content: "#text",
+											viewCount: 0,
+										},
+									]),
+								}),
+							}),
+						}),
+					};
+
+					// スラッグが変わっていないので、重複チェックはスキップされる
+					mockDb.select
+						.mockReturnValueOnce(existingArticleMock)
+						.mockReturnValueOnce(updatedArticleMock);
+
+					mockDb.update = vi.fn().mockReturnValue({
+						set: vi.fn().mockReturnValue({
+							where: vi.fn().mockResolvedValue({}),
+						}),
+					});
+
+					mockDb.delete = vi.fn().mockReturnValue({
+						where: vi.fn().mockResolvedValue({}),
+					});
+
+					mockDb.insert = vi.fn().mockReturnValue({
+						values: vi.fn().mockResolvedValue({}),
+					});
+
+					// Act
+					const client = testClient(articlesRoute, {
+						TURSO_DATABASE_URL: "test://test.db",
+						TURSO_AUTH_TOKEN: "test-token",
+					}) as any;
+					const res = await client[":id"].$put({
+						param: { id: "1" },
+						json: {
+							title: "テスト記事",
+							slug: "test-article-no-space-hash",
+							content: "#text",
+							status: "draft",
+						},
+					});
+
+					// Assert
+					expect(res.status).toBe(200);
+				});
+			});
+		});
 	});
 });

@@ -17,10 +17,25 @@ const ArticleUpdateSchema = z.object({
 			example: "updated-article-slug",
 			description: "記事のスラッグ（小文字の英数字とハイフンのみ、1-100文字）",
 		}),
-	content: z.string().min(1).openapi({
-		example: "# 更新されたタイトル\n\nこれは更新された記事の本文です...",
-		description: "記事の本文（Markdown形式）",
-	}),
+	content: z
+		.string()
+		.min(1)
+		.refine(
+			(content) => {
+				// コードブロックを除外してからチェック
+				const contentWithoutCodeBlocks = content.replace(/```[\s\S]*?```/g, "");
+				// H1見出し（行頭 + # + スペース + #以外）をチェック
+				return !/(^|\n)#\s+(?!#)/m.test(contentWithoutCodeBlocks);
+			},
+			{
+				message:
+					"記事本文でH1見出し（# 1個）は使用できません。H2（##）以降を使用してください。",
+			}
+		)
+		.openapi({
+			example: "## 更新されたタイトル\n\nこれは更新された記事の本文です...",
+			description: "記事の本文（Markdown形式）",
+		}),
 	status: z.enum(["draft", "published", "archived"]).openapi({
 		example: "published",
 		description: "記事のステータス",
