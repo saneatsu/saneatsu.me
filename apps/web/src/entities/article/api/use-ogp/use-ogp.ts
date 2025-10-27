@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { honoClient } from "@/shared/lib";
-import { apiClient } from "../../../../shared/api/client";
 
 /**
  * OGP情報の型定義
