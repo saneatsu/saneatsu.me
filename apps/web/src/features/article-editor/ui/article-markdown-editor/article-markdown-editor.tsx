@@ -13,9 +13,8 @@ import {
 	type SuggestionItem,
 } from "@/entities/article";
 import { type TagSuggestionItem, TagSuggestionsPopover } from "@/entities/tag";
-import { remarkTag } from "@/shared/lib/remark-tag";
-import { remarkWikiLink } from "@/shared/lib/remark-wiki-link";
-import { ArticleImage } from "@/shared/ui";
+import { remarkTag, remarkTweet, remarkWikiLink } from "@/shared/lib";
+import { ArticleImage, TweetEmbed } from "@/shared/ui";
 
 import { createImageUploadCommand } from "../../lib/image-upload-command/image-upload-command";
 import { useClickExpansion } from "../../lib/use-click-expansion/use-click-expansion";
@@ -292,7 +291,12 @@ export function ArticleMarkdownEditor({
 					height={height}
 					className="prose-editor"
 					previewOptions={{
-						remarkPlugins: [[remarkGfm], [remarkWikiLink], [remarkTag]],
+						remarkPlugins: [
+							[remarkGfm],
+							[remarkWikiLink],
+							[remarkTag],
+							[remarkTweet],
+						],
 						className: "prose dark:prose-invert max-w-none",
 						components: {
 							a: ({
@@ -340,6 +344,9 @@ export function ArticleMarkdownEditor({
 								// biome-ignore lint/performance/noImgElement: 外部画像URLはNext.js Imageで最適化できないため<img>を使用
 								return <img src={src} alt={alt} {...props} />;
 							},
+							// Tweet埋め込みのカスタムレンダリング
+							// @ts-expect-error - カスタムノードのため型定義がない
+							tweet: ({ id }) => <TweetEmbed id={id} />,
 						},
 					}}
 				/>
