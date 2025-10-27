@@ -1,17 +1,20 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { Env } from "@/env";
 
 import { getOgp } from "./get-ogp";
 import { getOgpRoute } from "./get-ogp.openapi";
 
-// open-graph-scraperをモック
-vi.mock("open-graph-scraper", () => ({
-	default: vi.fn(),
-}));
+// グローバルfetchをモック
+const mockFetch = vi.fn();
+global.fetch = mockFetch as any;
 
 describe("Unit Test", () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
+
 	describe("GET /api/ogp - OGP情報取得", () => {
 		it("OGP情報の取得に成功した場合、OGPデータを返す", async () => {
 			// Arrange
@@ -20,28 +23,25 @@ describe("Unit Test", () => {
 				getOgp
 			);
 
-			// open-graph-scraperのモックを設定
-			const ogs = await import("open-graph-scraper");
-			vi.mocked(ogs.default).mockResolvedValueOnce({
-				error: false,
-				result: {
-					ogTitle: "React Query との併用",
-					ogDescription:
-						"Feature-Sliced Designアーキテクチャでのデータ取得とキャッシュ管理について",
-					ogImage: [
-						{
-							url: "https://feature-sliced.github.io/og-image.png",
-						},
-					],
-					ogUrl: "https://feature-sliced.github.io/",
-					ogSiteName: "Feature-Sliced Design",
-					favicon: "https://feature-sliced.github.io/favicon.ico",
-				},
-				html: "<html></html>",
-				response: {
-					statusCode: 200,
-					url: "https://feature-sliced.github.io/",
-				},
+			// fetchのモックを設定
+			const mockHtml = `
+				<!DOCTYPE html>
+				<html>
+					<head>
+						<meta property="og:title" content="React Query との併用" />
+						<meta property="og:description" content="Feature-Sliced Designアーキテクチャでのデータ取得とキャッシュ管理について" />
+						<meta property="og:image" content="https://feature-sliced.github.io/og-image.png" />
+						<meta property="og:url" content="https://feature-sliced.github.io/" />
+						<meta property="og:site_name" content="Feature-Sliced Design" />
+						<link rel="icon" href="https://feature-sliced.github.io/favicon.ico" />
+					</head>
+					<body></body>
+				</html>
+			`;
+
+			mockFetch.mockResolvedValueOnce({
+				ok: true,
+				text: async () => mockHtml,
 			});
 
 			// Act
@@ -70,16 +70,20 @@ describe("Unit Test", () => {
 				getOgp
 			);
 
-			// open-graph-scraperのモックを設定（OGP情報なし）
-			const ogs = await import("open-graph-scraper");
-			vi.mocked(ogs.default).mockResolvedValueOnce({
-				error: false,
-				result: {},
-				html: "<html></html>",
-				response: {
-					statusCode: 200,
-					url: "https://example.com/",
-				},
+			// fetchのモックを設定（OGP情報なし）
+			const mockHtml = `
+				<!DOCTYPE html>
+				<html>
+					<head>
+						<title>Example Page</title>
+					</head>
+					<body></body>
+				</html>
+			`;
+
+			mockFetch.mockResolvedValueOnce({
+				ok: true,
+				text: async () => mockHtml,
 			});
 
 			// Act
@@ -90,7 +94,7 @@ describe("Unit Test", () => {
 			expect(res.status).toBe(200);
 			expect(json).toEqual({
 				data: {
-					title: null,
+					title: "Example Page",
 					description: null,
 					image: null,
 					favicon: null,
@@ -107,17 +111,11 @@ describe("Unit Test", () => {
 				getOgp
 			);
 
-			// open-graph-scraperのモックを設定（エラー）
-			const ogs = await import("open-graph-scraper");
-			const errorDetails = new Error("Page not found");
-			errorDetails.name = "PageNotFoundError";
-			vi.mocked(ogs.default).mockResolvedValueOnce({
-				error: true,
-				result: {
-					error: "Page not found",
-					errorDetails: errorDetails,
-				},
-			} as any);
+			// fetchのモックを設定（エラー）
+			mockFetch.mockResolvedValueOnce({
+				ok: false,
+				status: 404,
+			});
 
 			// Act
 			const res = await app.request("/?url=https://example.com/not-found");
@@ -140,9 +138,8 @@ describe("Unit Test", () => {
 				getOgp
 			);
 
-			// open-graph-scraperのモックを設定（例外発生）
-			const ogs = await import("open-graph-scraper");
-			vi.mocked(ogs.default).mockRejectedValueOnce(new Error("Network error"));
+			// fetchのモックを設定（例外発生）
+			mockFetch.mockRejectedValueOnce(new Error("Network error"));
 
 			// Act
 			const res = await app.request("/?url=https://example.com/");
