@@ -2,7 +2,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { honoClient, queryKeys } from "@/shared/lib";
+import { extractErrorMessage, honoClient, queryKeys } from "@/shared/lib";
 import type {
 	ArticleCreateRequest,
 	ArticleCreateResponse,
@@ -41,17 +41,16 @@ export function useCreate() {
 					status: data.status,
 					publishedAt: data.publishedAt,
 					tagIds: data.tagIds || [], // 空配列をデフォルトとする
+					cfImageId: data.cfImageId, // サムネイル画像ID
 				},
 			});
 
 			if (!response.ok) {
 				const error = await response.json();
-				// エラーレスポンスの構造に応じて適切にメッセージを取得
-				const errorMessage =
-					(error as { error?: { message?: string } }).error?.message ||
-					(error as { error?: string }).error ||
-					(error as { message?: string }).message ||
-					"記事の作成に失敗しました";
+				const errorMessage = extractErrorMessage(
+					error,
+					"記事の作成に失敗しました"
+				);
 				throw new Error(errorMessage);
 			}
 

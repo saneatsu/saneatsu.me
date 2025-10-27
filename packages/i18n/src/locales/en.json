@@ -27,7 +27,8 @@
 		},
 		"articles": {
 			"title": "Latest Articles"
-		}
+		},
+		"migrationNotice": "We are currently migrating articles from other blogs, so some articles may have styling issues. Site and content updates are scheduled to be completed by the end of 2025."
 	},
 	"blog": {
 		"title": "Blog"

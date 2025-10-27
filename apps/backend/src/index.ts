@@ -9,6 +9,7 @@ import { articlesRoute } from "./routes/articles";
 import { authRoute } from "./routes/auth/worker/worker";
 import { dashboardRoute } from "./routes/dashboard";
 import { imagesRoute } from "./routes/images";
+import { ogpRoute } from "./routes/ogp";
 import { tagsRoute } from "./routes/tags";
 
 /**
@@ -84,6 +85,7 @@ export function createApp(options?: { isDevelopment?: boolean }) {
 	app.route("/api/auth", authRoute);
 	app.route("/api/dashboard", dashboardRoute);
 	app.route("/api/images", imagesRoute);
+	app.route("/api/ogp", ogpRoute);
 	app.route("/api/tags", tagsRoute);
 
 	// ルートエンドポイント

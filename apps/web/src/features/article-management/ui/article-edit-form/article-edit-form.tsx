@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -101,6 +102,8 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 		article.publishedAt ? new Date(article.publishedAt) : undefined
 	);
 
+	const router = useRouter();
+
 	/**
 	 * サムネイルURLを生成
 	 *
@@ -181,13 +184,17 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 			});
 
 			toast.success("記事を更新しました");
+			router.push("/admin/articles");
 		} catch (error) {
-			// エラーメッセージをフォーム上部に表示
-			if (error instanceof Error) {
-				setFormError(error.message);
-			} else {
-				setFormError("記事の更新中にエラーが発生しました");
-			}
+			// エラーメッセージを表示
+			const errorMessage =
+				error instanceof Error
+					? error.message
+					: "記事の更新中にエラーが発生しました";
+
+			// Alert と toast の両方で表示
+			setFormError(errorMessage);
+			toast.error(errorMessage);
 		}
 	};
 

@@ -51,7 +51,7 @@ export function ArticlesList({ limit }: ArticlesListProps) {
 						className="flex flex-row items-start gap-4"
 					>
 						{/* サムネイル用スケルトン */}
-						<div className="w-28 md:w-40 aspect-video bg-muted rounded-md flex-shrink-0 animate-pulse" />
+						<div className="w-28 md:w-40 aspect-video bg-muted rounded-md shrink-0 animate-pulse" />
 
 						{/* コンテンツ用スケルトン */}
 						<div className="flex-1 flex flex-col gap-2 min-w-0">
