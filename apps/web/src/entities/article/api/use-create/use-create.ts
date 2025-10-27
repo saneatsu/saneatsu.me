@@ -41,6 +41,7 @@ export function useCreate() {
 					status: data.status,
 					publishedAt: data.publishedAt,
 					tagIds: data.tagIds || [], // 空配列をデフォルトとする
+					cfImageId: data.cfImageId, // サムネイル画像ID
 				},
 			});
 
