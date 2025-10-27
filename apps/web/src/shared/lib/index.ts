@@ -67,6 +67,8 @@ export {
 export { remarkTag } from "./remark-tag";
 // Remark Tweet
 export { remarkTweet } from "./remark-tweet";
+// Remark URL Card
+export { remarkUrlCard } from "./remark-url-card";
 // Remark Wiki Link
 export { remarkWikiLink } from "./remark-wiki-link";
 // React Hooks
