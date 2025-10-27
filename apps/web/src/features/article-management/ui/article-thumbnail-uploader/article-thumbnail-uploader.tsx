@@ -346,10 +346,10 @@ export function ArticleThumbnailUploader({
 			{/* ヘルプテキスト */}
 			<p className="text-sm text-muted-foreground">
 				{mode === "create"
-					? "推奨サイズ: 横800px × 縦600px、10MB以下。記事作成時に自動的にアップロードされます。"
+					? "推奨サイズ: 横1280px × 縦720px、10MB以下。記事作成時に自動的にアップロードされます。"
 					: !articleId
 						? "※ サムネイル画像は記事を保存した後にアップロードできます"
-						: "推奨サイズ: 横800px × 縦600px、10MB以下"}
+						: "推奨サイズ: 横1280px × 縦720px、10MB以下"}
 			</p>
 
 			{/* 削除確認ダイアログ */}
