@@ -65,6 +65,8 @@ export {
 } from "./react-query";
 // Remark Tag
 export { remarkTag } from "./remark-tag";
+// Remark Tweet
+export { remarkTweet } from "./remark-tweet";
 // Remark Wiki Link
 export { remarkWikiLink } from "./remark-wiki-link";
 // React Hooks
