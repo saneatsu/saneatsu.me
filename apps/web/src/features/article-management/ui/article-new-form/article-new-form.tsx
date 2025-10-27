@@ -8,7 +8,12 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { useCheckSlug, useCreate } from "@/entities/article";
+import {
+	useCheckSlug,
+	useCreate,
+	useDeleteImage,
+	useUploadImage,
+} from "@/entities/article";
 import { useGetAllTags } from "@/entities/tag";
 import { ArticleMarkdownEditor } from "@/features/article-editor";
 import { useDebounce } from "@/shared/lib";
@@ -74,6 +79,7 @@ export function ArticleNewForm() {
 	const [selectedTags, setSelectedTags] = useState<Option[]>([]);
 	const [publishedAtDate, setPublishedAtDate] = useState<Date | undefined>();
 	const [thumbnailError, setThumbnailError] = useState<string>("");
+	const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
 	const router = useRouter();
 
 	const {
@@ -98,6 +104,12 @@ export function ArticleNewForm() {
 	// 記事作成フック
 	const createArticleMutation = useCreate();
 
+	// 画像アップロードフック
+	const uploadImageMutation = useUploadImage();
+
+	// 画像削除フック
+	const deleteImageMutation = useDeleteImage();
+
 	// タグ一覧取得フック
 	const { data: tagsData, isLoading: tagsLoading } = useGetAllTags();
 
@@ -120,6 +132,13 @@ export function ArticleNewForm() {
 
 	/**
 	 * フォーム送信処理
+	 *
+	 * @description
+	 * 1. スラッグエラーチェック
+	 * 2. サムネイル画像がある場合、先にアップロード
+	 * 3. 記事を作成（画像IDを含む）
+	 * 4. 記事作成失敗時は、アップロードした画像を削除
+	 * 5. 成功したらリダイレクト
 	 */
 	const onSubmit = async (data: ArticleNewForm) => {
 		// スラッグエラーがある場合は送信しない
@@ -128,18 +147,43 @@ export function ArticleNewForm() {
 			return;
 		}
 
+		// アップロード済み画像のIDを保持（エラー時の削除用）
+		let uploadedImageId: string | undefined;
+
 		try {
-			// 公開日時の処理
+			// 1. サムネイル画像がある場合、先にアップロード
+			if (thumbnailFile) {
+				try {
+					const uploadResult = await uploadImageMutation.mutateAsync({
+						file: thumbnailFile,
+					});
+					uploadedImageId = uploadResult.imageId;
+					console.log("画像アップロード成功:", uploadedImageId);
+				} catch (uploadError) {
+					console.error("画像アップロードエラー:", uploadError);
+					const errorMessage =
+						uploadError &&
+						typeof uploadError === "object" &&
+						"error" in uploadError
+							? (uploadError.error as { message: string }).message
+							: "サムネイル画像のアップロードに失敗しました";
+					toast.error(errorMessage);
+					// 画像アップロード失敗時は処理を中止
+					return;
+				}
+			}
+
+			// 2. 公開日時の処理
 			let publishedAt: string | undefined;
 			if (data.status === "published" && publishedAtDate) {
 				// DateオブジェクトをISO文字列に変換
 				publishedAt = publishedAtDate.toISOString();
 			}
 
-			// タグIDを抽出
+			// 3. タグIDを抽出
 			const tagIds = selectedTags.map((tag) => Number.parseInt(tag.value));
 
-			// APIに送信
+			// 4. 記事を作成（cfImageIdを含む）
 			const response = await createArticleMutation.mutateAsync({
 				title: data.title,
 				slug: data.slug,
@@ -147,6 +191,7 @@ export function ArticleNewForm() {
 				status: data.status,
 				publishedAt,
 				tagIds: tagIds.length > 0 ? tagIds : undefined,
+				cfImageId: uploadedImageId,
 			});
 
 			console.log("記事作成成功:", response);
@@ -156,6 +201,19 @@ export function ArticleNewForm() {
 			router.push("/admin/articles");
 		} catch (error) {
 			console.error("記事作成エラー:", error);
+
+			// 5. 記事作成失敗時、アップロード済み画像を削除
+			if (uploadedImageId) {
+				try {
+					await deleteImageMutation.mutateAsync({ imageId: uploadedImageId });
+					console.log("アップロードした画像を削除しました:", uploadedImageId);
+					toast.info("アップロードした画像を削除しました");
+				} catch (deleteError) {
+					console.error("画像削除エラー:", deleteError);
+					// 画像削除失敗は致命的ではないため、警告のみ
+				}
+			}
+
 			const errorMessage =
 				error instanceof Error ? error.message : "記事の作成に失敗しました";
 			toast.error(`記事の作成に失敗しました: ${errorMessage}`);
@@ -184,9 +242,8 @@ export function ArticleNewForm() {
 
 				{/* サムネイル画像 */}
 				<ArticleThumbnailUploader
-					articleId={undefined}
-					thumbnailUrl={null}
-					disabled={true}
+					mode="create"
+					onFileSelect={setThumbnailFile}
 					onError={setThumbnailError}
 				/>
 
@@ -336,11 +393,21 @@ export function ArticleNewForm() {
 					>
 						キャンセル
 					</Button>
-					<Button type="submit" disabled={createArticleMutation.isPending}>
-						{createArticleMutation.isPending && (
+					<Button
+						type="submit"
+						disabled={
+							createArticleMutation.isPending || uploadImageMutation.isPending
+						}
+					>
+						{(createArticleMutation.isPending ||
+							uploadImageMutation.isPending) && (
 							<Loader2 className="mr-2 h-4 w-4 animate-spin" />
 						)}
-						{createArticleMutation.isPending ? "作成中..." : "記事を作成"}
+						{uploadImageMutation.isPending
+							? "画像アップロード中..."
+							: createArticleMutation.isPending
+								? "作成中..."
+								: "記事を作成"}
 					</Button>
 				</div>
 			</form>
