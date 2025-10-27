@@ -162,6 +162,120 @@ describe("POST /articles - 記事作成", () => {
 		expect(mockDb.select).toHaveBeenCalledTimes(2); // 既存チェック、記事取得
 	});
 
+	it("サムネイル画像付きで記事を正常に作成する", async () => {
+		// Arrange
+		const { mockDb } = setupDbMocks();
+
+		// createDatabaseClient関数がmockDbを返すように設定
+		const { createDatabaseClient } = await import("@saneatsu/db");
+		(createDatabaseClient as any).mockReturnValue(mockDb);
+
+		const testImageId = "test-image-id-123";
+
+		const mockNewArticle = {
+			id: 1,
+			slug: "article-with-thumbnail",
+			status: "draft",
+			cfImageId: testImageId, // サムネイル画像ID
+			createdAt: "2024-01-01T00:00:00.000Z",
+			updatedAt: "2024-01-01T00:00:00.000Z",
+			publishedAt: null,
+		};
+
+		const mockTranslation = {
+			id: 1,
+			articleId: 1,
+			language: "ja",
+			title: "サムネイル付き記事",
+			content: "# サムネイル付き記事\n\nこの記事にはサムネイル画像があります。",
+			viewCount: 0,
+		};
+
+		const mockCreatedArticle = {
+			...mockNewArticle,
+			title: mockTranslation.title,
+			content: mockTranslation.content,
+			viewCount: mockTranslation.viewCount,
+		};
+
+		// Insert記事のモック
+		const insertArticleMock = {
+			values: vi.fn().mockReturnValue({
+				returning: vi.fn().mockResolvedValue([mockNewArticle]),
+			}),
+		};
+
+		// Insert翻訳のモック
+		const insertTranslationMock = {
+			values: vi.fn().mockReturnValue({
+				returning: vi.fn().mockResolvedValue([mockTranslation]),
+			}),
+		};
+
+		// Select記事のモック（作成後の記事取得用）
+		const selectArticleMock = {
+			from: vi.fn().mockReturnValue({
+				leftJoin: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([mockCreatedArticle]),
+					}),
+				}),
+			}),
+		};
+
+		// 既存記事チェック用のモック
+		const checkExistingMock = {
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockReturnValue({
+					limit: vi.fn().mockResolvedValue([]), // 既存記事なし
+				}),
+			}),
+		};
+
+		mockDb.select
+			.mockReturnValueOnce(checkExistingMock) // 既存記事チェック
+			.mockReturnValueOnce(selectArticleMock); // 記事取得
+
+		mockDb.insert
+			.mockReturnValueOnce(insertArticleMock) // 記事作成
+			.mockReturnValueOnce(insertTranslationMock); // 翻訳作成
+
+		// Act
+		const client = testClient(articlesRoute, {
+			TURSO_DATABASE_URL: "test://test.db",
+			TURSO_AUTH_TOKEN: "test-token",
+		}) as any;
+		const res = await client.index.$post({
+			json: {
+				title: "サムネイル付き記事",
+				slug: "article-with-thumbnail",
+				content:
+					"# サムネイル付き記事\n\nこの記事にはサムネイル画像があります。",
+				status: "draft",
+				cfImageId: testImageId, // サムネイル画像IDを含む
+			},
+		});
+
+		// Assert
+		expect(res.status).toBe(201);
+		const data = await res.json();
+
+		expect(data).toEqual({
+			data: mockCreatedArticle,
+			message: "記事が正常に作成されました",
+		});
+
+		// cfImageIdが正しく保存されたことを確認
+		expect(insertArticleMock.values).toHaveBeenCalledWith(
+			expect.objectContaining({
+				cfImageId: testImageId,
+			})
+		);
+
+		expect(mockDb.insert).toHaveBeenCalledTimes(2); // 記事、翻訳
+		expect(mockDb.select).toHaveBeenCalledTimes(2); // 既存チェック、記事取得
+	});
+
 	it("バリデーションエラー: タイトルが空の場合", async () => {
 		// Arrange
 		const { mockDb } = setupDbMocks();
