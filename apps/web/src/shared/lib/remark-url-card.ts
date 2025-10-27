@@ -98,8 +98,6 @@ export const remarkUrlCard: Plugin = () => {
 			linkNode.data.hProperties = linkNode.data.hProperties || {};
 			linkNode.data.hProperties.className = ["url-card-link"];
 			linkNode.data.hProperties["data-url-card"] = url;
-
-			console.log("URL card link marked:", url);
 		});
 	};
 };

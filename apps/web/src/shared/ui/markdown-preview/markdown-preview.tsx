@@ -84,7 +84,6 @@ export function MarkdownPreview({
 			// URL Cardの判定
 			const isUrlCard = classNames?.includes("url-card-link");
 			if (isUrlCard && href) {
-				console.log("Rendering URL card for:", href);
 				return <UrlCard url={href} />;
 			}
 
