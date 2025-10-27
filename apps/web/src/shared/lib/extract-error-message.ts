@@ -9,8 +9,8 @@
  * 以下のエラー形式に対応：
  * 1. 直接配列（Zodバリデーションエラー）: `[{ code, path, message }]`
  * 2. error.errorが配列: `{ error: [{ code, path, message }] }`
- * 3. error.errorがオブジェクト: `{ error: { message: string } }`
- * 4. error.errorが文字列: `{ error: "error message" }`
+ * 3. error.errorがオブジェクト: `{ error: { message: string } }` または `{ error: { message: "[{\"message\":\"...\"}]" } }`（message内にJSON配列）
+ * 4. error.errorが文字列: `{ error: "error message" }` または `{ error: "[{\"message\":\"...\"}]" }`（JSON配列の文字列）
  * 5. Errorインスタンス: `Error("error message")`
  * 6. messageプロパティを持つオブジェクト: `{ message: "error message" }`
  */
@@ -42,9 +42,34 @@ export function extractErrorMessage(
 			apiError !== null &&
 			"message" in apiError
 		) {
-			errorMessage = (apiError as { message?: string }).message || errorMessage;
+			const message = (apiError as { message?: string }).message;
+			if (message) {
+				// messageがJSON配列の文字列かどうかをチェック
+				try {
+					const parsed = JSON.parse(message);
+					if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].message) {
+						errorMessage = parsed[0].message;
+					} else {
+						errorMessage = message;
+					}
+				} catch {
+					// JSONとしてパースできない場合は、文字列をそのまま使用
+					errorMessage = message;
+				}
+			}
 		} else if (typeof apiError === "string") {
-			errorMessage = apiError;
+			// 文字列がJSON配列かどうかをチェック
+			try {
+				const parsed = JSON.parse(apiError);
+				if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].message) {
+					errorMessage = parsed[0].message;
+				} else {
+					errorMessage = apiError;
+				}
+			} catch {
+				// JSONとしてパースできない場合は、文字列をそのまま使用
+				errorMessage = apiError;
+			}
 		}
 	}
 	// Error インスタンスの場合
