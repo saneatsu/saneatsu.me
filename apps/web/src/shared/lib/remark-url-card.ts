@@ -25,6 +25,10 @@ interface LinkNode extends Node {
 interface ParagraphNode extends Node {
 	type: "paragraph";
 	children: Node[];
+	data?: {
+		hName?: string;
+		hProperties?: Record<string, unknown>;
+	};
 }
 
 /**
@@ -85,8 +89,11 @@ export const remarkUrlCard: Plugin = () => {
 			// 画像URLは除外
 			if (isImageUrl(url)) return;
 
+			// パラグラフを div に変換（<p> 内に <div> を入れることができないため）
+			paragraphNode.data = paragraphNode.data || {};
+			paragraphNode.data.hName = "div";
+
 			// リンクノードにURLカードマークを追加
-			// パラグラフノードは削除せず、リンクにクラスを追加するだけ
 			linkNode.data = linkNode.data || {};
 			linkNode.data.hProperties = linkNode.data.hProperties || {};
 			linkNode.data.hProperties.className = ["url-card-link"];
