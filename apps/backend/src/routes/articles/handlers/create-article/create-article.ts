@@ -31,7 +31,7 @@ export const createArticle: Handler = async (c) => {
 		const db = createDatabaseClient(c.env);
 
 		// 2. リクエストボディを取得
-		const { title, slug, content, status, publishedAt, tagIds } =
+		const { title, slug, content, status, publishedAt, tagIds, cfImageId } =
 			c.req.valid("json");
 
 		// 3. スラッグの重複チェック
@@ -63,7 +63,7 @@ export const createArticle: Handler = async (c) => {
 				slug,
 				status,
 				publishedAt: finalPublishedAt,
-				cfImageId: null, // 現在は画像なし
+				cfImageId: cfImageId || null, // cfImageIdが指定されていれば設定、なければnull
 				createdAt: now,
 				updatedAt: now,
 			})
