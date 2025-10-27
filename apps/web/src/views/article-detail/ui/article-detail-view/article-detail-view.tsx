@@ -1,6 +1,7 @@
 // @ts-nocheck - React 19 compatibility issue with react-markdown
 "use client";
 
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import ReactMarkdown from "react-markdown";
@@ -17,9 +18,21 @@ import {
 	getImageUrl,
 	remarkTag,
 	remarkTweet,
+	remarkUrlCard,
 	remarkWikiLink,
 } from "@/shared/lib";
 import { Badge, TableOfContents, TweetEmbed, ZoomableImage } from "@/shared/ui";
+
+// URL Cardコンポーネントを動的インポート（クライアントサイドのみ）
+const UrlCard = dynamic(
+	() =>
+		import("@/entities/article/ui/url-card/url-card").then(
+			(mod) => mod.UrlCard
+		),
+	{
+		ssr: false,
+	}
+);
 
 export interface ArticleDetailViewProps {
 	/** 表示する記事データ */
@@ -155,6 +168,7 @@ export function ArticleDetailView({
 							<ReactMarkdown
 								remarkPlugins={[
 									remarkGfm,
+									remarkUrlCard,
 									remarkWikiLink,
 									remarkTag,
 									remarkTweet,
@@ -277,11 +291,16 @@ export function ArticleDetailView({
 										</blockquote>
 									),
 									a: ({ children, href, ...props }) => {
-										// Wiki Linkの判定
 										const className = props.className as string;
-										const isWikiLink = className?.includes("wiki-link");
 
-										// Wiki Linkの場合はカスタムコンポーネントを使用
+										// URL Cardの判定
+										const isUrlCard = className?.includes("url-card-link");
+										if (isUrlCard && href) {
+											return <UrlCard url={href} />;
+										}
+
+										// Wiki Linkの判定
+										const isWikiLink = className?.includes("wiki-link");
 										if (isWikiLink && href) {
 											return (
 												<WikiLink
