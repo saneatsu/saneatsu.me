@@ -8,6 +8,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 import { remarkTag } from "@/shared/lib/remark-tag";
+import { remarkUrlCard } from "@/shared/lib/remark-url-card";
 import { remarkWikiLink } from "@/shared/lib/remark-wiki-link";
 
 import { ArticleImage } from "../article-image/article-image";
@@ -15,6 +16,17 @@ import { ArticleImage } from "../article-image/article-image";
 // Wiki Linkコンポーネントを動的インポート（クライアントサイドのみ）
 const WikiLink = dynamic(
 	() => import("@/entities/article").then((mod) => mod.WikiLink),
+	{
+		ssr: false,
+	}
+);
+
+// URL Cardコンポーネントを動的インポート（クライアントサイドのみ）
+const UrlCard = dynamic(
+	() =>
+		import("@/entities/article/ui/url-card/url-card").then(
+			(mod) => mod.UrlCard
+		),
 	{
 		ssr: false,
 	}
@@ -68,9 +80,16 @@ export function MarkdownPreview({
 		// Wiki Linkのカスタムレンダリング
 		a: ({ children, href, ...props }) => {
 			const classNames = (props as { className?: string }).className;
-			const isWikiLink = classNames?.includes("wiki-link");
 
-			// Wiki Linkの場合はカスタムコンポーネントを使用
+			// URL Cardの判定
+			const isUrlCard = classNames?.includes("url-card-link");
+			if (isUrlCard && href) {
+				console.log("Rendering URL card for:", href);
+				return <UrlCard url={href} />;
+			}
+
+			// Wiki Linkの判定
+			const isWikiLink = classNames?.includes("wiki-link");
 			if (isWikiLink && href) {
 				return (
 					<WikiLink
@@ -116,7 +135,7 @@ export function MarkdownPreview({
 			data-color-mode={theme === "dark" ? "dark" : "light"}
 		>
 			<ReactMarkdown
-				remarkPlugins={[remarkGfm, remarkWikiLink, remarkTag]}
+				remarkPlugins={[remarkGfm, remarkUrlCard, remarkWikiLink, remarkTag]}
 				components={mergedComponents}
 			>
 				{content}
