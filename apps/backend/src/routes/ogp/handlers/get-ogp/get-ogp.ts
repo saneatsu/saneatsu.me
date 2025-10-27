@@ -1,11 +1,25 @@
 import type { RouteHandler } from "@hono/zod-openapi";
-import ogs from "open-graph-scraper";
+import { Parser } from "htmlparser2";
 
 import type { Env } from "@/env";
 
 import type { getOgpRoute } from "./get-ogp.openapi";
 
 type Handler = RouteHandler<typeof getOgpRoute, { Bindings: Env }>;
+
+/**
+ * HTMLからOGP情報を抽出する型定義
+ */
+interface OgpMetaTags {
+	ogTitle?: string;
+	ogDescription?: string;
+	ogImage?: string;
+	ogUrl?: string;
+	ogSiteName?: string;
+	favicon?: string;
+	title?: string;
+	description?: string;
+}
 
 /**
  * 相対URLを絶対URLに変換
@@ -35,23 +49,112 @@ const toAbsoluteUrl = (
 };
 
 /**
+ * HTMLからOGP情報を抽出
+ *
+ * @param html - パース対象のHTML
+ * @returns 抽出されたOGP情報
+ */
+const parseOgpFromHtml = (html: string): OgpMetaTags => {
+	const metaTags: OgpMetaTags = {};
+	let isInTitle = false;
+	let titleText = "";
+
+	const parser = new Parser(
+		{
+			onopentag(name, attributes) {
+				if (name === "meta") {
+					const property = attributes.property || attributes.name;
+					const content = attributes.content;
+
+					if (!property || !content) return;
+
+					// OGPタグの抽出
+					switch (property) {
+						case "og:title":
+							metaTags.ogTitle = content;
+							break;
+						case "og:description":
+							metaTags.ogDescription = content;
+							break;
+						case "og:image":
+							metaTags.ogImage = content;
+							break;
+						case "og:url":
+							metaTags.ogUrl = content;
+							break;
+						case "og:site_name":
+							metaTags.ogSiteName = content;
+							break;
+						case "description":
+							metaTags.description = content;
+							break;
+					}
+				} else if (name === "link") {
+					const rel = attributes.rel;
+					const href = attributes.href;
+
+					// faviconの抽出
+					if (
+						rel &&
+						href &&
+						(rel === "icon" ||
+							rel === "shortcut icon" ||
+							rel === "apple-touch-icon")
+					) {
+						if (!metaTags.favicon) {
+							metaTags.favicon = href;
+						}
+					}
+				} else if (name === "title") {
+					isInTitle = true;
+					titleText = "";
+				}
+			},
+			ontext(text) {
+				if (isInTitle) {
+					titleText += text;
+				}
+			},
+			onclosetag(name) {
+				if (name === "title" && isInTitle) {
+					metaTags.title = titleText.trim();
+					isInTitle = false;
+				}
+			},
+		},
+		{ decodeEntities: true }
+	);
+
+	parser.write(html);
+	parser.end();
+
+	return metaTags;
+};
+
+/**
  * GET /api/ogp - OGP情報取得
  *
  * @description
  * 1. クエリパラメータからURLを取得
- * 2. open-graph-scraperを使用してOGP情報を取得
- * 3. 取得したOGP情報を整形してレスポンス
- * 4. エラーハンドリング（無効なURL、取得失敗）
+ * 2. fetchを使用してHTMLを取得
+ * 3. htmlparser2を使用してOGP情報をパース
+ * 4. 取得したOGP情報を整形してレスポンス
+ * 5. エラーハンドリング（無効なURL、取得失敗）
  */
 export const getOgp: Handler = async (c) => {
 	try {
 		// 1. クエリパラメータからURLを取得
 		const { url } = c.req.valid("query");
 
-		// 2. open-graph-scraperを使用してOGP情報を取得
-		const { result, error } = await ogs({ url });
+		// 2. fetchを使用してHTMLを取得
+		const response = await fetch(url, {
+			headers: {
+				"User-Agent":
+					"Mozilla/5.0 (compatible; OGPBot/1.0; +https://saneatsu.me/)",
+			},
+		});
 
-		if (error) {
+		if (!response.ok) {
 			return c.json(
 				{
 					error: {
@@ -63,31 +166,27 @@ export const getOgp: Handler = async (c) => {
 			);
 		}
 
-		// 3. 取得したOGP情報を整形してレスポンス
-		const imageUrl =
-			result.ogImage?.[0]?.url || result.twitterImage?.[0]?.url || null;
-		const faviconUrl = result.favicon || null;
+		const html = await response.text();
 
+		// 3. htmlparser2を使用してOGP情報をパース
+		const metaTags = parseOgpFromHtml(html);
+
+		// 4. 取得したOGP情報を整形してレスポンス
 		return c.json(
 			{
 				data: {
-					title:
-						result.ogTitle || result.dcTitle || result.twitterTitle || null,
-					description:
-						result.ogDescription ||
-						result.dcDescription ||
-						result.twitterDescription ||
-						null,
-					image: toAbsoluteUrl(url, imageUrl),
-					favicon: toAbsoluteUrl(url, faviconUrl),
-					siteName: result.ogSiteName || null,
-					url: result.ogUrl || url,
+					title: metaTags.ogTitle || metaTags.title || null,
+					description: metaTags.ogDescription || metaTags.description || null,
+					image: toAbsoluteUrl(url, metaTags.ogImage),
+					favicon: toAbsoluteUrl(url, metaTags.favicon),
+					siteName: metaTags.ogSiteName || null,
+					url: metaTags.ogUrl || url,
 				},
 			},
 			200
 		);
 	} catch (err) {
-		// 4. エラーハンドリング
+		// 5. エラーハンドリング
 		console.error("OGP fetch error:", err);
 		return c.json(
 			{
