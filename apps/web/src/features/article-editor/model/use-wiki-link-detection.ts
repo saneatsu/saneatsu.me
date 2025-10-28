@@ -120,8 +120,9 @@ export function useWikiLinkDetection({
 
 			// テキストエリアのスタイルから実際のフォントサイズと行高を取得
 			const computedStyle = window.getComputedStyle(textarea);
-			const fontSize = parseInt(computedStyle.fontSize) || 16;
-			const lineHeight = parseInt(computedStyle.lineHeight) || fontSize * 1.5;
+			const fontSize = parseInt(computedStyle.fontSize, 10) || 16;
+			const lineHeight =
+				parseInt(computedStyle.lineHeight, 10) || fontSize * 1.5;
 
 			// 改行数をカウント
 			const lines = beforeCursor.split("\n").length;

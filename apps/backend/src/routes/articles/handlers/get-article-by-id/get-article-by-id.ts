@@ -37,7 +37,7 @@ export const getArticleById: Handler = async (c) => {
 		const { lang = "ja", includeAllTranslations = false } =
 			c.req.valid("query");
 
-		const articleId = parseInt(id);
+		const articleId = parseInt(id, 10);
 		if (Number.isNaN(articleId)) {
 			return c.json(
 				{
