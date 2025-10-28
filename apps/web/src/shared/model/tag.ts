@@ -16,9 +16,9 @@ export interface Tag {
 	/** タグの翻訳データ */
 	translations: {
 		/** 日本語の翻訳 */
-		ja: string;
+		ja: string | null; // FIXME:
 		/** 英語の翻訳 */
-		en: string;
+		en: string | null; // FIXME:
 	};
 }
 

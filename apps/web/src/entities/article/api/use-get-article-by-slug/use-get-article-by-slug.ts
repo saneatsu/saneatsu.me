@@ -2,7 +2,8 @@
 
 import { useQuery } from "@tanstack/react-query";
 
-import { type QueryConfig, queryKeys, useHonoClient } from "@/shared/lib";
+import type { QueryConfig } from "@/shared/lib";
+import { extractErrorMessage, queryKeys, useHonoClient } from "@/shared/lib";
 import type { ArticleResponse } from "@/shared/model";
 
 /**
@@ -57,10 +58,7 @@ export function useGetArticleBySlug({
 
 			if (!response.ok) {
 				const error = await response.json();
-				throw new Error(
-					(error as { error?: { message?: string } }).error?.message ||
-						"記事の取得に失敗しました"
-				);
+				throw new Error(extractErrorMessage(error, "記事の取得に失敗しました"));
 			}
 
 			return await response.json();

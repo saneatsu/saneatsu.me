@@ -3,7 +3,8 @@
 import type { ViewsTrendResponse } from "@saneatsu/schemas";
 import { useQuery } from "@tanstack/react-query";
 
-import { honoClient, type QueryConfig, queryKeys } from "@/shared/lib";
+import type { QueryConfig } from "@/shared/lib";
+import { extractErrorMessage, queryKeys, useHonoClient } from "@/shared/lib";
 
 /**
  * 閲覧数推移データ取得のオプション
@@ -36,10 +37,12 @@ export function useViewsTrend({
 	days = 30,
 	queryConfig = {},
 }: UseViewsTrendOptions = {}) {
+	const client = useHonoClient();
+
 	return useQuery({
 		queryKey: queryKeys.dashboard.viewsTrend(language, days),
 		queryFn: async () => {
-			const response = await honoClient.api.dashboard["views-trend"].$get({
+			const response = await client.api.dashboard["views-trend"].$get({
 				query: {
 					language,
 					days: days.toString(),
@@ -49,13 +52,11 @@ export function useViewsTrend({
 			if (!response.ok) {
 				const error = await response.json();
 				throw new Error(
-					(error as { error?: string }).error ||
-						"閲覧数推移データの取得に失敗しました"
+					extractErrorMessage(error, "閲覧数推移データの取得に失敗しました")
 				);
 			}
 
-			const data = await response.json();
-			return data as ViewsTrendResponse;
+			return await response.json();
 		},
 		...queryConfig,
 		staleTime: 5 * 60 * 1000, // 5分間は新鮮とみなす

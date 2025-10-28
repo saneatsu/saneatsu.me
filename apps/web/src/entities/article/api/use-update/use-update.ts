@@ -2,7 +2,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { extractErrorMessage, honoClient } from "@/shared/lib";
+import { extractErrorMessage, useHonoClient } from "@/shared/lib";
 
 /**
  * 記事更新用フック
@@ -13,6 +13,7 @@ import { extractErrorMessage, honoClient } from "@/shared/lib";
  */
 export const useUpdate = () => {
 	const queryClient = useQueryClient();
+	const client = useHonoClient();
 
 	return useMutation({
 		mutationFn: async ({
@@ -29,7 +30,7 @@ export const useUpdate = () => {
 				tagIds?: number[];
 			};
 		}) => {
-			const response = await honoClient.api.articles[":id"].$put({
+			const response = await client.api.articles[":id"].$put({
 				param: { id: String(id) },
 				json: data,
 			});

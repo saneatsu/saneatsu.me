@@ -2,11 +2,8 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { extractErrorMessage, honoClient, queryKeys } from "@/shared/lib";
-import type {
-	ArticleCreateRequest,
-	ArticleCreateResponse,
-} from "@/shared/model";
+import { extractErrorMessage, queryKeys, useHonoClient } from "@/shared/lib";
+import type { ArticleCreateRequest } from "@/shared/model";
 
 /**
  * 記事を作成するカスタムフック
@@ -30,10 +27,11 @@ import type {
  */
 export function useCreate() {
 	const queryClient = useQueryClient();
+	const client = useHonoClient();
 
 	return useMutation({
 		mutationFn: async (data: ArticleCreateRequest) => {
-			const response = await honoClient.api.articles.$post({
+			const response = await client.api.articles.$post({
 				json: {
 					title: data.title,
 					slug: data.slug,
@@ -54,8 +52,7 @@ export function useCreate() {
 				throw new Error(errorMessage);
 			}
 
-			const result = await response.json();
-			return result as ArticleCreateResponse;
+			return await response.json();
 		},
 		onSuccess: () => {
 			// 記事一覧のキャッシュを無効化
