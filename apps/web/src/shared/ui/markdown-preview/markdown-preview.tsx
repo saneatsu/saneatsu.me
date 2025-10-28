@@ -1,14 +1,14 @@
 "use client";
 
-import "@uiw/react-markdown-preview/markdown.css";
 import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
+import { useEffect } from "react";
 import type { Components } from "react-markdown";
 import ReactMarkdown from "react-markdown";
+import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
 import type { PluggableList } from "unified";
 
-import { cn } from "@/shared/lib";
 import { remarkTag } from "@/shared/lib/remark-tag";
 import { remarkTweet } from "@/shared/lib/remark-tweet";
 import { remarkUrlCard } from "@/shared/lib/remark-url-card";
@@ -167,14 +167,11 @@ export function createDefaultMarkdownComponents(
 					</code>
 				);
 			}
-			return (
-				<code className={cn(className, "text-foreground")}>{children}</code>
-			);
+			// ブロックコードはhighlight.jsのスタイルを尊重
+			return <code className={className}>{children}</code>;
 		},
 		pre: ({ children }) => (
-			<pre className="bg-muted text-foreground p-4 rounded-lg overflow-x-auto mb-4">
-				{children}
-			</pre>
+			<pre className="p-4 rounded-lg overflow-x-auto mb-4">{children}</pre>
 		),
 		// 引用のカスタムレンダリング
 		blockquote: ({ children }) => (
@@ -281,6 +278,34 @@ export function MarkdownPreview({
 }: MarkdownPreviewProps) {
 	const { theme } = useTheme();
 
+	// themeの初期値がundefinedの場合に備えてfallbackを設定
+	const resolvedTheme = theme || "light";
+
+	// テーマに応じてhighlight.jsのスタイルを動的に読み込む
+	useEffect(() => {
+		// 既存のhighlight.jsのスタイルシートを削除
+		const existingLink = document.querySelector(
+			"link[data-highlight-theme]"
+		) as HTMLLinkElement;
+		if (existingLink) {
+			existingLink.remove();
+		}
+
+		// 新しいスタイルシートを追加
+		const link = document.createElement("link");
+		link.rel = "stylesheet";
+		link.setAttribute("data-highlight-theme", "true");
+		link.href =
+			resolvedTheme === "dark"
+				? "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css"
+				: "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github.min.css";
+		document.head.appendChild(link);
+
+		return () => {
+			link.remove();
+		};
+	}, [resolvedTheme]);
+
 	const defaultComponents = createDefaultMarkdownComponents(
 		language,
 		imageComponent,
@@ -295,12 +320,12 @@ export function MarkdownPreview({
 
 	return (
 		<div
-			className={`prose dark:prose-invert max-w-none ${className}`}
-			data-color-mode={theme === "dark" ? "dark" : "light"}
+			className={`prose dark:prose-invert max-w-none bg-background ${className}`}
+			data-color-mode={resolvedTheme === "dark" ? "dark" : "light"}
 		>
 			<ReactMarkdown
 				remarkPlugins={[...defaultRemarkPlugins]}
-				rehypePlugins={rehypePlugins}
+				rehypePlugins={[rehypeHighlight, ...rehypePlugins]}
 				components={mergedComponents}
 			>
 				{content}
