@@ -100,24 +100,31 @@ export const authOptions: any = {
 								userData: userData,
 							});
 						} catch (error) {
+							// エラーオブジェクトのstatusプロパティを安全に取得
+							const getErrorStatus = (err: unknown): number | "No status" => {
+								if (
+									err &&
+									typeof err === "object" &&
+									"status" in err &&
+									typeof err.status === "number"
+								) {
+									return err.status;
+								}
+								return "No status";
+							};
+
+							const errorStatus = getErrorStatus(error);
+
 							console.error("🔍 API call error details:", {
 								error: error,
 								message:
 									error instanceof Error ? error.message : "Unknown error",
-								status:
-									error && typeof error === "object" && "status" in error
-										? (error as any).status
-										: "No status",
+								status: errorStatus,
 								stack: error instanceof Error ? error.stack : "No stack",
 							});
 
 							// APIエラーが403（Forbidden）の場合は認証拒否
-							if (
-								error &&
-								typeof error === "object" &&
-								"status" in error &&
-								(error as any).status === 403
-							) {
+							if (errorStatus === 403) {
 								console.error(
 									`❌ Backend rejected authentication (403) for: ${profile.email}`
 								);
@@ -169,10 +176,11 @@ export const authOptions: any = {
 
 			// JWTトークンからセッション情報を構築
 			if (token && session.user) {
-				session.user.id = token.id as string;
-				session.user.email = token.email as string;
-				session.user.name = token.name as string;
-				session.user.image = token.picture as string;
+				session.user.id = typeof token.id === "string" ? token.id : "";
+				session.user.email = typeof token.email === "string" ? token.email : "";
+				session.user.name = typeof token.name === "string" ? token.name : "";
+				session.user.image =
+					typeof token.picture === "string" ? token.picture : "";
 			} else {
 				console.error("❌ Session construction failed:", {
 					hasToken: !!token,
