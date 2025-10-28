@@ -103,19 +103,23 @@ export const updateArticle: Handler = async (c) => {
 			})
 			.where(eq(articles.id, articleId));
 
-		// 6. 翻訳データを更新（日本語）
+		// 6. 翻訳データをUpsert（日本語）
+		// レコードがない場合は新規作成、ある場合は更新
 		await db
-			.update(articleTranslations)
-			.set({
+			.insert(articleTranslations)
+			.values({
+				articleId,
+				language: "ja",
 				title,
 				content,
 			})
-			.where(
-				and(
-					eq(articleTranslations.articleId, articleId),
-					eq(articleTranslations.language, "ja")
-				)
-			);
+			.onConflictDoUpdate({
+				target: [articleTranslations.articleId, articleTranslations.language],
+				set: {
+					title,
+					content,
+				},
+			});
 
 		// 7. 英語への自動翻訳を実行（非同期）
 		if (c.env.GEMINI_API_KEY) {
@@ -131,19 +135,26 @@ export const updateArticle: Handler = async (c) => {
 				);
 
 				if (translatedArticle) {
-					// 英語版を更新
+					// 英語版をUpsert
+					// レコードがない場合は新規作成、ある場合は更新
 					await db
-						.update(articleTranslations)
-						.set({
+						.insert(articleTranslations)
+						.values({
+							articleId,
+							language: "en",
 							title: translatedArticle.title,
 							content: translatedArticle.content,
 						})
-						.where(
-							and(
-								eq(articleTranslations.articleId, articleId),
-								eq(articleTranslations.language, "en")
-							)
-						);
+						.onConflictDoUpdate({
+							target: [
+								articleTranslations.articleId,
+								articleTranslations.language,
+							],
+							set: {
+								title: translatedArticle.title,
+								content: translatedArticle.content,
+							},
+						});
 					console.log(`Article ${articleId} translated successfully`);
 				} else {
 					console.warn(
