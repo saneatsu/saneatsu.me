@@ -122,51 +122,47 @@ export const updateArticle: Handler = async (c) => {
 			});
 
 		// 7. 英語への自動翻訳を実行（非同期）
-		if (c.env.GEMINI_API_KEY) {
-			try {
-				const translationService = createTranslationService({
-					GEMINI_API_KEY: c.env.GEMINI_API_KEY,
-				});
+		try {
+			const translationService = createTranslationService({
+				GEMINI_API_KEY: c.env.GEMINI_API_KEY,
+			});
 
-				// 記事を翻訳
-				const translatedArticle = await translationService.translateArticle(
-					title,
-					content
-				);
+			// 記事を翻訳
+			const translatedArticle = await translationService.translateArticle(
+				title,
+				content
+			);
 
-				if (translatedArticle) {
-					// 英語版をUpsert
-					// レコードがない場合は新規作成、ある場合は更新
-					await db
-						.insert(articleTranslations)
-						.values({
-							articleId,
-							language: "en",
+			if (translatedArticle) {
+				// 英語版をUpsert
+				// レコードがない場合は新規作成、ある場合は更新
+				await db
+					.insert(articleTranslations)
+					.values({
+						articleId,
+						language: "en",
+						title: translatedArticle.title,
+						content: translatedArticle.content,
+					})
+					.onConflictDoUpdate({
+						target: [
+							articleTranslations.articleId,
+							articleTranslations.language,
+						],
+						set: {
 							title: translatedArticle.title,
 							content: translatedArticle.content,
-						})
-						.onConflictDoUpdate({
-							target: [
-								articleTranslations.articleId,
-								articleTranslations.language,
-							],
-							set: {
-								title: translatedArticle.title,
-								content: translatedArticle.content,
-							},
-						});
-					console.log(`Article ${articleId} translated successfully`);
-				} else {
-					console.warn(
-						`Translation failed for article ${articleId}, continuing without English translation update`
-					);
-				}
-			} catch (error) {
-				// 翻訳エラーが発生してもメインの処理は続行
-				console.error(`Translation error for article ${articleId}:`, error);
+						},
+					});
+				console.log(`Article ${articleId} translated successfully`);
+			} else {
+				console.warn(
+					`Translation failed for article ${articleId}, continuing without English translation update`
+				);
 			}
-		} else {
-			console.log("GEMINI_API_KEY not configured, skipping translation");
+		} catch (error) {
+			// 翻訳エラーが発生してもメインの処理は続行
+			console.error(`Translation error for article ${articleId}:`, error);
 		}
 
 		// 8. タグとの関連付けを更新
