@@ -36,7 +36,7 @@ export const updateArticle: Handler = async (c) => {
 		const { title, slug, content, status, publishedAt, tagIds } =
 			c.req.valid("json");
 
-		const articleId = parseInt(id);
+		const articleId = parseInt(id, 10);
 		if (Number.isNaN(articleId)) {
 			return c.json(
 				{

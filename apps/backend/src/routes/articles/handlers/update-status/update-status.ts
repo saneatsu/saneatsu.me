@@ -32,7 +32,7 @@ export const updateStatus: Handler = async (c) => {
 		const { id } = c.req.valid("param");
 		const { status } = c.req.valid("json");
 
-		const articleId = parseInt(id);
+		const articleId = parseInt(id, 10);
 		if (Number.isNaN(articleId)) {
 			return c.json(
 				{

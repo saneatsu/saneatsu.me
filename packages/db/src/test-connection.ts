@@ -18,7 +18,9 @@ async function testConnection() {
 			"SELECT name FROM sqlite_master WHERE type='table';"
 		);
 		console.log("✅ 接続成功！テーブル一覧:");
-		result.rows.forEach((row) => console.log("  -", row.name));
+		for (const row of result.rows) {
+			console.log("  -", row.name);
+		}
 	} catch (error) {
 		console.error("❌ 接続エラー:", error);
 	}

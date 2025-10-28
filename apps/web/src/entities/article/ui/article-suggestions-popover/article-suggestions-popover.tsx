@@ -236,8 +236,9 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 		let actualLineHeight = 24; // デフォルト値
 		if (textarea) {
 			const computedStyle = window.getComputedStyle(textarea);
-			const fontSize = parseInt(computedStyle.fontSize) || 16;
-			actualLineHeight = parseInt(computedStyle.lineHeight) || fontSize * 1.5;
+			const fontSize = parseInt(computedStyle.fontSize, 10) || 16;
+			actualLineHeight =
+				parseInt(computedStyle.lineHeight, 10) || fontSize * 1.5;
 		}
 
 		const popoverHeight = 300; // 推定高さ

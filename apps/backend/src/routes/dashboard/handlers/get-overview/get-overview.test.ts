@@ -187,7 +187,7 @@ describe("GET /dashboard/overview - ダッシュボード概要取得", () => {
 		const app = new OpenAPIHono<{
 			Bindings: { TURSO_DATABASE_URL: string; TURSO_AUTH_TOKEN: string };
 		}>();
-		// @ts-ignore - OpenAPIの型推論エラーを一時的に回避
+		// @ts-expect-error - OpenAPIの型推論エラーを一時的に回避
 		app.openapi(getDashboardOverviewRoute, getDashboardOverview);
 
 		const client = testClient(app, {
@@ -311,7 +311,7 @@ describe("GET /dashboard/overview - ダッシュボード概要取得", () => {
 		const app = new OpenAPIHono<{
 			Bindings: { TURSO_DATABASE_URL: string; TURSO_AUTH_TOKEN: string };
 		}>();
-		// @ts-ignore - OpenAPIの型推論エラーを一時的に回避
+		// @ts-expect-error - OpenAPIの型推論エラーを一時的に回避
 		app.openapi(getDashboardOverviewRoute, getDashboardOverview);
 
 		const client = testClient(app, {
