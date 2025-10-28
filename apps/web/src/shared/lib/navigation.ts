@@ -1,6 +1,6 @@
 import { createNavigation } from "next-intl/navigation";
 
-import { routing } from "../config/routing";
+import { routing } from "../config";
 
 /**
  * next-intl ナビゲーションAPI
