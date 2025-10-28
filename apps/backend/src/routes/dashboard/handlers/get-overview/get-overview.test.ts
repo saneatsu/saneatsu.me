@@ -94,6 +94,8 @@ describe("GET /dashboard/overview - ダッシュボード概要取得", () => {
 									title: "記事1",
 									viewCount: 500,
 									publishedAt: "2024-01-01T00:00:00.000Z",
+									cfImageId: "image-1",
+									updatedAt: "2024-01-01T00:00:00.000Z",
 								},
 								{
 									id: 2,
@@ -101,9 +103,47 @@ describe("GET /dashboard/overview - ダッシュボード概要取得", () => {
 									title: "記事2",
 									viewCount: 400,
 									publishedAt: "2024-01-02T00:00:00.000Z",
+									cfImageId: null,
+									updatedAt: "2024-01-02T00:00:00.000Z",
 								},
 							]),
 						}),
+					}),
+				}),
+			}),
+		};
+
+		// タグ情報のモック
+		const articleTagsDataMock = {
+			from: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
+					innerJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockResolvedValue([
+							{
+								articleId: 1,
+								tagId: 1,
+								tagName: "タグ1",
+								tagLanguage: "ja",
+							},
+							{
+								articleId: 1,
+								tagId: 1,
+								tagName: "Tag1",
+								tagLanguage: "en",
+							},
+							{
+								articleId: 2,
+								tagId: 2,
+								tagName: "タグ2",
+								tagLanguage: "ja",
+							},
+							{
+								articleId: 2,
+								tagId: 2,
+								tagName: "Tag2",
+								tagLanguage: "en",
+							},
+						]),
 					}),
 				}),
 			}),
@@ -140,6 +180,7 @@ describe("GET /dashboard/overview - ダッシュボード概要取得", () => {
 			.mockReturnValueOnce(totalViewsMock) // 総閲覧数
 			.mockReturnValueOnce(thisMonthViewsMock) // 今月の閲覧数
 			.mockReturnValueOnce(topArticlesMock) // 人気記事トップ5
+			.mockReturnValueOnce(articleTagsDataMock) // タグ情報
 			.mockReturnValueOnce(recentActivitiesMock); // 最近の活動
 
 		// Act
@@ -173,6 +214,11 @@ describe("GET /dashboard/overview - ダッシュボード概要取得", () => {
 		// 人気記事が取得できていること
 		expect(data.topArticles.articles).toHaveLength(2);
 		expect(data.topArticles.articles[0].title).toBe("記事1");
+		expect(data.topArticles.articles[0].cfImageId).toBe("image-1");
+		expect(data.topArticles.articles[0].tags).toHaveLength(1);
+		expect(data.topArticles.articles[0].tags[0].id).toBe(1);
+		expect(data.topArticles.articles[0].tags[0].translations.ja).toBe("タグ1");
+		expect(data.topArticles.articles[0].tags[0].translations.en).toBe("Tag1");
 
 		// 最近の活動が取得できていること
 		expect(data.recentActivities.activities).toHaveLength(1);

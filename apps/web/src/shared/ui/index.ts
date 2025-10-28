@@ -163,6 +163,8 @@ export { Label } from "./label/label";
 export { LocaleSwitcher } from "./locale-switcher/locale-switcher";
 // Markdown Preview
 export {
+	createDefaultMarkdownComponents,
+	defaultRemarkPlugins,
 	MarkdownPreview,
 	type MarkdownPreviewProps,
 } from "./markdown-preview/markdown-preview";
@@ -284,6 +286,9 @@ export {
 	TooltipProvider,
 	TooltipTrigger,
 } from "./tooltip/tooltip";
+
+// Tweet Embed
+export { TweetEmbed, type TweetEmbedProps } from "./tweet-embed/tweet-embed";
 
 // Zoomable Image
 export { ZoomableImage } from "./zoomable-image/zoomable-image";

@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { parseAsInteger, useQueryState } from "nuqs";
 
 import { ArticleCard, useGetAllArticles } from "@/entities/article";
+import { Link } from "@/shared/lib";
 import { Button } from "@/shared/ui";
 
 interface ArticlesListProps {
@@ -51,7 +52,7 @@ export function ArticlesList({ limit }: ArticlesListProps) {
 						className="flex flex-row items-start gap-4"
 					>
 						{/* サムネイル用スケルトン */}
-						<div className="w-28 md:w-40 aspect-video bg-muted rounded-md flex-shrink-0 animate-pulse" />
+						<div className="w-28 md:w-40 aspect-video bg-muted rounded-md shrink-0 animate-pulse" />
 
 						{/* コンテンツ用スケルトン */}
 						<div className="flex-1 flex flex-col gap-2 min-w-0">
@@ -131,13 +132,13 @@ export function ArticlesList({ limit }: ArticlesListProps) {
 			{/* トップページなど（limitが指定されている場合）は「すべての記事を見る」リンクを表示 */}
 			{limit && articles.length >= limit && (
 				<div className="text-center mt-8">
-					<a
+					<Link
 						href="/blog"
 						className="text-primary hover:text-primary/80 underline font-medium inline-flex items-center gap-1"
 					>
 						{t("viewAllArticles")}
 						<ChevronRight className="h-4 w-4" />
-					</a>
+					</Link>
 				</div>
 			)}
 

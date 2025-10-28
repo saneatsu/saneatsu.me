@@ -34,7 +34,8 @@ export const getArticleById: Handler = async (c) => {
 
 		// 2. パラメータを取得・検証
 		const { id } = c.req.valid("param");
-		const { lang = "ja" } = c.req.valid("query");
+		const { lang = "ja", includeAllTranslations = false } =
+			c.req.valid("query");
 
 		const articleId = parseInt(id);
 		if (Number.isNaN(articleId)) {
@@ -88,7 +89,41 @@ export const getArticleById: Handler = async (c) => {
 
 		const articleData = article[0];
 
-		// 5. タグ情報を取得
+		// 5. 全言語の翻訳を取得（includeAllTranslations=trueの場合）
+		let translations:
+			| {
+					ja: { title: string | null; content: string | null };
+					en: { title: string | null; content: string | null };
+			  }
+			| undefined;
+
+		if (includeAllTranslations) {
+			const allTranslations = await db
+				.select({
+					language: articleTranslations.language,
+					title: articleTranslations.title,
+					content: articleTranslations.content,
+				})
+				.from(articleTranslations)
+				.where(eq(articleTranslations.articleId, articleId));
+
+			// 言語ごとに翻訳データを整理
+			const jaTranslation = allTranslations.find((t) => t.language === "ja");
+			const enTranslation = allTranslations.find((t) => t.language === "en");
+
+			translations = {
+				ja: {
+					title: jaTranslation?.title || null,
+					content: jaTranslation?.content || null,
+				},
+				en: {
+					title: enTranslation?.title || null,
+					content: enTranslation?.content || null,
+				},
+			};
+		}
+
+		// 6. タグ情報を取得
 		const articleTagsData = await db
 			.select({
 				tagId: tags.id,
@@ -142,6 +177,7 @@ export const getArticleById: Handler = async (c) => {
 			{
 				data: {
 					...articleData,
+					...(translations && { translations }),
 					tags: Array.from(tagsMap.values()),
 				},
 			},

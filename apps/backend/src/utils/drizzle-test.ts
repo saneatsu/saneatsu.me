@@ -10,8 +10,20 @@ export function setupDbMocks() {
 	// 直接インポートせず、グローバルなモックを使用
 	const mockDb = {} as unknown as MockDb;
 
+	/**
+	 * INSERT文用のモックチェーン（Upsertサポート）
+	 * .insert().values().onConflictDoUpdate() のようなメソッドチェーン用
+	 */
+	const createInsertMockChain = () => ({
+		values: vi.fn().mockReturnValue({
+			onConflictDoUpdate: vi.fn().mockResolvedValue({}),
+			onConflictDoNothing: vi.fn().mockResolvedValue({}),
+		}),
+	});
+
 	// insertとupdateとselectとdeleteとselectDistinctのメソッドを追加
-	mockDb.insert = vi.fn();
+	// insertはデフォルトでUpsertをサポートするチェーンを返す
+	mockDb.insert = vi.fn().mockReturnValue(createInsertMockChain());
 	mockDb.update = vi.fn();
 	mockDb.select = vi.fn();
 	mockDb.selectDistinct = vi.fn();
@@ -112,5 +124,6 @@ export function setupDbMocks() {
 		createJoinMockChain,
 		createInnerJoinMockChain,
 		createSubqueryMock,
+		createInsertMockChain,
 	};
 }

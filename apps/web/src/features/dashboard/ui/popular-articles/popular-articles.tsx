@@ -1,8 +1,10 @@
 "use client";
 
 import { ExternalLink, Eye, TrendingUp } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
+import { getArticleEmoji, getImageUrl } from "@/shared/lib";
 import type { PopularArticle } from "@/shared/model/dashboard";
 import { Badge } from "@/shared/ui/badge/badge";
 import {
@@ -51,28 +53,24 @@ export function PopularArticles({
 }: PopularArticlesProps) {
 	/**
 	 * 日付をフォーマットして表示用に変換
+	 *
+	 * @description
+	 * YYYY/MM/DD HH:MM 形式で表示
 	 */
 	const formatDate = (dateString: string | null): string => {
-		if (!dateString) return "未公開";
+		if (!dateString) return "未設定";
 
-		const date = new Date(dateString);
-		const now = new Date();
-		const diffTime = Math.abs(now.getTime() - date.getTime());
-		const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-		if (diffDays === 1) {
-			return "1日前";
-		} else if (diffDays <= 7) {
-			return `${diffDays}日前`;
-		} else if (diffDays <= 30) {
-			const weeks = Math.floor(diffDays / 7);
-			return `${weeks}週間前`;
-		} else {
-			return date.toLocaleDateString("ja-JP", {
+		try {
+			const date = new Date(dateString);
+			return new Intl.DateTimeFormat("ja-JP", {
 				year: "numeric",
-				month: "short",
-				day: "numeric",
-			});
+				month: "2-digit",
+				day: "2-digit",
+				hour: "2-digit",
+				minute: "2-digit",
+			}).format(date);
+		} catch {
+			return "無効な日付";
 		}
 	};
 
@@ -100,9 +98,11 @@ export function PopularArticles({
 			<TableHeader>
 				<TableRow>
 					<TableHead className="w-[60px]">順位</TableHead>
-					<TableHead>記事タイトル</TableHead>
-					<TableHead className="w-[150px]">公開日</TableHead>
+					<TableHead>記事</TableHead>
+					<TableHead className="w-[200px]">タグ</TableHead>
 					<TableHead className="w-[120px] text-right">閲覧数</TableHead>
+					<TableHead className="w-[180px]">公開日</TableHead>
+					<TableHead className="w-[180px]">更新日</TableHead>
 				</TableRow>
 			</TableHeader>
 			<TableBody>
@@ -113,13 +113,25 @@ export function PopularArticles({
 							<Skeleton className="h-8 w-8 rounded-full" />
 						</TableCell>
 						<TableCell>
-							<Skeleton className="h-4 w-[400px]" />
+							<div className="flex items-center space-x-3">
+								<Skeleton className="h-12 w-20 rounded-md" />
+								<div className="space-y-2">
+									<Skeleton className="h-4 w-[300px]" />
+									<Skeleton className="h-3 w-[200px]" />
+								</div>
+							</div>
 						</TableCell>
 						<TableCell>
-							<Skeleton className="h-4 w-[100px]" />
+							<Skeleton className="h-6 w-[100px]" />
 						</TableCell>
 						<TableCell>
 							<Skeleton className="h-4 w-[80px] ml-auto" />
+						</TableCell>
+						<TableCell>
+							<Skeleton className="h-4 w-[140px]" />
+						</TableCell>
+						<TableCell>
+							<Skeleton className="h-4 w-[140px]" />
 						</TableCell>
 					</TableRow>
 				))}
@@ -141,14 +153,17 @@ export function PopularArticles({
 					<TableHeader>
 						<TableRow>
 							<TableHead className="w-[60px]">順位</TableHead>
-							<TableHead>記事タイトル</TableHead>
-							<TableHead className="w-[150px]">公開日</TableHead>
+							<TableHead>記事</TableHead>
+							<TableHead className="w-[200px]">タグ</TableHead>
 							<TableHead className="w-[120px] text-right">閲覧数</TableHead>
+							<TableHead className="w-[180px]">公開日</TableHead>
+							<TableHead className="w-[180px]">更新日</TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
 						{articles.slice(0, limit).map((article, index) => (
 							<TableRow key={article.id}>
+								{/* 順位 */}
 								<TableCell>
 									<Badge
 										className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${getRankingBadgeColor(index)}`}
@@ -156,24 +171,74 @@ export function PopularArticles({
 										{index + 1}
 									</Badge>
 								</TableCell>
+
+								{/* 記事（サムネイル + タイトル + slug） */}
 								<TableCell>
-									<div className="flex items-center space-x-2">
-										<h3 className="font-medium text-sm text-foreground max-w-lg truncate">
-											{article.title}
-										</h3>
-										<Link
-											href={`/blog/${article.slug}`}
-											target="_blank"
-											rel="noopener noreferrer"
-											className="text-muted-foreground hover:text-primary flex-shrink-0"
-										>
-											<ExternalLink className="h-3 w-3" />
-										</Link>
+									<div className="flex items-center space-x-3">
+										{/* サムネイル */}
+										<div className="relative w-20 aspect-video overflow-hidden rounded-md bg-muted flex-shrink-0">
+											{article.cfImageId ? (
+												<Image
+													src={getImageUrl(article.cfImageId, "small")}
+													alt={article.title || "記事のサムネイル"}
+													fill
+													className="object-cover"
+													sizes="80px"
+												/>
+											) : (
+												<div className="flex h-full w-full items-center justify-center">
+													<span className="text-3xl">
+														{getArticleEmoji(article.id)}
+													</span>
+												</div>
+											)}
+										</div>
+
+										{/* タイトル + slug */}
+										<div className="space-y-1 min-w-[200px]">
+											<div className="flex items-center space-x-2">
+												<Link
+													href={`/admin/articles/${article.id}/edit`}
+													className="font-medium text-sm hover:text-primary hover:underline transition-colors"
+												>
+													{article.title}
+												</Link>
+												<Link
+													href={`/blog/${article.slug}`}
+													target="_blank"
+													rel="noopener noreferrer"
+													className="text-muted-foreground hover:text-primary flex-shrink-0"
+												>
+													<ExternalLink className="h-3 w-3" />
+												</Link>
+											</div>
+											<div className="text-sm text-muted-foreground">
+												{article.slug}
+											</div>
+										</div>
 									</div>
 								</TableCell>
-								<TableCell className="text-muted-foreground">
-									{formatDate(article.publishedAt)}
+
+								{/* タグ */}
+								<TableCell>
+									<div className="flex flex-wrap gap-1">
+										{article.tags && article.tags.length > 0 ? (
+											article.tags.map((tag) => (
+												<Badge
+													key={tag.id}
+													variant="outline"
+													className="text-xs"
+												>
+													{tag.translations.ja}
+												</Badge>
+											))
+										) : (
+											<span className="text-sm text-muted-foreground">-</span>
+										)}
+									</div>
 								</TableCell>
+
+								{/* 閲覧数 */}
 								<TableCell className="text-right">
 									<div className="flex items-center justify-end space-x-1 text-muted-foreground">
 										<Eye className="h-4 w-4" />
@@ -181,6 +246,16 @@ export function PopularArticles({
 											{article.viewCount?.toLocaleString() ?? "0"}
 										</span>
 									</div>
+								</TableCell>
+
+								{/* 公開日 */}
+								<TableCell className="text-sm text-muted-foreground">
+									{formatDate(article.publishedAt)}
+								</TableCell>
+
+								{/* 更新日 */}
+								<TableCell className="text-sm text-muted-foreground">
+									{formatDate(article.updatedAt)}
 								</TableCell>
 							</TableRow>
 						))}

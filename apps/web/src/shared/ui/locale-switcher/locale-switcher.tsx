@@ -1,12 +1,12 @@
 "use client";
 
+import type { Locale } from "@saneatsu/i18n";
 import { Languages } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useTransition } from "react";
-import { localeItems as getLocaleItems } from "@/shared/config/locale";
-import type { Locale } from "@/shared/config/locale-constants";
-import { setUserLocale } from "@/shared/lib/locale";
-import { cn } from "@/shared/lib/utils";
+
+import { localeItems as getLocaleItems } from "../../config";
+import { cn, setUserLocale } from "../../lib";
 import {
 	Button,
 	DropdownMenu,
@@ -14,7 +14,7 @@ import {
 	DropdownMenuRadioGroup,
 	DropdownMenuRadioItem,
 	DropdownMenuTrigger,
-} from "@/shared/ui";
+} from "../../ui";
 
 export function LocaleSwitcher() {
 	const locale = useLocale();

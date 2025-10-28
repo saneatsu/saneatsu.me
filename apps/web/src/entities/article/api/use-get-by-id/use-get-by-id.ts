@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { honoClient } from "@/shared/lib";
+import { useHonoClient } from "@/shared/lib";
 
 type ErrorResponse = {
 	error?: {
@@ -18,6 +18,16 @@ type ArticleWithTags = {
 	title: string | null;
 	content: string | null;
 	viewCount: number;
+	translations?: {
+		ja: {
+			title: string | null;
+			content: string | null;
+		};
+		en: {
+			title: string | null;
+			content: string | null;
+		};
+	};
 	tags: {
 		id: number;
 		slug: string;
@@ -43,19 +53,27 @@ export const useGetById = (
 	id: number,
 	options?: {
 		language?: "ja" | "en";
+		includeAllTranslations?: boolean;
 		enabled?: boolean;
 		onSuccess?: (data: ArticleWithTags) => void;
 		onError?: (error: Error) => void;
 	}
 ) => {
-	const { language = "ja", enabled = true, onSuccess, onError } = options || {};
+	const {
+		language = "ja",
+		includeAllTranslations = false,
+		enabled = true,
+		onSuccess,
+		onError,
+	} = options || {};
+	const client = useHonoClient();
 
 	return useQuery({
-		queryKey: ["article", id, language],
+		queryKey: ["article", id, language, includeAllTranslations],
 		queryFn: async () => {
-			const response = await honoClient.api.articles.admin[":id"].$get({
+			const response = await client.api.articles.admin[":id"].$get({
 				param: { id: String(id) },
-				query: { lang: language },
+				query: { lang: language, includeAllTranslations },
 			});
 
 			if (!response.ok) {

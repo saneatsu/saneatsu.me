@@ -1,22 +1,34 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 
-import { honoClient } from "@/shared/lib";
+import { extractErrorMessage, useHonoClient } from "@/shared/lib";
 
-type ErrorResponse = {
-	error?: {
-		message?: string;
-	};
+/**
+ * 警告メッセージの型
+ */
+type Warning = {
+	code: string;
+	message: string;
 };
 
-type ValidationError = {
-	code: string;
-	format?: string;
-	path: string[];
+/**
+ * 記事更新レスポンスの型
+ */
+type UpdateArticleResponse = {
+	data: {
+		id: number;
+		slug: string;
+		cfImageId: string | null;
+		status: string;
+		publishedAt: string | null;
+		updatedAt: string;
+		title: string | null;
+		content: string | null;
+		viewCount: number;
+	};
 	message: string;
+	warnings?: Warning[];
 };
 
 /**
@@ -24,18 +36,16 @@ type ValidationError = {
  *
  * @description
  * 記事を更新するフック。
- * 成功時は記事一覧へリダイレクトし、
- * キャッシュをクリアして最新データを取得する。
+ * 成功時はキャッシュをクリアして最新データを取得する。
  */
 export const useUpdate = () => {
 	const queryClient = useQueryClient();
-	const router = useRouter();
+	const client = useHonoClient();
 
-	return useMutation({
-		mutationFn: async ({
-			id,
-			data,
-		}: {
+	return useMutation<
+		UpdateArticleResponse,
+		Error,
+		{
 			id: number;
 			data: {
 				title: string;
@@ -45,47 +55,32 @@ export const useUpdate = () => {
 				publishedAt?: string;
 				tagIds?: number[];
 			};
-		}) => {
-			const response = await honoClient.api.articles[":id"].$put({
+		}
+	>({
+		mutationFn: async ({ id, data }) => {
+			const response = await client.api.articles[":id"].$put({
 				param: { id: String(id) },
 				json: data,
 			});
 
 			if (!response.ok) {
 				const errorData = await response.json();
-
-				// Zodバリデーションエラーの配列形式をチェック
-				if (Array.isArray(errorData)) {
-					const validationErrors = errorData as ValidationError[];
-					const errorMessages = validationErrors.map((err) => {
-						const fieldName = err.path.join(".");
-						if (fieldName === "publishedAt") {
-							return "公開日時の形式が正しくありません";
-						}
-						return `${fieldName}: ${err.message}`;
-					});
-					throw new Error(errorMessages.join(", "));
-				}
-
-				// 従来のエラー形式
-				const errorResponse = errorData as ErrorResponse;
-				throw new Error(
-					errorResponse.error?.message || "記事の更新に失敗しました"
+				const errorMessage = extractErrorMessage(
+					errorData,
+					"記事の更新に失敗しました"
 				);
+				throw new Error(errorMessage);
 			}
 
-			return response.json();
+			return await response.json();
 		},
 		onSuccess: () => {
-			toast.success("記事を更新しました");
 			// 記事一覧と記事詳細のキャッシュをクリア
 			queryClient.invalidateQueries({ queryKey: ["articles"] });
 			queryClient.invalidateQueries({ queryKey: ["article"] });
-			// 記事一覧ページへリダイレクト
-			router.push("/admin/articles");
 		},
 		onError: (error: Error) => {
-			toast.error(error.message || "記事の更新に失敗しました");
+			console.error("Failed to update article:", error);
 		},
 	});
 };

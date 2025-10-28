@@ -57,6 +57,14 @@ export interface ArticleResponse {
 }
 
 /**
+ * 関連記事APIのレスポンス（ページネーションなし）
+ */
+export interface RelatedArticlesResponse {
+	/** 記事データの配列 */
+	data: Article[];
+}
+
+/**
  * 記事一覧取得のクエリパラメータ
  */
 export interface ArticlesQuery {
@@ -176,12 +184,14 @@ export interface ArticleCreateRequest {
 	slug: string;
 	/** 記事の本文（Markdown形式） */
 	content: string;
-	/** 記事のステータス */
-	status: ArticleStatus;
+	/** 記事のステータス（新規作成時はdraftかpublishedのみ） */
+	status: "draft" | "published";
 	/** 公開日時（オプショナル） */
 	publishedAt?: string;
 	/** タグIDの配列（オプショナル） */
 	tagIds?: number[];
+	/** Cloudflare Image ID（オプショナル） */
+	cfImageId?: string;
 }
 
 /**

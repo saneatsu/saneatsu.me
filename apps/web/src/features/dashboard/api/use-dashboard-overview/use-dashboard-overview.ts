@@ -3,7 +3,8 @@
 import type { DashboardOverviewResponse } from "@saneatsu/schemas";
 import { useQuery } from "@tanstack/react-query";
 
-import { honoClient, type QueryConfig, queryKeys } from "@/shared/lib";
+import type { QueryConfig } from "@/shared/lib";
+import { extractErrorMessage, queryKeys, useHonoClient } from "@/shared/lib";
 
 /**
  * ダッシュボード概要データ取得のオプション
@@ -30,23 +31,26 @@ export function useDashboardOverview({
 	language = "ja",
 	queryConfig = {},
 }: UseDashboardOverviewOptions = {}) {
+	const client = useHonoClient();
+
 	return useQuery({
 		queryKey: queryKeys.dashboard.overview(language),
 		queryFn: async () => {
-			const response = await honoClient.api.dashboard.overview.$get({
+			const response = await client.api.dashboard.overview.$get({
 				query: { language },
 			});
 
 			if (!response.ok) {
 				const error = await response.json();
 				throw new Error(
-					(error as { error?: string }).error ||
+					extractErrorMessage(
+						error,
 						"ダッシュボード概要データの取得に失敗しました"
+					)
 				);
 			}
 
-			const data = await response.json();
-			return data as DashboardOverviewResponse;
+			return await response.json();
 		},
 		...queryConfig,
 		staleTime: 5 * 60 * 1000, // 5分間は新鮮とみなす

@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import type { ComponentPropsWithoutRef } from "react";
-import { useArticle } from "@/entities/article";
-import { cn } from "@/shared/lib/utils";
+
+import { useGetArticleBySlug } from "@/entities/article";
+import { cn, Link } from "@/shared/lib";
 
 /**
  * Wiki Linkコンポーネントのプロパティ
@@ -43,7 +43,7 @@ export function WikiLink({
 	const anchor = match?.[2] || "";
 
 	// 記事情報を取得
-	const { data, isLoading, isError } = useArticle({
+	const { data, isLoading, isError } = useGetArticleBySlug({
 		slug: slug || "",
 		language,
 		queryConfig: {

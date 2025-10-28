@@ -1,11 +1,13 @@
 "use server";
 
+import type { Locale } from "@saneatsu/i18n";
+import { defaultLocale } from "@saneatsu/i18n";
 import { cookies } from "next/headers";
-import {
-	defaultLocale,
-	LOCALE_COOKIE_NAME,
-	type Locale,
-} from "@/shared/config/locale-constants";
+
+/**
+ * ロケール設定のCookie名
+ */
+const LOCALE_COOKIE_NAME = "NEXT_LOCALE";
 
 /**
  * ロケール（言語設定）はCookieから読み取られます。

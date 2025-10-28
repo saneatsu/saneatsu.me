@@ -41,7 +41,7 @@ if (!API_BASE_URL) {
  * Hono Clientの初期化
  * バックエンドAPIの型情報を使用して型安全なクライアントを作成
  */
-const client = hc<AppType>(API_BASE_URL) as any;
+const client = hc<AppType>(API_BASE_URL);
 
 /**
  * APIクライアントのエラークラス
@@ -58,18 +58,36 @@ export class ApiClientError extends Error {
 }
 
 /**
+ * ApiErrorの型ガード関数
+ */
+function isApiError(data: unknown): data is ApiError {
+	return (
+		typeof data === "object" &&
+		data !== null &&
+		"error" in data &&
+		typeof data.error === "object" &&
+		data.error !== null &&
+		"message" in data.error &&
+		"code" in data.error
+	);
+}
+
+/**
  * APIレスポンスのエラーハンドリング
  */
 async function handleApiResponse<T>(response: Response): Promise<T> {
 	const data = await response.json();
 
 	if (!response.ok) {
-		const error = data as ApiError;
-		throw new ApiClientError(
-			error.error.message || "API request failed",
-			response.status,
-			error.error.code
-		);
+		if (isApiError(data)) {
+			throw new ApiClientError(
+				data.error.message || "API request failed",
+				response.status,
+				data.error.code
+			);
+		}
+		// エラーの形式が不明な場合のフォールバック
+		throw new ApiClientError("API request failed", response.status);
 	}
 
 	return data;
@@ -137,8 +155,8 @@ export async function fetchArticle(
 
 		// ログイン中のユーザーの場合、X-User-Emailヘッダーを追加
 		const email = session?.user?.email;
-		if (email !== undefined) {
-			bindingHeaders["X-User-Email"] = email as string;
+		if (typeof email === "string") {
+			bindingHeaders["X-User-Email"] = email;
 		}
 
 		const request = new Request(url, {
@@ -165,8 +183,8 @@ export async function fetchArticle(
 
 	// ログイン中のユーザーの場合、X-User-Emailヘッダーを追加
 	const email = session?.user?.email;
-	if (email !== undefined) {
-		headers["X-User-Email"] = email as string;
+	if (typeof email === "string") {
+		headers["X-User-Email"] = email;
 	}
 
 	const response = await fetch(fullUrl, {

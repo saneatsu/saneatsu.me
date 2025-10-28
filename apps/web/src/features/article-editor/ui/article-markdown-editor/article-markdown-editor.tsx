@@ -3,19 +3,16 @@
 import MDEditor, { commands, type ICommand } from "@uiw/react-md-editor";
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
-import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
-import { useRef, useState } from "react";
-import remarkGfm from "remark-gfm";
+import { useEffect, useRef, useState } from "react";
 
 import {
 	ArticleSuggestionsPopover,
 	type SuggestionItem,
 } from "@/entities/article";
 import { type TagSuggestionItem, TagSuggestionsPopover } from "@/entities/tag";
-import { remarkTag } from "@/shared/lib/remark-tag";
-import { remarkWikiLink } from "@/shared/lib/remark-wiki-link";
-import { ArticleImage } from "@/shared/ui";
+import { extractHeadings } from "@/shared/lib";
+import { MarkdownPreview, Tabs, TabsList, TabsTrigger } from "@/shared/ui";
 
 import { createImageUploadCommand } from "../../lib/image-upload-command/image-upload-command";
 import { useClickExpansion } from "../../lib/use-click-expansion/use-click-expansion";
@@ -26,14 +23,6 @@ import { usePasteImage } from "../../lib/use-paste-image/use-paste-image";
 import { useTagDetection } from "../../model/use-tag-detection";
 import { useWikiLinkDetection } from "../../model/use-wiki-link-detection";
 import type { CursorPosition } from "./types";
-
-// Wiki Linkコンポーネントを動的インポート（クライアントサイドのみ）
-const WikiLink = dynamic(
-	() => import("@/entities/article").then((mod) => mod.WikiLink),
-	{
-		ssr: false,
-	}
-);
 
 /**
  * ArticleMarkdownEditorのプロパティ
@@ -47,12 +36,12 @@ interface ArticleMarkdownEditorProps {
 	setValue: (name: string, value: string) => void;
 	/** エディタの高さ（ピクセル）*/
 	height?: number;
-	/** プレビューモード */
-	preview?: "edit" | "live" | "preview";
 	/** 追加のCSSクラス */
 	className?: string;
 	/** 言語（Wiki Link用） */
 	language?: "ja" | "en";
+	/** 英語コンテンツ（プレビュー表示用） */
+	enContent?: string;
 }
 
 /**
@@ -73,12 +62,16 @@ export function ArticleMarkdownEditor({
 	onChange,
 	setValue,
 	height = 500,
-	preview = "live",
 	className = "",
 	language = "ja",
+	enContent,
 }: ArticleMarkdownEditorProps) {
 	const { theme } = useTheme();
 	const editorRef = useRef<HTMLDivElement>(null);
+	const previewRef = useRef<HTMLDivElement>(null);
+
+	// プレビュー言語の状態管理
+	const [previewLanguage, setPreviewLanguage] = useState<"ja" | "en">(language);
 
 	// Wiki Linkサジェスト関連の状態
 	const [showSuggestions, setShowSuggestions] = useState(false);
@@ -127,6 +120,63 @@ export function ArticleMarkdownEditor({
 	const { uploadImage } = useImageUpload();
 	usePasteImage(editorRef, uploadImage, onChange);
 	useDropImage(editorRef, uploadImage, onChange);
+
+	// Markdownから見出しを抽出（プレビュー用）
+	const headings = extractHeadings(value);
+
+	// スクロール同期（エディタ → プレビュー）
+	useEffect(() => {
+		// DOM要素のマウントを待つ
+		const timer = setTimeout(() => {
+			const editorElement = editorRef.current;
+			const previewElement = previewRef.current;
+
+			if (!editorElement || !previewElement) return;
+
+			let rafId: number | null = null;
+
+			const handleScroll = (event: Event) => {
+				const target = event.target as HTMLElement;
+
+				// 既存のrequestAnimationFrameをキャンセル
+				if (rafId !== null) {
+					cancelAnimationFrame(rafId);
+				}
+
+				// 次のフレームでスクロール同期を実行
+				rafId = requestAnimationFrame(() => {
+					// MDEditorと同じスケール係数ベースの計算
+					const editorScrollableHeight =
+						target.scrollHeight - target.offsetHeight;
+					const previewScrollableHeight =
+						previewElement.scrollHeight - previewElement.offsetHeight;
+
+					if (editorScrollableHeight > 0 && previewScrollableHeight > 0) {
+						const scale = editorScrollableHeight / previewScrollableHeight;
+						const newPreviewScrollTop = target.scrollTop / scale;
+
+						previewElement.scrollTop = newPreviewScrollTop;
+					}
+				});
+			};
+
+			// editorElement全体でスクロールイベントをキャッチ（useCapture=true）
+			editorElement.addEventListener("scroll", handleScroll, true);
+
+			// クリーンアップ関数を返す
+			return () => {
+				if (rafId !== null) {
+					cancelAnimationFrame(rafId);
+				}
+				editorElement.removeEventListener("scroll", handleScroll, true);
+			};
+		}, 100);
+
+		// タイマーのクリーンアップ
+		return () => {
+			clearTimeout(timer);
+		};
+	}, []);
 
 	// カスタムboldコマンド（Cmd+Bを使用）
 	const customBold: ICommand = {
@@ -281,68 +331,57 @@ export function ArticleMarkdownEditor({
 
 	return (
 		<div className={className}>
-			<div ref={editorRef}>
-				<MDEditor
-					value={value}
-					onChange={(val) => onChange(val || "")}
-					commands={customCommands}
-					preview={preview}
-					visibleDragbar={true}
-					data-color-mode={theme === "dark" ? "dark" : "light"}
-					height={height}
-					className="prose-editor"
-					previewOptions={{
-						remarkPlugins: [[remarkGfm], [remarkWikiLink], [remarkTag]],
-						className: "prose dark:prose-invert max-w-none",
-						components: {
-							a: ({
-								children,
-								href,
-								...props
-							}: {
-								children?: React.ReactNode;
-								href?: string;
-								className?: string;
-							}) => {
-								// Wiki Linkの判定
-								const className = props.className as string;
-								const isWikiLink = className?.includes("wiki-link");
+			<div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+				{/* 左側: エディタ */}
+				<div ref={editorRef} className="h-full">
+					<MDEditor
+						value={value}
+						onChange={(val) => onChange(val || "")}
+						commands={customCommands}
+						preview="edit"
+						visibleDragbar={false}
+						data-color-mode={theme === "dark" ? "dark" : "light"}
+						height={height}
+						className="prose-editor"
+					/>
+				</div>
 
-								// Wiki Linkの場合はカスタムコンポーネントを使用
-								if (isWikiLink && href) {
-									return (
-										<WikiLink
-											href={href}
-											language={language}
-											className={className}
-											{...props}
-										>
-											{children}
-										</WikiLink>
-									);
-								}
+				{/* 右側: プレビュー */}
+				<div
+					className="h-full flex flex-col border rounded-lg bg-background"
+					style={{ height }}
+				>
+					{/* プレビュー言語切り替え */}
+					<div className="border-b px-4 py-2">
+						<Tabs
+							value={previewLanguage}
+							onValueChange={(value) =>
+								setPreviewLanguage(value as "ja" | "en")
+							}
+						>
+							<TabsList className="h-8">
+								<TabsTrigger value="ja" className="text-xs">
+									日本語
+								</TabsTrigger>
+								<TabsTrigger value="en" className="text-xs">
+									English
+								</TabsTrigger>
+							</TabsList>
+						</Tabs>
+					</div>
 
-								// 通常のリンク
-								return (
-									<a href={href} className="underline" {...props}>
-										{children}
-									</a>
-								);
-							},
-							// 画像のカスタムレンダリング
-							img: ({ src, alt, ...props }) => {
-								// Cloudflare Images URLの場合はArticleImageを使用
-								if (src?.includes("imagedelivery.net")) {
-									return <ArticleImage src={src} alt={alt} />;
-								}
-
-								// 通常の画像（外部URL）
-								// biome-ignore lint/performance/noImgElement: 外部画像URLはNext.js Imageで最適化できないため<img>を使用
-								return <img src={src} alt={alt} {...props} />;
-							},
-						},
-					}}
-				/>
+					{/* プレビューコンテンツ */}
+					<div ref={previewRef} className="flex-1 overflow-y-auto p-4">
+						<MarkdownPreview
+							content={
+								previewLanguage === "en" && enContent ? enContent : value
+							}
+							language={previewLanguage}
+							imageComponent="article"
+							headings={headings}
+						/>
+					</div>
+				</div>
 			</div>
 
 			{/* Wiki Linkサジェストポップアップ */}

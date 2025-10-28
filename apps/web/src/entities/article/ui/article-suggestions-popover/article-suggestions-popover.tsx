@@ -96,9 +96,8 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 			if (e.ctrlKey && (e.key === "p" || e.key === "P")) {
 				// Ctrl+P: 上へ移動
 				if (
-					e.target &&
-					((e.target as HTMLElement).tagName === "TEXTAREA" ||
-						(e.target as HTMLElement).closest(".w-md-editor"))
+					e.target instanceof HTMLElement &&
+					(e.target.tagName === "TEXTAREA" || e.target.closest(".w-md-editor"))
 				) {
 					e.preventDefault();
 					e.stopPropagation();
@@ -112,9 +111,8 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 			if (e.ctrlKey && (e.key === "n" || e.key === "N")) {
 				// Ctrl+N: 下へ移動
 				if (
-					e.target &&
-					((e.target as HTMLElement).tagName === "TEXTAREA" ||
-						(e.target as HTMLElement).closest(".w-md-editor"))
+					e.target instanceof HTMLElement &&
+					(e.target.tagName === "TEXTAREA" || e.target.closest(".w-md-editor"))
 				) {
 					e.preventDefault();
 					e.stopPropagation();
@@ -151,9 +149,9 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 				case "ArrowDown":
 					// 矢印キーとEnterはMDEditor内での操作時のみ
 					if (
-						e.target &&
-						((e.target as HTMLElement).tagName === "TEXTAREA" ||
-							(e.target as HTMLElement).closest(".w-md-editor"))
+						e.target instanceof HTMLElement &&
+						(e.target.tagName === "TEXTAREA" ||
+							e.target.closest(".w-md-editor"))
 					) {
 						e.preventDefault();
 						e.stopPropagation();
@@ -164,9 +162,9 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 					break;
 				case "ArrowUp":
 					if (
-						e.target &&
-						((e.target as HTMLElement).tagName === "TEXTAREA" ||
-							(e.target as HTMLElement).closest(".w-md-editor"))
+						e.target instanceof HTMLElement &&
+						(e.target.tagName === "TEXTAREA" ||
+							e.target.closest(".w-md-editor"))
 					) {
 						e.preventDefault();
 						e.stopPropagation();
@@ -182,9 +180,9 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 					}
 
 					if (
-						e.target &&
-						((e.target as HTMLElement).tagName === "TEXTAREA" ||
-							(e.target as HTMLElement).closest(".w-md-editor")) &&
+						e.target instanceof HTMLElement &&
+						(e.target.tagName === "TEXTAREA" ||
+							e.target.closest(".w-md-editor")) &&
 						suggestions[selectedIndex]
 					) {
 						e.preventDefault();

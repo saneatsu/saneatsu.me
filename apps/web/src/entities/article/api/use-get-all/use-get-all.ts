@@ -2,7 +2,8 @@
 
 import { useQuery } from "@tanstack/react-query";
 
-import { honoClient, type QueryConfig, queryKeys } from "@/shared/lib";
+import type { QueryConfig } from "@/shared/lib";
+import { extractErrorMessage, queryKeys, useHonoClient } from "@/shared/lib";
 import type { ArticleStatus, ArticlesResponse } from "@/shared/model";
 
 /**
@@ -56,6 +57,8 @@ export function useGetAllArticles({
 	sortOrder = "desc",
 	queryConfig = {},
 }: UseGetAllArticlesOptions = {}) {
+	const client = useHonoClient();
+
 	return useQuery({
 		queryKey: queryKeys.article.all({
 			page,
@@ -68,7 +71,7 @@ export function useGetAllArticles({
 			sortOrder,
 		}),
 		queryFn: async () => {
-			const response = await honoClient.api.articles.$get({
+			const response = await client.api.articles.$get({
 				query: {
 					page: page.toString(),
 					limit: limit.toString(),
@@ -84,13 +87,10 @@ export function useGetAllArticles({
 
 			if (!response.ok) {
 				const error = await response.json();
-				throw new Error(
-					(error as { error?: string }).error || "記事の取得に失敗しました"
-				);
+				throw new Error(extractErrorMessage(error, "記事の取得に失敗しました"));
 			}
 
-			const data = await response.json();
-			return data as ArticlesResponse;
+			return await response.json();
 		},
 		...queryConfig,
 		staleTime: 30 * 1000, // 30秒間はデータを新鮮とみなす
