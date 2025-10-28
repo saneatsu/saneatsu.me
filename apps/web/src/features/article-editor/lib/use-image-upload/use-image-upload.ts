@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { honoClient } from "@/shared/lib";
+import { useHonoClient } from "@/shared/lib";
 
 /**
  * 画像アップロードの結果
@@ -42,6 +42,7 @@ export interface ImageUploadResult {
 export function useImageUpload() {
 	const [isUploading, setIsUploading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const client = useHonoClient();
 
 	/**
 	 * 画像をアップロードする
@@ -55,7 +56,7 @@ export function useImageUpload() {
 
 		try {
 			// APIリクエスト（Hono RPCでmultipart/form-dataを送信）
-			const response = await honoClient.api.images.$post({
+			const response = await client.api.images.$post({
 				form: {
 					file: file,
 				},

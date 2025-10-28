@@ -2,7 +2,8 @@
 
 import { useQuery } from "@tanstack/react-query";
 
-import { honoClient, type QueryConfig, queryKeys } from "@/shared/lib";
+import type { QueryConfig } from "@/shared/lib";
+import { extractErrorMessage, queryKeys, useHonoClient } from "@/shared/lib";
 import type { TagsResponse } from "@/shared/model";
 
 /**
@@ -29,20 +30,19 @@ type UseGetAllTagsOptions = {
  * ```
  */
 export function useGetAllTags({ queryConfig = {} }: UseGetAllTagsOptions = {}) {
+	const client = useHonoClient();
+
 	return useQuery({
 		queryKey: queryKeys.tag.all(),
 		queryFn: async () => {
-			const response = await honoClient.api.tags.$get();
+			const response = await client.api.tags.$get();
 
 			if (!response.ok) {
 				const error = await response.json();
-				throw new Error(
-					(error as { error?: string }).error || "タグの取得に失敗しました"
-				);
+				throw new Error(extractErrorMessage(error, "タグの取得に失敗しました"));
 			}
 
-			const data = await response.json();
-			return data as TagsResponse;
+			return await response.json();
 		},
 		...queryConfig,
 		staleTime: 60 * 1000, // 60秒間はデータを新鮮とみなす

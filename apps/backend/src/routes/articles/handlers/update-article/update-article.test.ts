@@ -45,6 +45,12 @@ describe("PUT /articles/:id - 記事更新", () => {
 		const { createDatabaseClient } = await import("@saneatsu/db");
 		(createDatabaseClient as any).mockReturnValue(mockDb);
 
+		// 翻訳サービスのモック設定（正常な翻訳結果を返す）
+		mockTranslateArticle.mockResolvedValue({
+			title: "Updated Article",
+			content: "This is updated content.",
+		});
+
 		// 既存記事チェックのモック
 		const existingArticleMock = {
 			from: vi.fn().mockReturnValue({
@@ -63,7 +69,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 			}),
 		};
 
-		// 更新後の記事取得のモック（GEMINI_API_KEYがないので3回目のselect呼び出し）
+		// 更新後の記事取得のモック
 		const updatedArticleMock = {
 			from: vi.fn().mockReturnValue({
 				leftJoin: vi.fn().mockReturnValue({
@@ -103,15 +109,18 @@ describe("PUT /articles/:id - 記事更新", () => {
 			where: vi.fn().mockResolvedValue({}),
 		});
 
-		// insert関数のモック（タグ追加用）
+		// insert関数のモック（タグ追加用、Upsertサポート）
 		mockDb.insert = vi.fn().mockReturnValue({
-			values: vi.fn().mockResolvedValue({}),
+			values: vi.fn().mockReturnValue({
+				onConflictDoUpdate: vi.fn().mockResolvedValue({}),
+			}),
 		});
 
 		// Act
 		const client = testClient(articlesRoute, {
 			TURSO_DATABASE_URL: "test://test.db",
 			TURSO_AUTH_TOKEN: "test-token",
+			GEMINI_API_KEY: "AItest-gemini-api-key-for-testing-purposes-only",
 		}) as any;
 		const res = await client[":id"].$put({
 			param: { id: "1" },
@@ -143,9 +152,9 @@ describe("PUT /articles/:id - 記事更新", () => {
 			message: "記事が正常に更新されました",
 		});
 
-		expect(mockDb.update).toHaveBeenCalledTimes(2); // 記事と翻訳の更新
+		expect(mockDb.update).toHaveBeenCalledTimes(1); // 記事の更新
 		expect(mockDb.delete).toHaveBeenCalledTimes(1); // タグ削除
-		expect(mockDb.insert).toHaveBeenCalledTimes(1); // タグ追加
+		expect(mockDb.insert).toHaveBeenCalledTimes(3); // 日本語翻訳のUpsert + 英語翻訳のUpsert + タグ追加
 	});
 
 	it("存在しないIDの場合、404エラーを返す", async () => {
@@ -171,6 +180,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 		const client = testClient(articlesRoute, {
 			TURSO_DATABASE_URL: "test://test.db",
 			TURSO_AUTH_TOKEN: "test-token",
+			GEMINI_API_KEY: "AItest-gemini-api-key-for-testing-purposes-only",
 		}) as any;
 		const res = await client[":id"].$put({
 			param: { id: "9999" },
@@ -229,6 +239,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 		const client = testClient(articlesRoute, {
 			TURSO_DATABASE_URL: "test://test.db",
 			TURSO_AUTH_TOKEN: "test-token",
+			GEMINI_API_KEY: "AItest-gemini-api-key-for-testing-purposes-only",
 		}) as any;
 		const res = await client[":id"].$put({
 			param: { id: "1" },
@@ -326,9 +337,11 @@ describe("PUT /articles/:id - 記事更新", () => {
 				where: vi.fn().mockResolvedValue({}),
 			});
 
-			// insert関数のモック（タグ追加用）
+			// insert関数のモック（タグ追加用、Upsertサポート）
 			mockDb.insert = vi.fn().mockReturnValue({
-				values: vi.fn().mockResolvedValue({}),
+				values: vi.fn().mockReturnValue({
+					onConflictDoUpdate: vi.fn().mockResolvedValue({}),
+				}),
 			});
 
 			// Act
@@ -357,111 +370,15 @@ describe("PUT /articles/:id - 記事更新", () => {
 			// 改善後の検証: SELECTは3回のみ（既存翻訳確認がない）
 			expect(mockDb.select).toHaveBeenCalledTimes(3);
 
-			// 改善後の検証: UPDATEは3回（記事 + 日本語翻訳 + 英語翻訳）
-			expect(mockDb.update).toHaveBeenCalledTimes(3);
+			// 改善後の検証: UPDATEは1回（記事のみ）、翻訳はINSERTでUpsert
+			expect(mockDb.update).toHaveBeenCalledTimes(1);
+			expect(mockDb.insert).toHaveBeenCalledTimes(3); // タグ追加 + 日本語翻訳 + 英語翻訳
 
 			// 翻訳サービスが呼ばれたことを確認
 			expect(mockTranslateArticle).toHaveBeenCalledWith(
 				"更新された記事",
 				"これは更新された内容です。"
 			);
-		});
-
-		it("GEMINI_API_KEYが設定されていない場合、日本語の翻訳のみ更新する", async () => {
-			// Arrange
-			const { mockDb } = setupDbMocks();
-
-			const { createDatabaseClient } = await import("@saneatsu/db");
-			(createDatabaseClient as any).mockReturnValue(mockDb);
-
-			// 既存記事チェックのモック
-			const existingArticleMock = {
-				from: vi.fn().mockReturnValue({
-					where: vi.fn().mockReturnValue({
-						limit: vi.fn().mockResolvedValue([{ id: 1, slug: "old-slug" }]),
-					}),
-				}),
-			};
-
-			// スラッグ重複チェックのモック（重複なし）
-			const duplicateSlugMock = {
-				from: vi.fn().mockReturnValue({
-					where: vi.fn().mockReturnValue({
-						limit: vi.fn().mockResolvedValue([]),
-					}),
-				}),
-			};
-
-			// 更新後の記事取得のモック
-			const updatedArticleMock = {
-				from: vi.fn().mockReturnValue({
-					leftJoin: vi.fn().mockReturnValue({
-						where: vi.fn().mockReturnValue({
-							limit: vi.fn().mockResolvedValue([
-								{
-									id: 1,
-									slug: "updated-article",
-									cfImageId: null,
-									status: "published",
-									publishedAt: "2024-01-01T00:00:00.000Z",
-									updatedAt: "2024-01-02T00:00:00.000Z",
-									title: "更新された記事",
-									content: "これは更新された内容です。",
-									viewCount: 0,
-								},
-							]),
-						}),
-					}),
-				}),
-			};
-
-			mockDb.select
-				.mockReturnValueOnce(existingArticleMock) // 既存記事チェック
-				.mockReturnValueOnce(duplicateSlugMock) // スラッグ重複チェック
-				.mockReturnValueOnce(updatedArticleMock); // 更新後の記事取得
-
-			// update関数のモック
-			mockDb.update = vi.fn().mockReturnValue({
-				set: vi.fn().mockReturnValue({
-					where: vi.fn().mockResolvedValue({}),
-				}),
-			});
-
-			// delete関数のモック（タグ削除用）
-			mockDb.delete = vi.fn().mockReturnValue({
-				where: vi.fn().mockResolvedValue({}),
-			});
-
-			// insert関数のモック（タグ追加用）
-			mockDb.insert = vi.fn().mockReturnValue({
-				values: vi.fn().mockResolvedValue({}),
-			});
-
-			// Act
-			const client = testClient(articlesRoute, {
-				TURSO_DATABASE_URL: "test://test.db",
-				TURSO_AUTH_TOKEN: "test-token",
-				// GEMINI_API_KEY未設定
-			}) as any;
-			const res = await client[":id"].$put({
-				param: { id: "1" },
-				json: {
-					title: "更新された記事",
-					slug: "updated-article",
-					content: "これは更新された内容です。",
-					status: "published",
-					tagIds: [1, 2],
-				},
-			});
-
-			// Assert
-			expect(res.status).toBe(200);
-
-			// UPDATEは2回のみ（記事 + 日本語翻訳のみ）
-			expect(mockDb.update).toHaveBeenCalledTimes(2);
-
-			// 翻訳サービスは呼ばれない
-			expect(mockTranslateArticle).not.toHaveBeenCalled();
 		});
 
 		it("翻訳が失敗しても日本語の翻訳は更新され、処理は続行される", async () => {
@@ -532,9 +449,11 @@ describe("PUT /articles/:id - 記事更新", () => {
 				where: vi.fn().mockResolvedValue({}),
 			});
 
-			// insert関数のモック（タグ追加用）
+			// insert関数のモック（タグ追加用、Upsertサポート）
 			mockDb.insert = vi.fn().mockReturnValue({
-				values: vi.fn().mockResolvedValue({}),
+				values: vi.fn().mockReturnValue({
+					onConflictDoUpdate: vi.fn().mockResolvedValue({}),
+				}),
 			});
 
 			// Act
@@ -558,8 +477,9 @@ describe("PUT /articles/:id - 記事更新", () => {
 			expect(res.status).toBe(200);
 
 			// 翻訳が失敗しても、記事更新と日本語翻訳は成功
-			// UPDATEは2回（記事 + 日本語翻訳のみ、英語翻訳は失敗したのでスキップ）
-			expect(mockDb.update).toHaveBeenCalledTimes(2);
+			// UPDATEは1回（記事のみ）、日本語翻訳はINSERTでUpsert、英語翻訳は失敗したのでスキップ
+			expect(mockDb.update).toHaveBeenCalledTimes(1);
+			expect(mockDb.insert).toHaveBeenCalledTimes(2); // タグ追加 + 日本語翻訳
 		});
 
 		describe("H1見出しバリデーション", () => {
@@ -574,6 +494,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 					const client = testClient(articlesRoute, {
 						TURSO_DATABASE_URL: "test://test.db",
 						TURSO_AUTH_TOKEN: "test-token",
+						GEMINI_API_KEY: "AItest-gemini-api-key-for-testing-purposes-only",
 					}) as any;
 					const res = await client[":id"].$put({
 						param: { id: "1" },
@@ -600,6 +521,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 					const client = testClient(articlesRoute, {
 						TURSO_DATABASE_URL: "test://test.db",
 						TURSO_AUTH_TOKEN: "test-token",
+						GEMINI_API_KEY: "AItest-gemini-api-key-for-testing-purposes-only",
 					}) as any;
 					const res = await client[":id"].$put({
 						param: { id: "1" },
@@ -626,6 +548,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 					const client = testClient(articlesRoute, {
 						TURSO_DATABASE_URL: "test://test.db",
 						TURSO_AUTH_TOKEN: "test-token",
+						GEMINI_API_KEY: "AItest-gemini-api-key-for-testing-purposes-only",
 					}) as any;
 					const res = await client[":id"].$put({
 						param: { id: "1" },
@@ -652,6 +575,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 					const client = testClient(articlesRoute, {
 						TURSO_DATABASE_URL: "test://test.db",
 						TURSO_AUTH_TOKEN: "test-token",
+						GEMINI_API_KEY: "AItest-gemini-api-key-for-testing-purposes-only",
 					}) as any;
 					const res = await client[":id"].$put({
 						param: { id: "1" },
@@ -732,13 +656,16 @@ describe("PUT /articles/:id - 記事更新", () => {
 					});
 
 					mockDb.insert = vi.fn().mockReturnValue({
-						values: vi.fn().mockResolvedValue({}),
+						values: vi.fn().mockReturnValue({
+							onConflictDoUpdate: vi.fn().mockResolvedValue({}),
+						}),
 					});
 
 					// Act
 					const client = testClient(articlesRoute, {
 						TURSO_DATABASE_URL: "test://test.db",
 						TURSO_AUTH_TOKEN: "test-token",
+						GEMINI_API_KEY: "AItest-gemini-api-key-for-testing-purposes-only",
 					}) as any;
 					const res = await client[":id"].$put({
 						param: { id: "1" },
@@ -813,13 +740,16 @@ describe("PUT /articles/:id - 記事更新", () => {
 					});
 
 					mockDb.insert = vi.fn().mockReturnValue({
-						values: vi.fn().mockResolvedValue({}),
+						values: vi.fn().mockReturnValue({
+							onConflictDoUpdate: vi.fn().mockResolvedValue({}),
+						}),
 					});
 
 					// Act
 					const client = testClient(articlesRoute, {
 						TURSO_DATABASE_URL: "test://test.db",
 						TURSO_AUTH_TOKEN: "test-token",
+						GEMINI_API_KEY: "AItest-gemini-api-key-for-testing-purposes-only",
 					}) as any;
 					const res = await client[":id"].$put({
 						param: { id: "1" },
@@ -894,13 +824,16 @@ describe("PUT /articles/:id - 記事更新", () => {
 					});
 
 					mockDb.insert = vi.fn().mockReturnValue({
-						values: vi.fn().mockResolvedValue({}),
+						values: vi.fn().mockReturnValue({
+							onConflictDoUpdate: vi.fn().mockResolvedValue({}),
+						}),
 					});
 
 					// Act
 					const client = testClient(articlesRoute, {
 						TURSO_DATABASE_URL: "test://test.db",
 						TURSO_AUTH_TOKEN: "test-token",
+						GEMINI_API_KEY: "AItest-gemini-api-key-for-testing-purposes-only",
 					}) as any;
 					const res = await client[":id"].$put({
 						param: { id: "1" },
@@ -975,13 +908,16 @@ describe("PUT /articles/:id - 記事更新", () => {
 					});
 
 					mockDb.insert = vi.fn().mockReturnValue({
-						values: vi.fn().mockResolvedValue({}),
+						values: vi.fn().mockReturnValue({
+							onConflictDoUpdate: vi.fn().mockResolvedValue({}),
+						}),
 					});
 
 					// Act
 					const client = testClient(articlesRoute, {
 						TURSO_DATABASE_URL: "test://test.db",
 						TURSO_AUTH_TOKEN: "test-token",
+						GEMINI_API_KEY: "AItest-gemini-api-key-for-testing-purposes-only",
 					}) as any;
 					const res = await client[":id"].$put({
 						param: { id: "1" },

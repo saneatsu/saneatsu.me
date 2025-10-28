@@ -33,10 +33,8 @@ export function useTagDetection({
 		let isComposing = false;
 
 		const checkTag = (_source: string) => {
-			const textarea = document.querySelector(
-				".w-md-editor-text-input"
-			) as HTMLTextAreaElement;
-			if (!textarea) return;
+			const textarea = document.querySelector(".w-md-editor-text-input");
+			if (!textarea || !(textarea instanceof HTMLTextAreaElement)) return;
 
 			// textareaの値を直接使用
 			const value = textarea.value;
@@ -183,27 +181,28 @@ export function useTagDetection({
 		};
 
 		// 初期のtextareaを探す
-		const textarea = document.querySelector(
-			".w-md-editor-text-input"
-		) as HTMLTextAreaElement;
+		const textarea = document.querySelector(".w-md-editor-text-input");
 
-		if (textarea) {
+		if (textarea instanceof HTMLTextAreaElement) {
 			attachListeners(textarea);
 		}
 
 		// MutationObserverでtextareaの出現を監視
 		const observer = new MutationObserver(() => {
-			const newTextarea = document.querySelector(
-				".w-md-editor-text-input"
-			) as HTMLTextAreaElement;
-			if (newTextarea && !newTextarea.dataset.tagListener) {
+			const newTextarea = document.querySelector(".w-md-editor-text-input");
+			if (
+				newTextarea instanceof HTMLTextAreaElement &&
+				!newTextarea.dataset.tagListener
+			) {
 				// 既存のリスナーをクリーンアップ
 				const existingTextareas = document.querySelectorAll(
 					".w-md-editor-text-input[data-tag-listener]"
 				);
 				existingTextareas.forEach((ta) => {
-					detachListeners(ta as HTMLTextAreaElement);
-					delete (ta as HTMLTextAreaElement).dataset.tagListener;
+					if (ta instanceof HTMLTextAreaElement) {
+						detachListeners(ta);
+						delete ta.dataset.tagListener;
+					}
 				});
 
 				newTextarea.dataset.tagListener = "true";
@@ -215,10 +214,8 @@ export function useTagDetection({
 
 		return () => {
 			observer.disconnect();
-			const currentTextarea = document.querySelector(
-				".w-md-editor-text-input"
-			) as HTMLTextAreaElement;
-			if (currentTextarea) {
+			const currentTextarea = document.querySelector(".w-md-editor-text-input");
+			if (currentTextarea instanceof HTMLTextAreaElement) {
 				detachListeners(currentTextarea);
 			}
 			// documentレベルのイベントリスナーもクリーンアップ

@@ -88,9 +88,8 @@ export function TagSuggestionsPopover({
 			// Ctrl+P: 上へ移動
 			if (e.ctrlKey && (e.key === "p" || e.key === "P")) {
 				if (
-					e.target &&
-					((e.target as HTMLElement).tagName === "TEXTAREA" ||
-						(e.target as HTMLElement).closest(".w-md-editor"))
+					e.target instanceof HTMLElement &&
+					(e.target.tagName === "TEXTAREA" || e.target.closest(".w-md-editor"))
 				) {
 					e.preventDefault();
 					e.stopPropagation();
@@ -104,9 +103,8 @@ export function TagSuggestionsPopover({
 			// Ctrl+N: 下へ移動
 			if (e.ctrlKey && (e.key === "n" || e.key === "N")) {
 				if (
-					e.target &&
-					((e.target as HTMLElement).tagName === "TEXTAREA" ||
-						(e.target as HTMLElement).closest(".w-md-editor"))
+					e.target instanceof HTMLElement &&
+					(e.target.tagName === "TEXTAREA" || e.target.closest(".w-md-editor"))
 				) {
 					e.preventDefault();
 					e.stopPropagation();

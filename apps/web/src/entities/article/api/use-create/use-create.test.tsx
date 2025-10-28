@@ -10,19 +10,19 @@ import type {
 
 import { useCreate } from "./use-create";
 
-// honoClientのモック
+// useHonoClientのモック
 const { mockPost } = vi.hoisted(() => ({
 	mockPost: vi.fn(),
 }));
 
 vi.mock("@/shared/lib", () => ({
-	honoClient: {
+	useHonoClient: () => ({
 		api: {
 			articles: {
 				$post: mockPost,
 			},
 		},
-	},
+	}),
 	queryKeys: {
 		article: {
 			all: () => ["articles"],

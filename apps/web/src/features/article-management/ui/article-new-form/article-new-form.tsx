@@ -339,7 +339,7 @@ export function ArticleNewForm() {
 						options={
 							tagsData?.data.map((tag) => ({
 								value: String(tag.id),
-								label: tag.translations.ja,
+								label: tag.translations.ja || tag.slug, // FIXME:
 							})) || []
 						}
 						placeholder="タグを選択してください"

@@ -45,21 +45,19 @@ export const envSchema = z.object({
 	CLOUDFLARE_API_TOKEN: z.string().min(1),
 
 	/**
-	 * Gemini API Key（オプショナル）
+	 * Gemini API Key（必須）
 	 *
 	 * @description
 	 * 記事の自動翻訳機能で使用する。
-	 * 未設定の場合は翻訳機能が動作しない。
 	 * プレースホルダー値（"your-"で始まる値）は起動時にエラーになる。
 	 *
 	 * API keyの取得方法: https://makersuite.google.com/app/apikey
 	 */
 	GEMINI_API_KEY: z
 		.string()
+		.min(1, "GEMINI_API_KEYは必須です")
 		.refine(
 			(val) => {
-				// 未設定または空文字列はOK（optional）
-				if (!val) return true;
 				// プレースホルダー値を拒否
 				if (val.includes("your-")) return false;
 				// Gemini API keyは "AI" で始まる（形式チェック）
@@ -67,10 +65,9 @@ export const envSchema = z.object({
 			},
 			{
 				message:
-					"GEMINI_API_KEY must be a valid Gemini API key (starts with 'AI') or left empty. Get your API key from: https://makersuite.google.com/app/apikey",
+					"GEMINI_API_KEYは有効なGemini APIキー（'AI'で始まる）である必要があります。APIキーの取得方法: https://makersuite.google.com/app/apikey",
 			}
-		)
-		.optional(),
+		),
 
 	/**
 	 * CORS許可オリジン（オプショナル）

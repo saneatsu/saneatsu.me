@@ -1,8 +1,6 @@
+import type { Locale } from "@saneatsu/i18n";
+import { defaultLocale, locales } from "@saneatsu/i18n";
 import { getRequestConfig } from "next-intl/server";
-import { defaultLocale } from "@/shared/config/locale-constants";
-
-const locales = ["ja", "en"] as const;
-type Locale = (typeof locales)[number];
 
 function isValidLocale(locale: string): locale is Locale {
 	return locales.includes(locale as Locale);

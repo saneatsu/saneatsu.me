@@ -1,12 +1,11 @@
-export { useArticle } from "./api/use-article/use-article";
 export { useCheckSlug } from "./api/use-check-slug/use-check-slug";
 export { useCreate } from "./api/use-create/use-create";
 export { useDelete } from "./api/use-delete/use-delete";
 export { useDeleteImage } from "./api/use-delete-image/use-delete-image";
 export { useDeleteThumbnail } from "./api/use-delete-thumbnail/use-delete-thumbnail";
 export { useGetAllArticles } from "./api/use-get-all/use-get-all";
+export { useGetArticleBySlug } from "./api/use-get-article-by-slug/use-get-article-by-slug";
 export { useGetById } from "./api/use-get-by-id/use-get-by-id";
-export { useGetBySlug } from "./api/use-get-by-slug/use-get-by-slug";
 export { useGetRelated } from "./api/use-get-related/use-get-related";
 export {
 	type SuggestionItem,

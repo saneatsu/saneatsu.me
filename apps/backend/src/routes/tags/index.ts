@@ -13,10 +13,11 @@ import { updateTagRoute } from "./handlers/update-tag/update-tag.openapi";
 
 /**
  * タグ関連のAPIルート
+ *
+ * TypeScriptの型推論を正しく動作させるため、チェーンメソッドパターンを使用している。
  */
-export const tagsRoute = new OpenAPIHono<{ Bindings: Env }>();
-
-tagsRoute.openapi(getAllTagsRoute, getAllTags);
-tagsRoute.openapi(createTagRoute, createTag);
-tagsRoute.openapi(updateTagRoute, updateTag);
-tagsRoute.openapi(deleteTagRoute, deleteTag);
+export const tagsRoute = new OpenAPIHono<{ Bindings: Env }>()
+	.openapi(getAllTagsRoute, getAllTags)
+	.openapi(createTagRoute, createTag)
+	.openapi(updateTagRoute, updateTag)
+	.openapi(deleteTagRoute, deleteTag);

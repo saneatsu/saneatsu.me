@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle, Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -12,6 +11,7 @@ import { useCheckSlug, useUpdate } from "@/entities/article";
 import { useGetAllTags } from "@/entities/tag";
 import { ArticleMarkdownEditor } from "@/features/article-editor";
 import { getImageUrl, useDebounce } from "@/shared/lib";
+import type { Option } from "@/shared/ui";
 import {
 	Alert,
 	AlertDescription,
@@ -21,7 +21,9 @@ import {
 	Input,
 	Label,
 	MultipleSelector,
-	type Option,
+	Tabs,
+	TabsList,
+	TabsTrigger,
 } from "@/shared/ui";
 
 import { ArticleStatusSelector } from "../article-status-selector/article-status-selector";
@@ -59,12 +61,22 @@ interface ArticleEditFormProps {
 	/** 編集対象の記事データ */
 	article: {
 		id: number;
-		title: string;
+		title: string | null;
 		slug: string;
-		content: string;
-		status: string;
+		content: string | null;
+		status: "draft" | "published" | "archived";
 		publishedAt: string | null;
 		cfImageId: string | null;
+		translations?: {
+			ja: {
+				title: string | null;
+				content: string | null;
+			};
+			en: {
+				title: string | null;
+				content: string | null;
+			};
+		};
 		tags: Array<{
 			id: number;
 			slug: string;
@@ -92,6 +104,9 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 	const [markdownValue, setMarkdownValue] = useState(article.content || "");
 	const [formError, setFormError] = useState<string>("");
 	const [thumbnailError, setThumbnailError] = useState<string>("");
+	const [warnings, setWarnings] = useState<
+		Array<{ code: string; message: string }>
+	>([]);
 	const [selectedTags, setSelectedTags] = useState<Option[]>(
 		article.tags.map((tag) => ({
 			value: String(tag.id),
@@ -102,7 +117,11 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 		article.publishedAt ? new Date(article.publishedAt) : undefined
 	);
 
-	const router = useRouter();
+	// 英語コンテンツを取得（プレビュー表示用）
+	const enContent = article.translations?.en.content || "";
+
+	// タイトルの表示言語
+	const [titleLanguage, setTitleLanguage] = useState<"ja" | "en">("ja");
 
 	/**
 	 * サムネイルURLを生成
@@ -130,7 +149,7 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 			title: article.title || "",
 			slug: article.slug || "",
 			content: article.content || "",
-			status: article.status as "draft" | "published" | "archived",
+			status: article.status,
 		},
 	});
 
@@ -162,6 +181,7 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 	const onSubmit = async (data: ArticleEditForm) => {
 		try {
 			setFormError(""); // エラーメッセージをクリア
+			setWarnings([]); // 警告メッセージをクリア
 
 			// publishedAtがある場合、ISO 8601形式に変換
 			let publishedAtISO: string | undefined;
@@ -173,7 +193,7 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 			// タグIDを抽出
 			const tagIds = selectedTags.map((tag) => Number.parseInt(tag.value));
 
-			await updateMutation.mutateAsync({
+			const response = await updateMutation.mutateAsync({
 				id: article.id,
 				data: {
 					...data,
@@ -184,7 +204,15 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 			});
 
 			toast.success("記事を更新しました");
-			router.push("/admin/articles");
+
+			if (response.warnings && response.warnings.length > 0) {
+				// 警告メッセージがあれば表示
+				setWarnings(response.warnings);
+				// 各警告をtoastでも表示
+				for (const warning of response.warnings) {
+					toast.warning(warning.message);
+				}
+			}
 		} catch (error) {
 			// エラーメッセージを表示
 			const errorMessage =
@@ -226,6 +254,19 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 				</Alert>
 			)}
 
+			{/* 警告メッセージ表示 */}
+			{warnings.length > 0 && (
+				<Alert variant="warning">
+					<AlertCircle className="h-4 w-4" />
+					<AlertTitle>警告</AlertTitle>
+					<AlertDescription>
+						{warnings.map((warning) => (
+							<p key={warning.code}>{warning.message}</p>
+						))}
+					</AlertDescription>
+				</Alert>
+			)}
+
 			{/* サムネイル画像 */}
 			<ArticleThumbnailUploader
 				articleId={article.id}
@@ -235,13 +276,38 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 
 			{/* タイトル */}
 			<div className="space-y-2">
-				<Label htmlFor="title">タイトル *</Label>
-				<Input
-					id="title"
-					{...register("title")}
-					placeholder="記事のタイトルを入力"
-				/>
-				{errors.title && (
+				<div className="flex items-center justify-between">
+					<Label htmlFor="title">タイトル *</Label>
+					<Tabs
+						value={titleLanguage}
+						onValueChange={(value) => setTitleLanguage(value as "ja" | "en")}
+					>
+						<TabsList className="h-8">
+							<TabsTrigger value="ja" className="text-xs">
+								日本語
+							</TabsTrigger>
+							<TabsTrigger value="en" className="text-xs">
+								English
+							</TabsTrigger>
+						</TabsList>
+					</Tabs>
+				</div>
+				{titleLanguage === "ja" ? (
+					<Input
+						key="title-ja"
+						id="title"
+						{...register("title")}
+						placeholder="記事のタイトルを入力"
+					/>
+				) : (
+					<Input
+						key="title-en"
+						value={article.translations?.en?.title ?? "(未設定)"}
+						readOnly
+						className="bg-muted"
+					/>
+				)}
+				{titleLanguage === "ja" && errors.title && (
 					<p className="text-sm text-destructive">{errors.title.message}</p>
 				)}
 			</div>
@@ -317,7 +383,7 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 					options={
 						tagsData?.data.map((tag) => ({
 							value: String(tag.id),
-							label: tag.translations.ja,
+							label: tag.translations.ja || tag.slug,
 						})) || []
 					}
 					placeholder="タグを選択してください"
@@ -347,6 +413,7 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 						setValue={setValue as (name: string, value: string) => void}
 						height={600}
 						language="ja"
+						enContent={enContent}
 					/>
 				</div>
 				{errors.content && (

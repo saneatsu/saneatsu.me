@@ -53,7 +53,7 @@ describe("Unit Test", () => {
 	describe("GET /", () => {
 		it("ルートエンドポイントが正しいレスポンスを返す", async () => {
 			// Act
-			// @ts-expect-error testClientの型推論の問題
+			// @ts-expect-error testClientはAppTypeのルート定義を完全に推論できないため
 			const res = await testClient(app, testEnv).$get({});
 
 			// Assert
@@ -69,7 +69,6 @@ describe("Unit Test", () => {
 	describe("GET /api/health", () => {
 		it("ヘルスチェックエンドポイントが正しいレスポンスを返す", async () => {
 			// Act
-			// @ts-expect-error testClientの型推論の問題
 			const res = await testClient(app, testEnv).api.health.$get({});
 
 			// Assert
@@ -93,7 +92,7 @@ describe("Unit Test", () => {
 	describe("404 Handler", () => {
 		it("存在しないルートへのアクセスで404エラーを返す", async () => {
 			// Act
-			// @ts-expect-error testClientの型推論の問題
+			// @ts-expect-error 404ハンドラーのテストのため意図的に存在しないルートにアクセス
 			const res = await testClient(app, testEnv).api["non-existent-route"].$get(
 				{}
 			);
@@ -119,7 +118,7 @@ describe("Unit Test", () => {
 			});
 
 			// Act
-			// @ts-expect-error testClientの型推論の問題
+			// @ts-expect-error テスト用に動的に追加したルートのため型定義に存在しない
 			const res = await testClient(app, testEnv).api["error-test"].$get({});
 
 			// Assert
@@ -160,7 +159,7 @@ describe("Integration Test", () => {
 	describe("Middleware", () => {
 		it("CORSヘッダーが正しく設定される", async () => {
 			// Act
-			// @ts-expect-error testClientの型推論の問題
+			// @ts-expect-error testClientはAppTypeのルート定義を完全に推論できないため
 			const res = await testClient(app, testEnv).$get({});
 
 			// Assert
@@ -169,7 +168,6 @@ describe("Integration Test", () => {
 
 		it("JSON形式のレスポンスがpretty printされる", async () => {
 			// Act
-			// @ts-expect-error testClientの型推論の問題
 			const res = await testClient(app, testEnv).api.health.$get({});
 
 			// Assert

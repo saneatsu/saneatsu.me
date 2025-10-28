@@ -70,7 +70,7 @@ const ArticleSchema = z.object({
 		example: "image-id-5678",
 		description: "Cloudflare画像ID",
 	}),
-	status: z.string().openapi({
+	status: z.enum(["draft", "published", "archived"]).openapi({
 		example: "published",
 		description: "記事のステータス",
 	}),
@@ -93,6 +93,20 @@ const ArticleSchema = z.object({
 	viewCount: z.number().int().openapi({
 		example: 127,
 		description: "記事の閲覧数（言語ごと）",
+	}),
+});
+
+/**
+ * 警告スキーマ
+ */
+const WarningSchema = z.object({
+	code: z.string().openapi({
+		example: "TRANSLATION_FAILED",
+		description: "警告コード",
+	}),
+	message: z.string().openapi({
+		example: "英語への翻訳に失敗しました",
+		description: "警告メッセージ",
 	}),
 });
 
@@ -142,6 +156,10 @@ export const updateArticleRoute = createRoute({
 						message: z.string().openapi({
 							example: "記事が正常に更新されました",
 							description: "更新成功メッセージ",
+						}),
+						warnings: z.array(WarningSchema).optional().openapi({
+							description:
+								"警告メッセージの配列（翻訳失敗などの非致命的なエラー）",
 						}),
 					}),
 				},
