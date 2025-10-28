@@ -45,6 +45,12 @@ describe("PUT /articles/:id - 記事更新", () => {
 		const { createDatabaseClient } = await import("@saneatsu/db");
 		(createDatabaseClient as any).mockReturnValue(mockDb);
 
+		// 翻訳サービスのモック設定（正常な翻訳結果を返す）
+		mockTranslateArticle.mockResolvedValue({
+			title: "Updated Article",
+			content: "This is updated content.",
+		});
+
 		// 既存記事チェックのモック
 		const existingArticleMock = {
 			from: vi.fn().mockReturnValue({
@@ -63,7 +69,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 			}),
 		};
 
-		// 更新後の記事取得のモック（GEMINI_API_KEYがないので3回目のselect呼び出し）
+		// 更新後の記事取得のモック
 		const updatedArticleMock = {
 			from: vi.fn().mockReturnValue({
 				leftJoin: vi.fn().mockReturnValue({
@@ -148,7 +154,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 
 		expect(mockDb.update).toHaveBeenCalledTimes(1); // 記事の更新
 		expect(mockDb.delete).toHaveBeenCalledTimes(1); // タグ削除
-		expect(mockDb.insert).toHaveBeenCalledTimes(2); // タグ追加 + 日本語翻訳のUpsert
+		expect(mockDb.insert).toHaveBeenCalledTimes(3); // 日本語翻訳のUpsert + 英語翻訳のUpsert + タグ追加
 	});
 
 	it("存在しないIDの場合、404エラーを返す", async () => {
