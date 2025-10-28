@@ -98,7 +98,6 @@ export const PreviewMode: Story = {
 				value={value}
 				onChange={() => {}}
 				setValue={mockSetValue}
-				preview="preview"
 				language="ja"
 			/>
 		);
@@ -125,7 +124,6 @@ export const EditMode: Story = {
 				value={value}
 				onChange={setValue}
 				setValue={mockSetValue}
-				preview="edit"
 				language="ja"
 			/>
 		);
