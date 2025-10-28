@@ -70,7 +70,7 @@ const ArticleSchema = z.object({
 		example: "image-id-5678",
 		description: "Cloudflare画像ID",
 	}),
-	status: z.string().openapi({
+	status: z.enum(["draft", "published", "archived"]).openapi({
 		example: "published",
 		description: "記事のステータス",
 	}),
