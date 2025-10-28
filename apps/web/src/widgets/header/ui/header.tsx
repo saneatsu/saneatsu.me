@@ -20,14 +20,17 @@ export function Header() {
 
 	/**
 	 * 指定されたパスがアクティブかどうかを判定する
+	 *
+	 * @param path - ロケールを含まない相対パス（例: "/", "/blog", "/about"）
 	 */
 	const isActivePath = (path: string) => {
-		if (path === `/${locale}`) {
-			// ホームページの場合は完全一致
+		if (path === "/") {
+			// ホームページの場合は完全一致（ロケールのみのパス）
 			return pathname === `/${locale}`;
 		}
 		// その他のページは前方一致（サブページも含む）
-		return pathname.startsWith(path);
+		// path に locale を追加してチェック
+		return pathname.startsWith(`/${locale}${path}`);
 	};
 
 	/**
@@ -46,27 +49,19 @@ export function Header() {
 				<div className="max-w-7xl mx-auto flex h-14 items-center">
 					<div className="mr-4 flex">
 						<Link
-							href={`/${locale}`}
+							href="/"
 							className={cn(
 								"mr-6 flex items-center space-x-2 transition-colors hover:text-foreground/80",
-								isActivePath(`/${locale}`)
-									? "text-foreground"
-									: "text-foreground/90"
+								isActivePath("/") ? "text-foreground" : "text-foreground/90"
 							)}
 						>
 							<span className="font-bold">saneatsu.me</span>
 						</Link>
 						<nav className="flex items-center space-x-6 text-sm font-medium">
-							<Link
-								href={`/${locale}/blog`}
-								className={getNavLinkClassName(`/${locale}/blog`)}
-							>
+							<Link href="/blog" className={getNavLinkClassName("/blog")}>
 								Blog
 							</Link>
-							<Link
-								href={`/${locale}/about`}
-								className={getNavLinkClassName(`/${locale}/about`)}
-							>
+							<Link href="/about" className={getNavLinkClassName("/about")}>
 								{t("about")}
 							</Link>
 						</nav>
