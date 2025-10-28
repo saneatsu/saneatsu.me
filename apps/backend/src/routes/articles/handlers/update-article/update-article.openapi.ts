@@ -97,6 +97,20 @@ const ArticleSchema = z.object({
 });
 
 /**
+ * 警告スキーマ
+ */
+const WarningSchema = z.object({
+	code: z.string().openapi({
+		example: "TRANSLATION_FAILED",
+		description: "警告コード",
+	}),
+	message: z.string().openapi({
+		example: "英語への翻訳に失敗しました",
+		description: "警告メッセージ",
+	}),
+});
+
+/**
  * エラースキーマ
  */
 const ErrorSchema = z.object({
@@ -142,6 +156,10 @@ export const updateArticleRoute = createRoute({
 						message: z.string().openapi({
 							example: "記事が正常に更新されました",
 							description: "更新成功メッセージ",
+						}),
+						warnings: z.array(WarningSchema).optional().openapi({
+							description:
+								"警告メッセージの配列（翻訳失敗などの非致命的なエラー）",
 						}),
 					}),
 				},

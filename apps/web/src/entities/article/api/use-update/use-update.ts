@@ -5,6 +5,33 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { extractErrorMessage, useHonoClient } from "@/shared/lib";
 
 /**
+ * 警告メッセージの型
+ */
+type Warning = {
+	code: string;
+	message: string;
+};
+
+/**
+ * 記事更新レスポンスの型
+ */
+type UpdateArticleResponse = {
+	data: {
+		id: number;
+		slug: string;
+		cfImageId: string | null;
+		status: string;
+		publishedAt: string | null;
+		updatedAt: string;
+		title: string | null;
+		content: string | null;
+		viewCount: number;
+	};
+	message: string;
+	warnings?: Warning[];
+};
+
+/**
  * 記事更新用フック
  *
  * @description
@@ -15,11 +42,10 @@ export const useUpdate = () => {
 	const queryClient = useQueryClient();
 	const client = useHonoClient();
 
-	return useMutation({
-		mutationFn: async ({
-			id,
-			data,
-		}: {
+	return useMutation<
+		UpdateArticleResponse,
+		Error,
+		{
 			id: number;
 			data: {
 				title: string;
@@ -29,7 +55,9 @@ export const useUpdate = () => {
 				publishedAt?: string;
 				tagIds?: number[];
 			};
-		}) => {
+		}
+	>({
+		mutationFn: async ({ id, data }) => {
 			const response = await client.api.articles[":id"].$put({
 				param: { id: String(id) },
 				json: data,
@@ -44,7 +72,7 @@ export const useUpdate = () => {
 				throw new Error(errorMessage);
 			}
 
-			return response.json();
+			return await response.json();
 		},
 		onSuccess: () => {
 			// 記事一覧と記事詳細のキャッシュをクリア

@@ -104,6 +104,9 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 	const [markdownValue, setMarkdownValue] = useState(article.content || "");
 	const [formError, setFormError] = useState<string>("");
 	const [thumbnailError, setThumbnailError] = useState<string>("");
+	const [warnings, setWarnings] = useState<
+		Array<{ code: string; message: string }>
+	>([]);
 	const [selectedTags, setSelectedTags] = useState<Option[]>(
 		article.tags.map((tag) => ({
 			value: String(tag.id),
@@ -178,6 +181,7 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 	const onSubmit = async (data: ArticleEditForm) => {
 		try {
 			setFormError(""); // エラーメッセージをクリア
+			setWarnings([]); // 警告メッセージをクリア
 
 			// publishedAtがある場合、ISO 8601形式に変換
 			let publishedAtISO: string | undefined;
@@ -189,7 +193,7 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 			// タグIDを抽出
 			const tagIds = selectedTags.map((tag) => Number.parseInt(tag.value));
 
-			await updateMutation.mutateAsync({
+			const response = await updateMutation.mutateAsync({
 				id: article.id,
 				data: {
 					...data,
@@ -200,6 +204,15 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 			});
 
 			toast.success("記事を更新しました");
+
+			if (response.warnings && response.warnings.length > 0) {
+				// 警告メッセージがあれば表示
+				setWarnings(response.warnings);
+				// 各警告をtoastでも表示
+				for (const warning of response.warnings) {
+					toast.warning(warning.message);
+				}
+			}
 		} catch (error) {
 			// エラーメッセージを表示
 			const errorMessage =
@@ -238,6 +251,19 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 					<AlertCircle className="h-4 w-4" />
 					<AlertTitle>サムネイル画像エラー</AlertTitle>
 					<AlertDescription>{thumbnailError}</AlertDescription>
+				</Alert>
+			)}
+
+			{/* 警告メッセージ表示 */}
+			{warnings.length > 0 && (
+				<Alert variant="warning">
+					<AlertCircle className="h-4 w-4" />
+					<AlertTitle>警告</AlertTitle>
+					<AlertDescription>
+						{warnings.map((warning, index) => (
+							<p key={index}>{warning.message}</p>
+						))}
+					</AlertDescription>
 				</Alert>
 			)}
 

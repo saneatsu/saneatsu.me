@@ -122,6 +122,8 @@ export const updateArticle: Handler = async (c) => {
 			});
 
 		// 7. 英語への自動翻訳を実行（非同期）
+		const warnings: Array<{ code: string; message: string }> = [];
+
 		try {
 			const translationService = createTranslationService({
 				GEMINI_API_KEY: c.env.GEMINI_API_KEY,
@@ -154,15 +156,24 @@ export const updateArticle: Handler = async (c) => {
 							content: translatedArticle.content,
 						},
 					});
-				console.log(`Article ${articleId} translated successfully`);
 			} else {
-				console.warn(
-					`Translation failed for article ${articleId}, continuing without English translation update`
-				);
+				warnings.push({
+					code: "TRANSLATION_FAILED",
+					message:
+						"英語への自動翻訳に失敗しました。記事の更新は正常に完了しています。",
+				});
 			}
 		} catch (error) {
 			// 翻訳エラーが発生してもメインの処理は続行
 			console.error(`Translation error for article ${articleId}:`, error);
+			const errorMessage =
+				error instanceof Error
+					? error.message
+					: "英語への自動翻訳中にエラーが発生しました";
+			warnings.push({
+				code: "TRANSLATION_FAILED",
+				message: `${errorMessage}。記事の更新は正常に完了しています。`,
+			});
 		}
 
 		// 8. タグとの関連付けを更新
@@ -208,6 +219,7 @@ export const updateArticle: Handler = async (c) => {
 			{
 				data: updatedArticle[0],
 				message: "記事が正常に更新されました",
+				...(warnings.length > 0 && { warnings }),
 			},
 			200
 		);
