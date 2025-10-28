@@ -40,6 +40,8 @@ interface ArticleMarkdownEditorProps {
 	className?: string;
 	/** 言語（Wiki Link用） */
 	language?: "ja" | "en";
+	/** 英語コンテンツ（プレビュー表示用） */
+	enContent?: string;
 }
 
 /**
@@ -62,6 +64,7 @@ export function ArticleMarkdownEditor({
 	height = 500,
 	className = "",
 	language = "ja",
+	enContent,
 }: ArticleMarkdownEditorProps) {
 	const { theme } = useTheme();
 	const editorRef = useRef<HTMLDivElement>(null);
@@ -370,7 +373,9 @@ export function ArticleMarkdownEditor({
 					{/* プレビューコンテンツ */}
 					<div ref={previewRef} className="flex-1 overflow-y-auto p-4">
 						<MarkdownPreview
-							content={value}
+							content={
+								previewLanguage === "en" && enContent ? enContent : value
+							}
 							language={previewLanguage}
 							imageComponent="article"
 							headings={headings}
