@@ -385,7 +385,6 @@ export function ArticleNewForm() {
 							onChange={handleEditorChange}
 							setValue={setValue as (name: string, value: string) => void}
 							height={500}
-							preview="live"
 							language="ja"
 						/>
 					</div>
