@@ -15,6 +15,13 @@
 			"when": 1761201196773,
 			"tag": "0001_move_view_count_to_articles",
 			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "6",
+			"when": 1761639855071,
+			"tag": "0002_add_unique_article_language",
+			"breakpoints": true
 		}
 	]
 }

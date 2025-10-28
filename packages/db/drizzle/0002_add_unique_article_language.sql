@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX `article_translations_article_id_language_unique` ON `article_translations` (`article_id`,`language`);
