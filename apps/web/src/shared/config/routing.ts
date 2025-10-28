@@ -1,6 +1,5 @@
+import { defaultLocale, locales } from "@saneatsu/i18n";
 import { defineRouting } from "next-intl/routing";
-
-import { defaultLocale } from "./locale-constants";
 
 /**
  * next-intl のルーティング設定
@@ -16,7 +15,7 @@ import { defaultLocale } from "./locale-constants";
  *   - 'never': URL にロケール接頭辞を表示しない
  */
 export const routing = defineRouting({
-	locales: ["ja", "en"],
+	locales,
 	defaultLocale,
 	localePrefix: "always", // 常にロケールプレフィックスを含める
 });
