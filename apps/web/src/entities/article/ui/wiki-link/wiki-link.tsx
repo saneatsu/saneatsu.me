@@ -1,10 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import type { ComponentPropsWithoutRef } from "react";
 
 import { useGetArticleBySlug } from "@/entities/article";
-import { cn } from "@/shared/lib";
+import { cn, Link } from "@/shared/lib";
 
 /**
  * Wiki Linkコンポーネントのプロパティ

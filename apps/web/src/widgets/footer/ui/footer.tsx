@@ -1,9 +1,9 @@
-import Link from "next/link";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
+
+import { Link } from "@/shared/lib";
 
 export function Footer() {
 	const t = useTranslations("footer");
-	const locale = useLocale();
 
 	return (
 		<footer className="border-t">
@@ -15,10 +15,10 @@ export function Footer() {
 						</p>
 					</div>
 					<div className="flex items-center space-x-4 text-sm text-muted-foreground">
-						<Link href={`/${locale}/privacy`} className="hover:underline">
+						<Link href="/privacy" className="hover:underline">
 							{t("privacy")}
 						</Link>
-						<Link href={`/${locale}/terms`} className="hover:underline">
+						<Link href="/terms" className="hover:underline">
 							{t("terms")}
 						</Link>
 						<Link
