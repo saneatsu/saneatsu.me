@@ -4,7 +4,7 @@ import MDEditor, { commands, type ICommand } from "@uiw/react-md-editor";
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
 import { useTheme } from "next-themes";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
 	ArticleSuggestionsPopover,
@@ -65,6 +65,7 @@ export function ArticleMarkdownEditor({
 }: ArticleMarkdownEditorProps) {
 	const { theme } = useTheme();
 	const editorRef = useRef<HTMLDivElement>(null);
+	const previewRef = useRef<HTMLDivElement>(null);
 
 	// Wiki Linkサジェスト関連の状態
 	const [showSuggestions, setShowSuggestions] = useState(false);
@@ -116,6 +117,39 @@ export function ArticleMarkdownEditor({
 
 	// Markdownから見出しを抽出（プレビュー用）
 	const headings = extractHeadings(value);
+
+	// スクロール同期（エディタ → プレビュー）
+	useEffect(() => {
+		const editorElement = editorRef.current;
+		const previewElement = previewRef.current;
+
+		if (!editorElement || !previewElement) return;
+
+		// MDEditor内のtextareaを取得
+		const textarea = editorElement.querySelector("textarea");
+		if (!textarea) return;
+
+		const handleScroll = () => {
+			// エディタのスクロール割合を計算
+			const scrollPercentage =
+				textarea.scrollTop / (textarea.scrollHeight - textarea.clientHeight);
+
+			// プレビューに同じ割合を適用
+			const previewScrollTop =
+				scrollPercentage *
+				(previewElement.scrollHeight - previewElement.clientHeight);
+
+			previewElement.scrollTop = previewScrollTop;
+		};
+
+		// スクロールイベントをリスン
+		textarea.addEventListener("scroll", handleScroll);
+
+		// クリーンアップ
+		return () => {
+			textarea.removeEventListener("scroll", handleScroll);
+		};
+	}, []);
 
 	// カスタムboldコマンド（Cmd+Bを使用）
 	const customBold: ICommand = {
@@ -287,6 +321,7 @@ export function ArticleMarkdownEditor({
 
 				{/* 右側: プレビュー */}
 				<div
+					ref={previewRef}
 					className="h-full overflow-y-auto border rounded-lg p-4 bg-background"
 					style={{ height }}
 				>
