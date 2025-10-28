@@ -25,7 +25,7 @@ describe("GeminiTranslationService", () => {
 
 		// generateContentのモックを設定
 		mockGenerateContent = vi.fn();
-		// @ts-ignore - プライベートプロパティへのアクセス
+		// @ts-expect-error - プライベートプロパティへのアクセス
 		service.model.generateContent = mockGenerateContent;
 	});
 

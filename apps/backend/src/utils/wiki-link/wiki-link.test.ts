@@ -99,7 +99,7 @@ describe("wiki-link utilities", () => {
 						}),
 					}),
 				});
-				// @ts-ignore
+				// @ts-expect-error
 				mockDb.db.select = mockSelect;
 
 				const result = await fetchArticleInfoBySlugs(
@@ -136,7 +136,7 @@ describe("wiki-link utilities", () => {
 						}),
 					}),
 				});
-				// @ts-ignore
+				// @ts-expect-error
 				mockDb.db.select = mockSelect;
 
 				const result = await fetchArticleInfoBySlugs(
@@ -173,7 +173,7 @@ describe("wiki-link utilities", () => {
 						}),
 					}),
 				});
-				// @ts-ignore
+				// @ts-expect-error
 				mockDb.db.select = mockSelect;
 
 				const result = await fetchArticleInfoBySlugs(
@@ -220,7 +220,7 @@ describe("wiki-link utilities", () => {
 						}),
 					}),
 				});
-				// @ts-ignore
+				// @ts-expect-error
 				mockDb.db.select = mockSelect;
 
 				const content = `
@@ -247,7 +247,7 @@ describe("wiki-link utilities", () => {
 						}),
 					}),
 				});
-				// @ts-ignore
+				// @ts-expect-error
 				mockDb.db.select = mockSelect;
 
 				const content = "この記事では[[non-existent]]について説明します。";
@@ -272,7 +272,7 @@ describe("wiki-link utilities", () => {
 						}),
 					}),
 				});
-				// @ts-ignore
+				// @ts-expect-error
 				mockDb.db.select = mockSelect;
 
 				const content = `
@@ -311,7 +311,7 @@ describe("wiki-link utilities", () => {
 						}),
 					}),
 				});
-				// @ts-ignore
+				// @ts-expect-error
 				mockDb.db.select = mockSelect;
 
 				const content = `
