@@ -8,6 +8,8 @@ import { deleteTag } from "./handlers/delete-tag/delete-tag";
 import { deleteTagRoute } from "./handlers/delete-tag/delete-tag.openapi";
 import { getAllTags } from "./handlers/get-all-tags/get-all-tags";
 import { getAllTagsRoute } from "./handlers/get-all-tags/get-all-tags.openapi";
+import { getTagSuggestions } from "./handlers/get-tag-suggestions/get-tag-suggestions";
+import { getTagSuggestionsRoute } from "./handlers/get-tag-suggestions/get-tag-suggestions.openapi";
 import { updateTag } from "./handlers/update-tag/update-tag";
 import { updateTagRoute } from "./handlers/update-tag/update-tag.openapi";
 
@@ -18,6 +20,7 @@ import { updateTagRoute } from "./handlers/update-tag/update-tag.openapi";
  */
 export const tagsRoute = new OpenAPIHono<{ Bindings: Env }>()
 	.openapi(getAllTagsRoute, getAllTags)
+	.openapi(getTagSuggestionsRoute, getTagSuggestions)
 	.openapi(createTagRoute, createTag)
 	.openapi(updateTagRoute, updateTag)
 	.openapi(deleteTagRoute, deleteTag);
