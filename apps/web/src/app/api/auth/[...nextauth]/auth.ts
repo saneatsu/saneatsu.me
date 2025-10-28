@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
-import { isAdminEmail } from "@/shared/config/admin";
+import { isAdminEmail } from "@/shared/config";
 import { upsertUser } from "@/shared/lib";
 
 export const authOptions: any = {
