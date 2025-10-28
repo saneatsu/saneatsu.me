@@ -260,8 +260,8 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 					<AlertCircle className="h-4 w-4" />
 					<AlertTitle>警告</AlertTitle>
 					<AlertDescription>
-						{warnings.map((warning, index) => (
-							<p key={index}>{warning.message}</p>
+						{warnings.map((warning) => (
+							<p key={warning.code}>{warning.message}</p>
 						))}
 					</AlertDescription>
 				</Alert>
