@@ -2,30 +2,23 @@
 
 import { useQuery } from "@tanstack/react-query";
 
-import { honoClient, type QueryConfig, queryKeys } from "@/shared/lib";
-import type { Article } from "@/shared/model";
+import { type QueryConfig, queryKeys, useHonoClient } from "@/shared/lib";
+import type { ArticleResponse } from "@/shared/model";
 
 /**
- * 記事詳細取得レスポンスの型
+ * スラッグで記事を取得するオプション
  */
-export interface ArticleDetailResponse {
-	data: Article;
-}
-
-/**
- * 記事詳細取得オプション
- */
-export type UseArticleOptions = {
+export type UseGetArticleBySlugOptions = {
 	/** 記事のスラッグ */
 	slug: string;
 	/** 言語 */
 	language?: "ja" | "en";
 	/** React Queryの設定 */
-	queryConfig?: QueryConfig<() => Promise<ArticleDetailResponse>>;
+	queryConfig?: QueryConfig<() => Promise<ArticleResponse>>;
 };
 
 /**
- * 記事詳細を取得するカスタムフック
+ * スラッグで記事を取得するカスタムフック
  *
  * @description
  * スラッグから記事の詳細情報を取得します。
@@ -36,7 +29,7 @@ export type UseArticleOptions = {
  *
  * @example
  * ```tsx
- * const { data, isLoading } = useArticle({
+ * const { data, isLoading } = useGetArticleBySlug({
  *   slug: "nextjs-basics",
  *   language: "ja"
  * });
@@ -47,15 +40,17 @@ export type UseArticleOptions = {
  * }
  * ```
  */
-export function useArticle({
+export function useGetArticleBySlug({
 	slug,
 	language = "ja",
 	queryConfig = {},
-}: UseArticleOptions) {
+}: UseGetArticleBySlugOptions) {
+	const client = useHonoClient();
+
 	return useQuery({
 		queryKey: queryKeys.article.detail({ slug, language }),
 		queryFn: async () => {
-			const response = await honoClient.api.articles[":slug"].$get({
+			const response = await client.api.articles[":slug"].$get({
 				param: { slug },
 				query: { lang: language },
 			});
@@ -68,10 +63,10 @@ export function useArticle({
 				);
 			}
 
-			const data = await response.json();
-			return data as ArticleDetailResponse;
+			return await response.json();
 		},
 		...queryConfig,
-		enabled: !!slug && queryConfig.enabled !== false,
+		staleTime: 30 * 1000, // 30秒間はデータを新鮮とみなす
+		enabled: !!slug && (queryConfig.enabled ?? true),
 	});
 }
