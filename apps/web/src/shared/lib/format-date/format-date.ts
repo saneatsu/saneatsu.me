@@ -1,4 +1,4 @@
-import type { Locale } from "../../config/locale-constants";
+import type { Locale } from "@saneatsu/i18n";
 
 /**
  * ISO 8601形式の日時をdatetime-local形式に変換する
