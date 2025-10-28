@@ -113,20 +113,16 @@ export async function middleware(request: NextRequest) {
 		const validUsername =
 			process.env.BASIC_AUTH_USER ||
 			cloudflareContext?.env?.BASIC_AUTH_USER ||
-			// @ts-expect-error
 			// biome-ignore lint/suspicious/noExplicitAny: Edge Runtime互換性のため
 			(globalThis as any).BASIC_AUTH_USER ||
-			// @ts-expect-error
 			// biome-ignore lint/suspicious/noExplicitAny: Edge Runtime互換性のため
 			(self as any).BASIC_AUTH_USER ||
 			"admin";
 		const validPassword =
 			process.env.BASIC_AUTH_PASSWORD ||
 			cloudflareContext?.env?.BASIC_AUTH_PASSWORD ||
-			// @ts-expect-error
 			// biome-ignore lint/suspicious/noExplicitAny: Edge Runtime互換性のため
 			(globalThis as any).BASIC_AUTH_PASSWORD ||
-			// @ts-expect-error
 			// biome-ignore lint/suspicious/noExplicitAny: Edge Runtime互換性のため
 			(self as any).BASIC_AUTH_PASSWORD ||
 			"password";
