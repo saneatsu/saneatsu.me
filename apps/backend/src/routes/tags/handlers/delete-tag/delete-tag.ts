@@ -29,7 +29,7 @@ export const deleteTag: Handler = async (c) => {
 		const { id } = c.req.valid("param");
 
 		// 3. IDの検証
-		const tagId = Number.parseInt(id);
+		const tagId = Number.parseInt(id, 10);
 		if (Number.isNaN(tagId)) {
 			return c.json(
 				{

@@ -77,8 +77,11 @@ export const FirstPage: Story = {
 			handlers: [
 				http.get("http://localhost:8888/api/articles", ({ request }) => {
 					const url = new URL(request.url);
-					const page = Number.parseInt(url.searchParams.get("page") || "1");
-					const limit = Number.parseInt(url.searchParams.get("limit") || "24");
+					const page = Number.parseInt(url.searchParams.get("page") || "1", 10);
+					const limit = Number.parseInt(
+						url.searchParams.get("limit") || "24",
+						10
+					);
 
 					return HttpResponse.json(createMockResponse(page, limit, 50));
 				}),
@@ -115,8 +118,11 @@ export const MiddlePage: Story = {
 			handlers: [
 				http.get("http://localhost:8888/api/articles", ({ request }) => {
 					const url = new URL(request.url);
-					const page = Number.parseInt(url.searchParams.get("page") || "1");
-					const limit = Number.parseInt(url.searchParams.get("limit") || "24");
+					const page = Number.parseInt(url.searchParams.get("page") || "1", 10);
+					const limit = Number.parseInt(
+						url.searchParams.get("limit") || "24",
+						10
+					);
 
 					return HttpResponse.json(createMockResponse(page, limit, 50));
 				}),
@@ -157,8 +163,11 @@ export const LastPage: Story = {
 			handlers: [
 				http.get("http://localhost:8888/api/articles", ({ request }) => {
 					const url = new URL(request.url);
-					const page = Number.parseInt(url.searchParams.get("page") || "1");
-					const limit = Number.parseInt(url.searchParams.get("limit") || "24");
+					const page = Number.parseInt(url.searchParams.get("page") || "1", 10);
+					const limit = Number.parseInt(
+						url.searchParams.get("limit") || "24",
+						10
+					);
 
 					return HttpResponse.json(createMockResponse(page, limit, 50));
 				}),
@@ -200,8 +209,11 @@ export const SinglePage: Story = {
 			handlers: [
 				http.get("http://localhost:8888/api/articles", ({ request }) => {
 					const url = new URL(request.url);
-					const page = Number.parseInt(url.searchParams.get("page") || "1");
-					const limit = Number.parseInt(url.searchParams.get("limit") || "24");
+					const page = Number.parseInt(url.searchParams.get("page") || "1", 10);
+					const limit = Number.parseInt(
+						url.searchParams.get("limit") || "24",
+						10
+					);
 
 					// 総数を10件に設定（1ページに収まる）
 					return HttpResponse.json(createMockResponse(page, limit, 10));
@@ -240,8 +252,11 @@ export const WithLimit: Story = {
 			handlers: [
 				http.get("http://localhost:8888/api/articles", ({ request }) => {
 					const url = new URL(request.url);
-					const page = Number.parseInt(url.searchParams.get("page") || "1");
-					const limit = Number.parseInt(url.searchParams.get("limit") || "6");
+					const page = Number.parseInt(url.searchParams.get("page") || "1", 10);
+					const limit = Number.parseInt(
+						url.searchParams.get("limit") || "6",
+						10
+					);
 
 					return HttpResponse.json(createMockResponse(page, limit, 50));
 				}),
@@ -282,8 +297,11 @@ export const PageSwitching: Story = {
 			handlers: [
 				http.get("http://localhost:8888/api/articles", ({ request }) => {
 					const url = new URL(request.url);
-					const page = Number.parseInt(url.searchParams.get("page") || "1");
-					const limit = Number.parseInt(url.searchParams.get("limit") || "24");
+					const page = Number.parseInt(url.searchParams.get("page") || "1", 10);
+					const limit = Number.parseInt(
+						url.searchParams.get("limit") || "24",
+						10
+					);
 
 					return HttpResponse.json(createMockResponse(page, limit, 50));
 				}),
