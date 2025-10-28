@@ -6,6 +6,8 @@ import { getSession } from "next-auth/react";
 import { useLocale } from "next-intl";
 import { useMemo } from "react";
 
+import { env } from "@/env";
+
 /**
  * Honoクライアントのラッパーフック
  *
@@ -29,7 +31,7 @@ import { useMemo } from "react";
  *    - Honoの型定義をそのまま活用できる
  *    - カスタムfetchでも型推論が正しく動作
  */
-export function useHonoClient() {
+export function useHonoClient(): ReturnType<typeof hc<AppType>> {
 	const locale = useLocale();
 
 	// localeが変わるたびに新しいクライアントを作成
@@ -54,16 +56,9 @@ export function useHonoClient() {
 			});
 		};
 
-		// Next.js APIルート経由でバックエンドにアクセス
-		// 開発環境ではlocalhost:3333、本番環境では相対パスを使用
-		const apiUrl =
-			process.env.NODE_ENV === "development"
-				? "http://localhost:3333/api"
-				: "/api";
+		const apiUrl = env.NEXT_PUBLIC_API_URL;
 
-		return hc<AppType>(apiUrl, {
-			fetch: customFetch,
-		});
+		return hc<AppType>(apiUrl, { fetch: customFetch });
 	}, [locale]);
 }
 
