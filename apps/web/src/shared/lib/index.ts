@@ -43,8 +43,6 @@ export {
 } from "./get-image-url";
 // Hono Hook
 export { type HonoClient, useHonoClient } from "./hono/use-client";
-// Hono Client
-export { getApiBaseUrl, honoClient } from "./hono-client";
 export { usePersistentQueryStates } from "./hooks";
 // Locale
 export { getUserLocale, setUserLocale } from "./locale";
