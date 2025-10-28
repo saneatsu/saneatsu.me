@@ -94,7 +94,7 @@ export const getRelatedArticles: Handler = async (c) => {
 			id: number;
 			slug: string;
 			cfImageId: string | null;
-			status: string;
+			status: "draft" | "published" | "archived";
 			publishedAt: string | null;
 			updatedAt: string;
 			title: string | null;
