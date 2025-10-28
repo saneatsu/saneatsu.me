@@ -33,7 +33,8 @@ export function TagEditPageContent({ id }: { id: string }) {
 		return (
 			<div className="rounded-md border border-destructive bg-destructive/10 p-4">
 				<p className="text-sm text-destructive">
-					エラー: {(error as Error).message || "エラーが発生しました"}
+					エラー:{" "}
+					{error instanceof Error ? error.message : "エラーが発生しました"}
 				</p>
 			</div>
 		);
