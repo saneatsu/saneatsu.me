@@ -1,8 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { honoClient } from "@/shared/lib/hono-client";
-import { queryKeys } from "@/shared/lib/query-keys";
-import type { TagDeleteResponse } from "@/shared/model";
+import { extractErrorMessage, queryKeys, useHonoClient } from "@/shared/lib";
 
 /**
  * タグ削除フック
@@ -22,23 +20,20 @@ import type { TagDeleteResponse } from "@/shared/model";
  */
 export function useDeleteTag() {
 	const queryClient = useQueryClient();
+	const client = useHonoClient();
 
 	return useMutation({
 		mutationFn: async (id: number) => {
-			const response = await honoClient.api.tags[":id"].$delete({
+			const response = await client.api.tags[":id"].$delete({
 				param: { id: String(id) },
 			});
 
 			if (!response.ok) {
 				const error = await response.json();
-				const errorMessage =
-					(error as { error?: { message?: string } }).error?.message ||
-					"タグの削除に失敗しました";
-				throw new Error(errorMessage);
+				throw new Error(extractErrorMessage(error, "タグの削除に失敗しました"));
 			}
 
-			const result = await response.json();
-			return result as TagDeleteResponse;
+			return await response.json();
 		},
 		onSuccess: () => {
 			// タグ一覧のキャッシュを無効化して再取得

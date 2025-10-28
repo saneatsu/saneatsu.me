@@ -2,7 +2,8 @@
 
 import { useQuery } from "@tanstack/react-query";
 
-import { honoClient, type QueryConfig, queryKeys } from "@/shared/lib";
+import type { QueryConfig } from "@/shared/lib";
+import { extractErrorMessage, queryKeys, useHonoClient } from "@/shared/lib";
 import type { SlugCheckResponse } from "@/shared/model";
 
 /**
@@ -34,10 +35,12 @@ type UseCheckSlugOptions = {
  * ```
  */
 export function useCheckSlug({ slug, queryConfig = {} }: UseCheckSlugOptions) {
+	const client = useHonoClient();
+
 	return useQuery({
 		queryKey: queryKeys.article.checkSlug(slug),
 		queryFn: async () => {
-			const response = await honoClient.api.articles["check-slug"].$get({
+			const response = await client.api.articles["check-slug"].$get({
 				query: {
 					slug,
 				},
@@ -46,13 +49,11 @@ export function useCheckSlug({ slug, queryConfig = {} }: UseCheckSlugOptions) {
 			if (!response.ok) {
 				const error = await response.json();
 				throw new Error(
-					(error as { error?: string }).error ||
-						"スラッグのチェックに失敗しました"
+					extractErrorMessage(error, "スラッグのチェックに失敗しました")
 				);
 			}
 
-			const data = await response.json();
-			return data as SlugCheckResponse;
+			return await response.json();
 		},
 		...queryConfig,
 		staleTime: 10 * 1000, // 10秒間はデータを新鮮とみなす

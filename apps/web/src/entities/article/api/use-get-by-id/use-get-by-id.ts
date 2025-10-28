@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { honoClient } from "@/shared/lib";
+import { useHonoClient } from "@/shared/lib";
 
 type ErrorResponse = {
 	error?: {
@@ -49,11 +49,12 @@ export const useGetById = (
 	}
 ) => {
 	const { language = "ja", enabled = true, onSuccess, onError } = options || {};
+	const client = useHonoClient();
 
 	return useQuery({
 		queryKey: ["article", id, language],
 		queryFn: async () => {
-			const response = await honoClient.api.articles.admin[":id"].$get({
+			const response = await client.api.articles.admin[":id"].$get({
 				param: { id: String(id) },
 				query: { lang: language },
 			});

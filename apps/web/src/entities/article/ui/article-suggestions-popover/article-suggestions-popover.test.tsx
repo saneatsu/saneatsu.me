@@ -40,6 +40,24 @@ const mockApiResponse = {
 	suggestions: mockSuggestions,
 };
 
+// useHonoClientのモック
+const mockGet = vi.fn();
+vi.mock("@/shared/lib", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("@/shared/lib")>();
+	return {
+		...actual,
+		useHonoClient: () => ({
+			api: {
+				articles: {
+					suggestions: {
+						$get: mockGet,
+					},
+				},
+			},
+		}),
+	};
+});
+
 // fetch関数のモック
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
@@ -81,6 +99,10 @@ describe("Unit Test", () => {
 				ok: true,
 				json: async () => mockApiResponse,
 			});
+			mockGet.mockResolvedValue({
+				ok: true,
+				json: async () => mockApiResponse,
+			});
 		});
 
 		afterEach(() => {
@@ -104,6 +126,10 @@ describe("Unit Test", () => {
 
 		it("should show empty state when no suggestions", async () => {
 			mockFetch.mockResolvedValueOnce({
+				ok: true,
+				json: async () => ({ suggestions: [] }),
+			});
+			mockGet.mockResolvedValueOnce({
 				ok: true,
 				json: async () => ({ suggestions: [] }),
 			});
@@ -431,12 +457,13 @@ describe("Unit Test", () => {
 			// waitForを使用して非同期処理を待つ
 			await waitFor(() => {
 				// 空のクエリでも全記事を表示するために、APIが呼ばれる
-				expect(mockFetch).toHaveBeenCalledWith(
-					expect.stringContaining(
-						"/api/articles/suggestions?q=&lang=ja&limit=20"
-					),
-					expect.any(Object)
-				);
+				expect(mockGet).toHaveBeenCalledWith({
+					query: {
+						q: "",
+						lang: "ja",
+						limit: "20",
+					},
+				});
 			});
 		});
 
@@ -449,7 +476,7 @@ describe("Unit Test", () => {
 			// waitForを使用して非同期処理を待つ
 			await waitFor(() => {
 				// openがfalseの場合、コンポーネントがnullを返すのでfetchも呼ばれない
-				expect(mockFetch).not.toHaveBeenCalled();
+				expect(mockGet).not.toHaveBeenCalled();
 			});
 		});
 	});
@@ -471,7 +498,7 @@ describe("Integration Test", () => {
 		});
 
 		it("should handle API errors gracefully", async () => {
-			mockFetch.mockRejectedValueOnce(new Error("Network error"));
+			mockGet.mockRejectedValueOnce(new Error("Network error"));
 
 			renderWithQueryClient(<ArticleSuggestionsPopover {...defaultProps} />);
 
@@ -484,7 +511,7 @@ describe("Integration Test", () => {
 		});
 
 		it("should handle language change", async () => {
-			mockFetch.mockResolvedValue({
+			mockGet.mockResolvedValue({
 				ok: true,
 				json: async () => mockApiResponse,
 			});
@@ -510,10 +537,16 @@ describe("Integration Test", () => {
 
 			// 新しいAPIコールが発生することを確認
 			await waitFor(() => {
-				expect(mockFetch).toHaveBeenCalledTimes(2);
-				// 2回目の呼び出しがlang=enを含むことを確認
-				const secondCall = mockFetch.mock.calls[1];
-				expect(secondCall[0]).toContain("lang=en");
+				expect(mockGet).toHaveBeenCalledTimes(2);
+				// 2回目の呼び出しはlang=enを含むクエリパラメータで呼ばれるはず
+				const secondCall = mockGet.mock.calls[1];
+				expect(secondCall[0]).toEqual({
+					query: {
+						q: "react",
+						lang: "en",
+						limit: "20",
+					},
+				});
 			});
 		});
 	});

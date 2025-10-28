@@ -59,10 +59,10 @@ interface ArticleEditFormProps {
 	/** 編集対象の記事データ */
 	article: {
 		id: number;
-		title: string;
+		title: string | null;
 		slug: string;
-		content: string;
-		status: string;
+		content: string | null;
+		status: "draft" | "published" | "archived";
 		publishedAt: string | null;
 		cfImageId: string | null;
 		tags: Array<{
@@ -130,7 +130,7 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 			title: article.title || "",
 			slug: article.slug || "",
 			content: article.content || "",
-			status: article.status as "draft" | "published" | "archived",
+			status: article.status,
 		},
 	});
 
@@ -317,7 +317,7 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 					options={
 						tagsData?.data.map((tag) => ({
 							value: String(tag.id),
-							label: tag.translations.ja,
+							label: tag.translations.ja || tag.slug,
 						})) || []
 					}
 					placeholder="タグを選択してください"

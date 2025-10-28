@@ -89,7 +89,7 @@ const mockArticle = {
 	title: "React Hooks完全ガイド",
 	slug: "react-hooks-guide",
 	content: "# React Hooks完全ガイド\n\nReact Hooksの使い方を解説します。",
-	status: "published",
+	status: "published" as const,
 	publishedAt: "2024-01-10T00:00:00Z",
 	cfImageId: "test-image-id",
 	tags: [

@@ -2,8 +2,9 @@
 
 import { useQuery } from "@tanstack/react-query";
 
-import { honoClient, type QueryConfig, queryKeys } from "@/shared/lib";
-import type { ArticlesResponse } from "@/shared/model";
+import type { QueryConfig } from "@/shared/lib";
+import { extractErrorMessage, queryKeys, useHonoClient } from "@/shared/lib";
+import type { RelatedArticlesResponse } from "@/shared/model";
 
 /**
  * 関連記事を取得するオプション
@@ -12,11 +13,11 @@ type UseGetRelatedOptions = {
 	/** 記事のスラッグ */
 	slug: string;
 	/** 言語 */
-	lang?: string;
+	lang?: "ja" | "en";
 	/** 取得する記事数 */
 	limit?: number;
 	/** React Queryの設定 */
-	queryConfig?: QueryConfig<() => Promise<ArticlesResponse>>;
+	queryConfig?: QueryConfig<() => Promise<RelatedArticlesResponse>>;
 };
 
 /**
@@ -40,10 +41,12 @@ export function useGetRelated({
 	limit,
 	queryConfig = {},
 }: UseGetRelatedOptions) {
+	const client = useHonoClient();
+
 	return useQuery({
 		queryKey: queryKeys.article.related(slug, lang, limit),
 		queryFn: async () => {
-			const response = await honoClient.api.articles[":slug"].related.$get({
+			const response = await client.api.articles[":slug"].related.$get({
 				param: { slug },
 				query: {
 					language: lang,
@@ -54,13 +57,11 @@ export function useGetRelated({
 			if (!response.ok) {
 				const error = await response.json();
 				throw new Error(
-					(error as { error?: { message?: string } }).error?.message ||
-						"関連記事の取得に失敗しました"
+					extractErrorMessage(error, "関連記事の取得に失敗しました")
 				);
 			}
 
-			const data = await response.json();
-			return data as ArticlesResponse;
+			return await response.json();
 		},
 		...queryConfig,
 		staleTime: 5 * 60 * 1000, // 5分間はデータを新鮮とみなす（関連記事はあまり変わらないため）

@@ -3,19 +3,19 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useImageUpload } from "./use-image-upload";
 
-// honoClientのモック
+// useHonoClientのモック
 const { mockPost } = vi.hoisted(() => ({
 	mockPost: vi.fn(),
 }));
 
 vi.mock("@/shared/lib", () => ({
-	honoClient: {
+	useHonoClient: () => ({
 		api: {
 			images: {
 				$post: mockPost,
 			},
 		},
-	},
+	}),
 }));
 
 // sonnerのモック
