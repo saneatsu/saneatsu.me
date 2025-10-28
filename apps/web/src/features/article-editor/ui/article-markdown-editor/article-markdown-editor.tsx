@@ -120,34 +120,55 @@ export function ArticleMarkdownEditor({
 
 	// スクロール同期（エディタ → プレビュー）
 	useEffect(() => {
-		const editorElement = editorRef.current;
-		const previewElement = previewRef.current;
+		// DOM要素のマウントを待つ
+		const timer = setTimeout(() => {
+			const editorElement = editorRef.current;
+			const previewElement = previewRef.current;
 
-		if (!editorElement || !previewElement) return;
+			if (!editorElement || !previewElement) return;
 
-		// MDEditor内のtextareaを取得
-		const textarea = editorElement.querySelector("textarea");
-		if (!textarea) return;
+			let rafId: number | null = null;
 
-		const handleScroll = () => {
-			// エディタのスクロール割合を計算
-			const scrollPercentage =
-				textarea.scrollTop / (textarea.scrollHeight - textarea.clientHeight);
+			const handleScroll = (event: Event) => {
+				const target = event.target as HTMLElement;
 
-			// プレビューに同じ割合を適用
-			const previewScrollTop =
-				scrollPercentage *
-				(previewElement.scrollHeight - previewElement.clientHeight);
+				// 既存のrequestAnimationFrameをキャンセル
+				if (rafId !== null) {
+					cancelAnimationFrame(rafId);
+				}
 
-			previewElement.scrollTop = previewScrollTop;
-		};
+				// 次のフレームでスクロール同期を実行
+				rafId = requestAnimationFrame(() => {
+					// MDEditorと同じスケール係数ベースの計算
+					const editorScrollableHeight =
+						target.scrollHeight - target.offsetHeight;
+					const previewScrollableHeight =
+						previewElement.scrollHeight - previewElement.offsetHeight;
 
-		// スクロールイベントをリスン
-		textarea.addEventListener("scroll", handleScroll);
+					if (editorScrollableHeight > 0 && previewScrollableHeight > 0) {
+						const scale = editorScrollableHeight / previewScrollableHeight;
+						const newPreviewScrollTop = target.scrollTop / scale;
 
-		// クリーンアップ
+						previewElement.scrollTop = newPreviewScrollTop;
+					}
+				});
+			};
+
+			// editorElement全体でスクロールイベントをキャッチ（useCapture=true）
+			editorElement.addEventListener("scroll", handleScroll, true);
+
+			// クリーンアップ関数を返す
+			return () => {
+				if (rafId !== null) {
+					cancelAnimationFrame(rafId);
+				}
+				editorElement.removeEventListener("scroll", handleScroll, true);
+			};
+		}, 100);
+
+		// タイマーのクリーンアップ
 		return () => {
-			textarea.removeEventListener("scroll", handleScroll);
+			clearTimeout(timer);
 		};
 	}, []);
 
