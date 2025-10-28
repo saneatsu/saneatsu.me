@@ -3,23 +3,16 @@
 import MDEditor, { commands, type ICommand } from "@uiw/react-md-editor";
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
-import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
-import { useRef, useState } from "react";
-import remarkGfm from "remark-gfm";
+import { useEffect, useRef, useState } from "react";
 
 import {
 	ArticleSuggestionsPopover,
 	type SuggestionItem,
 } from "@/entities/article";
 import { type TagSuggestionItem, TagSuggestionsPopover } from "@/entities/tag";
-import {
-	remarkTag,
-	remarkTweet,
-	remarkUrlCard,
-	remarkWikiLink,
-} from "@/shared/lib";
-import { ArticleImage, TweetEmbed } from "@/shared/ui";
+import { extractHeadings } from "@/shared/lib";
+import { MarkdownPreview } from "@/shared/ui";
 
 import { createImageUploadCommand } from "../../lib/image-upload-command/image-upload-command";
 import { useClickExpansion } from "../../lib/use-click-expansion/use-click-expansion";
@@ -30,25 +23,6 @@ import { usePasteImage } from "../../lib/use-paste-image/use-paste-image";
 import { useTagDetection } from "../../model/use-tag-detection";
 import { useWikiLinkDetection } from "../../model/use-wiki-link-detection";
 import type { CursorPosition } from "./types";
-
-// Wiki Linkコンポーネントを動的インポート（クライアントサイドのみ）
-const WikiLink = dynamic(
-	() => import("@/entities/article").then((mod) => mod.WikiLink),
-	{
-		ssr: false,
-	}
-);
-
-// URL Cardコンポーネントを動的インポート（クライアントサイドのみ）
-const UrlCard = dynamic(
-	() =>
-		import("@/entities/article/ui/url-card/url-card").then(
-			(mod) => mod.UrlCard
-		),
-	{
-		ssr: false,
-	}
-);
 
 /**
  * ArticleMarkdownEditorのプロパティ
@@ -62,8 +36,6 @@ interface ArticleMarkdownEditorProps {
 	setValue: (name: string, value: string) => void;
 	/** エディタの高さ（ピクセル）*/
 	height?: number;
-	/** プレビューモード */
-	preview?: "edit" | "live" | "preview";
 	/** 追加のCSSクラス */
 	className?: string;
 	/** 言語（Wiki Link用） */
@@ -88,12 +60,12 @@ export function ArticleMarkdownEditor({
 	onChange,
 	setValue,
 	height = 500,
-	preview = "live",
 	className = "",
 	language = "ja",
 }: ArticleMarkdownEditorProps) {
 	const { theme } = useTheme();
 	const editorRef = useRef<HTMLDivElement>(null);
+	const previewRef = useRef<HTMLDivElement>(null);
 
 	// Wiki Linkサジェスト関連の状態
 	const [showSuggestions, setShowSuggestions] = useState(false);
@@ -142,6 +114,42 @@ export function ArticleMarkdownEditor({
 	const { uploadImage } = useImageUpload();
 	usePasteImage(editorRef, uploadImage, onChange);
 	useDropImage(editorRef, uploadImage, onChange);
+
+	// Markdownから見出しを抽出（プレビュー用）
+	const headings = extractHeadings(value);
+
+	// スクロール同期（エディタ → プレビュー）
+	useEffect(() => {
+		const editorElement = editorRef.current;
+		const previewElement = previewRef.current;
+
+		if (!editorElement || !previewElement) return;
+
+		// MDEditor内のtextareaを取得
+		const textarea = editorElement.querySelector("textarea");
+		if (!textarea) return;
+
+		const handleScroll = () => {
+			// エディタのスクロール割合を計算
+			const scrollPercentage =
+				textarea.scrollTop / (textarea.scrollHeight - textarea.clientHeight);
+
+			// プレビューに同じ割合を適用
+			const previewScrollTop =
+				scrollPercentage *
+				(previewElement.scrollHeight - previewElement.clientHeight);
+
+			previewElement.scrollTop = previewScrollTop;
+		};
+
+		// スクロールイベントをリスン
+		textarea.addEventListener("scroll", handleScroll);
+
+		// クリーンアップ
+		return () => {
+			textarea.removeEventListener("scroll", handleScroll);
+		};
+	}, []);
 
 	// カスタムboldコマンド（Cmd+Bを使用）
 	const customBold: ICommand = {
@@ -296,84 +304,34 @@ export function ArticleMarkdownEditor({
 
 	return (
 		<div className={className}>
-			<div ref={editorRef}>
-				<MDEditor
-					value={value}
-					onChange={(val) => onChange(val || "")}
-					commands={customCommands}
-					preview={preview}
-					visibleDragbar={true}
-					data-color-mode={theme === "dark" ? "dark" : "light"}
-					height={height}
-					className="prose-editor"
-					previewOptions={{
-						remarkPlugins: [
-							[remarkGfm],
-							[remarkUrlCard],
-							[remarkWikiLink],
-							[remarkTag],
-							[remarkTweet],
-						],
-						className: "prose dark:prose-invert max-w-none",
-						components: {
-							a: ({
-								children,
-								href,
-								...props
-							}: {
-								children?: React.ReactNode;
-								href?: string;
-								className?: string;
-							}) => {
-								const className = props.className as string;
+			<div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+				{/* 左側: エディタ */}
+				<div ref={editorRef} className="h-full">
+					<MDEditor
+						value={value}
+						onChange={(val) => onChange(val || "")}
+						commands={customCommands}
+						preview="edit"
+						visibleDragbar={false}
+						data-color-mode={theme === "dark" ? "dark" : "light"}
+						height={height}
+						className="prose-editor"
+					/>
+				</div>
 
-								// URL Cardの判定
-								const isUrlCard = className?.includes("url-card-link");
-								if (isUrlCard && href) {
-									return <UrlCard url={href} />;
-								}
-
-								// Wiki Linkの判定
-								const isWikiLink = className?.includes("wiki-link");
-
-								// Wiki Linkの場合はカスタムコンポーネントを使用
-								if (isWikiLink && href) {
-									return (
-										<WikiLink
-											href={href}
-											language={language}
-											className={className}
-											{...props}
-										>
-											{children}
-										</WikiLink>
-									);
-								}
-
-								// 通常のリンク
-								return (
-									<a href={href} className="underline" {...props}>
-										{children}
-									</a>
-								);
-							},
-							// 画像のカスタムレンダリング
-							img: ({ src, alt, ...props }) => {
-								// Cloudflare Images URLの場合はArticleImageを使用
-								if (src?.includes("imagedelivery.net")) {
-									return <ArticleImage src={src} alt={alt} />;
-								}
-
-								// 通常の画像（外部URL）
-								// biome-ignore lint/performance/noImgElement: 外部画像URLはNext.js Imageで最適化できないため<img>を使用
-								return <img src={src} alt={alt} {...props} />;
-							},
-							// Tweet埋め込みのカスタムレンダリング
-							// @ts-expect-error - カスタムノードのため型定義がない
-							tweet: ({ id }) => <TweetEmbed id={id} />,
-						},
-					}}
-				/>
+				{/* 右側: プレビュー */}
+				<div
+					ref={previewRef}
+					className="h-full overflow-y-auto border rounded-lg p-4 bg-background"
+					style={{ height }}
+				>
+					<MarkdownPreview
+						content={value}
+						language={language}
+						imageComponent="article"
+						headings={headings}
+					/>
+				</div>
 			</div>
 
 			{/* Wiki Linkサジェストポップアップ */}

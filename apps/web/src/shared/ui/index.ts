@@ -163,6 +163,8 @@ export { Label } from "./label/label";
 export { LocaleSwitcher } from "./locale-switcher/locale-switcher";
 // Markdown Preview
 export {
+	createDefaultMarkdownComponents,
+	defaultRemarkPlugins,
 	MarkdownPreview,
 	type MarkdownPreviewProps,
 } from "./markdown-preview/markdown-preview";
