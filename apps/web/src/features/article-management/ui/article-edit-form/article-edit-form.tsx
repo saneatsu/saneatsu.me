@@ -268,13 +268,15 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 				</div>
 				{titleLanguage === "ja" ? (
 					<Input
+						key="title-ja"
 						id="title"
 						{...register("title")}
 						placeholder="記事のタイトルを入力"
 					/>
 				) : (
 					<Input
-						value={article.translations?.en.title || "(未設定)"}
+						key="title-en"
+						value={article.translations?.en?.title ?? "(未設定)"}
 						readOnly
 						className="bg-muted"
 					/>
