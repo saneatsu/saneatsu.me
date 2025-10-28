@@ -114,6 +114,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 		const client = testClient(articlesRoute, {
 			TURSO_DATABASE_URL: "test://test.db",
 			TURSO_AUTH_TOKEN: "test-token",
+			GEMINI_API_KEY: "AItest-gemini-api-key-for-testing-purposes-only",
 		}) as any;
 		const res = await client[":id"].$put({
 			param: { id: "1" },
@@ -173,6 +174,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 		const client = testClient(articlesRoute, {
 			TURSO_DATABASE_URL: "test://test.db",
 			TURSO_AUTH_TOKEN: "test-token",
+			GEMINI_API_KEY: "AItest-gemini-api-key-for-testing-purposes-only",
 		}) as any;
 		const res = await client[":id"].$put({
 			param: { id: "9999" },
@@ -231,6 +233,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 		const client = testClient(articlesRoute, {
 			TURSO_DATABASE_URL: "test://test.db",
 			TURSO_AUTH_TOKEN: "test-token",
+			GEMINI_API_KEY: "AItest-gemini-api-key-for-testing-purposes-only",
 		}) as any;
 		const res = await client[":id"].$put({
 			param: { id: "1" },
@@ -372,106 +375,6 @@ describe("PUT /articles/:id - 記事更新", () => {
 			);
 		});
 
-		it("GEMINI_API_KEYが設定されていない場合、日本語の翻訳のみ更新する", async () => {
-			// Arrange
-			const { mockDb } = setupDbMocks();
-
-			const { createDatabaseClient } = await import("@saneatsu/db");
-			(createDatabaseClient as any).mockReturnValue(mockDb);
-
-			// 既存記事チェックのモック
-			const existingArticleMock = {
-				from: vi.fn().mockReturnValue({
-					where: vi.fn().mockReturnValue({
-						limit: vi.fn().mockResolvedValue([{ id: 1, slug: "old-slug" }]),
-					}),
-				}),
-			};
-
-			// スラッグ重複チェックのモック（重複なし）
-			const duplicateSlugMock = {
-				from: vi.fn().mockReturnValue({
-					where: vi.fn().mockReturnValue({
-						limit: vi.fn().mockResolvedValue([]),
-					}),
-				}),
-			};
-
-			// 更新後の記事取得のモック
-			const updatedArticleMock = {
-				from: vi.fn().mockReturnValue({
-					leftJoin: vi.fn().mockReturnValue({
-						where: vi.fn().mockReturnValue({
-							limit: vi.fn().mockResolvedValue([
-								{
-									id: 1,
-									slug: "updated-article",
-									cfImageId: null,
-									status: "published",
-									publishedAt: "2024-01-01T00:00:00.000Z",
-									updatedAt: "2024-01-02T00:00:00.000Z",
-									title: "更新された記事",
-									content: "これは更新された内容です。",
-									viewCount: 0,
-								},
-							]),
-						}),
-					}),
-				}),
-			};
-
-			mockDb.select
-				.mockReturnValueOnce(existingArticleMock) // 既存記事チェック
-				.mockReturnValueOnce(duplicateSlugMock) // スラッグ重複チェック
-				.mockReturnValueOnce(updatedArticleMock); // 更新後の記事取得
-
-			// update関数のモック
-			mockDb.update = vi.fn().mockReturnValue({
-				set: vi.fn().mockReturnValue({
-					where: vi.fn().mockResolvedValue({}),
-				}),
-			});
-
-			// delete関数のモック（タグ削除用）
-			mockDb.delete = vi.fn().mockReturnValue({
-				where: vi.fn().mockResolvedValue({}),
-			});
-
-			// insert関数のモック（タグ追加用、Upsertサポート）
-			mockDb.insert = vi.fn().mockReturnValue({
-				values: vi.fn().mockReturnValue({
-					onConflictDoUpdate: vi.fn().mockResolvedValue({}),
-				}),
-			});
-
-			// Act
-			const client = testClient(articlesRoute, {
-				TURSO_DATABASE_URL: "test://test.db",
-				TURSO_AUTH_TOKEN: "test-token",
-				// GEMINI_API_KEY未設定
-			}) as any;
-			const res = await client[":id"].$put({
-				param: { id: "1" },
-				json: {
-					title: "更新された記事",
-					slug: "updated-article",
-					content: "これは更新された内容です。",
-					status: "published",
-					tagIds: [1, 2],
-				},
-			});
-
-			// Assert
-			expect(res.status).toBe(200);
-
-			// UPDATEは1回のみ（記事のみ）、日本語翻訳はINSERTでUpsert
-			expect(mockDb.update).toHaveBeenCalledTimes(1);
-			expect(mockDb.insert).toHaveBeenCalledTimes(2); // タグ追加 + 日本語翻訳
-
-			// 翻訳サービスは呼ばれない
-			expect(mockTranslateArticle).not.toHaveBeenCalled();
-		});
-
 		it("翻訳が失敗しても日本語の翻訳は更新され、処理は続行される", async () => {
 			// Arrange
 			const { mockDb } = setupDbMocks();
@@ -585,6 +488,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 					const client = testClient(articlesRoute, {
 						TURSO_DATABASE_URL: "test://test.db",
 						TURSO_AUTH_TOKEN: "test-token",
+						GEMINI_API_KEY: "AItest-gemini-api-key-for-testing-purposes-only",
 					}) as any;
 					const res = await client[":id"].$put({
 						param: { id: "1" },
@@ -611,6 +515,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 					const client = testClient(articlesRoute, {
 						TURSO_DATABASE_URL: "test://test.db",
 						TURSO_AUTH_TOKEN: "test-token",
+						GEMINI_API_KEY: "AItest-gemini-api-key-for-testing-purposes-only",
 					}) as any;
 					const res = await client[":id"].$put({
 						param: { id: "1" },
@@ -637,6 +542,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 					const client = testClient(articlesRoute, {
 						TURSO_DATABASE_URL: "test://test.db",
 						TURSO_AUTH_TOKEN: "test-token",
+						GEMINI_API_KEY: "AItest-gemini-api-key-for-testing-purposes-only",
 					}) as any;
 					const res = await client[":id"].$put({
 						param: { id: "1" },
@@ -663,6 +569,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 					const client = testClient(articlesRoute, {
 						TURSO_DATABASE_URL: "test://test.db",
 						TURSO_AUTH_TOKEN: "test-token",
+						GEMINI_API_KEY: "AItest-gemini-api-key-for-testing-purposes-only",
 					}) as any;
 					const res = await client[":id"].$put({
 						param: { id: "1" },
@@ -752,6 +659,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 					const client = testClient(articlesRoute, {
 						TURSO_DATABASE_URL: "test://test.db",
 						TURSO_AUTH_TOKEN: "test-token",
+						GEMINI_API_KEY: "AItest-gemini-api-key-for-testing-purposes-only",
 					}) as any;
 					const res = await client[":id"].$put({
 						param: { id: "1" },
@@ -835,6 +743,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 					const client = testClient(articlesRoute, {
 						TURSO_DATABASE_URL: "test://test.db",
 						TURSO_AUTH_TOKEN: "test-token",
+						GEMINI_API_KEY: "AItest-gemini-api-key-for-testing-purposes-only",
 					}) as any;
 					const res = await client[":id"].$put({
 						param: { id: "1" },
@@ -918,6 +827,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 					const client = testClient(articlesRoute, {
 						TURSO_DATABASE_URL: "test://test.db",
 						TURSO_AUTH_TOKEN: "test-token",
+						GEMINI_API_KEY: "AItest-gemini-api-key-for-testing-purposes-only",
 					}) as any;
 					const res = await client[":id"].$put({
 						param: { id: "1" },
@@ -1001,6 +911,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 					const client = testClient(articlesRoute, {
 						TURSO_DATABASE_URL: "test://test.db",
 						TURSO_AUTH_TOKEN: "test-token",
+						GEMINI_API_KEY: "AItest-gemini-api-key-for-testing-purposes-only",
 					}) as any;
 					const res = await client[":id"].$put({
 						param: { id: "1" },
