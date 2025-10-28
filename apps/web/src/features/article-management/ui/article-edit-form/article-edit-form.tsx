@@ -11,6 +11,7 @@ import { useCheckSlug, useUpdate } from "@/entities/article";
 import { useGetAllTags } from "@/entities/tag";
 import { ArticleMarkdownEditor } from "@/features/article-editor";
 import { getImageUrl, useDebounce } from "@/shared/lib";
+import type { Option } from "@/shared/ui";
 import {
 	Alert,
 	AlertDescription,
@@ -20,7 +21,9 @@ import {
 	Input,
 	Label,
 	MultipleSelector,
-	type Option,
+	Tabs,
+	TabsList,
+	TabsTrigger,
 } from "@/shared/ui";
 
 import { ArticleStatusSelector } from "../article-status-selector/article-status-selector";
@@ -113,6 +116,9 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 
 	// 英語コンテンツを取得（プレビュー表示用）
 	const enContent = article.translations?.en.content || "";
+
+	// タイトルの表示言語
+	const [titleLanguage, setTitleLanguage] = useState<"ja" | "en">("ja");
 
 	/**
 	 * サムネイルURLを生成
@@ -244,13 +250,36 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 
 			{/* タイトル */}
 			<div className="space-y-2">
-				<Label htmlFor="title">タイトル *</Label>
-				<Input
-					id="title"
-					{...register("title")}
-					placeholder="記事のタイトルを入力"
-				/>
-				{errors.title && (
+				<div className="flex items-center justify-between">
+					<Label htmlFor="title">タイトル *</Label>
+					<Tabs
+						value={titleLanguage}
+						onValueChange={(value) => setTitleLanguage(value as "ja" | "en")}
+					>
+						<TabsList className="h-8">
+							<TabsTrigger value="ja" className="text-xs">
+								日本語
+							</TabsTrigger>
+							<TabsTrigger value="en" className="text-xs">
+								English
+							</TabsTrigger>
+						</TabsList>
+					</Tabs>
+				</div>
+				{titleLanguage === "ja" ? (
+					<Input
+						id="title"
+						{...register("title")}
+						placeholder="記事のタイトルを入力"
+					/>
+				) : (
+					<Input
+						value={article.translations?.en.title || "(未設定)"}
+						readOnly
+						className="bg-muted"
+					/>
+				)}
+				{titleLanguage === "ja" && errors.title && (
 					<p className="text-sm text-destructive">{errors.title.message}</p>
 				)}
 			</div>
