@@ -12,7 +12,7 @@ import {
 } from "@/entities/article";
 import { type TagSuggestionItem, TagSuggestionsPopover } from "@/entities/tag";
 import { extractHeadings } from "@/shared/lib";
-import { MarkdownPreview } from "@/shared/ui";
+import { MarkdownPreview, Tabs, TabsList, TabsTrigger } from "@/shared/ui";
 
 import { createImageUploadCommand } from "../../lib/image-upload-command/image-upload-command";
 import { useClickExpansion } from "../../lib/use-click-expansion/use-click-expansion";
@@ -66,6 +66,9 @@ export function ArticleMarkdownEditor({
 	const { theme } = useTheme();
 	const editorRef = useRef<HTMLDivElement>(null);
 	const previewRef = useRef<HTMLDivElement>(null);
+
+	// プレビュー言語の状態管理
+	const [previewLanguage, setPreviewLanguage] = useState<"ja" | "en">(language);
 
 	// Wiki Linkサジェスト関連の状態
 	const [showSuggestions, setShowSuggestions] = useState(false);
@@ -342,16 +345,37 @@ export function ArticleMarkdownEditor({
 
 				{/* 右側: プレビュー */}
 				<div
-					ref={previewRef}
-					className="h-full overflow-y-auto border rounded-lg p-4 bg-background"
+					className="h-full flex flex-col border rounded-lg bg-background"
 					style={{ height }}
 				>
-					<MarkdownPreview
-						content={value}
-						language={language}
-						imageComponent="article"
-						headings={headings}
-					/>
+					{/* プレビュー言語切り替え */}
+					<div className="border-b px-4 py-2">
+						<Tabs
+							value={previewLanguage}
+							onValueChange={(value) =>
+								setPreviewLanguage(value as "ja" | "en")
+							}
+						>
+							<TabsList className="h-8">
+								<TabsTrigger value="ja" className="text-xs">
+									日本語
+								</TabsTrigger>
+								<TabsTrigger value="en" className="text-xs">
+									English
+								</TabsTrigger>
+							</TabsList>
+						</Tabs>
+					</div>
+
+					{/* プレビューコンテンツ */}
+					<div ref={previewRef} className="flex-1 overflow-y-auto p-4">
+						<MarkdownPreview
+							content={value}
+							language={previewLanguage}
+							imageComponent="article"
+							headings={headings}
+						/>
+					</div>
 				</div>
 			</div>
 
