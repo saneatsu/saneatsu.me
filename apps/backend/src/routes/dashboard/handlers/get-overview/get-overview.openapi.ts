@@ -35,6 +35,17 @@ const articleStatsOpenApiSchema = z.object({
 });
 
 /**
+ * 人気記事用タグスキーマ
+ */
+const popularArticleTagOpenApiSchema = z.object({
+	id: z.number().int(),
+	translations: z.object({
+		ja: z.string(),
+		en: z.string(),
+	}),
+});
+
+/**
  * 人気記事スキーマ
  */
 const popularArticleOpenApiSchema = z.object({
@@ -43,6 +54,9 @@ const popularArticleOpenApiSchema = z.object({
 	title: z.string(),
 	viewCount: z.number().int(),
 	publishedAt: z.string().nullable(),
+	cfImageId: z.string().nullable(),
+	updatedAt: z.string().nullable(),
+	tags: z.array(popularArticleTagOpenApiSchema),
 });
 
 /**

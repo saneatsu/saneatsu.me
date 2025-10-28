@@ -1,8 +1,5 @@
+import type { Locale } from "@saneatsu/i18n";
 import type { useTranslations } from "next-intl";
-
-import type { Locale } from "./locale-constants";
-
-export const locales: Locale[] = ["ja", "en"];
 
 type LocaleItem = {
 	flag: string;

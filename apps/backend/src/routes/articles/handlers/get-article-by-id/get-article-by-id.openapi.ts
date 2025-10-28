@@ -16,7 +16,7 @@ const ArticleWithTagsSchema = z.object({
 		example: "image-id-5678",
 		description: "Cloudflare画像ID",
 	}),
-	status: z.string().openapi({
+	status: z.enum(["draft", "published", "archived"]).openapi({
 		example: "published",
 		description: "記事のステータス",
 	}),
@@ -40,6 +40,34 @@ const ArticleWithTagsSchema = z.object({
 		example: 127,
 		description: "記事の閲覧数（言語ごと）",
 	}),
+	translations: z
+		.object({
+			ja: z.object({
+				title: z.string().nullable().openapi({
+					example: "私の最初のブログ記事",
+					description: "日本語のタイトル",
+				}),
+				content: z.string().nullable().openapi({
+					example: "これは記事の本文です...",
+					description: "日本語の本文",
+				}),
+			}),
+			en: z.object({
+				title: z.string().nullable().openapi({
+					example: "My First Blog Post",
+					description: "英語のタイトル",
+				}),
+				content: z.string().nullable().openapi({
+					example: "This is the article content...",
+					description: "英語の本文",
+				}),
+			}),
+		})
+		.optional()
+		.openapi({
+			description:
+				"全言語の翻訳データ（includeAllTranslations=trueの場合のみ）",
+		}),
 	tags: z.array(
 		z.object({
 			id: z.number().int().openapi({
@@ -110,6 +138,14 @@ export const getArticleByIdRoute = createRoute({
 				example: "ja",
 				description: "言語",
 			}),
+			includeAllTranslations: z.coerce
+				.boolean()
+				.optional()
+				.default(false)
+				.openapi({
+					example: true,
+					description: "全言語の翻訳を含めるかどうか",
+				}),
 		}),
 	},
 	responses: {

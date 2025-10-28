@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { honoClient } from "@/shared/lib";
+import { useHonoClient } from "@/shared/lib";
 
 /**
  * OGP情報の型定義
@@ -26,10 +26,12 @@ interface OgpData {
  * ```
  */
 export const useOgp = (url: string) => {
+	const client = useHonoClient();
+
 	return useQuery({
 		queryKey: ["ogp", url],
 		queryFn: async () => {
-			const response = await honoClient.api.ogp.$get({
+			const response = await client.api.ogp.$get({
 				query: { url },
 			});
 
@@ -38,7 +40,7 @@ export const useOgp = (url: string) => {
 			}
 
 			const json = await response.json();
-			return json.data as OgpData;
+			return json.data satisfies OgpData;
 		},
 		// 同じURLは24時間キャッシュ
 		staleTime: 1000 * 60 * 60 * 24,

@@ -26,7 +26,7 @@ export function RelatedArticles({ slug, limit = 6 }: RelatedArticlesProps) {
 
 	const { data, isLoading, error } = useGetRelated({
 		slug,
-		lang: locale,
+		lang: locale as "ja" | "en",
 		limit,
 	});
 

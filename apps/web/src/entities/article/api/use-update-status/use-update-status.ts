@@ -3,7 +3,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-import { honoClient, queryKeys } from "@/shared/lib";
+import { extractErrorMessage, queryKeys, useHonoClient } from "@/shared/lib";
 
 /**
  * 記事のステータス更新パラメータ
@@ -12,13 +12,7 @@ type UpdateStatusParams = {
 	/** 記事ID */
 	id: number;
 	/** 新しいステータス */
-	status: string;
-};
-
-type ErrorResponse = {
-	error?: {
-		message?: string;
-	};
+	status: "draft" | "published" | "archived";
 };
 
 /**
@@ -45,10 +39,11 @@ type ErrorResponse = {
  */
 export function useUpdateStatus() {
 	const queryClient = useQueryClient();
+	const client = useHonoClient();
 
 	return useMutation({
 		mutationFn: async ({ id, status }: UpdateStatusParams) => {
-			const response = await honoClient.api.articles[":id"].status.$patch({
+			const response = await client.api.articles[":id"].status.$patch({
 				param: { id: String(id) },
 				json: { status },
 			});
@@ -56,8 +51,7 @@ export function useUpdateStatus() {
 			if (!response.ok) {
 				const error = await response.json();
 				throw new Error(
-					(error as ErrorResponse).error?.message ||
-						"記事ステータスの更新に失敗しました"
+					extractErrorMessage(error, "記事ステータスの更新に失敗しました")
 				);
 			}
 

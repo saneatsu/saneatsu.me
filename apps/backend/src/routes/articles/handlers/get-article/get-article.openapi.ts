@@ -16,7 +16,7 @@ const ArticleSchema = z.object({
 		example: "image-id-5678",
 		description: "Cloudflare画像ID",
 	}),
-	status: z.string().openapi({
+	status: z.enum(["draft", "published", "archived"]).openapi({
 		example: "published",
 		description: "記事のステータス",
 	}),
@@ -40,6 +40,44 @@ const ArticleSchema = z.object({
 		example: 127,
 		description: "記事の閲覧数（言語ごと）",
 	}),
+	tags: z
+		.array(
+			z.object({
+				id: z.number().int().openapi({
+					example: 1,
+					description: "タグID",
+				}),
+				slug: z.string().openapi({
+					example: "typescript",
+					description: "タグスラッグ",
+				}),
+				createdAt: z.string().openapi({
+					example: "2024-01-01T00:00:00.000Z",
+					description: "作成日時",
+				}),
+				updatedAt: z.string().openapi({
+					example: "2024-01-01T00:00:00.000Z",
+					description: "更新日時",
+				}),
+				articleCount: z.number().int().openapi({
+					example: 0,
+					description: "このタグが付けられた記事の数",
+				}),
+				translations: z.object({
+					ja: z.string().openapi({
+						example: "TypeScript",
+						description: "日本語のタグ名",
+					}),
+					en: z.string().openapi({
+						example: "TypeScript",
+						description: "英語のタグ名",
+					}),
+				}),
+			})
+		)
+		.openapi({
+			description: "記事に関連付けられたタグ",
+		}),
 });
 
 /**

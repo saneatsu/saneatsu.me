@@ -14,6 +14,7 @@ export type {
 	ArticlesQuery,
 	ArticlesResponse,
 	LanguageCode,
+	RelatedArticlesResponse,
 	SlugCheckQuery,
 	SlugCheckResponse,
 } from "./article";
