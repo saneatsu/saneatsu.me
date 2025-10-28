@@ -191,7 +191,7 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 			}
 
 			// タグIDを抽出
-			const tagIds = selectedTags.map((tag) => Number.parseInt(tag.value));
+			const tagIds = selectedTags.map((tag) => Number.parseInt(tag.value, 10));
 
 			const response = await updateMutation.mutateAsync({
 				id: article.id,

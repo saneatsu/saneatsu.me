@@ -182,7 +182,7 @@ export function ArticleNewForm() {
 			}
 
 			// 3. タグIDを抽出
-			const tagIds = selectedTags.map((tag) => Number.parseInt(tag.value));
+			const tagIds = selectedTags.map((tag) => Number.parseInt(tag.value, 10));
 
 			// 4. 記事を作成（cfImageIdを含む）
 			const response = await createArticleMutation.mutateAsync({
