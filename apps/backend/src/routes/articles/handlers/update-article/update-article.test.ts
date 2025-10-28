@@ -103,9 +103,11 @@ describe("PUT /articles/:id - 記事更新", () => {
 			where: vi.fn().mockResolvedValue({}),
 		});
 
-		// insert関数のモック（タグ追加用）
+		// insert関数のモック（タグ追加用、Upsertサポート）
 		mockDb.insert = vi.fn().mockReturnValue({
-			values: vi.fn().mockResolvedValue({}),
+			values: vi.fn().mockReturnValue({
+				onConflictDoUpdate: vi.fn().mockResolvedValue({}),
+			}),
 		});
 
 		// Act
@@ -143,9 +145,9 @@ describe("PUT /articles/:id - 記事更新", () => {
 			message: "記事が正常に更新されました",
 		});
 
-		expect(mockDb.update).toHaveBeenCalledTimes(2); // 記事と翻訳の更新
+		expect(mockDb.update).toHaveBeenCalledTimes(1); // 記事の更新
 		expect(mockDb.delete).toHaveBeenCalledTimes(1); // タグ削除
-		expect(mockDb.insert).toHaveBeenCalledTimes(1); // タグ追加
+		expect(mockDb.insert).toHaveBeenCalledTimes(2); // タグ追加 + 日本語翻訳のUpsert
 	});
 
 	it("存在しないIDの場合、404エラーを返す", async () => {
@@ -326,9 +328,11 @@ describe("PUT /articles/:id - 記事更新", () => {
 				where: vi.fn().mockResolvedValue({}),
 			});
 
-			// insert関数のモック（タグ追加用）
+			// insert関数のモック（タグ追加用、Upsertサポート）
 			mockDb.insert = vi.fn().mockReturnValue({
-				values: vi.fn().mockResolvedValue({}),
+				values: vi.fn().mockReturnValue({
+					onConflictDoUpdate: vi.fn().mockResolvedValue({}),
+				}),
 			});
 
 			// Act
@@ -357,8 +361,9 @@ describe("PUT /articles/:id - 記事更新", () => {
 			// 改善後の検証: SELECTは3回のみ（既存翻訳確認がない）
 			expect(mockDb.select).toHaveBeenCalledTimes(3);
 
-			// 改善後の検証: UPDATEは3回（記事 + 日本語翻訳 + 英語翻訳）
-			expect(mockDb.update).toHaveBeenCalledTimes(3);
+			// 改善後の検証: UPDATEは1回（記事のみ）、翻訳はINSERTでUpsert
+			expect(mockDb.update).toHaveBeenCalledTimes(1);
+			expect(mockDb.insert).toHaveBeenCalledTimes(3); // タグ追加 + 日本語翻訳 + 英語翻訳
 
 			// 翻訳サービスが呼ばれたことを確認
 			expect(mockTranslateArticle).toHaveBeenCalledWith(
@@ -432,9 +437,11 @@ describe("PUT /articles/:id - 記事更新", () => {
 				where: vi.fn().mockResolvedValue({}),
 			});
 
-			// insert関数のモック（タグ追加用）
+			// insert関数のモック（タグ追加用、Upsertサポート）
 			mockDb.insert = vi.fn().mockReturnValue({
-				values: vi.fn().mockResolvedValue({}),
+				values: vi.fn().mockReturnValue({
+					onConflictDoUpdate: vi.fn().mockResolvedValue({}),
+				}),
 			});
 
 			// Act
@@ -457,8 +464,9 @@ describe("PUT /articles/:id - 記事更新", () => {
 			// Assert
 			expect(res.status).toBe(200);
 
-			// UPDATEは2回のみ（記事 + 日本語翻訳のみ）
-			expect(mockDb.update).toHaveBeenCalledTimes(2);
+			// UPDATEは1回のみ（記事のみ）、日本語翻訳はINSERTでUpsert
+			expect(mockDb.update).toHaveBeenCalledTimes(1);
+			expect(mockDb.insert).toHaveBeenCalledTimes(2); // タグ追加 + 日本語翻訳
 
 			// 翻訳サービスは呼ばれない
 			expect(mockTranslateArticle).not.toHaveBeenCalled();
@@ -532,9 +540,11 @@ describe("PUT /articles/:id - 記事更新", () => {
 				where: vi.fn().mockResolvedValue({}),
 			});
 
-			// insert関数のモック（タグ追加用）
+			// insert関数のモック（タグ追加用、Upsertサポート）
 			mockDb.insert = vi.fn().mockReturnValue({
-				values: vi.fn().mockResolvedValue({}),
+				values: vi.fn().mockReturnValue({
+					onConflictDoUpdate: vi.fn().mockResolvedValue({}),
+				}),
 			});
 
 			// Act
@@ -558,8 +568,9 @@ describe("PUT /articles/:id - 記事更新", () => {
 			expect(res.status).toBe(200);
 
 			// 翻訳が失敗しても、記事更新と日本語翻訳は成功
-			// UPDATEは2回（記事 + 日本語翻訳のみ、英語翻訳は失敗したのでスキップ）
-			expect(mockDb.update).toHaveBeenCalledTimes(2);
+			// UPDATEは1回（記事のみ）、日本語翻訳はINSERTでUpsert、英語翻訳は失敗したのでスキップ
+			expect(mockDb.update).toHaveBeenCalledTimes(1);
+			expect(mockDb.insert).toHaveBeenCalledTimes(2); // タグ追加 + 日本語翻訳
 		});
 
 		describe("H1見出しバリデーション", () => {
@@ -732,7 +743,9 @@ describe("PUT /articles/:id - 記事更新", () => {
 					});
 
 					mockDb.insert = vi.fn().mockReturnValue({
-						values: vi.fn().mockResolvedValue({}),
+						values: vi.fn().mockReturnValue({
+							onConflictDoUpdate: vi.fn().mockResolvedValue({}),
+						}),
 					});
 
 					// Act
@@ -813,7 +826,9 @@ describe("PUT /articles/:id - 記事更新", () => {
 					});
 
 					mockDb.insert = vi.fn().mockReturnValue({
-						values: vi.fn().mockResolvedValue({}),
+						values: vi.fn().mockReturnValue({
+							onConflictDoUpdate: vi.fn().mockResolvedValue({}),
+						}),
 					});
 
 					// Act
@@ -894,7 +909,9 @@ describe("PUT /articles/:id - 記事更新", () => {
 					});
 
 					mockDb.insert = vi.fn().mockReturnValue({
-						values: vi.fn().mockResolvedValue({}),
+						values: vi.fn().mockReturnValue({
+							onConflictDoUpdate: vi.fn().mockResolvedValue({}),
+						}),
 					});
 
 					// Act
@@ -975,7 +992,9 @@ describe("PUT /articles/:id - 記事更新", () => {
 					});
 
 					mockDb.insert = vi.fn().mockReturnValue({
-						values: vi.fn().mockResolvedValue({}),
+						values: vi.fn().mockReturnValue({
+							onConflictDoUpdate: vi.fn().mockResolvedValue({}),
+						}),
 					});
 
 					// Act
