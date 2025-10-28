@@ -64,6 +64,16 @@ interface ArticleEditFormProps {
 		status: "draft" | "published" | "archived";
 		publishedAt: string | null;
 		cfImageId: string | null;
+		translations?: {
+			ja: {
+				title: string | null;
+				content: string | null;
+			};
+			en: {
+				title: string | null;
+				content: string | null;
+			};
+		};
 		tags: Array<{
 			id: number;
 			slug: string;
@@ -100,6 +110,9 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 	const [publishedAtDate, setPublishedAtDate] = useState<Date | undefined>(
 		article.publishedAt ? new Date(article.publishedAt) : undefined
 	);
+
+	// 英語コンテンツを取得（プレビュー表示用）
+	const enContent = article.translations?.en.content || "";
 
 	/**
 	 * サムネイルURLを生成
@@ -343,6 +356,7 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 						setValue={setValue as (name: string, value: string) => void}
 						height={600}
 						language="ja"
+						enContent={enContent}
 					/>
 				</div>
 				{errors.content && (

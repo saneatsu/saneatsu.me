@@ -17,8 +17,12 @@ export default function ArticleEditPage() {
 	const params = useParams();
 	const articleId = parseInt(params.id as string);
 
-	// 記事データを取得
-	const { data: article, isLoading, error } = useGetById(articleId);
+	// 記事データを取得（全言語の翻訳を含む）
+	const {
+		data: article,
+		isLoading,
+		error,
+	} = useGetById(articleId, { includeAllTranslations: true });
 
 	// ローディング中
 	if (isLoading) {
