@@ -20,7 +20,6 @@ import type {
  */
 function getServiceBinding() {
 	// OpenNext Cloudflareの環境変数アクセス方法
-	// @ts-ignore
 	const cloudflareContext = (globalThis as any)[
 		Symbol.for("__cloudflare-context__")
 	];

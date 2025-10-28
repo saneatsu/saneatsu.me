@@ -15,7 +15,7 @@ import { ArticleEditForm } from "@/features/article-management";
  */
 export default function ArticleEditPage() {
 	const params = useParams();
-	const articleId = parseInt(params.id as string);
+	const articleId = parseInt(params.id as string, 10);
 
 	// 記事データを取得（全言語の翻訳を含む）
 	const {
