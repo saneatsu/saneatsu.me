@@ -1,8 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { honoClient } from "@/shared/lib/hono-client";
-import { queryKeys } from "@/shared/lib/query-keys";
-import type { TagUpdateRequest, TagUpdateResponse } from "@/shared/model";
+import { extractErrorMessage, queryKeys, useHonoClient } from "@/shared/lib";
+import type { TagUpdateRequest } from "@/shared/model";
 
 /**
  * タグ更新フック
@@ -22,10 +21,11 @@ import type { TagUpdateRequest, TagUpdateResponse } from "@/shared/model";
  */
 export function useUpdateTag() {
 	const queryClient = useQueryClient();
+	const client = useHonoClient();
 
 	return useMutation({
 		mutationFn: async (data: TagUpdateRequest & { id: number }) => {
-			const response = await honoClient.api.tags[":id"].$put({
+			const response = await client.api.tags[":id"].$put({
 				param: { id: String(data.id) },
 				json: {
 					name: data.name,
@@ -36,14 +36,10 @@ export function useUpdateTag() {
 
 			if (!response.ok) {
 				const error = await response.json();
-				const errorMessage =
-					(error as { error?: { message?: string } }).error?.message ||
-					"タグの更新に失敗しました";
-				throw new Error(errorMessage);
+				throw new Error(extractErrorMessage(error, "タグの更新に失敗しました"));
 			}
 
-			const result = await response.json();
-			return result as TagUpdateResponse;
+			return await response.json();
 		},
 		onSuccess: () => {
 			// タグ一覧のキャッシュを無効化して再取得

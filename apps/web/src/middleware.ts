@@ -1,9 +1,7 @@
+import { defaultLocale, locales } from "@saneatsu/i18n";
 import { type NextRequest, NextResponse } from "next/server";
 
 import { auth } from "./app/api/auth/[...nextauth]/auth";
-import { defaultLocale } from "./shared/config/locale-constants";
-
-const locales = ["ja", "en"] as const;
 
 /**
  * Accept-Languageヘッダーから適切な言語を検出する

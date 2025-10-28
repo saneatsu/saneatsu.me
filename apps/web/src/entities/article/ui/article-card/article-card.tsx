@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 
 import type { Article } from "@/shared";
@@ -8,6 +7,7 @@ import {
 	getArticleEmoji,
 	getCloudflareImageUrl,
 } from "@/shared/lib";
+import { Link } from "@/shared/lib/navigation";
 
 interface ArticleCardProps {
 	article: Article;

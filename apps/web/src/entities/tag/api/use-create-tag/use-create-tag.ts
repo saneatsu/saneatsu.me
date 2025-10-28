@@ -2,8 +2,8 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { honoClient, queryKeys } from "@/shared/lib";
-import type { TagCreateRequest, TagCreateResponse } from "@/shared/model";
+import { extractErrorMessage, queryKeys, useHonoClient } from "@/shared/lib";
+import type { TagCreateRequest } from "@/shared/model";
 
 /**
  * タグを作成するカスタムフック
@@ -30,28 +30,23 @@ import type { TagCreateRequest, TagCreateResponse } from "@/shared/model";
  */
 export function useCreateTag() {
 	const queryClient = useQueryClient();
+	const client = useHonoClient();
 
 	return useMutation({
 		mutationFn: async (data: TagCreateRequest) => {
-			const response = await honoClient.api.tags.$post({
+			const response = await client.api.tags.$post({
 				json: {
+					name: data.name,
 					slug: data.slug,
 				},
 			});
 
 			if (!response.ok) {
 				const error = await response.json();
-				// エラーレスポンスの構造に応じて適切にメッセージを取得
-				const errorMessage =
-					(error as { error?: { message?: string } }).error?.message ||
-					(error as { error?: string }).error ||
-					(error as { message?: string }).message ||
-					"タグの作成に失敗しました";
-				throw new Error(errorMessage);
+				throw new Error(extractErrorMessage(error, "タグの作成に失敗しました"));
 			}
 
-			const result = await response.json();
-			return result as TagCreateResponse;
+			return await response.json();
 		},
 		onSuccess: () => {
 			// タグ一覧のキャッシュを無効化

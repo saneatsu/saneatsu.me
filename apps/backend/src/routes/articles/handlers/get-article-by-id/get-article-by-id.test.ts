@@ -285,4 +285,98 @@ describe("GET /articles/admin/:id - 管理画面用記事詳細取得", () => {
 		expect(data.data.status).toBe("draft");
 		expect(data.data.title).toBe("下書き記事");
 	});
+
+	it("includeAllTranslations=trueの場合、全言語の翻訳を取得する", async () => {
+		// Arrange
+		const { mockDb } = setupDbMocks();
+
+		// createDatabaseClient関数がmockDbを返すように設定
+		const { createDatabaseClient } = await import("@saneatsu/db");
+		(createDatabaseClient as any).mockReturnValue(mockDb);
+
+		const mockArticle = createMockArticleWithTranslation({
+			article: {
+				id: "1",
+				slug: "test-article",
+				status: "published",
+			},
+			translation: {
+				title: "テスト記事",
+				content: "これはテスト記事の内容です。",
+			},
+		});
+
+		// 全言語の翻訳データ
+		const mockTranslations = [
+			{
+				language: "ja",
+				title: "テスト記事",
+				content: "これはテスト記事の内容です。",
+			},
+			{
+				language: "en",
+				title: "Test Article",
+				content: "This is the test article content.",
+			},
+		];
+
+		// 記事取得のモック
+		const articleMock = {
+			from: vi.fn().mockReturnValue({
+				leftJoin: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([mockArticle]),
+					}),
+				}),
+			}),
+		};
+
+		// 全翻訳取得のモック
+		const translationsMock = {
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockResolvedValue(mockTranslations),
+			}),
+		};
+
+		// タグ取得のモック（タグなし）
+		const tagsMock = {
+			from: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
+					innerJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockResolvedValue([]),
+					}),
+				}),
+			}),
+		};
+
+		mockDb.select
+			.mockReturnValueOnce(articleMock) // 記事取得
+			.mockReturnValueOnce(translationsMock) // 全翻訳取得
+			.mockReturnValueOnce(tagsMock); // タグ取得
+
+		// Act
+		const client = testClient(articlesRoute, {
+			TURSO_DATABASE_URL: "test://test.db",
+			TURSO_AUTH_TOKEN: "test-token",
+		}) as any;
+		const res = await client.admin[":id"].$get({
+			param: { id: "1" },
+			query: { includeAllTranslations: true },
+		});
+
+		// Assert
+		expect(res.status).toBe(200);
+		const data = await res.json();
+
+		// translations フィールドが含まれることを確認
+		expect(data.data.translations).toBeDefined();
+		expect(data.data.translations.ja).toEqual({
+			title: "テスト記事",
+			content: "これはテスト記事の内容です。",
+		});
+		expect(data.data.translations.en).toEqual({
+			title: "Test Article",
+			content: "This is the test article content.",
+		});
+	});
 });

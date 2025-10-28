@@ -3,22 +3,12 @@
 
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
-import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
-import remarkGfm from "remark-gfm";
 
-import { WikiLink } from "@/entities/article";
 import { RelatedArticles } from "@/features/article-management";
 import type { Article } from "@/shared";
-import {
-	cn,
-	extractHeadings,
-	formatRelativeDate,
-	getImageUrl,
-	remarkTag,
-	remarkWikiLink,
-} from "@/shared/lib";
-import { Badge, TableOfContents, ZoomableImage } from "@/shared/ui";
+import { extractHeadings, formatRelativeDate, getImageUrl } from "@/shared/lib";
+import { Badge, MarkdownPreview, TableOfContents } from "@/shared/ui";
 
 export interface ArticleDetailViewProps {
 	/** 表示する記事データ */
@@ -66,7 +56,7 @@ export function ArticleDetailView({
 
 	return (
 		<main className="container mx-auto px-4 py-8">
-			<div className="max-w-6xl mx-auto">
+			<article className="max-w-6xl mx-auto">
 				{/* Article Header */}
 				<header className="mb-12 space-y-6">
 					<div className="space-y-4">
@@ -150,173 +140,18 @@ export function ArticleDetailView({
 				<div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8 lg:gap-12">
 					{/* Article Content */}
 					<div className="min-w-0 order-2 lg:order-1">
-						<article className="prose prose-neutral dark:prose-invert max-w-none">
-							<ReactMarkdown
-								remarkPlugins={[remarkGfm, remarkWikiLink, remarkTag]}
-								rehypePlugins={[rehypeHighlight]}
-								components={{
-									h1: ({ children }) => (
-										<h1
-											id={
-												extractHeadings(article.content || "").find(
-													(h) => h.text === children?.toString()
-												)?.id
-											}
-											className="text-2xl font-semibold mt-6 mb-3 border-b-4 border-double border-border pb-2 scroll-mt-8"
-										>
-											{children}
-										</h1>
-									),
-									h2: ({ children }) => (
-										<h2
-											id={
-												extractHeadings(article.content || "").find(
-													(h) => h.text === children?.toString()
-												)?.id
-											}
-											className="text-2xl font-bold mt-6 mb-3 border-b-4 border-double border-border pb-2 scroll-mt-8"
-										>
-											{children}
-										</h2>
-									),
-									h3: ({ children }) => (
-										<h3
-											id={
-												extractHeadings(article.content || "").find(
-													(h) => h.text === children?.toString()
-												)?.id
-											}
-											className="text-xl font-semibold mt-4 mb-2 border-b border-border pb-1 scroll-mt-8"
-										>
-											{children}
-										</h3>
-									),
-									h4: ({ children }) => (
-										<h4
-											id={
-												extractHeadings(article.content || "").find(
-													(h) => h.text === children?.toString()
-												)?.id
-											}
-											className="text-lg font-semibold mt-3 mb-2 border-b border-dashed border-border pb-1 scroll-mt-8"
-										>
-											{children}
-										</h4>
-									),
-									h5: ({ children }) => (
-										<h5
-											id={
-												extractHeadings(article.content || "").find(
-													(h) => h.text === children?.toString()
-												)?.id
-											}
-											className="text-base font-semibold mt-2 mb-1 scroll-mt-8"
-										>
-											{children}
-										</h5>
-									),
-									h6: ({ children }) => (
-										<h6
-											id={
-												extractHeadings(article.content || "").find(
-													(h) => h.text === children?.toString()
-												)?.id
-											}
-											className="text-sm font-semibold mt-2 mb-1 scroll-mt-8"
-										>
-											{children}
-										</h6>
-									),
-									p: ({ children }) => (
-										<p className="mb-4 text-muted-foreground leading-relaxed">
-											{children}
-										</p>
-									),
-									ul: ({ children }) => (
-										<ul className="mb-4 ml-6 list-disc space-y-1">
-											{children}
-										</ul>
-									),
-									ol: ({ children }) => (
-										<ol className="mb-4 ml-6 list-decimal space-y-1">
-											{children}
-										</ol>
-									),
-									li: ({ children }) => (
-										<li className="text-muted-foreground">{children}</li>
-									),
-									code: ({ children, className }) => {
-										const isInline = !className;
-										if (isInline) {
-											return (
-												<code className="bg-muted text-foreground px-1 py-0.5 rounded text-sm font-mono">
-													{children}
-												</code>
-											);
-										}
-										return (
-											<code className={cn(className, "text-foreground")}>
-												{children}
-											</code>
-										);
-									},
-									pre: ({ children }) => (
-										<pre className="bg-muted text-foreground p-4 rounded-lg overflow-x-auto mb-4">
-											{children}
-										</pre>
-									),
-									blockquote: ({ children }) => (
-										<blockquote className="border-l-4 border-border pl-4 italic my-4">
-											{children}
-										</blockquote>
-									),
-									a: ({ children, href, ...props }) => {
-										// Wiki Linkの判定
-										const className = props.className as string;
-										const isWikiLink = className?.includes("wiki-link");
-
-										// Wiki Linkの場合はカスタムコンポーネントを使用
-										if (isWikiLink && href) {
-											return (
-												<WikiLink
-													href={href}
-													language={locale as "ja" | "en"}
-													className={className}
-													{...props}
-												>
-													{children}
-												</WikiLink>
-											);
-										}
-
-										// 通常のリンク
-										return (
-											<a
-												href={href}
-												className="underline decoration-dotted underline-offset-4 hover:decoration-solid"
-												{...props}
-											>
-												{children}
-											</a>
-										);
-									},
-									img: ({ src, alt }) => (
-										<ZoomableImage src={src || ""} alt={alt || ""} />
-									),
-								}}
-							>
-								{article.content}
-							</ReactMarkdown>
-						</article>
+						<MarkdownPreview
+							content={article.content || ""}
+							language={locale as "ja" | "en"}
+							className="prose-neutral"
+							rehypePlugins={[rehypeHighlight]}
+							imageComponent="zoomable"
+							headings={headings}
+						/>
 					</div>
 
 					{/* Table of Contents Sidebar */}
-					<aside
-						className={cn(
-							"order-1 lg:order-2 lg:sticky lg:top-20 lg:h-fit lg:w-[300px]",
-							headings.length === 0 && "hidden lg:block"
-						)}
-					>
+					<aside className="order-1 lg:order-2 lg:sticky lg:top-20 lg:h-fit lg:w-[300px]">
 						<div className="rounded-lg border bg-card p-6 shadow-sm lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto">
 							<TableOfContents
 								headings={headings}
@@ -335,7 +170,7 @@ export function ArticleDetailView({
 						<RelatedArticles slug={article.slug} limit={6} />
 					</div>
 				</section>
-			</div>
+			</article>
 		</main>
 	);
 }

@@ -27,6 +27,10 @@ export interface ArticleThumbnailUploaderProps {
 	articleId?: number;
 	/** 既存のサムネイルURL（編集時のみ） */
 	thumbnailUrl?: string | null;
+	/** モード: 'create'=新規作成時、'edit'=編集時 */
+	mode?: "create" | "edit";
+	/** ファイル選択時のコールバック（作成モード用） */
+	onFileSelect?: (file: File | null) => void;
 	/** アップロード成功時のコールバック */
 	onUploadSuccess?: (imageUrl: string, imageId: string) => void;
 	/** 削除成功時のコールバック */
@@ -47,17 +51,19 @@ export interface ArticleThumbnailUploaderProps {
  * 1. 画像ファイルを選択（画像ファイルのみ）
  * 2. 選択した画像のプレビュー表示
  * 3. 既存のサムネイル画像の表示
- * 4. アップロードボタン
- * 5. 削除ボタン（サムネイルがある場合のみ）
+ * 4. アップロードボタン（編集モードのみ）
+ * 5. 削除ボタン（編集モードかつサムネイルがある場合のみ）
  *
  * @example
- * // 新規作成時（articleIdなし）
+ * // 新規作成時（mode='create'）
  * <ArticleThumbnailUploader
- *   onUploadSuccess={(url, id) => console.log(url, id)}
+ *   mode="create"
+ *   onFileSelect={(file) => setThumbnailFile(file)}
  * />
  *
- * // 編集時（articleIdあり、既存サムネイルあり）
+ * // 編集時（mode='edit'、articleIdあり、既存サムネイルあり）
  * <ArticleThumbnailUploader
+ *   mode="edit"
  *   articleId={123}
  *   thumbnailUrl="https://example.com/image.jpg"
  *   onUploadSuccess={(url, id) => console.log(url, id)}
@@ -67,6 +73,8 @@ export interface ArticleThumbnailUploaderProps {
 export function ArticleThumbnailUploader({
 	articleId,
 	thumbnailUrl,
+	mode = "edit",
+	onFileSelect,
 	onUploadSuccess,
 	onDeleteSuccess,
 	onError,
@@ -106,6 +114,11 @@ export function ArticleThumbnailUploader({
 		// プレビューURLを生成
 		const url = URL.createObjectURL(file);
 		setPreviewUrl(url);
+
+		// 作成モードの場合、親コンポーネントにファイルを通知
+		if (mode === "create") {
+			onFileSelect?.(file);
+		}
 	};
 
 	/**
@@ -209,6 +222,11 @@ export function ArticleThumbnailUploader({
 		if (fileInputRef.current) {
 			fileInputRef.current.value = "";
 		}
+
+		// 作成モードの場合、親コンポーネントにクリアを通知
+		if (mode === "create") {
+			onFileSelect?.(null);
+		}
 	};
 
 	// 表示する画像URL（優先度: プレビュー > 既存サムネイル）
@@ -265,15 +283,17 @@ export function ArticleThumbnailUploader({
 						type="button"
 						variant="outline"
 						onClick={handleSelectClick}
-						disabled={disabled || isLoading || !articleId}
+						disabled={
+							disabled || isLoading || (mode === "edit" && !articleId) // 編集モードの場合のみarticleIdチェック
+						}
 					>
 						<ImagePlus className="mr-2 h-4 w-4" />
 						画像を選択
 					</Button>
 				)}
 
-				{/* アップロードボタン（ファイル選択時のみ表示） */}
-				{selectedFile && previewUrl && (
+				{/* アップロードボタン（ファイル選択時、編集モードのみ表示） */}
+				{selectedFile && previewUrl && mode === "edit" && (
 					<>
 						<Button
 							type="button"
@@ -295,8 +315,21 @@ export function ArticleThumbnailUploader({
 					</>
 				)}
 
-				{/* 削除ボタン（既存サムネイルがあり、プレビューがない場合のみ表示） */}
-				{thumbnailUrl && !previewUrl && (
+				{/* 作成モードでファイル選択時はキャンセルボタンのみ表示 */}
+				{selectedFile && previewUrl && mode === "create" && (
+					<Button
+						type="button"
+						variant="outline"
+						onClick={handleClearSelection}
+						disabled={disabled || isLoading}
+					>
+						<Trash2 className="mr-2 h-4 w-4" />
+						削除
+					</Button>
+				)}
+
+				{/* 削除ボタン（既存サムネイルがあり、プレビューがない場合、編集モードのみ表示） */}
+				{thumbnailUrl && !previewUrl && mode === "edit" && (
 					<Button
 						type="button"
 						variant="destructive"
@@ -312,9 +345,11 @@ export function ArticleThumbnailUploader({
 
 			{/* ヘルプテキスト */}
 			<p className="text-sm text-muted-foreground">
-				{!articleId
-					? "※ サムネイル画像は記事を保存した後にアップロードできます"
-					: "推奨サイズ: 横800px × 縦600px、10MB以下"}
+				{mode === "create"
+					? "推奨サイズ: 横1280px × 縦720px、10MB以下。記事作成時に自動的にアップロードされます。"
+					: !articleId
+						? "※ サムネイル画像は記事を保存した後にアップロードできます"
+						: "推奨サイズ: 横1280px × 縦720px、10MB以下"}
 			</p>
 
 			{/* 削除確認ダイアログ */}

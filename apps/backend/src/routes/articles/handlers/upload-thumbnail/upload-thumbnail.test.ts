@@ -46,6 +46,7 @@ const mockEnv: Env = {
 	CLOUDFLARE_ACCOUNT_ID: "test-account-id",
 	CLOUDFLARE_API_TOKEN: "test-token",
 	CLOUDFLARE_ACCOUNT_HASH: "test-hash",
+	GEMINI_API_KEY: "AItest-gemini-api-key-for-testing-purposes-only",
 	NODE_ENV: "development",
 };
 

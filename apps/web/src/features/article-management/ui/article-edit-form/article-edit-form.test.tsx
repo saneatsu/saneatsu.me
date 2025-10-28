@@ -5,6 +5,17 @@ import { describe, expect, it, vi } from "vitest";
 import { ArticleEditForm } from "./article-edit-form";
 
 // Mock dependencies
+vi.mock("next/navigation", () => ({
+	useRouter: vi.fn(() => ({
+		push: vi.fn(),
+		replace: vi.fn(),
+		back: vi.fn(),
+		forward: vi.fn(),
+		refresh: vi.fn(),
+		prefetch: vi.fn(),
+	})),
+}));
+
 vi.mock("@/entities/article", () => ({
 	useUpdate: vi.fn(() => ({
 		mutateAsync: vi.fn(),
@@ -133,7 +144,7 @@ describe("ArticleEditForm", () => {
 					title: "Test Article",
 					slug: "test-article",
 					content: "Test content",
-					status: "published",
+					status: "published" as const,
 					publishedAt: "2024-01-15T10:30:00.000Z", // ISO 8601形式
 					cfImageId: null,
 					tags: [],
@@ -161,7 +172,7 @@ describe("ArticleEditForm", () => {
 					title: "Draft Article",
 					slug: "draft-article",
 					content: "Draft content",
-					status: "published",
+					status: "published" as const,
 					publishedAt: null,
 					cfImageId: null,
 					tags: [],

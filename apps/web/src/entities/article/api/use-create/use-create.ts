@@ -2,11 +2,8 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { honoClient, queryKeys } from "@/shared/lib";
-import type {
-	ArticleCreateRequest,
-	ArticleCreateResponse,
-} from "@/shared/model";
+import { extractErrorMessage, queryKeys, useHonoClient } from "@/shared/lib";
+import type { ArticleCreateRequest } from "@/shared/model";
 
 /**
  * 記事を作成するカスタムフック
@@ -30,10 +27,11 @@ import type {
  */
 export function useCreate() {
 	const queryClient = useQueryClient();
+	const client = useHonoClient();
 
 	return useMutation({
 		mutationFn: async (data: ArticleCreateRequest) => {
-			const response = await honoClient.api.articles.$post({
+			const response = await client.api.articles.$post({
 				json: {
 					title: data.title,
 					slug: data.slug,
@@ -41,22 +39,20 @@ export function useCreate() {
 					status: data.status,
 					publishedAt: data.publishedAt,
 					tagIds: data.tagIds || [], // 空配列をデフォルトとする
+					cfImageId: data.cfImageId, // サムネイル画像ID
 				},
 			});
 
 			if (!response.ok) {
 				const error = await response.json();
-				// エラーレスポンスの構造に応じて適切にメッセージを取得
-				const errorMessage =
-					(error as { error?: { message?: string } }).error?.message ||
-					(error as { error?: string }).error ||
-					(error as { message?: string }).message ||
-					"記事の作成に失敗しました";
+				const errorMessage = extractErrorMessage(
+					error,
+					"記事の作成に失敗しました"
+				);
 				throw new Error(errorMessage);
 			}
 
-			const result = await response.json();
-			return result as ArticleCreateResponse;
+			return await response.json();
 		},
 		onSuccess: () => {
 			// 記事一覧のキャッシュを無効化

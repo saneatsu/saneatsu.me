@@ -4,13 +4,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useUpdateTag } from "./use-update-tag";
 
-// honoClient のモック
+// useHonoClient のモック
 const { mockPut } = vi.hoisted(() => ({
 	mockPut: vi.fn(),
 }));
 
-vi.mock("@/shared/lib/hono-client", () => ({
-	honoClient: {
+vi.mock("@/shared/lib", () => ({
+	useHonoClient: () => ({
 		api: {
 			tags: {
 				":id": {
@@ -18,7 +18,13 @@ vi.mock("@/shared/lib/hono-client", () => ({
 				},
 			},
 		},
+	}),
+	queryKeys: {
+		tag: {
+			all: () => ["tags"],
+		},
 	},
+	extractErrorMessage: vi.fn(),
 }));
 
 /**

@@ -17,10 +17,25 @@ const ArticleUpdateSchema = z.object({
 			example: "updated-article-slug",
 			description: "記事のスラッグ（小文字の英数字とハイフンのみ、1-100文字）",
 		}),
-	content: z.string().min(1).openapi({
-		example: "# 更新されたタイトル\n\nこれは更新された記事の本文です...",
-		description: "記事の本文（Markdown形式）",
-	}),
+	content: z
+		.string()
+		.min(1)
+		.refine(
+			(content) => {
+				// コードブロックを除外してからチェック
+				const contentWithoutCodeBlocks = content.replace(/```[\s\S]*?```/g, "");
+				// H1見出し（行頭 + # + スペース + #以外）をチェック
+				return !/(^|\n)#\s+(?!#)/m.test(contentWithoutCodeBlocks);
+			},
+			{
+				message:
+					"記事本文でH1見出し（# 1個）は使用できません。H2（##）以降を使用してください。",
+			}
+		)
+		.openapi({
+			example: "## 更新されたタイトル\n\nこれは更新された記事の本文です...",
+			description: "記事の本文（Markdown形式）",
+		}),
 	status: z.enum(["draft", "published", "archived"]).openapi({
 		example: "published",
 		description: "記事のステータス",
@@ -55,7 +70,7 @@ const ArticleSchema = z.object({
 		example: "image-id-5678",
 		description: "Cloudflare画像ID",
 	}),
-	status: z.string().openapi({
+	status: z.enum(["draft", "published", "archived"]).openapi({
 		example: "published",
 		description: "記事のステータス",
 	}),
@@ -78,6 +93,20 @@ const ArticleSchema = z.object({
 	viewCount: z.number().int().openapi({
 		example: 127,
 		description: "記事の閲覧数（言語ごと）",
+	}),
+});
+
+/**
+ * 警告スキーマ
+ */
+const WarningSchema = z.object({
+	code: z.string().openapi({
+		example: "TRANSLATION_FAILED",
+		description: "警告コード",
+	}),
+	message: z.string().openapi({
+		example: "英語への翻訳に失敗しました",
+		description: "警告メッセージ",
 	}),
 });
 
@@ -127,6 +156,10 @@ export const updateArticleRoute = createRoute({
 						message: z.string().openapi({
 							example: "記事が正常に更新されました",
 							description: "更新成功メッセージ",
+						}),
+						warnings: z.array(WarningSchema).optional().openapi({
+							description:
+								"警告メッセージの配列（翻訳失敗などの非致命的なエラー）",
 						}),
 					}),
 				},

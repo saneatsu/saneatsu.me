@@ -257,7 +257,7 @@ export function ArticlesTable({ onRefresh }: ArticlesTableProps) {
 		}
 
 		return tagsData.data.map((tag) => ({
-			label: tag.translations.ja,
+			label: tag.translations.ja || tag.slug, // FIXME:
 			value: tag.id.toString(),
 			count: tag.articleCount,
 		}));

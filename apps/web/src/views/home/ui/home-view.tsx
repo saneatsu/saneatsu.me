@@ -20,6 +20,10 @@ export function HomeView() {
 					<h1 className="text-3xl font-bold">{t("hero.title")}</h1>
 				</section> */}
 
+				<h4 className="text-sm text-muted-foreground">
+					{t("migrationNotice")}
+				</h4>
+
 				{/* Articles Section */}
 				<section>
 					<h2 className="text-2xl font-bold mb-6">{t("articles.title")}</h2>

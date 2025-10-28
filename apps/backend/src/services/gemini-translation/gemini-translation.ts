@@ -14,8 +14,8 @@ export class GeminiTranslationService {
 
 	constructor(apiKey: string) {
 		this.genAI = new GoogleGenerativeAI(apiKey);
-		// Gemini 1.5 Flashモデルを使用（高速・低コスト）
-		this.model = this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+		// Gemini 2.5 Flashモデルを使用（高速・低コスト）
+		this.model = this.genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 	}
 
 	/**

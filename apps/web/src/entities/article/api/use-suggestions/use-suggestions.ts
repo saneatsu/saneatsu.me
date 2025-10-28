@@ -2,11 +2,12 @@
 
 import { useQuery } from "@tanstack/react-query";
 
+import type { QueryConfig } from "@/shared/lib";
 import {
-	honoClient,
-	type QueryConfig,
+	extractErrorMessage,
 	queryKeys,
 	useDebounce,
+	useHonoClient,
 } from "@/shared/lib";
 
 /**
@@ -30,7 +31,7 @@ export interface SuggestionItem {
 /**
  * サジェストレスポンスの型
  */
-export interface SuggestionsResponse {
+interface SuggestionsResponse {
 	/** サジェスト配列 */
 	suggestions: SuggestionItem[];
 	/** キャッシュから取得したか */
@@ -40,7 +41,7 @@ export interface SuggestionsResponse {
 /**
  * 記事サジェスト取得オプション
  */
-export type UseArticleSuggestionsOptions = {
+type UseArticleSuggestionsOptions = {
 	/** 検索クエリ */
 	query: string;
 	/** 言語 */
@@ -90,6 +91,7 @@ export function useArticleSuggestions({
 }: UseArticleSuggestionsOptions) {
 	// APIリクエストを300msでデバウンス
 	const debouncedQuery = useDebounce(query, 300);
+	const client = useHonoClient();
 
 	return useQuery({
 		queryKey: queryKeys.article.suggestions({
@@ -115,20 +117,18 @@ export function useArticleSuggestions({
 				queryParams.targetSlug = targetSlug;
 			}
 
-			const response = await honoClient.api.articles.suggestions.$get({
+			const response = await client.api.articles.suggestions.$get({
 				query: queryParams,
 			});
 
 			if (!response.ok) {
 				const error = await response.json();
 				throw new Error(
-					(error as { error?: { message?: string } }).error?.message ||
-						"サジェストの取得に失敗しました"
+					extractErrorMessage(error, "サジェストの取得に失敗しました")
 				);
 			}
 
-			const data = await response.json();
-			return data as SuggestionsResponse;
+			return await response.json();
 		},
 		staleTime: 0, // 常に新しいデータを取得（リアルタイム検索のため）
 		gcTime: 0, // キャッシュを即座に削除（React Query v5）
