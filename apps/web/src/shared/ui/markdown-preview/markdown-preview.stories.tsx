@@ -730,3 +730,119 @@ https://www.youtube.com/watch?v=jNQXAC9IVRw
 		);
 	},
 };
+
+/**
+ * Amazon商品カードの埋め込み（基本）
+ */
+export const AmazonProductCardBasic: Story = {
+	name: "Amazon商品カードの埋め込み（基本）",
+	tags: ["code-only"],
+	args: {
+		content: `# Amazon商品の紹介
+
+以下はAmazon商品のリンクです。
+
+https://www.amazon.co.jp/dp/B08N5WRWNW
+
+商品の詳細はリンクをクリックして確認できます。`,
+		language: "ja",
+	},
+	parameters: {},
+};
+
+/**
+ * Amazon商品カードの埋め込み（複数商品）
+ */
+export const AmazonProductCardMultiple: Story = {
+	name: "Amazon商品カードの埋め込み（複数商品）",
+	tags: ["code-only"],
+	args: {
+		content: `# おすすめ商品
+
+## 商品1
+
+https://www.amazon.co.jp/dp/B08N5WRWNW
+
+## 商品2
+
+https://www.amazon.co.jp/dp/B0CX23V2ZK
+
+各商品は独立したカードとして表示されます。`,
+		language: "ja",
+	},
+	parameters: {},
+};
+
+/**
+ * Amazon商品カードの埋め込み（テキストと混在）
+ */
+export const AmazonProductCardWithText: Story = {
+	name: "Amazon商品カードの埋め込み（テキストと混在）",
+	tags: ["validation"],
+	args: {
+		content: `# Amazon商品カードとテキストの混在
+
+Amazon商品カードの埋め込みは単独行のURLのみが対象です。
+
+通常のテキスト内の[Amazonリンク](https://www.amazon.co.jp/dp/B08N5WRWNW)は埋め込まれず、通常のリンクとして表示されます。
+
+https://www.amazon.co.jp/dp/B0CX23V2ZK
+
+上記のように単独行のAmazon URLのみが商品カードとして埋め込まれます。`,
+		language: "ja",
+	},
+	parameters: {},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+
+		// 通常のリンクが存在することを確認
+		const link = canvas.getByRole("link", { name: /Amazonリンク/ });
+		expect(link).toBeInTheDocument();
+		expect(link).toHaveAttribute(
+			"href",
+			"https://www.amazon.co.jp/dp/B08N5WRWNW"
+		);
+
+		// Amazon商品カード（ボタンまたはリンク）が存在することを確認
+		const amazonCard = canvasElement.querySelector("a[href*='B0CX23V2ZK']");
+		expect(amazonCard).toBeInTheDocument();
+	},
+};
+
+/**
+ * Amazon商品カードの埋め込み（短縮URL）
+ */
+export const AmazonProductCardShortUrl: Story = {
+	name: "Amazon商品カードの埋め込み（短縮URL）",
+	tags: ["validation"],
+	args: {
+		content: `# Amazon短縮URLの埋め込み
+
+Amazonの短縮URL（amzn.to、amzn.asia）にも対応しています。
+
+https://amzn.to/3ABC123
+
+https://amzn.asia/d/xyz789
+
+短縮URLの場合、ASINが直接取得できないため、「Amazon商品（短縮URL）」と表示されます。`,
+		language: "ja",
+	},
+	parameters: {},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		// 「Amazon商品（短縮URL）」テキストが存在することを確認
+		const text = canvasElement.textContent;
+		expect(text).toContain("Amazon商品（短縮URL）");
+
+		// amzn.toのリンクが存在することを確認
+		const amznToLink = canvasElement.querySelector("a[href*='amzn.to']");
+		expect(amznToLink).toBeInTheDocument();
+
+		// amzn.asiaのリンクが存在することを確認
+		const amznAsiaLink = canvasElement.querySelector("a[href*='amzn.asia']");
+		expect(amznAsiaLink).toBeInTheDocument();
+
+		// ドメイン表示を確認
+		expect(text).toContain("amzn.to");
+		expect(text).toContain("amzn.asia");
+	},
+};

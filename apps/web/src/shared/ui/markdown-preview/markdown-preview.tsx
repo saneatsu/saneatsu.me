@@ -10,6 +10,7 @@ import remarkGfm from "remark-gfm";
 import type { PluggableList } from "unified";
 
 import {
+	remarkAmazon,
 	remarkTag,
 	remarkTweet,
 	remarkUrlCard,
@@ -33,6 +34,7 @@ export const defaultRemarkPlugins = [
 	remarkTag,
 	remarkTweet,
 	remarkYoutube,
+	remarkAmazon,
 ] as const;
 
 // Wiki Linkコンポーネントを動的インポート（クライアントサイドのみ）
@@ -66,6 +68,14 @@ const TweetEmbed = dynamic(
 const YouTubeEmbed = dynamic(
 	() =>
 		import("../youtube-embed/youtube-embed").then((mod) => mod.YouTubeEmbed),
+	{
+		ssr: false,
+	}
+);
+
+// Amazon Product Cardコンポーネントを動的インポート（クライアントサイドのみ）
+const AmazonProductCard = dynamic(
+	() => import("@/entities/article").then((mod) => mod.AmazonProductCard),
 	{
 		ssr: false,
 	}
@@ -250,6 +260,11 @@ export function createDefaultMarkdownComponents(
 		// @ts-expect-error - カスタムノードのため型定義がない
 		youtube: ({ videoId, startTime }) => (
 			<YouTubeEmbed videoId={videoId} startTime={startTime} />
+		),
+		// Amazon商品カードのカスタムレンダリング
+		// @ts-expect-error - カスタムノードのため型定義がない
+		amazon: ({ url, asin, domain }) => (
+			<AmazonProductCard url={url} asin={asin} domain={domain} />
 		),
 	};
 }
