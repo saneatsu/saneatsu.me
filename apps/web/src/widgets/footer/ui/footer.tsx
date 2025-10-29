@@ -1,7 +1,6 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { siGithub, siX } from "simple-icons";
 
 import { Link } from "@/shared/lib";
 
@@ -23,42 +22,6 @@ export function Footer() {
 						</Link>
 						<Link href="/terms" className="hover:underline">
 							{t("terms")}
-						</Link>
-						<Link
-							href="https://github.com/saneatsu/saneatsu.me"
-							target="_blank"
-							rel="noopener noreferrer"
-							className="flex items-center gap-1.5 hover:underline"
-							aria-label="GitHub"
-						>
-							<svg
-								role="img"
-								viewBox="0 0 24 24"
-								className="h-4 w-4"
-								fill="currentColor"
-							>
-								<title>GitHub</title>
-								<path d={siGithub.path} />
-							</svg>
-							<span>GitHub</span>
-						</Link>
-						<Link
-							href="https://x.com/saneatsu_wakana"
-							target="_blank"
-							rel="noopener noreferrer"
-							className="flex items-center gap-1.5 hover:underline"
-							aria-label="X"
-						>
-							<svg
-								role="img"
-								viewBox="0 0 24 24"
-								className="h-4 w-4"
-								fill="currentColor"
-							>
-								<title>X</title>
-								<path d={siX.path} />
-							</svg>
-							<span>X</span>
 						</Link>
 					</div>
 				</div>
