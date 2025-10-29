@@ -1,17 +1,11 @@
 "use client";
 
-import { Menu } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import { siGithub, siX } from "simple-icons";
 
 import { LanguageSwitcher } from "@/features/lang";
 import { cn, Link, usePathname } from "@/shared/lib";
-import {
-	Button,
-	ThemeSelector,
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
-} from "@/shared/ui";
+import { ThemeSelector } from "@/shared/ui";
 
 export function Header() {
 	const t = useTranslations("navigation");
@@ -57,7 +51,7 @@ export function Header() {
 						>
 							<span className="font-bold">saneatsu.me</span>
 						</Link>
-						<nav className="flex items-center space-x-6 text-sm font-medium">
+						<nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
 							<Link href="/blog" className={getNavLinkClassName("/blog")}>
 								Blog
 							</Link>
@@ -67,21 +61,42 @@ export function Header() {
 						</nav>
 					</div>
 					<div className="flex flex-1 items-center justify-end space-x-2">
+						<Link
+							href="https://github.com/saneatsu/saneatsu.me"
+							target="_blank"
+							rel="noopener noreferrer"
+							className="text-foreground/60 transition-colors hover:text-foreground/80"
+							aria-label="GitHub"
+						>
+							<svg
+								role="img"
+								viewBox="0 0 24 24"
+								className="h-5 w-5 mx-2"
+								fill="currentColor"
+							>
+								<title>GitHub</title>
+								<path d={siGithub.path} />
+							</svg>
+						</Link>
+						<Link
+							href="https://x.com/saneatsu_wakana"
+							target="_blank"
+							rel="noopener noreferrer"
+							className="text-foreground/60 transition-colors hover:text-foreground/80"
+							aria-label="X"
+						>
+							<svg
+								role="img"
+								viewBox="0 0 24 24"
+								className="h-4 w-4 mx-2"
+								fill="currentColor"
+							>
+								<title>X</title>
+								<path d={siX.path} />
+							</svg>
+						</Link>
 						<LanguageSwitcher />
 						<ThemeSelector />
-						<Tooltip>
-							<TooltipTrigger asChild>
-								<Button
-									variant="ghost"
-									size="icon"
-									className="md:hidden"
-									aria-label="Toggle menu"
-								>
-									<Menu className="h-4 w-4" />
-								</Button>
-							</TooltipTrigger>
-							<TooltipContent>メニューを開く</TooltipContent>
-						</Tooltip>
 					</div>
 				</div>
 			</div>

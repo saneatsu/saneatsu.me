@@ -5,6 +5,7 @@ import { getMessages } from "next-intl/server";
 
 import { Footer } from "@/widgets/footer";
 import { Header } from "@/widgets/header";
+import { MobileMenu } from "@/widgets/mobile-menu";
 
 // サポートされているロケール
 const locales = ["ja", "en"] as const;
@@ -76,6 +77,7 @@ export default async function LocaleLayout({ children, params }: Props) {
 				<Header />
 				<main className="flex-1">{children}</main>
 				<Footer />
+				<MobileMenu />
 			</div>
 		</NextIntlClientProvider>
 	);

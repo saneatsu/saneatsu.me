@@ -1,2 +1,2 @@
 // Header Widget Public API
-export { Header } from "./ui/header";
+export { Header } from "./ui/header/header";

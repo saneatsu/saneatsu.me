@@ -63,6 +63,12 @@ export {
 	type QueryConfig,
 	queryConfig,
 } from "./react-query";
+// Remark Amazon
+export {
+	extractAmazonAsin,
+	extractAmazonDomain,
+	remarkAmazon,
+} from "./remark-amazon/remark-amazon";
 // Remark Tag
 export { remarkTag } from "./remark-tag";
 // Remark Tweet
@@ -71,6 +77,12 @@ export { remarkTweet } from "./remark-tweet";
 export { remarkUrlCard } from "./remark-url-card";
 // Remark Wiki Link
 export { remarkWikiLink } from "./remark-wiki-link";
+// Remark YouTube
+export {
+	extractYouTubeTimestamp,
+	extractYouTubeVideoId,
+	remarkYoutube,
+} from "./remark-youtube/remark-youtube";
 // React Hooks
 export { useDebounce } from "./use-debounce";
 export { useIsMobile } from "./use-mobile";
