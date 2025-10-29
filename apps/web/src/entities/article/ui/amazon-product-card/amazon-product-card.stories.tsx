@@ -85,7 +85,7 @@ export const ButtonValidation: Story = {
 			);
 		}
 
-		// rel属性に "sponsored" が含まれることを確認（アフィリエイトリンク）
+		// rel属性に "sponsored" が含まれることを確認（アフィリエイトリンクであることを示す）
 		if (button) {
 			await expect(button).toHaveAttribute(
 				"rel",
