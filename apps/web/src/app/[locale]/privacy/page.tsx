@@ -28,37 +28,6 @@ export default async function PrivacyPage({
 
 				<section className="mb-8">
 					<h2 className="text-2xl font-semibold mb-4">
-						{t("dataCollection.title")}
-					</h2>
-					<p>{t("dataCollection.content")}</p>
-					<ul className="list-disc pl-6 mt-2">
-						<li>{t("dataCollection.items.email")}</li>
-						<li>{t("dataCollection.items.name")}</li>
-						<li>{t("dataCollection.items.profile")}</li>
-					</ul>
-				</section>
-
-				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">
-						{t("dataUsage.title")}
-					</h2>
-					<p>{t("dataUsage.content")}</p>
-				</section>
-
-				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">
-						{t("dataSecurity.title")}
-					</h2>
-					<p>{t("dataSecurity.content")}</p>
-				</section>
-
-				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">{t("cookies.title")}</h2>
-					<p>{t("cookies.content")}</p>
-				</section>
-
-				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">
 						{t("thirdParty.title")}
 					</h2>
 					<p>{t("thirdParty.content")}</p>
@@ -75,7 +44,7 @@ export default async function PrivacyPage({
 				</section>
 
 				<p className="text-sm text-muted-foreground mt-8">
-					{t("lastUpdated")}: 2024-12-15
+					{t("lastUpdated")}: 2025-10-29
 				</p>
 			</div>
 		</div>
