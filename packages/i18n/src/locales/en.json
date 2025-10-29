@@ -253,16 +253,24 @@
 		},
 		"service": {
 			"title": "Service Description",
-			"content": "The Site is a web service that provides technical articles and blog content. Service content may change without notice."
+			"content": "The Site is a personal website that provides technical articles and blog content. Some content may include AI-assisted translations or generated text, and the Site does not guarantee its accuracy. Service content may change without notice."
+		},
+		"affiliate": {
+			"title": "Affiliate Links and Advertising",
+			"content": "This site is a participant in the Amazon Associates Program, an affiliate advertising program designed to provide a means for sites to earn advertising fees by advertising and linking to Amazon.co.jp. If you click on a link in an article and make a purchase, this site may earn a referral fee. The presence or absence of a referral fee does not affect the product price. We may add other affiliate programs or advertisements in the future. Articles containing affiliate links will clearly indicate this within the article."
+		},
+		"externalLinks": {
+			"title": "External Links",
+			"content": "This site contains links to external websites. The Site assumes no responsibility for the content, services, or transactions on linked sites. Please refer to each site's privacy policy and terms of service when using external sites."
 		},
 		"userObligations": {
 			"title": "User Obligations",
-			"content": "Users must comply with the following when using the Site:",
+			"content": "Users must comply with the following when browsing the Site and when submitting inquiries or other information:",
 			"items": {
 				"lawful": "Not engage in activities that violate laws or public order and morals",
-				"respectful": "Not infringe on the rights of other users or third parties",
-				"accurate": "Not register false information",
-				"security": "Not engage in unauthorized access or activities that burden the system"
+				"respectful": "Not infringe on the rights or privacy of others",
+				"accurate": "Provide accurate and up-to-date information when submitting inquiries or feedback",
+				"security": "Not engage in unauthorized access or activities that place excessive load on the system"
 			}
 		},
 		"prohibited": {
@@ -281,11 +289,11 @@
 		},
 		"disclaimer": {
 			"title": "Disclaimer",
-			"content": "The Site does not guarantee the accuracy or completeness of the information provided. The Site assumes no responsibility for any damages arising from the use of the Site."
+			"content": "The Site does not guarantee the accuracy, completeness, or timeliness of the information provided. Except where liability is required by law, the Site is not responsible for any damages arising from its use."
 		},
 		"limitation": {
 			"title": "Limitation of Liability",
-			"content": "The Site is not responsible for damages caused by interruption, suspension, termination, change, or unavailability of the service."
+			"content": "The Site is not responsible for damages caused by interruption, suspension, termination, change, or unavailability of the service, unless caused by the Site's willful misconduct or gross negligence."
 		},
 		"termination": {
 			"title": "Termination of Use",
@@ -297,7 +305,11 @@
 		},
 		"changes": {
 			"title": "Changes to Terms",
-			"content": "These Terms may be changed as necessary. Changed terms become effective when posted on the Site."
+			"content": "These Terms may be changed as necessary. Updated Terms take effect when posted on the Site. Material changes will be communicated through reasonable means on the Site."
+		},
+		"contact": {
+			"title": "Contact",
+			"content": "For questions regarding these Terms or the operation of the Site, please contact nito.tech.official@gmail.com."
 		},
 		"lastUpdated": "Last Updated"
 	}
