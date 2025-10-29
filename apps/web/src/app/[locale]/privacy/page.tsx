@@ -6,8 +6,13 @@ export const metadata: Metadata = {
 	description: "saneatsu.meのプライバシーポリシー",
 };
 
-export default async function PrivacyPage() {
-	const t = await getTranslations("Privacy");
+export default async function PrivacyPage({
+	params,
+}: {
+	params: Promise<{ locale: string }>;
+}) {
+	const { locale } = await params;
+	const t = await getTranslations({ locale, namespace: "Privacy" });
 
 	return (
 		<div className="container mx-auto py-8 px-4 max-w-4xl">
