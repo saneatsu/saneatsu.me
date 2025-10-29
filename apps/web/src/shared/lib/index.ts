@@ -63,6 +63,12 @@ export {
 	type QueryConfig,
 	queryConfig,
 } from "./react-query";
+// Remark Amazon
+export {
+	extractAmazonAsin,
+	extractAmazonDomain,
+	remarkAmazon,
+} from "./remark-amazon/remark-amazon";
 // Remark Tag
 export { remarkTag } from "./remark-tag";
 // Remark Tweet
