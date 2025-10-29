@@ -71,7 +71,7 @@ export function Header() {
 							<svg
 								role="img"
 								viewBox="0 0 24 24"
-								className="h-5 w-5"
+								className="h-5 w-5 mx-2"
 								fill="currentColor"
 							>
 								<title>GitHub</title>
@@ -88,7 +88,7 @@ export function Header() {
 							<svg
 								role="img"
 								viewBox="0 0 24 24"
-								className="h-5 w-5"
+								className="h-4 w-4 mx-2"
 								fill="currentColor"
 							>
 								<title>X</title>
