@@ -6,8 +6,13 @@ export const metadata: Metadata = {
 	description: "saneatsu.meの利用規約",
 };
 
-export default async function TermsPage() {
-	const t = await getTranslations("Terms");
+export default async function TermsPage({
+	params,
+}: {
+	params: Promise<{ locale: string }>;
+}) {
+	const { locale } = await params;
+	const t = await getTranslations({ locale, namespace: "Terms" });
 
 	return (
 		<div className="container mx-auto py-8 px-4 max-w-4xl">
@@ -24,6 +29,20 @@ export default async function TermsPage() {
 				<section className="mb-8">
 					<h2 className="text-2xl font-semibold mb-4">{t("service.title")}</h2>
 					<p>{t("service.content")}</p>
+				</section>
+
+				<section className="mb-8">
+					<h2 className="text-2xl font-semibold mb-4">
+						{t("affiliate.title")}
+					</h2>
+					<p>{t("affiliate.content")}</p>
+				</section>
+
+				<section className="mb-8">
+					<h2 className="text-2xl font-semibold mb-4">
+						{t("externalLinks.title")}
+					</h2>
+					<p>{t("externalLinks.content")}</p>
 				</section>
 
 				<section className="mb-8">
@@ -92,8 +111,13 @@ export default async function TermsPage() {
 					<p>{t("changes.content")}</p>
 				</section>
 
+				<section className="mb-8">
+					<h2 className="text-2xl font-semibold mb-4">{t("contact.title")}</h2>
+					<p>{t("contact.content")}</p>
+				</section>
+
 				<p className="text-sm text-muted-foreground mt-8">
-					{t("lastUpdated")}: 2024-12-15
+					{t("lastUpdated")}: 2025-10-29
 				</p>
 			</div>
 		</div>
