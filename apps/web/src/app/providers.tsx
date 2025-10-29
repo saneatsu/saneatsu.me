@@ -24,7 +24,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
 				<SessionProvider>
 					<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
 						{children}
-						<Toaster />
+						<Toaster expand={true} />
 					</ThemeProvider>
 				</SessionProvider>
 				{/* 開発環境でのみReact Query DevToolsを表示 */}
