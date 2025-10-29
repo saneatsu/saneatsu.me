@@ -309,10 +309,10 @@ export function MarkdownPreview({
 	imageComponent = "article",
 	headings,
 }: MarkdownPreviewProps) {
-	const { theme } = useTheme();
+	const { resolvedTheme } = useTheme();
 
-	// themeの初期値がundefinedの場合に備えてfallbackを設定
-	const resolvedTheme = theme || "light";
+	// resolvedThemeの初期値がundefinedの場合に備えてfallbackを設定
+	const currentTheme = resolvedTheme || "light";
 
 	// テーマに応じてhighlight.jsのスタイルを動的に読み込む
 	useEffect(() => {
@@ -329,7 +329,7 @@ export function MarkdownPreview({
 		link.rel = "stylesheet";
 		link.setAttribute("data-highlight-theme", "true");
 		link.href =
-			resolvedTheme === "dark"
+			currentTheme === "dark"
 				? "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css"
 				: "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github.min.css";
 		document.head.appendChild(link);
@@ -337,7 +337,7 @@ export function MarkdownPreview({
 		return () => {
 			link.remove();
 		};
-	}, [resolvedTheme]);
+	}, [currentTheme]);
 
 	const defaultComponents = createDefaultMarkdownComponents(
 		language,
@@ -354,7 +354,7 @@ export function MarkdownPreview({
 	return (
 		<div
 			className={`prose dark:prose-invert max-w-none bg-background ${className}`}
-			data-color-mode={resolvedTheme === "dark" ? "dark" : "light"}
+			data-color-mode={currentTheme === "dark" ? "dark" : "light"}
 		>
 			<ReactMarkdown
 				remarkPlugins={[...defaultRemarkPlugins]}
