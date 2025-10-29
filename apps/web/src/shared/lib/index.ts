@@ -71,6 +71,12 @@ export { remarkTweet } from "./remark-tweet";
 export { remarkUrlCard } from "./remark-url-card";
 // Remark Wiki Link
 export { remarkWikiLink } from "./remark-wiki-link";
+// Remark YouTube
+export {
+	extractYouTubeTimestamp,
+	extractYouTubeVideoId,
+	remarkYoutube,
+} from "./remark-youtube/remark-youtube";
 // React Hooks
 export { useDebounce } from "./use-debounce";
 export { useIsMobile } from "./use-mobile";
