@@ -128,6 +128,38 @@ const parseOgpFromHtml = (html: string): OgpMetaTags => {
 	parser.write(html);
 	parser.end();
 
+	// Amazon専用: data-a-dynamic-imageから画像URLを抽出
+	if (!metaTags.ogImage && html.includes("data-a-dynamic-image")) {
+		try {
+			const dynamicImageMatch = html.match(/data-a-dynamic-image="([^"]+)"/);
+			if (dynamicImageMatch) {
+				// HTMLエンティティをデコード
+				const imageData = dynamicImageMatch[1]
+					.replace(/&quot;/g, '"')
+					.replace(/&amp;/g, "&")
+					.replace(/&lt;/g, "<")
+					.replace(/&gt;/g, ">");
+
+				// JSONをパース
+				const imageObj = JSON.parse(imageData);
+
+				// 最初の画像URLを取得（最大解像度のものを選択）
+				const imageUrls = Object.keys(imageObj);
+				if (imageUrls.length > 0) {
+					// 解像度が最大のものを選択（サイズの配列の最初の要素で比較）
+					const sortedUrls = imageUrls.sort((a, b) => {
+						const sizeA = imageObj[a][0] || 0;
+						const sizeB = imageObj[b][0] || 0;
+						return sizeB - sizeA;
+					});
+					metaTags.ogImage = sortedUrls[0];
+				}
+			}
+		} catch (err) {
+			console.error("Failed to parse Amazon image data:", err);
+		}
+	}
+
 	return metaTags;
 };
 
@@ -150,7 +182,11 @@ export const getOgp: Handler = async (c) => {
 		const response = await fetch(url, {
 			headers: {
 				"User-Agent":
-					"Mozilla/5.0 (compatible; OGPBot/1.0; +https://saneatsu.me/)",
+					"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+				Accept:
+					"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+				"Accept-Language": "ja-JP,ja;q=0.9,en-US;q=0.8,en;q=0.7",
+				"Cache-Control": "no-cache",
 			},
 		});
 
