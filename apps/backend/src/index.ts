@@ -60,23 +60,7 @@ export function createApp(options?: { isDevelopment?: boolean }) {
 				},
 				credentials: true,
 				allowMethods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-				allowHeaders: [
-					"Content-Type",
-					"Authorization",
-					"X-User-Email",
-					// Instagram WebView対応のための追加ヘッダー
-					"User-Agent",
-					"Referer",
-					"Origin",
-					"Accept",
-					"Accept-Language",
-					"Accept-Encoding",
-					"Cache-Control",
-				],
-				// Preflightリクエストのキャッシュ時間を1日に設定
-				maxAge: 86400,
-				// クライアントに公開するレスポンスヘッダー
-				exposeHeaders: ["Content-Type", "Content-Length", "X-Request-Id"],
+				allowHeaders: ["Content-Type", "Authorization", "X-User-Email"],
 			});
 			return corsMiddleware(c, next);
 		})
