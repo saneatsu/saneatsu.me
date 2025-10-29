@@ -2,8 +2,6 @@
 
 import { ExternalLink, ShoppingCart } from "lucide-react";
 
-import { Button } from "@/shared/ui";
-
 import { useOgp } from "../../api/use-ogp/use-ogp";
 
 /**
@@ -79,7 +77,7 @@ export function AmazonProductCard({
 				href={url}
 				target="_blank"
 				rel="noopener noreferrer sponsored"
-				className="block not-prose my-4"
+				className="block not-prose my-4 cursor-pointer"
 			>
 				<div className="border border-[#FF9900]/20 rounded-lg p-4 hover:shadow-md transition-shadow flex items-center gap-3 bg-gradient-to-br from-white to-orange-50 dark:from-gray-900 dark:to-orange-950/20">
 					<ShoppingCart className="w-5 h-5 text-[#FF9900] shrink-0" />
@@ -99,7 +97,12 @@ export function AmazonProductCard({
 
 	// OGP情報あり：フルカード
 	return (
-		<div className="block not-prose my-4">
+		<a
+			href={url}
+			target="_blank"
+			rel="noopener noreferrer sponsored"
+			className="block not-prose my-4 group cursor-pointer"
+		>
 			<div className="border border-[#FF9900]/20 rounded-lg overflow-hidden hover:shadow-md transition-shadow bg-gradient-to-br from-white to-orange-50 dark:from-gray-900 dark:to-orange-950/20">
 				<div className="flex flex-col sm:flex-row">
 					{/* 商品画像 */}
@@ -117,7 +120,7 @@ export function AmazonProductCard({
 					<div className="flex-1 p-4 min-w-0 flex flex-col gap-3">
 						{/* タイトル */}
 						{data.title && (
-							<h3 className="font-semibold text-base line-clamp-2">
+							<h3 className="font-semibold text-base line-clamp-2 group-hover:underline">
 								{data.title}
 							</h3>
 						)}
@@ -144,24 +147,14 @@ export function AmazonProductCard({
 								)}
 								<span className="truncate">{formattedDomain}</span>
 							</div>
-							<Button
-								asChild
-								size="sm"
-								className="bg-[#FF9900] hover:bg-[#FF9900]/90 text-white shrink-0"
-							>
-								<a
-									href={url}
-									target="_blank"
-									rel="noopener noreferrer sponsored"
-								>
-									<ShoppingCart className="w-4 h-4 mr-1" />
-									Amazonで見る
-								</a>
-							</Button>
+							<div className="bg-[#FF9900] hover:bg-[#FF9900]/90 text-white px-3 py-1.5 rounded-md text-sm font-medium shrink-0 flex items-center gap-1.5 pointer-events-none">
+								<ShoppingCart className="w-4 h-4" />
+								Amazonで見る
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+		</a>
 	);
 }
