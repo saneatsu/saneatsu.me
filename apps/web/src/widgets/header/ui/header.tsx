@@ -1,17 +1,10 @@
 "use client";
 
-import { Menu } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 
 import { LanguageSwitcher } from "@/features/lang";
 import { cn, Link, usePathname } from "@/shared/lib";
-import {
-	Button,
-	ThemeSelector,
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
-} from "@/shared/ui";
+import { ThemeSelector } from "@/shared/ui";
 
 export function Header() {
 	const t = useTranslations("navigation");
@@ -57,7 +50,7 @@ export function Header() {
 						>
 							<span className="font-bold">saneatsu.me</span>
 						</Link>
-						<nav className="flex items-center space-x-6 text-sm font-medium">
+						<nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
 							<Link href="/blog" className={getNavLinkClassName("/blog")}>
 								Blog
 							</Link>
@@ -69,19 +62,6 @@ export function Header() {
 					<div className="flex flex-1 items-center justify-end space-x-2">
 						<LanguageSwitcher />
 						<ThemeSelector />
-						<Tooltip>
-							<TooltipTrigger asChild>
-								<Button
-									variant="ghost"
-									size="icon"
-									className="md:hidden"
-									aria-label="Toggle menu"
-								>
-									<Menu className="h-4 w-4" />
-								</Button>
-							</TooltipTrigger>
-							<TooltipContent>メニューを開く</TooltipContent>
-						</Tooltip>
 					</div>
 				</div>
 			</div>
