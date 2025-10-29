@@ -21,34 +21,10 @@ export interface AmazonProductCardProps {
 }
 
 /**
- * アフィリエイトリンクを生成する
- *
- * @param url - 元のAmazon URL
- * @returns アフィリエイトID付きのURL、またはID未設定の場合は元のURL
- */
-function createAffiliateLink(url: string): string {
-	// 環境変数からアフィリエイトIDを取得
-	const affiliateId = process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_ID;
-
-	if (!affiliateId) {
-		return url;
-	}
-
-	try {
-		const urlObj = new URL(url);
-		urlObj.searchParams.set("tag", affiliateId);
-		return urlObj.toString();
-	} catch {
-		return url;
-	}
-}
-
-/**
  * Amazon商品カードコンポーネント
  *
  * @description
  * Amazon商品のOGP情報を取得してカード形式で表示する。
- * アフィリエイトリンク対応。
  *
  * 表示状態：
  * - ローディング: スケルトン表示
@@ -71,7 +47,6 @@ export function AmazonProductCard({
 	domain = "amazon.co.jp",
 }: AmazonProductCardProps) {
 	const { data, isLoading, isError } = useOgp(url);
-	const affiliateUrl = createAffiliateLink(url);
 
 	// ドメイン名を整形
 	const formattedDomain = domain.replace("www.", "");
@@ -101,7 +76,7 @@ export function AmazonProductCard({
 	if (isError || !data || (!data.title && !data.image)) {
 		return (
 			<a
-				href={affiliateUrl}
+				href={url}
 				target="_blank"
 				rel="noopener noreferrer sponsored"
 				className="block not-prose my-4"
@@ -175,7 +150,7 @@ export function AmazonProductCard({
 								className="bg-[#FF9900] hover:bg-[#FF9900]/90 text-white shrink-0"
 							>
 								<a
-									href={affiliateUrl}
+									href={url}
 									target="_blank"
 									rel="noopener noreferrer sponsored"
 								>
