@@ -608,3 +608,241 @@ export const MixedImages: Story = {
 	},
 	parameters: {},
 };
+
+/**
+ * YouTube埋め込みの表示確認（基本）
+ */
+export const YouTubeEmbedBasic: Story = {
+	name: "YouTube埋め込み（基本）",
+	tags: ["code-only"],
+	args: {
+		content: `# YouTube埋め込みの例
+
+以下はYouTubeの動画埋め込みです。
+
+https://www.youtube.com/watch?v=dQw4w9WgXcQ
+
+この動画はMarkdown内のURL単独行から自動的に埋め込まれます。`,
+		language: "ja",
+	},
+	parameters: {},
+};
+
+/**
+ * YouTube埋め込みの表示確認（タイムスタンプ付き）
+ */
+export const YouTubeEmbedWithTimestamp: Story = {
+	name: "YouTube埋め込み（タイムスタンプ付き）",
+	tags: ["code-only"],
+	args: {
+		content: `# タイムスタンプ付きYouTube埋め込み
+
+URLにタイムスタンプパラメータを含めることで、指定した時刻から再生を開始できます。
+
+https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=10s
+
+この動画は10秒の位置から再生されます。`,
+		language: "ja",
+	},
+	parameters: {},
+};
+
+/**
+ * YouTube埋め込みの表示確認（ショートURL）
+ */
+export const YouTubeEmbedShortUrl: Story = {
+	name: "YouTube埋め込み（ショートURL）",
+	tags: ["code-only"],
+	args: {
+		content: `# ショートURL形式のYouTube埋め込み
+
+youtu.be形式のショートURLにも対応しています。
+
+https://youtu.be/jNQXAC9IVRw
+
+ショートURL形式でも正しく動画が埋め込まれます。`,
+		language: "ja",
+	},
+	parameters: {},
+};
+
+/**
+ * YouTube埋め込みの表示確認（複数動画）
+ */
+export const YouTubeEmbedMultiple: Story = {
+	name: "YouTube埋め込み（複数動画）",
+	tags: ["code-only"],
+	args: {
+		content: `# 複数のYouTube動画
+
+記事内に複数のYouTube動画を埋め込むこともできます。
+
+## 動画1
+
+https://www.youtube.com/watch?v=dQw4w9WgXcQ
+
+## 動画2
+
+https://youtu.be/jNQXAC9IVRw
+
+各動画は独立して埋め込まれ、個別に再生できます。`,
+		language: "ja",
+	},
+	parameters: {},
+};
+
+/**
+ * YouTube埋め込みとテキストの混在
+ */
+export const YouTubeEmbedWithText: Story = {
+	name: "YouTube埋め込みとテキストの混在",
+	tags: ["validation"],
+	args: {
+		content: `# YouTube埋め込みとテキストの混在
+
+YouTubeの埋め込みは単独行のURLのみが対象です。
+
+通常のテキスト内の[YouTubeリンク](https://www.youtube.com/watch?v=dQw4w9WgXcQ)は埋め込まれず、通常のリンクとして表示されます。
+
+https://www.youtube.com/watch?v=jNQXAC9IVRw
+
+上記のように単独行のYouTube URLのみが動画プレーヤーとして埋め込まれます。`,
+		language: "ja",
+	},
+	parameters: {},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+
+		// 通常のリンクが存在することを確認
+		const link = canvas.getByRole("link", { name: /YouTubeリンク/ });
+		expect(link).toBeInTheDocument();
+		expect(link).toHaveAttribute(
+			"href",
+			"https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+		);
+
+		// iframe（埋め込み動画）が存在することを確認
+		const iframe = canvasElement.querySelector("iframe");
+		expect(iframe).toBeInTheDocument();
+		expect(iframe).toHaveAttribute(
+			"src",
+			expect.stringContaining("jNQXAC9IVRw")
+		);
+	},
+};
+
+/**
+ * Amazon商品カードの埋め込み（基本）
+ */
+export const AmazonProductCardBasic: Story = {
+	name: "Amazon商品カードの埋め込み（基本）",
+	tags: ["code-only"],
+	args: {
+		content: `# Amazon商品の紹介
+
+以下はAmazon商品のリンクです。
+
+https://www.amazon.co.jp/dp/B08N5WRWNW
+
+商品の詳細はリンクをクリックして確認できます。`,
+		language: "ja",
+	},
+	parameters: {},
+};
+
+/**
+ * Amazon商品カードの埋め込み（複数商品）
+ */
+export const AmazonProductCardMultiple: Story = {
+	name: "Amazon商品カードの埋め込み（複数商品）",
+	tags: ["code-only"],
+	args: {
+		content: `# おすすめ商品
+
+## 商品1
+
+https://www.amazon.co.jp/dp/B08N5WRWNW
+
+## 商品2
+
+https://www.amazon.co.jp/dp/B0CX23V2ZK
+
+各商品は独立したカードとして表示されます。`,
+		language: "ja",
+	},
+	parameters: {},
+};
+
+/**
+ * Amazon商品カードの埋め込み（テキストと混在）
+ */
+export const AmazonProductCardWithText: Story = {
+	name: "Amazon商品カードの埋め込み（テキストと混在）",
+	tags: ["validation"],
+	args: {
+		content: `# Amazon商品カードとテキストの混在
+
+Amazon商品カードの埋め込みは単独行のURLのみが対象です。
+
+通常のテキスト内の[Amazonリンク](https://www.amazon.co.jp/dp/B08N5WRWNW)は埋め込まれず、通常のリンクとして表示されます。
+
+https://www.amazon.co.jp/dp/B0CX23V2ZK
+
+上記のように単独行のAmazon URLのみが商品カードとして埋め込まれます。`,
+		language: "ja",
+	},
+	parameters: {},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+
+		// 通常のリンクが存在することを確認
+		const link = canvas.getByRole("link", { name: /Amazonリンク/ });
+		expect(link).toBeInTheDocument();
+		expect(link).toHaveAttribute(
+			"href",
+			"https://www.amazon.co.jp/dp/B08N5WRWNW"
+		);
+
+		// Amazon商品カード（ボタンまたはリンク）が存在することを確認
+		const amazonCard = canvasElement.querySelector("a[href*='B0CX23V2ZK']");
+		expect(amazonCard).toBeInTheDocument();
+	},
+};
+
+/**
+ * Amazon商品カードの埋め込み（短縮URL）
+ */
+export const AmazonProductCardShortUrl: Story = {
+	name: "Amazon商品カードの埋め込み（短縮URL）",
+	tags: ["validation"],
+	args: {
+		content: `# Amazon短縮URLの埋め込み
+
+Amazonの短縮URL（amzn.to、amzn.asia）にも対応しています。
+
+https://amzn.to/3ABC123
+
+https://amzn.asia/d/xyz789
+
+短縮URLの場合、ASINが直接取得できないため、「Amazon商品（短縮URL）」と表示されます。`,
+		language: "ja",
+	},
+	parameters: {},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		// 「Amazon商品（短縮URL）」テキストが存在することを確認
+		const text = canvasElement.textContent;
+		expect(text).toContain("Amazon商品（短縮URL）");
+
+		// amzn.toのリンクが存在することを確認
+		const amznToLink = canvasElement.querySelector("a[href*='amzn.to']");
+		expect(amznToLink).toBeInTheDocument();
+
+		// amzn.asiaのリンクが存在することを確認
+		const amznAsiaLink = canvasElement.querySelector("a[href*='amzn.asia']");
+		expect(amznAsiaLink).toBeInTheDocument();
+
+		// ドメイン表示を確認
+		expect(text).toContain("amzn.to");
+		expect(text).toContain("amzn.asia");
+	},
+};

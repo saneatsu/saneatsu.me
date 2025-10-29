@@ -1,2 +1,2 @@
 // Footer Widget Public API
-export { Footer } from "./ui/footer";
+export { Footer } from "./ui/footer/footer";

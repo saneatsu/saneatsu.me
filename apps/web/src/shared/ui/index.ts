@@ -290,5 +290,11 @@ export {
 // Tweet Embed
 export { TweetEmbed, type TweetEmbedProps } from "./tweet-embed/tweet-embed";
 
+// YouTube Embed
+export {
+	YouTubeEmbed,
+	type YouTubeEmbedProps,
+} from "./youtube-embed/youtube-embed";
+
 // Zoomable Image
 export { ZoomableImage } from "./zoomable-image/zoomable-image";

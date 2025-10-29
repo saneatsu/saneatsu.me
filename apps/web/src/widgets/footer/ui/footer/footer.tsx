@@ -1,3 +1,5 @@
+"use client";
+
 import { useTranslations } from "next-intl";
 
 import { Link } from "@/shared/lib";
@@ -6,7 +8,7 @@ export function Footer() {
 	const t = useTranslations("footer");
 
 	return (
-		<footer className="border-t">
+		<footer className="border-t pb-20 md:pb-0">
 			<div className="container mx-auto px-4">
 				<div className="max-w-7xl mx-auto flex flex-col items-center justify-between gap-4 py-10 md:h-24 md:flex-row md:py-0">
 					<div className="flex flex-col items-center gap-4 md:flex-row md:gap-2">
@@ -20,14 +22,6 @@ export function Footer() {
 						</Link>
 						<Link href="/terms" className="hover:underline">
 							{t("terms")}
-						</Link>
-						<Link
-							href="https://github.com/saneatsu/saneatsu.me"
-							target="_blank"
-							rel="noopener noreferrer"
-							className="hover:underline"
-						>
-							GitHub
 						</Link>
 					</div>
 				</div>
