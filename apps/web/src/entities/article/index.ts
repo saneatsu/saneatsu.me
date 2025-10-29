@@ -16,6 +16,10 @@ export { useUpdateStatus } from "./api/use-update-status/use-update-status";
 export { useUploadImage } from "./api/use-upload-image/use-upload-image";
 export { useUploadThumbnail } from "./api/use-upload-thumbnail/use-upload-thumbnail";
 
+export {
+	AmazonProductCard,
+	type AmazonProductCardProps,
+} from "./ui/amazon-product-card/amazon-product-card";
 export { ArticleCard } from "./ui/article-card/article-card";
 export {
 	ArticleSuggestionsPopover,
