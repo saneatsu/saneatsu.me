@@ -9,11 +9,13 @@ import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
 import type { PluggableList } from "unified";
 
-import { remarkTag } from "@/shared/lib/remark-tag";
-import { remarkTweet } from "@/shared/lib/remark-tweet";
-import { remarkUrlCard } from "@/shared/lib/remark-url-card";
-import { remarkWikiLink } from "@/shared/lib/remark-wiki-link";
-
+import {
+	remarkTag,
+	remarkTweet,
+	remarkUrlCard,
+	remarkWikiLink,
+	remarkYoutube,
+} from "../../lib/";
 import { ArticleImage } from "../article-image/article-image";
 import { ZoomableImage } from "../zoomable-image/zoomable-image";
 
@@ -30,6 +32,7 @@ export const defaultRemarkPlugins = [
 	remarkWikiLink,
 	remarkTag,
 	remarkTweet,
+	remarkYoutube,
 ] as const;
 
 // Wiki Linkコンポーネントを動的インポート（クライアントサイドのみ）
@@ -54,6 +57,15 @@ const UrlCard = dynamic(
 // Tweet Embedコンポーネントを動的インポート（クライアントサイドのみ）
 const TweetEmbed = dynamic(
 	() => import("../tweet-embed/tweet-embed").then((mod) => mod.TweetEmbed),
+	{
+		ssr: false,
+	}
+);
+
+// YouTube Embedコンポーネントを動的インポート（クライアントサイドのみ）
+const YouTubeEmbed = dynamic(
+	() =>
+		import("../youtube-embed/youtube-embed").then((mod) => mod.YouTubeEmbed),
 	{
 		ssr: false,
 	}
@@ -234,6 +246,11 @@ export function createDefaultMarkdownComponents(
 		// Tweet埋め込みのカスタムレンダリング
 		// @ts-expect-error - カスタムノードのため型定義がない
 		tweet: ({ id }) => <TweetEmbed id={id} />,
+		// YouTube埋め込みのカスタムレンダリング
+		// @ts-expect-error - カスタムノードのため型定義がない
+		youtube: ({ videoId, startTime }) => (
+			<YouTubeEmbed videoId={videoId} startTime={startTime} />
+		),
 	};
 }
 
@@ -249,6 +266,7 @@ export function createDefaultMarkdownComponents(
  * - タグ機能 (#タグ名)
  * - URL Card機能（単独行のURL）
  * - Tweet埋め込み機能
+ * - YouTube埋め込み機能
  * - proseスタイル適用
  * - ダークモード対応
  * - カスタムコンポーネント注入可能

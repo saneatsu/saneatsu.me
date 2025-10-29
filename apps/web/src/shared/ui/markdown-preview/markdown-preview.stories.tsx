@@ -608,3 +608,125 @@ export const MixedImages: Story = {
 	},
 	parameters: {},
 };
+
+/**
+ * YouTube埋め込みの表示確認（基本）
+ */
+export const YouTubeEmbedBasic: Story = {
+	name: "YouTube埋め込み（基本）",
+	tags: ["code-only"],
+	args: {
+		content: `# YouTube埋め込みの例
+
+以下はYouTubeの動画埋め込みです。
+
+https://www.youtube.com/watch?v=dQw4w9WgXcQ
+
+この動画はMarkdown内のURL単独行から自動的に埋め込まれます。`,
+		language: "ja",
+	},
+	parameters: {},
+};
+
+/**
+ * YouTube埋め込みの表示確認（タイムスタンプ付き）
+ */
+export const YouTubeEmbedWithTimestamp: Story = {
+	name: "YouTube埋め込み（タイムスタンプ付き）",
+	tags: ["code-only"],
+	args: {
+		content: `# タイムスタンプ付きYouTube埋め込み
+
+URLにタイムスタンプパラメータを含めることで、指定した時刻から再生を開始できます。
+
+https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=10s
+
+この動画は10秒の位置から再生されます。`,
+		language: "ja",
+	},
+	parameters: {},
+};
+
+/**
+ * YouTube埋め込みの表示確認（ショートURL）
+ */
+export const YouTubeEmbedShortUrl: Story = {
+	name: "YouTube埋め込み（ショートURL）",
+	tags: ["code-only"],
+	args: {
+		content: `# ショートURL形式のYouTube埋め込み
+
+youtu.be形式のショートURLにも対応しています。
+
+https://youtu.be/jNQXAC9IVRw
+
+ショートURL形式でも正しく動画が埋め込まれます。`,
+		language: "ja",
+	},
+	parameters: {},
+};
+
+/**
+ * YouTube埋め込みの表示確認（複数動画）
+ */
+export const YouTubeEmbedMultiple: Story = {
+	name: "YouTube埋め込み（複数動画）",
+	tags: ["code-only"],
+	args: {
+		content: `# 複数のYouTube動画
+
+記事内に複数のYouTube動画を埋め込むこともできます。
+
+## 動画1
+
+https://www.youtube.com/watch?v=dQw4w9WgXcQ
+
+## 動画2
+
+https://youtu.be/jNQXAC9IVRw
+
+各動画は独立して埋め込まれ、個別に再生できます。`,
+		language: "ja",
+	},
+	parameters: {},
+};
+
+/**
+ * YouTube埋め込みとテキストの混在
+ */
+export const YouTubeEmbedWithText: Story = {
+	name: "YouTube埋め込みとテキストの混在",
+	tags: ["validation"],
+	args: {
+		content: `# YouTube埋め込みとテキストの混在
+
+YouTubeの埋め込みは単独行のURLのみが対象です。
+
+通常のテキスト内の[YouTubeリンク](https://www.youtube.com/watch?v=dQw4w9WgXcQ)は埋め込まれず、通常のリンクとして表示されます。
+
+https://www.youtube.com/watch?v=jNQXAC9IVRw
+
+上記のように単独行のYouTube URLのみが動画プレーヤーとして埋め込まれます。`,
+		language: "ja",
+	},
+	parameters: {},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+
+		// 通常のリンクが存在することを確認
+		const link = canvas.getByRole("link", { name: /YouTubeリンク/ });
+		expect(link).toBeInTheDocument();
+		expect(link).toHaveAttribute(
+			"href",
+			"https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+		);
+
+		// iframe（埋め込み動画）が存在することを確認
+		const iframe = canvasElement.querySelector("iframe");
+		expect(iframe).toBeInTheDocument();
+		expect(iframe).toHaveAttribute(
+			"src",
+			expect.stringContaining("jNQXAC9IVRw")
+		);
+	},
+};
