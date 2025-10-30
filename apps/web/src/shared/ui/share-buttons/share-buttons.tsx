@@ -1,6 +1,10 @@
 "use client";
 
+import { Check, Link } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { siFacebook, siX } from "simple-icons";
+import { toast } from "sonner";
 
 import { cn } from "@/shared/lib";
 
@@ -60,13 +64,47 @@ const createShareUrls = (url: string, title: string) => ({
  */
 export function ShareButtons({ url, title, className }: ShareButtonsProps) {
 	const shareUrls = createShareUrls(url, title);
+	const t = useTranslations("share");
+	const [isCopied, setIsCopied] = useState(false);
 
 	// 共通のボタンスタイル
 	const buttonClassName =
 		"flex h-10 w-10 items-center justify-center bg-background rounded-md transition-colors";
 
+	/**
+	 * リンクをクリップボードにコピーする
+	 */
+	const handleCopyLink = async () => {
+		try {
+			await navigator.clipboard.writeText(url);
+			setIsCopied(true);
+			toast.success(t("copyLink"));
+
+			// 2秒後にアイコンを元に戻す
+			setTimeout(() => {
+				setIsCopied(false);
+			}, 2000);
+		} catch {
+			toast.error(t("copyLinkError"));
+		}
+	};
+
 	return (
 		<div className={cn("flex items-center gap-2", className)}>
+			{/* リンクコピーボタン */}
+			<button
+				type="button"
+				onClick={handleCopyLink}
+				className={cn(buttonClassName, "hover:text-blue-500 cursor-pointer")}
+				aria-label="Copy link"
+			>
+				{isCopied ? (
+					<Check className="h-4 w-4 text-success" />
+				) : (
+					<Link className="h-4 w-4" />
+				)}
+			</button>
+
 			{/* Xシェアボタン */}
 			<a
 				href={shareUrls.x}

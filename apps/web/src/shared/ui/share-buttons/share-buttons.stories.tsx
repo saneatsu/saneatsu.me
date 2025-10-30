@@ -109,3 +109,18 @@ export const Mobile: Story = {
 		title: "モバイル記事のタイトル",
 	},
 };
+
+/**
+ * リンクコピー機能
+ *
+ * リンクコピーボタンの動作を確認できる。
+ * コピーボタンをクリックすると、アイコンがCheckに変化し、成功トーストが表示される。
+ */
+export const CopyLinkFeature: Story = {
+	name: "リンクコピー機能",
+	tags: ["code-only"],
+	args: {
+		url: "https://saneatsu.me/blog/copy-test-article",
+		title: "コピー機能テスト記事",
+	},
+};
