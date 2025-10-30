@@ -33,35 +33,21 @@ interface TwitterSyndicationResponse {
 }
 
 /**
- * ツイートIDからトークンを生成
- *
- * @description
- * Twitter Syndication APIで使用するトークンを生成する。
- * react-tweetと同じアルゴリズムを使用。
- *
- * @param id - ツイートID
- * @returns トークン文字列
- */
-function getToken(id: string): string {
-	return ((Number(id) / 1e15) * Math.PI).toString(36).replace(/(0+|\.)/g, "");
-}
-
-/**
  * Twitter Syndication APIでツイートのメタデータを取得
  *
  * @description
+ * CORS問題を回避するため、自前のAPI Routeを経由してメタデータを取得する。
  * 画像の有無などのメタデータを取得して、適切なSkeletonサイズを判定する。
  *
  * @param id - ツイートID
  * @returns メタデータ（失敗時はnull）
  */
 async function fetchTweetMetadata(
-	id: string
+	id: string,
 ): Promise<TwitterSyndicationResponse | null> {
 	try {
-		const token = getToken(id);
-		const url = `https://cdn.syndication.twimg.com/tweet-result?id=${id}&token=${token}`;
-		const response = await fetch(url);
+		// 自前のAPI Routeを経由（CORS問題を回避）
+		const response = await fetch(`/api/tweet-metadata?id=${id}`);
 
 		if (!response.ok) {
 			console.warn(`Failed to fetch tweet metadata: ${response.status}`);
