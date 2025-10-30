@@ -43,20 +43,18 @@ interface TwitterSyndicationResponse {
  * @returns メタデータ（失敗時はnull）
  */
 async function fetchTweetMetadata(
-	id: string,
+	id: string
 ): Promise<TwitterSyndicationResponse | null> {
 	try {
 		// 自前のAPI Routeを経由（CORS問題を回避）
 		const response = await fetch(`/api/tweet-metadata?id=${id}`);
 
 		if (!response.ok) {
-			console.warn(`Failed to fetch tweet metadata: ${response.status}`);
 			return null;
 		}
 
 		return await response.json();
-	} catch (error) {
-		console.warn("Error fetching tweet metadata:", error);
+	} catch {
 		return null;
 	}
 }
@@ -139,26 +137,53 @@ export function TweetEmbed({ id, className }: TweetEmbedProps) {
 		blockquote.appendChild(link);
 		container.appendChild(blockquote);
 
+		// タイムアウト処理（15秒）
+		const timeoutId = setTimeout(() => {
+			setLoadingState("loaded");
+		}, 15000);
+
 		// widgets.jsをロードして埋め込み実行
+		const loadTweet = () => {
+			if (window.twttr?.widgets) {
+				const loadPromise = window.twttr.widgets.load(container);
+
+				if (loadPromise && typeof loadPromise.then === "function") {
+					loadPromise
+						.then(() => {
+							clearTimeout(timeoutId);
+							setLoadingState("loaded");
+						})
+						.catch(() => {
+							clearTimeout(timeoutId);
+							setLoadingState("loaded"); // エラー時もスケルトンを消す
+						});
+				} else {
+					clearTimeout(timeoutId);
+					setLoadingState("loaded");
+				}
+			}
+		};
+
 		if (!window.twttr) {
 			const script = document.createElement("script");
 			script.src = "https://platform.twitter.com/widgets.js";
 			script.async = true;
 			script.onload = () => {
-				if (window.twttr?.widgets) {
-					window.twttr.widgets.load(container).then(() => {
-						setLoadingState("loaded");
-					});
-				}
+				loadTweet();
+			};
+			script.onerror = () => {
+				clearTimeout(timeoutId);
+				setLoadingState("loaded");
 			};
 			document.body.appendChild(script);
 		} else {
-			if (window.twttr?.widgets) {
-				window.twttr.widgets.load(container).then(() => {
-					setLoadingState("loaded");
-				});
-			}
+			loadTweet();
 		}
+
+		// クリーンアップ
+		return () => {
+			clearTimeout(timeoutId);
+		};
 	}, [loadingState, id, theme]);
 
 	return (

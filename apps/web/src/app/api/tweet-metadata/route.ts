@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 /**
  * ツイートIDからトークンを生成
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
 		if (!id) {
 			return NextResponse.json(
 				{ error: "Missing tweet id parameter" },
-				{ status: 400 },
+				{ status: 400 }
 			);
 		}
 
@@ -52,11 +52,11 @@ export async function GET(request: NextRequest) {
 
 		if (!response.ok) {
 			console.warn(
-				`Twitter Syndication API returned ${response.status} for tweet ${id}`,
+				`Twitter Syndication API returned ${response.status} for tweet ${id}`
 			);
 			return NextResponse.json(
 				{ error: "Failed to fetch tweet metadata" },
-				{ status: response.status },
+				{ status: response.status }
 			);
 		}
 
@@ -72,7 +72,7 @@ export async function GET(request: NextRequest) {
 		console.error("Error in tweet-metadata API:", error);
 		return NextResponse.json(
 			{ error: "Internal server error" },
-			{ status: 500 },
+			{ status: 500 }
 		);
 	}
 }
