@@ -56,7 +56,7 @@ export function AmazonProductCard({
 				<div className="border border-[#FF9900]/20 rounded-lg overflow-hidden hover:shadow-md transition-shadow animate-pulse bg-gradient-to-br from-white to-orange-50 dark:from-gray-900 dark:to-orange-950/20">
 					<div className="flex flex-col sm:flex-row">
 						{/* スケルトン画像 */}
-						<div className="aspect-square w-full sm:w-48 bg-gray-200 dark:bg-gray-700 shrink-0" />
+						<div className="aspect-square w-40 sm:w-48 mx-auto sm:mx-0 bg-gray-200 dark:bg-gray-700 shrink-0" />
 						{/* スケルトンコンテンツ */}
 						<div className="flex-1 p-4 space-y-3">
 							<div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-3/4" />
@@ -107,7 +107,7 @@ export function AmazonProductCard({
 				<div className="flex flex-col sm:flex-row">
 					{/* 商品画像 */}
 					{data.image && (
-						<div className="aspect-square w-full sm:w-48 shrink-0 relative overflow-hidden bg-white dark:bg-gray-800">
+						<div className="aspect-square w-40 sm:w-48 mx-auto sm:mx-0 shrink-0 relative overflow-hidden bg-white dark:bg-gray-800">
 							{/* biome-ignore lint/performance/noImgElement: OGP画像は外部URLなのでNext.js Imageは使用できない */}
 							<img
 								src={data.image}
@@ -126,7 +126,7 @@ export function AmazonProductCard({
 						)}
 						{/* 説明 */}
 						{data.description && (
-							<p className="text-sm text-muted-foreground line-clamp-2">
+							<p className="hidden sm:block text-sm text-muted-foreground line-clamp-2">
 								{data.description}
 							</p>
 						)}
