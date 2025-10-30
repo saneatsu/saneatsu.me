@@ -127,7 +127,11 @@
 	},
 	"share": {
 		"copyLink": "リンクをコピーしました",
-		"copyLinkError": "リンクのコピーに失敗しました"
+		"copyLinkError": "リンクのコピーに失敗しました",
+		"copyLinkTooltip": "記事のリンクをコピー",
+		"shareOnX": "Xにポスト",
+		"shareOnFacebook": "Facebookに投稿",
+		"addToHatena": "はてなブックマークに登録"
 	},
 	"common": {
 		"search": "検索",
