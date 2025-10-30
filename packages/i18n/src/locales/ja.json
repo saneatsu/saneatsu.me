@@ -125,6 +125,10 @@
 			"error": "関連記事の取得に失敗しました"
 		}
 	},
+	"share": {
+		"copyLink": "リンクをコピーしました",
+		"copyLinkError": "リンクのコピーに失敗しました"
+	},
 	"common": {
 		"search": "検索",
 		"filterByStatus": "ステータスで絞り込み",
