@@ -127,7 +127,11 @@
 	},
 	"share": {
 		"copyLink": "Link copied",
-		"copyLinkError": "Failed to copy link"
+		"copyLinkError": "Failed to copy link",
+		"copyLinkTooltip": "Copy article link",
+		"shareOnX": "Post to X",
+		"shareOnFacebook": "Post to Facebook",
+		"addToHatena": "Add to Hatena Bookmark"
 	},
 	"common": {
 		"search": "Search",
