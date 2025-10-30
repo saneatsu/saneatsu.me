@@ -1,5 +1,6 @@
 import { useTranslations } from "next-intl";
 
+import { BlogNotice } from "@/shared/ui";
 import { ArticlesList } from "@/widgets";
 
 /**
@@ -20,9 +21,8 @@ export function HomeView() {
 					<h1 className="text-3xl font-bold">{t("hero.title")}</h1>
 				</section> */}
 
-				<h4 className="text-sm text-muted-foreground">
-					{t("migrationNotice")}
-				</h4>
+				{/* Blog運営方針 */}
+				<BlogNotice />
 
 				{/* Articles Section */}
 				<section>
