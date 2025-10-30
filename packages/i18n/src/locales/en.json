@@ -113,6 +113,9 @@
 		"viewCount": "Viewed {count} times",
 		"readMore": "Read more",
 		"backToList": "Back to articles",
+		"justNow": "Just now",
+		"minutesAgo": "{minutes} minutes ago",
+		"hoursAgo": "{hours} hours ago",
 		"today": "Today",
 		"daysAgo": "{days} days ago",
 		"notFound": {
