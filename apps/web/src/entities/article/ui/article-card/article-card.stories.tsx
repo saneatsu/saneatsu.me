@@ -67,8 +67,8 @@ export const Default: Story = {
 	},
 };
 
-export const UpdatedToday: Story = {
-	name: "更新日が今日の場合",
+export const UpdatedJustNow: Story = {
+	name: "更新日がたった今の場合（0分前）",
 	tags: ["validation"],
 	args: {
 		article: {
@@ -79,9 +79,75 @@ export const UpdatedToday: Story = {
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		const canvas = within(canvasElement);
 
-		// 「今日」が表示されていることを確認
-		const todayText = canvas.getByText(/今日|Today/);
-		expect(todayText).toBeInTheDocument();
+		// 「たった今」が表示されていることを確認
+		const justNowText = canvas.getByText(/たった今|Just now/);
+		expect(justNowText).toBeInTheDocument();
+	},
+};
+
+export const Updated30MinutesAgo: Story = {
+	name: "更新日が30分前の場合",
+	tags: ["validation"],
+	args: {
+		article: {
+			...baseArticle,
+			updatedAt: (() => {
+				const date = new Date();
+				date.setMinutes(date.getMinutes() - 30);
+				return date.toISOString();
+			})(),
+		},
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+
+		// 「30分前」が表示されていることを確認
+		const minutesAgoText = canvas.getByText(/30分前|30 minutes ago/);
+		expect(minutesAgoText).toBeInTheDocument();
+	},
+};
+
+export const Updated1HourAgo: Story = {
+	name: "更新日が1時間前の場合",
+	tags: ["validation"],
+	args: {
+		article: {
+			...baseArticle,
+			updatedAt: (() => {
+				const date = new Date();
+				date.setHours(date.getHours() - 1);
+				return date.toISOString();
+			})(),
+		},
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+
+		// 「1時間前」が表示されていることを確認
+		const hoursAgoText = canvas.getByText(/1時間前|1 hours ago/);
+		expect(hoursAgoText).toBeInTheDocument();
+	},
+};
+
+export const Updated23HoursAgo: Story = {
+	name: "更新日が23時間前の場合（境界値）",
+	tags: ["validation"],
+	args: {
+		article: {
+			...baseArticle,
+			updatedAt: (() => {
+				const date = new Date();
+				date.setHours(date.getHours() - 23);
+				return date.toISOString();
+			})(),
+		},
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+
+		// 「23時間前」が表示されていることを確認
+		const hoursAgoText = canvas.getByText(/23時間前|23 hours ago/);
+		expect(hoursAgoText).toBeInTheDocument();
 	},
 };
 
