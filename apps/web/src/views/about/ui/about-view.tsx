@@ -6,8 +6,11 @@ import {
 	siCloudflare,
 	siCss,
 	siDart,
+	siDjango,
 	siDocker,
+	siDotnet,
 	siDrizzle,
+	siFastify,
 	siFlask,
 	siFlutter,
 	siGit,
@@ -15,6 +18,7 @@ import {
 	siGithubactions,
 	siGooglebigquery,
 	siHono,
+	siHtml5,
 	siJavascript,
 	siMantine,
 	siMui,
@@ -26,31 +30,37 @@ import {
 	siPostgresql,
 	siPrisma,
 	siPython,
+	siPytorch,
 	siRadixui,
 	siReact,
 	siRemix,
 	siSass,
+	siShadcnui,
 	siSlack,
 	siSqlite,
 	siStorybook,
 	siStripe,
+	siSupabase,
 	siTailwindcss,
+	siTurso,
 	siTypescript,
 	siVercel,
 	siVite,
+	siVitest,
 	siVuedotjs,
 	siX,
 	siZenn,
 } from "simple-icons";
 
-import { BadgeWithIcon } from "@/shared/ui";
+import type { TimelineItem } from "@/shared/types";
+import { BadgeWithIcon, StepperTimeline } from "@/shared/ui";
 
 /**
  * 技術アイテムの型定義
  */
 type TechItem = {
 	name: string;
-	icon: SimpleIcon;
+	icon?: SimpleIcon;
 };
 
 /**
@@ -72,6 +82,7 @@ type SocialItem = {
  */
 export function AboutView() {
 	const t = useTranslations("about");
+	const experienceT = useTranslations("about.experience");
 
 	// 技術スタックの定義（アイコン付き）
 	const techStack: {
@@ -85,6 +96,10 @@ export function AboutView() {
 			{ name: "JavaScript", icon: siJavascript },
 			{ name: "Python", icon: siPython },
 			{ name: "Dart", icon: siDart },
+			{ name: "HTML5", icon: siHtml5 },
+			{ name: "CSS", icon: siCss },
+			{ name: "Visual Basic", icon: siDotnet },
+			{ name: "VBA", icon: siDotnet },
 		],
 		frameworks: [
 			{ name: "React", icon: siReact },
@@ -93,24 +108,31 @@ export function AboutView() {
 			{ name: "Nuxt", icon: siNuxt },
 			{ name: "Remix", icon: siRemix },
 			{ name: "Flutter", icon: siFlutter },
-			{ name: "CSS", icon: siCss },
 			{ name: "Sass", icon: siSass },
 			{ name: "Tailwind CSS", icon: siTailwindcss },
 			{ name: "MUI", icon: siMui },
 			{ name: "Radix UI", icon: siRadixui },
+			{ name: "shadcn/ui", icon: siShadcnui },
 			{ name: "Mantine", icon: siMantine },
 			{ name: "Pinia", icon: siPinia },
 			{ name: "Node.js", icon: siNodedotjs },
 			{ name: "Hono", icon: siHono },
+			{ name: "Fastify", icon: siFastify },
 			{ name: "Flask", icon: siFlask },
+			{ name: "Django", icon: siDjango },
+			{ name: "PyTorch", icon: siPytorch },
 			{ name: "Vite", icon: siVite },
+			{ name: "Vitest", icon: siVitest },
 			{ name: "Storybook", icon: siStorybook },
+			{ name: "Kysely" },
 			{ name: "Drizzle ORM", icon: siDrizzle },
 			{ name: "Prisma", icon: siPrisma },
 		],
 		databases: [
 			{ name: "PostgreSQL", icon: siPostgresql },
 			{ name: "SQLite", icon: siSqlite },
+			{ name: "Supabase", icon: siSupabase },
+			{ name: "Turso", icon: siTurso },
 			{ name: "BigQuery", icon: siGooglebigquery },
 		],
 		tools: [
@@ -147,6 +169,12 @@ export function AboutView() {
 			username: "@saneatsu",
 		},
 	];
+
+	// 経歴データの定義
+	// 翻訳ファイルから経歴データを取得してTimelineItem型の配列に変換
+	const timelineItems: TimelineItem[] = experienceT.raw(
+		"timeline"
+	) as TimelineItem[];
 
 	return (
 		<main className="container mx-auto px-4 py-8">
@@ -186,6 +214,9 @@ export function AboutView() {
 											key={tech.name}
 											icon={tech.icon}
 											text={tech.name}
+											backgroundColor={
+												tech.name === "Kysely" ? "#7CE2FE" : undefined
+											}
 										/>
 									))}
 								</div>
@@ -222,7 +253,7 @@ export function AboutView() {
 					</section>
 
 					{/* 経歴セクション */}
-					<section className="space-y-4 pb-12 border-b">
+					<section className="space-y-6 pb-12 border-b">
 						<div>
 							<h2 className="text-2xl font-bold mb-2">
 								{t("experience.title")}
@@ -231,24 +262,7 @@ export function AboutView() {
 								{t("experience.description")}
 							</p>
 						</div>
-						<div className="space-y-6">
-							<div>
-								<h3 className="text-lg font-semibold mb-2">
-									{t("experience.current.title")}
-								</h3>
-								<p className="text-muted-foreground">
-									{t("experience.current.description")}
-								</p>
-							</div>
-							<div>
-								<h3 className="text-lg font-semibold mb-2">
-									{t("experience.focus.title")}
-								</h3>
-								<p className="text-muted-foreground">
-									{t("experience.focus.description")}
-								</p>
-							</div>
-						</div>
+						<StepperTimeline items={timelineItems} />
 					</section>
 
 					{/* SNS・Webサイトセクション */}

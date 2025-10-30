@@ -206,6 +206,11 @@ export {
 } from "./select/select";
 // Separator
 export { Separator } from "./separator/separator";
+// Share Buttons
+export {
+	ShareButtons,
+	type ShareButtonsProps,
+} from "./share-buttons/share-buttons";
 // Sheet
 export {
 	Sheet,
@@ -248,6 +253,11 @@ export {
 export { Skeleton } from "./skeleton/skeleton";
 // Toaster
 export { Toaster } from "./sonner/sonner";
+// Stepper Timeline
+export {
+	StepperTimeline,
+	type StepperTimelineProps,
+} from "./stepper-timeline/stepper-timeline";
 // Switch
 export { Switch } from "./switch/switch";
 // Table

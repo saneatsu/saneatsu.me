@@ -58,12 +58,14 @@ function getIconColor(hex: string): string {
  * BadgeWithIconコンポーネントのProps
  */
 type BadgeWithIconProps = {
-	/** Simple Iconsのアイコンオブジェクト */
-	icon: SimpleIcon;
+	/** Simple Iconsのアイコンオブジェクト（オプショナル） */
+	icon?: SimpleIcon;
 	/** 表示するテキスト */
 	text: string;
 	/** カスタムクラス名 */
 	className?: string;
+	/** カスタム背景色（アイコンがない場合に使用、#付きのhex値） */
+	backgroundColor?: string;
 };
 
 /**
@@ -83,24 +85,50 @@ type BadgeWithIconProps = {
  * <BadgeWithIcon icon={siReact} text="React" />
  * ```
  */
-export function BadgeWithIcon({ icon, text, className }: BadgeWithIconProps) {
+export function BadgeWithIcon({
+	icon,
+	text,
+	className,
+	backgroundColor,
+}: BadgeWithIconProps) {
+	// デフォルトの背景色（アイコンがない場合）
+	const defaultBgColor = "6B7280"; // Tailwind gray-500
+
+	// 背景色を決定（優先順位：1. backgroundColor, 2. icon.hex, 3. defaultBgColor）
+	const bgColorHex = icon
+		? icon.hex
+		: backgroundColor
+			? backgroundColor.replace("#", "")
+			: defaultBgColor;
+
 	return (
 		<div className={cn("inline-flex items-center overflow-hidden", className)}>
 			{/* アイコン部分：円形背景 */}
 			<div
 				className="flex h-7 w-7 shrink-0 items-center justify-center rounded-l-full"
-				style={{ backgroundColor: `#${icon.hex}` }}
+				style={{
+					backgroundColor: `#${bgColorHex}`,
+				}}
 			>
-				<svg
-					role="img"
-					viewBox="0 0 24 24"
-					className="h-3.5 w-3.5"
-					fill={getIconColor(icon.hex)}
-					aria-label={icon.title}
-				>
-					<title>{icon.title}</title>
-					<path d={icon.path} />
-				</svg>
+				{icon ? (
+					<svg
+						role="img"
+						viewBox="0 0 24 24"
+						className="h-3.5 w-3.5"
+						fill={getIconColor(icon.hex)}
+						aria-label={icon.title}
+					>
+						<title>{icon.title}</title>
+						<path d={icon.path} />
+					</svg>
+				) : (
+					<span
+						className="text-sm font-semibold"
+						style={{ color: getIconColor(bgColorHex) }}
+					>
+						{text.charAt(0).toUpperCase()}
+					</span>
+				)}
 			</div>
 
 			{/* テキスト部分：Badgeスタイル */}
