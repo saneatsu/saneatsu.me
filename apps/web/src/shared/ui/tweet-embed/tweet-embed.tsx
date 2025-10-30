@@ -16,6 +16,71 @@ export interface TweetEmbedProps {
 }
 
 /**
+ * Twitter Syndication APIのレスポンス型
+ */
+interface TwitterSyndicationResponse {
+	/** メディア詳細（画像・動画など） */
+	mediaDetails?: Array<{
+		/** メディアタイプ */
+		type: "photo" | "video" | "animated_gif";
+		/** メディアURL */
+		media_url_https?: string;
+		/** 動画情報 */
+		video_info?: unknown;
+	}>;
+	/** その他のフィールド */
+	[key: string]: unknown;
+}
+
+/**
+ * ツイートIDからトークンを生成
+ *
+ * @description
+ * Twitter Syndication APIで使用するトークンを生成する。
+ * react-tweetと同じアルゴリズムを使用。
+ *
+ * @param id - ツイートID
+ * @returns トークン文字列
+ */
+function getToken(id: string): string {
+	return ((Number(id) / 1e15) * Math.PI).toString(36).replace(/(0+|\.)/g, "");
+}
+
+/**
+ * Twitter Syndication APIでツイートのメタデータを取得
+ *
+ * @description
+ * 画像の有無などのメタデータを取得して、適切なSkeletonサイズを判定する。
+ *
+ * @param id - ツイートID
+ * @returns メタデータ（失敗時はnull）
+ */
+async function fetchTweetMetadata(
+	id: string
+): Promise<TwitterSyndicationResponse | null> {
+	try {
+		const token = getToken(id);
+		const url = `https://cdn.syndication.twimg.com/tweet-result?id=${id}&token=${token}`;
+		const response = await fetch(url);
+
+		if (!response.ok) {
+			console.warn(`Failed to fetch tweet metadata: ${response.status}`);
+			return null;
+		}
+
+		return await response.json();
+	} catch (error) {
+		console.warn("Error fetching tweet metadata:", error);
+		return null;
+	}
+}
+
+/**
+ * ローディング状態の型定義
+ */
+type LoadingState = "fetching-metadata" | "loading-tweet" | "loaded";
+
+/**
  * ツイート埋め込みコンポーネント
  *
  * @description
@@ -24,15 +89,16 @@ export interface TweetEmbedProps {
  *
  * @features
  * 1. ライト/ダークテーマ対応
- * 2. ロード中状態の表示
+ * 2. 動的なSkeletonサイズ選択（CLS最適化）
  * 3. レスポンシブデザイン
  * 4. 公式デザインのまま表示（iframe形式）
  *
  * @implementation
- * 1. widgets.jsをロード（初回のみ）
- * 2. blockquoteタグを動的に生成（id/theme変更時に再生成）
- * 3. twttr.widgets.load()で埋め込み実行
- * 4. id/themeが変わったら既存コンテンツをクリアして再生成
+ * 1. Twitter Syndication APIでメタデータ取得（画像有無を判定）
+ * 2. 画像有無に応じて適切なSkeletonを表示
+ * 3. widgets.jsをロード（初回のみ）
+ * 4. blockquoteタグを動的に生成（id/theme変更時に再生成）
+ * 5. twttr.widgets.load()で埋め込み実行
  *
  * @example
  * ```tsx
@@ -42,14 +108,35 @@ export interface TweetEmbedProps {
 export function TweetEmbed({ id, className }: TweetEmbedProps) {
 	const { theme } = useTheme();
 	const containerRef = useRef<HTMLDivElement>(null);
-	const [isLoading, setIsLoading] = useState(true);
+	const [loadingState, setLoadingState] =
+		useState<LoadingState>("fetching-metadata");
+	const [hasMedia, setHasMedia] = useState(false);
 
+	// Phase 1: メタデータを取得して画像の有無を判定
 	useEffect(() => {
+		const fetchMetadata = async () => {
+			setLoadingState("fetching-metadata");
+
+			const metadata = await fetchTweetMetadata(id);
+
+			// 画像・動画の有無を判定
+			const mediaExists =
+				metadata?.mediaDetails && metadata.mediaDetails.length > 0;
+			setHasMedia(mediaExists ?? false);
+
+			// メタデータ取得完了、次の段階へ
+			setLoadingState("loading-tweet");
+		};
+
+		fetchMetadata();
+	}, [id]);
+
+	// Phase 2: widgets.jsで埋め込み実行
+	useEffect(() => {
+		if (loadingState !== "loading-tweet") return;
+
 		const container = containerRef.current;
 		if (!container) return;
-
-		// ローディング状態をリセット
-		setIsLoading(true);
 
 		// 既存のコンテンツをクリア（id/themeが変わったときのため）
 		container.innerHTML = "";
@@ -74,7 +161,7 @@ export function TweetEmbed({ id, className }: TweetEmbedProps) {
 			script.onload = () => {
 				if (window.twttr?.widgets) {
 					window.twttr.widgets.load(container).then(() => {
-						setIsLoading(false);
+						setLoadingState("loaded");
 					});
 				}
 			};
@@ -82,32 +169,85 @@ export function TweetEmbed({ id, className }: TweetEmbedProps) {
 		} else {
 			if (window.twttr?.widgets) {
 				window.twttr.widgets.load(container).then(() => {
-					setIsLoading(false);
+					setLoadingState("loaded");
 				});
 			}
 		}
-	}, [id, theme]);
+	}, [loadingState, id, theme]);
 
 	return (
 		<div className={className}>
-			{isLoading && <TweetSkeleton />}
+			{/* メタデータ取得中は小さいSkeletonを表示 */}
+			{loadingState === "fetching-metadata" && <TweetSkeletonSmall />}
+
+			{/* widgets.js読み込み中は判定結果に応じたSkeletonを表示 */}
+			{loadingState === "loading-tweet" &&
+				(hasMedia ? <TweetSkeletonLarge /> : <TweetSkeletonSmall />)}
+
+			{/* 埋め込み完了後はコンテナを表示 */}
 			<div
 				ref={containerRef}
-				style={{ display: isLoading ? "none" : "block" }}
+				style={{ display: loadingState === "loaded" ? "block" : "none" }}
 			/>
 		</div>
 	);
 }
 
 /**
- * ツイート読み込み中のスケルトン表示
+ * ツイート読み込み中のスケルトン表示（画像なし用）
  *
  * @description
- * ツイートが読み込まれるまでの間、スケルトンを表示する。
- * 実際のツイートの高さに近い形状で表示してLayout Shiftを最小限に抑える。
- * 画像付きツイートを想定した大きめのサイズ。
+ * 画像を含まないテキストのみのツイート用のスケルトン。
+ * 小さめのサイズでLayout Shiftを最小限に抑える。
  */
-function TweetSkeleton() {
+function TweetSkeletonSmall() {
+	return (
+		<div className="flex justify-center my-6">
+			<div
+				className="w-full max-w-[550px] border rounded-xl p-4 space-y-3"
+				style={{ minHeight: "200px" }}
+			>
+				{/* ヘッダー部分 */}
+				<div className="flex items-center space-x-2">
+					<Skeleton className="h-12 w-12 rounded-full shrink-0" />
+					<div className="space-y-2 flex-1">
+						<Skeleton className="h-4 w-32" />
+						<Skeleton className="h-3 w-24" />
+					</div>
+				</div>
+
+				{/* テキスト部分（短め） */}
+				<div className="space-y-2 pt-2">
+					<Skeleton className="h-4 w-full" />
+					<Skeleton className="h-4 w-full" />
+					<Skeleton className="h-4 w-3/4" />
+				</div>
+
+				{/* タイムスタンプ */}
+				<div className="pt-2">
+					<Skeleton className="h-3 w-32" />
+				</div>
+
+				{/* フッター部分（いいね・リツイート・返信数など） */}
+				<div className="flex justify-around pt-2 border-t">
+					<Skeleton className="h-4 w-16" />
+					<Skeleton className="h-4 w-16" />
+					<Skeleton className="h-4 w-16" />
+					<Skeleton className="h-4 w-16" />
+				</div>
+			</div>
+		</div>
+	);
+}
+
+/**
+ * ツイート読み込み中のスケルトン表示（画像あり用）
+ *
+ * @description
+ * 画像を含むツイート用のスケルトン。
+ * 大きめのサイズでLayout Shiftを最小限に抑える。
+ */
+function TweetSkeletonLarge() {
 	return (
 		<div className="flex justify-center my-6">
 			<div
@@ -123,7 +263,7 @@ function TweetSkeleton() {
 					</div>
 				</div>
 
-				{/* テキスト部分（行数を増やして現実的に） */}
+				{/* テキスト部分（長め） */}
 				<div className="space-y-2 pt-2">
 					<Skeleton className="h-4 w-full" />
 					<Skeleton className="h-4 w-full" />
@@ -133,7 +273,7 @@ function TweetSkeleton() {
 					<Skeleton className="h-4 w-3/4" />
 				</div>
 
-				{/* 画像プレースホルダー（多くのツイートに画像が含まれる） */}
+				{/* 画像プレースホルダー */}
 				<Skeleton className="h-[400px] w-full rounded-lg" />
 
 				{/* タイムスタンプ */}
