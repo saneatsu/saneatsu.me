@@ -53,7 +53,7 @@ import {
 } from "simple-icons";
 
 import type { TimelineItem } from "@/shared/types";
-import { Badge, BadgeWithIcon, StepperTimeline } from "@/shared/ui";
+import { BadgeWithIcon, StepperTimeline } from "@/shared/ui";
 
 /**
  * 技術アイテムの型定義
@@ -195,17 +195,13 @@ export function AboutView() {
 									{t("tech.languages.title")}
 								</h3>
 								<div className="flex flex-wrap gap-2">
-									{techStack.languages.map((tech) =>
-										tech.icon ? (
-											<BadgeWithIcon
-												key={tech.name}
-												icon={tech.icon}
-												text={tech.name}
-											/>
-										) : (
-											<Badge key={tech.name}>{tech.name}</Badge>
-										)
-									)}
+									{techStack.languages.map((tech) => (
+										<BadgeWithIcon
+											key={tech.name}
+											icon={tech.icon}
+											text={tech.name}
+										/>
+									))}
 								</div>
 							</div>
 							<div>
@@ -213,19 +209,16 @@ export function AboutView() {
 									{t("tech.frameworks.title")}
 								</h3>
 								<div className="flex flex-wrap gap-2">
-									{techStack.frameworks.map((tech) =>
-										tech.icon ? (
-											<BadgeWithIcon
-												key={tech.name}
-												icon={tech.icon}
-												text={tech.name === "Kysely" ? "K" : tech.name}
-											/>
-										) : (
-											<Badge key={tech.name}>
-												{tech.name === "Kysely" ? "K" : tech.name}
-											</Badge>
-										)
-									)}
+									{techStack.frameworks.map((tech) => (
+										<BadgeWithIcon
+											key={tech.name}
+											icon={tech.icon}
+											text={tech.name}
+											backgroundColor={
+												tech.name === "Kysely" ? "#7CE2FE" : undefined
+											}
+										/>
+									))}
 								</div>
 							</div>
 							<div>
@@ -233,17 +226,13 @@ export function AboutView() {
 									{t("tech.databases.title")}
 								</h3>
 								<div className="flex flex-wrap gap-2">
-									{techStack.databases.map((tech) =>
-										tech.icon ? (
-											<BadgeWithIcon
-												key={tech.name}
-												icon={tech.icon}
-												text={tech.name}
-											/>
-										) : (
-											<Badge key={tech.name}>{tech.name}</Badge>
-										)
-									)}
+									{techStack.databases.map((tech) => (
+										<BadgeWithIcon
+											key={tech.name}
+											icon={tech.icon}
+											text={tech.name}
+										/>
+									))}
 								</div>
 							</div>
 							<div>
@@ -251,17 +240,13 @@ export function AboutView() {
 									{t("tech.tools.title")}
 								</h3>
 								<div className="flex flex-wrap gap-2">
-									{techStack.tools.map((tech) =>
-										tech.icon ? (
-											<BadgeWithIcon
-												key={tech.name}
-												icon={tech.icon}
-												text={tech.name}
-											/>
-										) : (
-											<Badge key={tech.name}>{tech.name}</Badge>
-										)
-									)}
+									{techStack.tools.map((tech) => (
+										<BadgeWithIcon
+											key={tech.name}
+											icon={tech.icon}
+											text={tech.name}
+										/>
+									))}
 								</div>
 							</div>
 						</div>
