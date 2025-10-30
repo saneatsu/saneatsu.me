@@ -34,7 +34,7 @@ interface TwitterWidgets {
 		createTweet(
 			tweetId: string,
 			element: HTMLElement,
-			options?: TwitterEmbedOptions,
+			options?: TwitterEmbedOptions
 		): Promise<HTMLElement | undefined>;
 	};
 }
