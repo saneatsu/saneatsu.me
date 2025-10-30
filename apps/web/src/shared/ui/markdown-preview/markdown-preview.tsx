@@ -122,7 +122,7 @@ export function createDefaultMarkdownComponents(
 		h1: ({ children }) => (
 			<h1
 				id={headings?.find((h) => h.text === children?.toString())?.id}
-				className="text-2xl font-semibold mt-6 mb-3 border-b-4 border-double border-border pb-2 scroll-mt-8"
+				className="text-2xl font-semibold mt-6 mb-3 border-b-4 border-double border-border pb-2 scroll-mt-20"
 			>
 				{children}
 			</h1>
@@ -130,7 +130,7 @@ export function createDefaultMarkdownComponents(
 		h2: ({ children }) => (
 			<h2
 				id={headings?.find((h) => h.text === children?.toString())?.id}
-				className="text-2xl font-bold mt-6 mb-3 border-b-4 border-double border-border pb-2 scroll-mt-8"
+				className="text-2xl font-bold mt-6 mb-3 border-b-4 border-double border-border pb-2 scroll-mt-20"
 			>
 				{children}
 			</h2>
@@ -138,7 +138,7 @@ export function createDefaultMarkdownComponents(
 		h3: ({ children }) => (
 			<h3
 				id={headings?.find((h) => h.text === children?.toString())?.id}
-				className="text-xl font-semibold mt-4 mb-2 border-b border-border pb-1 scroll-mt-8"
+				className="text-xl font-semibold mt-4 mb-2 border-b border-border pb-1 scroll-mt-20"
 			>
 				{children}
 			</h3>
@@ -146,7 +146,7 @@ export function createDefaultMarkdownComponents(
 		h4: ({ children }) => (
 			<h4
 				id={headings?.find((h) => h.text === children?.toString())?.id}
-				className="text-lg font-semibold mt-3 mb-2 border-b border-dashed border-border pb-1 scroll-mt-8"
+				className="text-lg font-semibold mt-3 mb-2 border-b border-dashed border-border pb-1 scroll-mt-20"
 			>
 				{children}
 			</h4>
@@ -154,7 +154,7 @@ export function createDefaultMarkdownComponents(
 		h5: ({ children }) => (
 			<h5
 				id={headings?.find((h) => h.text === children?.toString())?.id}
-				className="text-base font-semibold mt-2 mb-1 scroll-mt-8"
+				className="text-base font-semibold mt-2 mb-1 scroll-mt-20"
 			>
 				{children}
 			</h5>
@@ -162,7 +162,7 @@ export function createDefaultMarkdownComponents(
 		h6: ({ children }) => (
 			<h6
 				id={headings?.find((h) => h.text === children?.toString())?.id}
-				className="text-sm font-semibold mt-2 mb-1 scroll-mt-8"
+				className="text-sm font-semibold mt-2 mb-1 scroll-mt-20"
 			>
 				{children}
 			</h6>
