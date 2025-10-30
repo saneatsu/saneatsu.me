@@ -14,11 +14,10 @@ export function BlogNotice() {
 	const t = useTranslations("common.blogNotice");
 
 	return (
-		<div className="text-sm text-muted-foreground space-y-3 pl-4 py-2">
+		<div className="text-sm text-muted-foreground space-y-3 py-2">
 			{/* 運営方針の箇条書き */}
 			<ul className="space-y-2 list-disc list-inside pl-2">
 				<li>{t("principle1")}</li>
-				<li>{t("principle2")}</li>
 				<li>
 					{t("principle3")}
 					<br />
@@ -31,7 +30,6 @@ export function BlogNotice() {
 						ref: {t("bookLink")} | Amazon
 					</a>
 				</li>
-				<li>{t("disclaimer")}</li>
 			</ul>
 		</div>
 	);
