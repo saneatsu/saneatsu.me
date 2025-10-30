@@ -4,8 +4,9 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 
-import { getArticleEmoji, getImageUrl } from "@/shared/lib";
+import { formatRelativeDate, getArticleEmoji, getImageUrl } from "@/shared/lib";
 import { ARTICLE_STATUS_CONFIG, type Article } from "@/shared/model";
 import { Badge, Button } from "@/shared/ui";
 
@@ -33,26 +34,44 @@ export const articleStatusOptions = [
 ];
 
 /**
- * 日付フォーマット関数
+ * 相対日付表示コンポーネント
  *
- * @param dateString - フォーマット対象の日付文字列
- * @returns フォーマットされた日付文字列
+ * @param dateString - ISO 8601形式の日付文字列
+ * @returns 相対日付（x分前、x時間前、x日前）または絶対日付
  */
-function formatDate(dateString: string | null): string {
-	if (!dateString) return "未設定";
+function DateCell({ dateString }: { dateString: string | null }) {
+	const locale = useLocale();
+	const t = useTranslations("article");
 
-	try {
-		const date = new Date(dateString);
-		return new Intl.DateTimeFormat("ja-JP", {
-			year: "numeric",
-			month: "2-digit",
-			day: "2-digit",
-			hour: "2-digit",
-			minute: "2-digit",
-		}).format(date);
-	} catch {
-		return "無効な日付";
+	if (!dateString) return <span className="text-muted-foreground">未設定</span>;
+
+	const dateInfo = formatRelativeDate(dateString, locale as "ja" | "en");
+
+	if (!dateInfo)
+		return <span className="text-muted-foreground">無効な日付</span>;
+
+	if (dateInfo.isRelative) {
+		// 相対表示
+		if (dateInfo.minutes !== undefined) {
+			// 1時間未満
+			return dateInfo.minutes === 0
+				? t("justNow")
+				: t("minutesAgo", { minutes: dateInfo.minutes });
+		}
+		if (dateInfo.hours !== undefined) {
+			// 24時間未満
+			return t("hoursAgo", { hours: dateInfo.hours });
+		}
+		if (dateInfo.days !== undefined) {
+			// 10日以内
+			return dateInfo.days === 0
+				? t("today")
+				: t("daysAgo", { days: dateInfo.days });
+		}
 	}
+
+	// 絶対日付表示
+	return <>{dateInfo.formatted}</>;
 }
 
 /**
@@ -211,7 +230,11 @@ export const columns: ColumnDef<Article>[] = [
 			const article = row.original;
 			return (
 				<div className="text-sm w-[180px]">
-					{article.publishedAt ? formatDate(article.publishedAt) : "未公開"}
+					{article.publishedAt ? (
+						<DateCell dateString={article.publishedAt} />
+					) : (
+						<span className="text-muted-foreground">未公開</span>
+					)}
 				</div>
 			);
 		},
@@ -233,7 +256,7 @@ export const columns: ColumnDef<Article>[] = [
 			const article = row.original;
 			return (
 				<div className="text-sm w-[180px]">
-					{formatDate(article.updatedAt || article.publishedAt)}
+					<DateCell dateString={article.updatedAt || article.publishedAt} />
 				</div>
 			);
 		},
