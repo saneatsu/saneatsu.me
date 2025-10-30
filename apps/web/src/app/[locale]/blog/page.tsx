@@ -1,5 +1,6 @@
 import { useTranslations } from "next-intl";
 
+import { BlogNotice } from "@/shared/ui";
 import { ArticlesList } from "@/widgets";
 
 /**
@@ -18,6 +19,10 @@ export default function ArticlesPage() {
 				<section className="text-center">
 					<h1 className="text-4xl font-bold">{t("blog.title")}</h1>
 				</section>
+
+				{/* Blog運営方針 */}
+				<BlogNotice />
+
 				<ArticlesList />
 			</div>
 		</main>
