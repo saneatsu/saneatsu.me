@@ -174,10 +174,10 @@ export function ArticleDetailView({
 
 					{/* Table of Contents Sidebar */}
 					<aside className="order-1 lg:order-2 lg:sticky lg:top-20 lg:h-fit lg:w-[300px]">
-						<div className="rounded-lg border bg-card p-6 shadow-sm lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto">
+						<div className="rounded-lg border bg-card p-6 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto">
 							<TableOfContents
 								headings={headings}
-								title={locale === "ja" ? "目次" : "Table of Contents"}
+								title={t("tableOfContents")}
 							/>
 						</div>
 					</aside>
