@@ -37,6 +37,12 @@ export default function RootLayout({
 }) {
 	return (
 		<html lang="ja" suppressHydrationWarning>
+			<head>
+				<link
+					rel="stylesheet"
+					href="https://unpkg.com/react-tweet@3.2.2/dist/twitter-theme/theme.css"
+				/>
+			</head>
 			<body>
 				<Providers>{children}</Providers>
 			</body>
