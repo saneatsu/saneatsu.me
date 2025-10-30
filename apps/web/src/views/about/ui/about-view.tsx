@@ -43,7 +43,8 @@ import {
 	siZenn,
 } from "simple-icons";
 
-import { BadgeWithIcon } from "@/shared/ui";
+import type { TimelineItem } from "@/shared/types";
+import { BadgeWithIcon, StepperTimeline } from "@/shared/ui";
 
 /**
  * 技術アイテムの型定義
@@ -72,6 +73,7 @@ type SocialItem = {
  */
 export function AboutView() {
 	const t = useTranslations("about");
+	const experienceT = useTranslations("about.experience");
 
 	// 技術スタックの定義（アイコン付き）
 	const techStack: {
@@ -148,6 +150,12 @@ export function AboutView() {
 		},
 	];
 
+	// 経歴データの定義
+	// 翻訳ファイルから経歴データを取得してTimelineItem型の配列に変換
+	const timelineItems: TimelineItem[] = experienceT.raw(
+		"timeline"
+	) as TimelineItem[];
+
 	return (
 		<main className="container mx-auto px-4 py-8">
 			<div className="max-w-4xl mx-auto space-y-16">
@@ -222,7 +230,7 @@ export function AboutView() {
 					</section>
 
 					{/* 経歴セクション */}
-					<section className="space-y-4 pb-12 border-b">
+					<section className="space-y-6 pb-12 border-b">
 						<div>
 							<h2 className="text-2xl font-bold mb-2">
 								{t("experience.title")}
@@ -231,24 +239,7 @@ export function AboutView() {
 								{t("experience.description")}
 							</p>
 						</div>
-						<div className="space-y-6">
-							<div>
-								<h3 className="text-lg font-semibold mb-2">
-									{t("experience.current.title")}
-								</h3>
-								<p className="text-muted-foreground">
-									{t("experience.current.description")}
-								</p>
-							</div>
-							<div>
-								<h3 className="text-lg font-semibold mb-2">
-									{t("experience.focus.title")}
-								</h3>
-								<p className="text-muted-foreground">
-									{t("experience.focus.description")}
-								</p>
-							</div>
-						</div>
+						<StepperTimeline items={timelineItems} />
 					</section>
 
 					{/* SNS・Webサイトセクション */}
