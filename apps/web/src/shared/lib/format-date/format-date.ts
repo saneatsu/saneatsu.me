@@ -44,7 +44,11 @@ export function convertIsoToDatetimeLocal(
 export interface RelativeDateResult {
 	/** 相対表示かどうか */
 	isRelative: boolean;
-	/** 日数差（相対表示の場合のみ） */
+	/** 分数差（1時間未満の場合） */
+	minutes?: number;
+	/** 時間差（24時間未満の場合） */
+	hours?: number;
+	/** 日数差（10日以内の場合） */
 	days?: number;
 	/** フォーマット済み日付文字列（通常表示の場合） */
 	formatted?: string;
@@ -59,16 +63,29 @@ export interface RelativeDateResult {
  * @returns 相対日付の結果オブジェクト、nullの場合はundefinedを返す
  *
  * @description
- * 10日以内の場合は相対表示（日数差を返す）、それ以外は通常の日付形式で返す。
+ * 以下のロジックで相対日付を判定する：
+ * - 1時間未満: 分数を返す
+ * - 24時間未満: 時間数を返す
+ * - 10日以内: 日数を返す
+ * - それ以上: フォーマット済み日付文字列を返す
+ *
  * 翻訳はコンポーネント側でnext-intlを使用して行う。
  *
  * @example
+ * // 30分前の場合（相対表示）
+ * formatRelativeDate("2024-01-15T09:30:00.000Z", "ja", new Date("2024-01-15T10:00:00.000Z"))
+ * // => { isRelative: true, minutes: 30 }
+ *
+ * // 5時間前の場合（相対表示）
+ * formatRelativeDate("2024-01-15T05:00:00.000Z", "ja", new Date("2024-01-15T10:00:00.000Z"))
+ * // => { isRelative: true, hours: 5 }
+ *
  * // 3日前の場合（相対表示）
- * formatRelativeDate("2024-01-12T10:00:00.000Z", "ja")
+ * formatRelativeDate("2024-01-12T10:00:00.000Z", "ja", new Date("2024-01-15T10:00:00.000Z"))
  * // => { isRelative: true, days: 3 }
  *
  * // 15日前の場合（通常表示）
- * formatRelativeDate("2024-01-01T10:00:00.000Z", "ja")
+ * formatRelativeDate("2024-01-01T10:00:00.000Z", "ja", new Date("2024-01-15T10:00:00.000Z"))
  * // => { isRelative: false, formatted: "2024年1月1日" }
  */
 export function formatRelativeDate(
@@ -86,19 +103,30 @@ export function formatRelativeDate(
 			return undefined;
 		}
 
-		// 日数差を計算（時刻をリセットして日付のみで比較）
-		// UTCベースで日付を比較してタイムゾーンの影響を受けないようにする
-		const today = new Date(currentDate);
-		today.setUTCHours(0, 0, 0, 0);
+		// 時間差を計算（ミリ秒単位）
+		const diffTime = Math.abs(currentDate.getTime() - targetDate.getTime());
+		const diffMinutes = Math.floor(diffTime / (1000 * 60));
+		const diffHours = Math.floor(diffMinutes / 60);
+		const diffDays = Math.floor(diffHours / 24);
 
-		const target = new Date(targetDate);
-		target.setUTCHours(0, 0, 0, 0);
+		// 1時間未満の場合は分で返す
+		if (diffMinutes < 60) {
+			return {
+				isRelative: true,
+				minutes: diffMinutes,
+			};
+		}
 
-		const diffTime = today.getTime() - target.getTime();
-		const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+		// 24時間未満の場合は時間で返す
+		if (diffHours < 24) {
+			return {
+				isRelative: true,
+				hours: diffHours,
+			};
+		}
 
-		// 10日以内の場合は相対表示
-		if (diffDays >= 0 && diffDays <= 10) {
+		// 10日以内の場合は日数で返す
+		if (diffDays <= 10) {
 			return {
 				isRelative: true,
 				days: diffDays,
