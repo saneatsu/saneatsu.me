@@ -36,6 +36,9 @@ export { Badge, badgeVariants } from "./badge/badge";
 // Badge With Icon
 export { BadgeWithIcon } from "./badge-with-icon/badge-with-icon";
 
+// Blog Notice
+export { BlogNotice } from "./blog-notice/blog-notice";
+
 // Breadcrumb
 export {
 	Breadcrumb,
