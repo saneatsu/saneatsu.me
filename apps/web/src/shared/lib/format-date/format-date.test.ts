@@ -81,24 +81,80 @@ describe("convertIsoToDatetimeLocal", () => {
 
 describe("formatRelativeDate", () => {
 	describe("Unit Test", () => {
-		it("今日の日付の場合は0日前として返す", () => {
-			// Arrange: 今日の日付を基準日として設定
+		it("30分前の場合は分数で返す", () => {
+			// Arrange: 30分前の日付
+			const currentDate = new Date("2024-01-15T10:30:00.000Z");
+			const isoString = "2024-01-15T10:00:00.000Z";
+
+			// Act: 相対日付に変換
+			const result = formatRelativeDate(isoString, "ja", currentDate);
+
+			// Assert: 相対表示で30分前
+			expect(result).toBeDefined();
+			expect(result?.isRelative).toBe(true);
+			expect(result?.minutes).toBe(30);
+		});
+
+		it("1分未満の場合は0分として返す", () => {
+			// Arrange: 30秒前の日付
+			const currentDate = new Date("2024-01-15T10:00:30.000Z");
+			const isoString = "2024-01-15T10:00:00.000Z";
+
+			// Act: 相対日付に変換
+			const result = formatRelativeDate(isoString, "ja", currentDate);
+
+			// Assert: 相対表示で0分前
+			expect(result).toBeDefined();
+			expect(result?.isRelative).toBe(true);
+			expect(result?.minutes).toBe(0);
+		});
+
+		it("59分前の場合は分数で返す（境界値）", () => {
+			// Arrange: 59分前の日付
+			const currentDate = new Date("2024-01-15T11:00:00.000Z");
+			const isoString = "2024-01-15T10:01:00.000Z";
+
+			// Act: 相対日付に変換
+			const result = formatRelativeDate(isoString, "ja", currentDate);
+
+			// Assert: 相対表示で59分前
+			expect(result).toBeDefined();
+			expect(result?.isRelative).toBe(true);
+			expect(result?.minutes).toBe(59);
+		});
+
+		it("5時間前の場合は時間数で返す", () => {
+			// Arrange: 5時間前の日付
 			const currentDate = new Date("2024-01-15T15:00:00.000Z");
 			const isoString = "2024-01-15T10:00:00.000Z";
 
 			// Act: 相対日付に変換
 			const result = formatRelativeDate(isoString, "ja", currentDate);
 
-			// Assert: 相対表示で0日前
+			// Assert: 相対表示で5時間前
 			expect(result).toBeDefined();
 			expect(result?.isRelative).toBe(true);
-			expect(result?.days).toBe(0);
+			expect(result?.hours).toBe(5);
 		});
 
-		it("1日前の日付の場合は相対表示で返す", () => {
-			// Arrange: 1日前の日付
-			const currentDate = new Date("2024-01-15T10:00:00.000Z");
-			const isoString = "2024-01-14T10:00:00.000Z";
+		it("23時間前の場合は時間数で返す（境界値）", () => {
+			// Arrange: 23時間前の日付
+			const currentDate = new Date("2024-01-15T23:00:00.000Z");
+			const isoString = "2024-01-15T00:00:00.000Z";
+
+			// Act: 相対日付に変換
+			const result = formatRelativeDate(isoString, "ja", currentDate);
+
+			// Assert: 相対表示で23時間前
+			expect(result).toBeDefined();
+			expect(result?.isRelative).toBe(true);
+			expect(result?.hours).toBe(23);
+		});
+
+		it("0日前の場合は日数で返す（24時間経過）", () => {
+			// Arrange: ちょうど24時間前の日付
+			const currentDate = new Date("2024-01-16T10:00:00.000Z");
+			const isoString = "2024-01-15T10:00:00.000Z";
 
 			// Act: 相対日付に変換
 			const result = formatRelativeDate(isoString, "ja", currentDate);
@@ -109,10 +165,24 @@ describe("formatRelativeDate", () => {
 			expect(result?.days).toBe(1);
 		});
 
+		it("2日前の日付の場合は相対表示で返す", () => {
+			// Arrange: 48時間（2日）前の日付
+			const currentDate = new Date("2024-01-17T10:00:00.000Z");
+			const isoString = "2024-01-15T10:00:00.000Z";
+
+			// Act: 相対日付に変換
+			const result = formatRelativeDate(isoString, "ja", currentDate);
+
+			// Assert: 相対表示で2日前
+			expect(result).toBeDefined();
+			expect(result?.isRelative).toBe(true);
+			expect(result?.days).toBe(2);
+		});
+
 		it("5日前の日付の場合は相対表示で返す", () => {
-			// Arrange: 5日前の日付
-			const currentDate = new Date("2024-01-15T10:00:00.000Z");
-			const isoString = "2024-01-10T10:00:00.000Z";
+			// Arrange: 5日前（120時間前）の日付
+			const currentDate = new Date("2024-01-20T10:00:00.000Z");
+			const isoString = "2024-01-15T10:00:00.000Z";
 
 			// Act: 相対日付に変換
 			const result = formatRelativeDate(isoString, "ja", currentDate);
@@ -124,9 +194,9 @@ describe("formatRelativeDate", () => {
 		});
 
 		it("10日前の日付の場合は相対表示で返す（境界値）", () => {
-			// Arrange: 10日前の日付（境界値）
-			const currentDate = new Date("2024-01-15T10:00:00.000Z");
-			const isoString = "2024-01-05T10:00:00.000Z";
+			// Arrange: 10日前（240時間前）の日付（境界値）
+			const currentDate = new Date("2024-01-25T10:00:00.000Z");
+			const isoString = "2024-01-15T10:00:00.000Z";
 
 			// Act: 相対日付に変換
 			const result = formatRelativeDate(isoString, "ja", currentDate);
@@ -138,9 +208,9 @@ describe("formatRelativeDate", () => {
 		});
 
 		it("11日前の日付の場合は通常の日付形式で返す", () => {
-			// Arrange: 11日前の日付
-			const currentDate = new Date("2024-01-15T10:00:00.000Z");
-			const isoString = "2024-01-04T10:00:00.000Z";
+			// Arrange: 11日前（264時間前）の日付
+			const currentDate = new Date("2024-01-26T10:00:00.000Z");
+			const isoString = "2024-01-15T10:00:00.000Z";
 
 			// Act: 相対日付に変換
 			const result = formatRelativeDate(isoString, "ja", currentDate);
@@ -151,7 +221,7 @@ describe("formatRelativeDate", () => {
 			expect(result?.formatted).toBeDefined();
 			expect(result?.formatted).toContain("2024");
 			expect(result?.formatted).toContain("1");
-			expect(result?.formatted).toContain("4");
+			expect(result?.formatted).toContain("15");
 		});
 
 		it("30日前の日付の場合は通常の日付形式で返す", () => {
@@ -206,20 +276,6 @@ describe("formatRelativeDate", () => {
 			expect(result?.formatted).toBeDefined();
 			expect(result?.formatted).toContain("2024");
 			expect(result?.formatted).toContain("January");
-		});
-
-		it("時刻が異なっても日付が同じなら0日前として扱う", () => {
-			// Arrange: 同じ日の異なる時刻
-			const currentDate = new Date("2024-01-15T23:59:00.000Z");
-			const isoString = "2024-01-15T00:01:00.000Z";
-
-			// Act: 相対日付に変換
-			const result = formatRelativeDate(isoString, "ja", currentDate);
-
-			// Assert: 時刻は無視され、日付のみで比較される
-			expect(result).toBeDefined();
-			expect(result?.isRelative).toBe(true);
-			expect(result?.days).toBe(0);
 		});
 	});
 });
