@@ -53,14 +53,35 @@
 		"experience": {
 			"title": "Experience",
 			"description": "My development experience and initiatives",
-			"current": {
-				"title": "Current Activities",
-				"description": "Through personal project development, I focus on learning new technologies and practicing best practices."
-			},
-			"focus": {
-				"title": "Areas of Focus",
-				"description": "I'm particularly interested in modern web application development, performance optimization, and improving developer experience."
-			}
+			"timeline": [
+				{
+					"period": {
+						"start": "2025-03",
+						"end": null
+					},
+					"title": "Freelancer",
+					"description": "Started working as a freelancer",
+					"category": "work"
+				},
+				{
+					"period": {
+						"start": "2018-07",
+						"end": "2025-02"
+					},
+					"title": "Algoage, Inc.",
+					"description": "Worked as a Software Engineer",
+					"category": "work"
+				},
+				{
+					"period": {
+						"start": "2017-08",
+						"end": "2018-06"
+					},
+					"title": "Accenture",
+					"description": "Worked as an IT Consultant",
+					"category": "work"
+				}
+			]
 		},
 		"contact": {
 			"title": "SNS & Websites"
@@ -103,6 +124,14 @@
 			"loading": "Loading...",
 			"error": "Failed to load related articles"
 		}
+	},
+	"share": {
+		"copyLink": "Link copied",
+		"copyLinkError": "Failed to copy link",
+		"copyLinkTooltip": "Copy article link",
+		"shareOnX": "Post to X",
+		"shareOnFacebook": "Post to Facebook",
+		"addToHatena": "Add to Hatena Bookmark"
 	},
 	"common": {
 		"search": "Search",

@@ -53,14 +53,35 @@
 		"experience": {
 			"title": "経歴・経験",
 			"description": "これまでの開発経験と取り組み",
-			"current": {
-				"title": "現在の活動",
-				"description": "個人プロジェクトの開発を通じて、新しい技術の習得とベストプラクティスの実践に取り組んでいます。"
-			},
-			"focus": {
-				"title": "注力分野",
-				"description": "モダンなWebアプリケーション開発、パフォーマンス最適化、開発者体験の向上に特に関心を持っています。"
-			}
+			"timeline": [
+				{
+					"period": {
+						"start": "2025-03",
+						"end": null
+					},
+					"title": "個人事業主",
+					"description": "フリーランスとして活動開始",
+					"category": "work"
+				},
+				{
+					"period": {
+						"start": "2018-07",
+						"end": "2025-02"
+					},
+					"title": "株式会社Algoage",
+					"description": "ソフトウェアエンジニアとして従事",
+					"category": "work"
+				},
+				{
+					"period": {
+						"start": "2017-08",
+						"end": "2018-06"
+					},
+					"title": "株式会社Accenture",
+					"description": "ITコンサルタントとして従事",
+					"category": "work"
+				}
+			]
 		},
 		"contact": {
 			"title": "SNS・Webサイト"
@@ -103,6 +124,14 @@
 			"loading": "読み込み中...",
 			"error": "関連記事の取得に失敗しました"
 		}
+	},
+	"share": {
+		"copyLink": "リンクをコピーしました",
+		"copyLinkError": "リンクのコピーに失敗しました",
+		"copyLinkTooltip": "記事のリンクをコピー",
+		"shareOnX": "Xにポスト",
+		"shareOnFacebook": "Facebookに投稿",
+		"addToHatena": "はてなブックマークに登録"
 	},
 	"common": {
 		"search": "検索",

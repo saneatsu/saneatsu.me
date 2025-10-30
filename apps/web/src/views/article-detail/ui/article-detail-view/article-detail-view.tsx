@@ -8,7 +8,12 @@ import rehypeHighlight from "rehype-highlight";
 import { RelatedArticles } from "@/features/article-management";
 import type { Article } from "@/shared";
 import { extractHeadings, formatRelativeDate, getImageUrl } from "@/shared/lib";
-import { Badge, MarkdownPreview, TableOfContents } from "@/shared/ui";
+import {
+	Badge,
+	MarkdownPreview,
+	ShareButtons,
+	TableOfContents,
+} from "@/shared/ui";
 
 export interface ArticleDetailViewProps {
 	/** 表示する記事データ */
@@ -53,6 +58,13 @@ export function ArticleDetailView({
 
 	// Markdownから見出しを抽出
 	const headings = extractHeadings(article.content || "");
+
+	// 記事のURLを生成（SSR時はフォールバック、CSR時はwindow.location.originを使用）
+	const baseUrl =
+		typeof window !== "undefined"
+			? window.location.origin
+			: "https://saneatsu.me";
+	const articleUrl = `${baseUrl}/blog/${article.slug}`;
 
 	return (
 		<main className="container mx-auto px-4 py-8">
@@ -138,8 +150,13 @@ export function ArticleDetailView({
 
 				{/* Main Content Area - 2 Column Layout */}
 				<div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8 lg:gap-12">
-					{/* Article Content */}
 					<div className="min-w-0 order-2 lg:order-1">
+						{/* シェアボタン（上部） */}
+						<div className="flex justify-end">
+							<ShareButtons url={articleUrl} title={article.title || ""} />
+						</div>
+
+						{/* Article Content */}
 						<MarkdownPreview
 							content={article.content || ""}
 							language={locale as "ja" | "en"}
@@ -148,6 +165,11 @@ export function ArticleDetailView({
 							imageComponent="zoomable"
 							headings={headings}
 						/>
+
+						{/* シェアボタン（下部） */}
+						<div className="mt-12 flex justify-end">
+							<ShareButtons url={articleUrl} title={article.title || ""} />
+						</div>
 					</div>
 
 					{/* Table of Contents Sidebar */}
