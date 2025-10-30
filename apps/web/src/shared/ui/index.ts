@@ -206,6 +206,11 @@ export {
 } from "./select/select";
 // Separator
 export { Separator } from "./separator/separator";
+// Share Buttons
+export {
+	ShareButtons,
+	type ShareButtonsProps,
+} from "./share-buttons/share-buttons";
 // Sheet
 export {
 	Sheet,
