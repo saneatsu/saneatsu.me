@@ -248,6 +248,11 @@ export {
 export { Skeleton } from "./skeleton/skeleton";
 // Toaster
 export { Toaster } from "./sonner/sonner";
+// Stepper Timeline
+export {
+	StepperTimeline,
+	type StepperTimelineProps,
+} from "./stepper-timeline/stepper-timeline";
 // Switch
 export { Switch } from "./switch/switch";
 // Table
