@@ -95,11 +95,11 @@ export function AboutView() {
 			{ name: "TypeScript", icon: siTypescript },
 			{ name: "JavaScript", icon: siJavascript },
 			{ name: "Python", icon: siPython },
-			{ name: "Visual Basic", icon: siDotnet },
 			{ name: "Dart", icon: siDart },
-			{ name: "VBA", icon: siDotnet },
 			{ name: "HTML5", icon: siHtml5 },
 			{ name: "CSS", icon: siCss },
+			{ name: "Visual Basic", icon: siDotnet },
+			{ name: "VBA", icon: siDotnet },
 		],
 		frameworks: [
 			{ name: "React", icon: siReact },
