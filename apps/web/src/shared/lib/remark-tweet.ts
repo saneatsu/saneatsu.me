@@ -5,6 +5,11 @@ import { visit } from "unist-util-visit";
 /**
  * Nodeの型定義を拡張
  */
+interface TextNode extends Node {
+	type: "text";
+	value: string;
+}
+
 interface LinkNode extends Node {
 	type: "link";
 	url: string;
@@ -74,6 +79,19 @@ export const remarkTweet: Plugin = () => {
 				const match = url.match(tweetRegex);
 
 				if (!match) return;
+
+				// カスタムテキストがある場合は通常のリンクとして扱う
+				// 例: [カスタムテキスト](URL) は変換しない
+				// 例: [URL](URL) は変換する（テキストとURLが同じ）
+				const hasCustomText =
+					linkNode.children.length > 0 &&
+					!(
+						linkNode.children.length === 1 &&
+						linkNode.children[0].type === "text" &&
+						(linkNode.children[0] as TextNode).value === url
+					);
+
+				if (hasCustomText) return;
 
 				const tweetId = match[1];
 
