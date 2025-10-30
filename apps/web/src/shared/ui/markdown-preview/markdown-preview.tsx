@@ -8,6 +8,7 @@ import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
 import type { PluggableList } from "unified";
+import "react-tweet/theme.css";
 
 import {
 	remarkAmazon,
