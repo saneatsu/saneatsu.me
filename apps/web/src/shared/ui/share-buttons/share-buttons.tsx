@@ -176,7 +176,7 @@ export function ShareButtons({ url, title, className }: ShareButtonsProps) {
 							aria-label="Copy link"
 						>
 							{isCopied ? (
-								<Check className="h-4 w-4 text-success" />
+								<Check className="h-4 w-4 text-success-foreground" />
 							) : (
 								<Link className="h-4 w-4" />
 							)}
