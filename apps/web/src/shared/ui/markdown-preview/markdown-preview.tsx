@@ -122,7 +122,7 @@ export function createDefaultMarkdownComponents(
 		h1: ({ children }) => (
 			<h1
 				id={headings?.find((h) => h.text === children?.toString())?.id}
-				className="text-2xl font-semibold mt-6 mb-3 border-b-4 border-double border-border pb-2 scroll-mt-20"
+				className="text-2xl font-semibold mt-16 mb-3 border-b-4 border-double border-border pb-2 scroll-mt-20"
 			>
 				{children}
 			</h1>
@@ -130,7 +130,7 @@ export function createDefaultMarkdownComponents(
 		h2: ({ children }) => (
 			<h2
 				id={headings?.find((h) => h.text === children?.toString())?.id}
-				className="text-2xl font-bold mt-6 mb-3 border-b-4 border-double border-border pb-2 scroll-mt-20"
+				className="text-2xl font-bold mt-16 mb-3 border-b-4 border-double border-border pb-2 scroll-mt-20"
 			>
 				{children}
 			</h2>
@@ -353,7 +353,8 @@ export function MarkdownPreview({
 
 	return (
 		<div
-			className={`prose dark:prose-invert max-w-none bg-background ${className}`}
+			// H1, H2 の1つ目のmtは0
+			className={`prose dark:prose-invert max-w-none bg-background [&>h1:first-child]:mt-0 [&>h2:first-child]:mt-0 ${className}`}
 			data-color-mode={currentTheme === "dark" ? "dark" : "light"}
 		>
 			<ReactMarkdown
