@@ -28,7 +28,7 @@
 		"articles": {
 			"title": "最新の記事"
 		},
-		"migrationNotice": "現在は他のブログから記事を移管している最中なので、スタイリングが崩れている記事があります。2025年内にサイトと記事内容の整備が完了予定です。"
+		"migrationNotice": "現在は他のブログから記事を移管している最中なのでスタイリングが崩れている記事があります。2025年内にサイトと記事内容の整備が完了予定です。"
 	},
 	"blog": {
 		"title": "Blog"
@@ -113,6 +113,9 @@
 		"viewCount": "{count} 回閲覧",
 		"readMore": "続きを読む",
 		"backToList": "記事一覧に戻る",
+		"justNow": "たった今",
+		"minutesAgo": "{minutes}分前",
+		"hoursAgo": "{hours}時間前",
 		"today": "今日",
 		"daysAgo": "{days}日前",
 		"notFound": {
