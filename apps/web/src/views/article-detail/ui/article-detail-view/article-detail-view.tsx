@@ -97,9 +97,13 @@ export function ArticleDetailView({
 								<time dateTime={article.updatedAt || undefined}>
 									{t("updatedAt")}:{" "}
 									{updatedDateInfo.isRelative
-										? updatedDateInfo.days === 0
-											? t("today")
-											: t("daysAgo", { days: updatedDateInfo.days })
+										? updatedDateInfo.minutes !== undefined
+											? updatedDateInfo.minutes === 0
+												? t("justNow")
+												: t("minutesAgo", { minutes: updatedDateInfo.minutes })
+											: updatedDateInfo.hours !== undefined
+												? t("hoursAgo", { hours: updatedDateInfo.hours })
+												: t("daysAgo", { days: updatedDateInfo.days })
 										: updatedDateInfo.formatted}
 								</time>
 							)}
