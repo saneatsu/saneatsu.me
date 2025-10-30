@@ -4,7 +4,7 @@ const withNextIntl = createNextIntlPlugin("./src/shared/i18n/request.ts");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-	transpilePackages: ["@saneatsu/i18n", "@saneatsu/schemas", "react-tweet"],
+	transpilePackages: ["@saneatsu/i18n", "@saneatsu/schemas"],
 	// Disable type checking for backend package during build
 	typescript: {
 		ignoreBuildErrors: false,
