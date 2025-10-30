@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @plugin 'tailwindcss-animate';
 @plugin '@tailwindcss/typography';
-@import "react-tweet/theme.css";
+@import "../../node_modules/react-tweet/dist/twitter-theme/theme.css";
 
 @custom-variant dark (&:is(.dark *));
 
