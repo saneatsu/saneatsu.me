@@ -27,8 +27,7 @@
 		},
 		"articles": {
 			"title": "Latest Articles"
-		},
-		"migrationNotice": "We are currently migrating articles from other blogs, so some articles may have styling issues. Site and content updates are scheduled to be completed by the end of 2025."
+		}
 	},
 	"blog": {
 		"title": "Blog"
@@ -143,7 +142,14 @@
 		"allStatus": "All",
 		"published": "Published",
 		"draft": "Draft",
-		"clearFilters": "Clear Filters"
+		"clearFilters": "Clear Filters",
+		"blogNotice": {
+			"principle1": "Articles are published without waiting for perfection and are continuously updated",
+			"principle2": "Documents, opinions, and thoughts are dynamic. We publish first and aim for the optimal state",
+			"principle3": "This approach is inspired by GitLab's transparency-focused culture",
+			"bookLink": "The GitLab Handbook (Remote Work Best Practices)",
+			"disclaimer": "The content and opinions in articles are from the time of writing and may change over time."
+		}
 	},
 	"pagination": {
 		"previous": "Previous",
