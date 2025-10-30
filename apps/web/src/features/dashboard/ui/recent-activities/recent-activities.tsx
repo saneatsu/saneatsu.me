@@ -2,7 +2,9 @@
 
 import { Activity, FileText, Plus, TrendingUp } from "lucide-react";
 import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 
+import { formatRelativeDate } from "@/shared/lib";
 import type { RecentActivityItem } from "@/shared/model/dashboard";
 import {
 	Card,
@@ -82,31 +84,34 @@ export function RecentActivities({
 		}
 	};
 
-	/**
-	 * 日時をフォーマットして表示用に変換
-	 */
-	const formatDateTime = (dateString: string): string => {
-		const date = new Date(dateString);
-		const now = new Date();
-		const diffTime = Math.abs(now.getTime() - date.getTime());
-		const diffMinutes = Math.floor(diffTime / (1000 * 60));
-		const diffHours = Math.floor(diffMinutes / 60);
-		const diffDays = Math.floor(diffHours / 24);
+	const locale = useLocale();
+	const t = useTranslations("article");
 
-		if (diffMinutes < 60) {
-			return `${diffMinutes}分前`;
-		} else if (diffHours < 24) {
-			return `${diffHours}時間前`;
-		} else if (diffDays < 7) {
-			return `${diffDays}日前`;
-		} else {
-			return date.toLocaleDateString("ja-JP", {
-				month: "short",
-				day: "numeric",
-				hour: "2-digit",
-				minute: "2-digit",
-			});
+	/**
+	 * 日時を相対形式で表示
+	 */
+	const formatActivityDateTime = (dateString: string): string => {
+		const dateInfo = formatRelativeDate(dateString, locale as "ja" | "en");
+
+		if (!dateInfo) return dateString;
+
+		if (dateInfo.isRelative) {
+			if (dateInfo.minutes !== undefined) {
+				return dateInfo.minutes === 0
+					? t("justNow")
+					: t("minutesAgo", { minutes: dateInfo.minutes });
+			}
+			if (dateInfo.hours !== undefined) {
+				return t("hoursAgo", { hours: dateInfo.hours });
+			}
+			if (dateInfo.days !== undefined) {
+				return dateInfo.days === 0
+					? t("today")
+					: t("daysAgo", { days: dateInfo.days });
+			}
 		}
+
+		return dateInfo.formatted ?? dateString;
 	};
 
 	/**
@@ -185,7 +190,7 @@ export function RecentActivities({
 												{activity.entityTitle}
 											</Link>
 											<span className="text-xs text-muted-foreground flex-shrink-0 ml-2">
-												{formatDateTime(activity.createdAt)}
+												{formatActivityDateTime(activity.createdAt)}
 											</span>
 										</div>
 									</div>
