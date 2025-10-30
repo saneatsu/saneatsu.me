@@ -47,6 +47,22 @@ const createShareUrls = (url: string, title: string) => ({
 });
 
 /**
+ * シェアボタンの設定型
+ */
+interface ShareButtonConfig {
+	/** シェアURL */
+	href: string;
+	/** ツールチップのi18nキー */
+	tooltipKey: string;
+	/** アクセシビリティラベル */
+	ariaLabel: string;
+	/** アイコン要素 */
+	icon: React.ReactNode;
+	/** ホバー時の色クラス */
+	hoverColor: string;
+}
+
+/**
  * SNSシェアボタンコンポーネント
  *
  * @description
@@ -95,6 +111,55 @@ export function ShareButtons({ url, title, className }: ShareButtonsProps) {
 		}
 	};
 
+	/**
+	 * シェアボタンの設定配列
+	 */
+	const shareButtons: ShareButtonConfig[] = [
+		{
+			href: shareUrls.x,
+			tooltipKey: "shareOnX",
+			ariaLabel: "Share on X",
+			icon: (
+				<svg
+					role="img"
+					viewBox="0 0 24 24"
+					className="h-4 w-4"
+					fill="currentColor"
+					aria-label={siX.title}
+				>
+					<title>{siX.title}</title>
+					<path d={siX.path} />
+				</svg>
+			),
+			hoverColor: "hover:text-black dark:hover:text-white",
+		},
+		{
+			href: shareUrls.facebook,
+			tooltipKey: "shareOnFacebook",
+			ariaLabel: "Share on Facebook",
+			icon: (
+				<svg
+					role="img"
+					viewBox="0 0 24 24"
+					className="h-5 w-5"
+					fill="currentColor"
+					aria-label={siFacebook.title}
+				>
+					<title>{siFacebook.title}</title>
+					<path d={siFacebook.path} />
+				</svg>
+			),
+			hoverColor: "hover:text-[#1877F2]",
+		},
+		{
+			href: shareUrls.hatena,
+			tooltipKey: "addToHatena",
+			ariaLabel: "Add to Hatena Bookmark",
+			icon: "B!",
+			hoverColor: "hover:text-[#00A4DE] font-bold text-base",
+		},
+	];
+
 	return (
 		<TooltipProvider>
 			<div className={cn("flex items-center gap-2", className)}>
@@ -122,83 +187,32 @@ export function ShareButtons({ url, title, className }: ShareButtonsProps) {
 					</TooltipContent>
 				</Tooltip>
 
-				{/* Xシェアボタン */}
-				<Tooltip>
-					<TooltipTrigger asChild>
-						<a
-							href={shareUrls.x}
-							target="_blank"
-							rel="noopener noreferrer"
-							className={cn(
-								buttonClassName,
-								"hover:text-black dark:hover:text-white"
-							)}
-							aria-label="Share on X"
-						>
-							<svg
-								role="img"
-								viewBox="0 0 24 24"
-								className="h-4 w-4"
-								fill="currentColor"
-								aria-label={siX.title}
+				{/* SNSシェアボタン */}
+				{shareButtons.map((button) => (
+					<Tooltip key={button.href}>
+						<TooltipTrigger asChild>
+							<a
+								href={button.href}
+								target="_blank"
+								rel="noopener noreferrer"
+								className={cn(buttonClassName, button.hoverColor)}
+								aria-label={button.ariaLabel}
 							>
-								<title>{siX.title}</title>
-								<path d={siX.path} />
-							</svg>
-						</a>
-					</TooltipTrigger>
-					<TooltipContent>
-						<p>{t("shareOnX")}</p>
-					</TooltipContent>
-				</Tooltip>
-
-				{/* Facebookシェアボタン */}
-				<Tooltip>
-					<TooltipTrigger asChild>
-						<a
-							href={shareUrls.facebook}
-							target="_blank"
-							rel="noopener noreferrer"
-							className={cn(buttonClassName, "hover:text-[#1877F2]")}
-							aria-label="Share on Facebook"
-						>
-							<svg
-								role="img"
-								viewBox="0 0 24 24"
-								className="h-5 w-5"
-								fill="currentColor"
-								aria-label={siFacebook.title}
-							>
-								<title>{siFacebook.title}</title>
-								<path d={siFacebook.path} />
-							</svg>
-						</a>
-					</TooltipTrigger>
-					<TooltipContent>
-						<p>{t("shareOnFacebook")}</p>
-					</TooltipContent>
-				</Tooltip>
-
-				{/* はてなブックマークボタン */}
-				<Tooltip>
-					<TooltipTrigger asChild>
-						<a
-							href={shareUrls.hatena}
-							target="_blank"
-							rel="noopener noreferrer"
-							className={cn(
-								buttonClassName,
-								"hover:text-[#00A4DE] font-bold text-base"
-							)}
-							aria-label="Add to Hatena Bookmark"
-						>
-							B!
-						</a>
-					</TooltipTrigger>
-					<TooltipContent>
-						<p>{t("addToHatena")}</p>
-					</TooltipContent>
-				</Tooltip>
+								{button.icon}
+							</a>
+						</TooltipTrigger>
+						<TooltipContent>
+							<p>
+								{t(
+									button.tooltipKey as
+										| "shareOnX"
+										| "shareOnFacebook"
+										| "addToHatena"
+								)}
+							</p>
+						</TooltipContent>
+					</Tooltip>
+				))}
 			</div>
 		</TooltipProvider>
 	);
