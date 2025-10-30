@@ -383,10 +383,10 @@ export const LongContent: Story = {
 };
 
 /**
- * 更新日が今日の場合のテスト
+ * 更新日がたった今の場合のテスト（0分前）
  */
-export const UpdatedToday: Story = {
-	name: "更新日が今日",
+export const UpdatedJustNow: Story = {
+	name: "更新日がたった今（0分前）",
 	tags: ["validation"],
 	args: {
 		article: {
@@ -407,9 +407,102 @@ export const UpdatedToday: Story = {
 		const updatedDate = canvas.getByText(/更新日:/);
 		expect(updatedDate).toBeInTheDocument();
 
-		// 「今日」が表示されていることを確認
-		const todayText = canvas.getByText(/今日/);
-		expect(todayText).toBeInTheDocument();
+		// 「たった今」が表示されていることを確認
+		const justNowText = canvas.getByText(/たった今|Just now/);
+		expect(justNowText).toBeInTheDocument();
+	},
+};
+
+/**
+ * 更新日が30分前の場合のテスト
+ */
+export const Updated30MinutesAgo: Story = {
+	name: "更新日が30分前",
+	tags: ["validation"],
+	args: {
+		article: {
+			...mockArticle,
+			updatedAt: (() => {
+				const date = new Date();
+				date.setMinutes(date.getMinutes() - 30);
+				return date.toISOString();
+			})(),
+		},
+		locale: "ja",
+	},
+	parameters: {},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+
+		// 更新日の確認
+		const updatedDate = canvas.getByText(/更新日:/);
+		expect(updatedDate).toBeInTheDocument();
+
+		// 「30分前」が表示されていることを確認
+		const minutesAgoText = canvas.getByText(/30分前|30 minutes ago/);
+		expect(minutesAgoText).toBeInTheDocument();
+	},
+};
+
+/**
+ * 更新日が1時間前の場合のテスト
+ */
+export const Updated1HourAgo: Story = {
+	name: "更新日が1時間前",
+	tags: ["validation"],
+	args: {
+		article: {
+			...mockArticle,
+			updatedAt: (() => {
+				const date = new Date();
+				date.setHours(date.getHours() - 1);
+				return date.toISOString();
+			})(),
+		},
+		locale: "ja",
+	},
+	parameters: {},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+
+		// 更新日の確認
+		const updatedDate = canvas.getByText(/更新日:/);
+		expect(updatedDate).toBeInTheDocument();
+
+		// 「1時間前」が表示されていることを確認
+		const hoursAgoText = canvas.getByText(/1時間前|1 hours ago/);
+		expect(hoursAgoText).toBeInTheDocument();
+	},
+};
+
+/**
+ * 更新日が23時間前の場合のテスト（境界値）
+ */
+export const Updated23HoursAgo: Story = {
+	name: "更新日が23時間前（境界値）",
+	tags: ["validation"],
+	args: {
+		article: {
+			...mockArticle,
+			updatedAt: (() => {
+				const date = new Date();
+				date.setHours(date.getHours() - 23);
+				return date.toISOString();
+			})(),
+		},
+		locale: "ja",
+	},
+	parameters: {},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+
+		// 更新日の確認
+		const updatedDate = canvas.getByText(/更新日:/);
+		expect(updatedDate).toBeInTheDocument();
+
+		// 「23時間前」が表示されていることを確認
+		const hoursAgoText = canvas.getByText(/23時間前|23 hours ago/);
+		expect(hoursAgoText).toBeInTheDocument();
 	},
 };
 
