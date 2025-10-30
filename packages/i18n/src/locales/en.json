@@ -144,11 +144,9 @@
 		"draft": "Draft",
 		"clearFilters": "Clear Filters",
 		"blogNotice": {
-			"principle1": "Articles are published without waiting for perfection and are continuously updated",
-			"principle2": "Documents, opinions, and thoughts are dynamic. We publish first and aim for the optimal state",
+			"principle1": "Articles are published without waiting for perfection and are continuously updated. Content reflects the time of writing and may change over time",
 			"principle3": "This approach is inspired by GitLab's transparency-focused culture",
-			"bookLink": "The GitLab Handbook (Remote Work Best Practices)",
-			"disclaimer": "The content and opinions in articles are from the time of writing and may change over time."
+			"bookLink": "The GitLab Handbook (Remote Work Best Practices)"
 		}
 	},
 	"pagination": {
