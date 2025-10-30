@@ -53,7 +53,7 @@ import {
 } from "simple-icons";
 
 import type { TimelineItem } from "@/shared/types";
-import { BadgeWithIcon, StepperTimeline } from "@/shared/ui";
+import { BadgeWithIcon, BlogNotice, StepperTimeline } from "@/shared/ui";
 
 /**
  * 技術アイテムの型定義
@@ -183,6 +183,9 @@ export function AboutView() {
 				<section className="text-center">
 					<h1 className="text-4xl font-bold">{t("title")}</h1>
 				</section>
+
+				{/* Blog運営方針 */}
+				<BlogNotice />
 
 				{/* コンテンツセクション */}
 				<div className="space-y-12">
