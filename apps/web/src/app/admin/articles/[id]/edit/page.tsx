@@ -27,10 +27,8 @@ export default function ArticleEditPage() {
 	// ローディング中
 	if (isLoading) {
 		return (
-			<div className="container mx-auto py-6">
-				<div className="flex items-center justify-center h-96">
-					<Loader2 className="h-8 w-8 animate-spin text-primary" />
-				</div>
+			<div className="flex items-center justify-center h-96">
+				<Loader2 className="h-8 w-8 animate-spin text-primary" />
 			</div>
 		);
 	}
@@ -38,22 +36,16 @@ export default function ArticleEditPage() {
 	// エラー処理
 	if (error || !article) {
 		return (
-			<div className="container mx-auto py-6">
-				<div className="bg-destructive/10 border border-destructive rounded-lg p-6">
-					<h2 className="text-lg font-semibold text-destructive mb-2">
-						エラーが発生しました
-					</h2>
-					<p className="text-muted-foreground">
-						{error?.message || "記事が見つかりませんでした"}
-					</p>
-				</div>
+			<div className="bg-destructive/10 border border-destructive rounded-lg p-6">
+				<h2 className="text-lg font-semibold text-destructive mb-2">
+					エラーが発生しました
+				</h2>
+				<p className="text-muted-foreground">
+					{error?.message || "記事が見つかりませんでした"}
+				</p>
 			</div>
 		);
 	}
 
-	return (
-		<div className="container mx-auto py-6">
-			<ArticleEditForm article={article} />
-		</div>
-	);
+	return <ArticleEditForm article={article} />;
 }

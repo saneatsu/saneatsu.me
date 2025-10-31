@@ -238,7 +238,7 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 		<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 			{/* フォームエラー表示 */}
 			{formError && (
-				<Alert variant="destructive">
+				<Alert variant="destructive" className="max-w-7xl">
 					<AlertCircle className="h-4 w-4" />
 					<AlertTitle>エラーが発生しました</AlertTitle>
 					<AlertDescription>{formError}</AlertDescription>
@@ -247,7 +247,7 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 
 			{/* サムネイルエラー表示 */}
 			{thumbnailError && (
-				<Alert variant="destructive">
+				<Alert variant="destructive" className="max-w-7xl">
 					<AlertCircle className="h-4 w-4" />
 					<AlertTitle>サムネイル画像エラー</AlertTitle>
 					<AlertDescription>{thumbnailError}</AlertDescription>
@@ -256,7 +256,7 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 
 			{/* 警告メッセージ表示 */}
 			{warnings.length > 0 && (
-				<Alert variant="warning">
+				<Alert variant="warning" className="max-w-7xl">
 					<AlertCircle className="h-4 w-4" />
 					<AlertTitle>警告</AlertTitle>
 					<AlertDescription>
@@ -268,14 +268,16 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 			)}
 
 			{/* サムネイル画像 */}
-			<ArticleThumbnailUploader
-				articleId={article.id}
-				thumbnailUrl={thumbnailUrl}
-				onError={setThumbnailError}
-			/>
+			<div className="max-w-7xl">
+				<ArticleThumbnailUploader
+					articleId={article.id}
+					thumbnailUrl={thumbnailUrl}
+					onError={setThumbnailError}
+				/>
+			</div>
 
 			{/* タイトル */}
-			<div className="space-y-2">
+			<div className="space-y-2 max-w-7xl">
 				<div className="flex items-center justify-between">
 					<Label htmlFor="title">タイトル *</Label>
 					<Tabs
@@ -313,7 +315,7 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 			</div>
 
 			{/* スラッグ */}
-			<div className="space-y-2">
+			<div className="space-y-2 max-w-7xl">
 				<Label htmlFor="slug">スラッグ *</Label>
 				<div className="relative">
 					<Input
@@ -348,20 +350,22 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 			</div>
 
 			{/* ステータス */}
-			<ArticleStatusSelector
-				value={watchStatus}
-				onValueChange={(value) =>
-					setValue("status", value as "draft" | "published" | "archived")
-				}
-				statuses={["draft", "published", "archived"]}
-				label="ステータス"
-				required
-				error={errors.status?.message}
-			/>
+			<div className="max-w-7xl">
+				<ArticleStatusSelector
+					value={watchStatus}
+					onValueChange={(value) =>
+						setValue("status", value as "draft" | "published" | "archived")
+					}
+					statuses={["draft", "published", "archived"]}
+					label="ステータス"
+					required
+					error={errors.status?.message}
+				/>
+			</div>
 
 			{/* 公開日時 */}
 			{watchStatus === "published" && (
-				<div className="space-y-2">
+				<div className="space-y-2 max-w-7xl">
 					<Label htmlFor="publishedAt">公開日時</Label>
 					<DateTimePicker
 						value={publishedAtDate}
@@ -375,7 +379,7 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 			)}
 
 			{/* タグ選択 */}
-			<div className="space-y-2">
+			<div className="space-y-2 max-w-7xl">
 				<Label>タグ</Label>
 				<MultipleSelector
 					value={selectedTags}
@@ -411,7 +415,7 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 						value={markdownValue}
 						onChange={handleEditorChange}
 						setValue={setValue as (name: string, value: string) => void}
-						height={600}
+						height={800}
 						language="ja"
 						enContent={enContent}
 					/>

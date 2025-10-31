@@ -9,9 +9,5 @@ import { ArticleNewForm } from "@/features/article-management";
  * 保存時に自動翻訳を実行して多言語での記事を作成する。
  */
 export default function ArticleNewPage() {
-	return (
-		<div className="container mx-auto py-6">
-			<ArticleNewForm />
-		</div>
-	);
+	return <ArticleNewForm />;
 }

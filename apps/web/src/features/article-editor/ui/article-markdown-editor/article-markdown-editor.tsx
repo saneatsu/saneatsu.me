@@ -331,7 +331,7 @@ export function ArticleMarkdownEditor({
 
 	return (
 		<div className={className}>
-			<div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+			<div className="grid grid-cols-2 gap-4">
 				{/* 左側: エディタ */}
 				<div ref={editorRef} className="h-full">
 					<MDEditor
