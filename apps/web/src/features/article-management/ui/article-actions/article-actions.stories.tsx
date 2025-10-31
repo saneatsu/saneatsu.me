@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { expect, fn, userEvent, within } from "storybook/test";
+import { expect, fn, screen, userEvent, within } from "storybook/test";
 
 import type { Article } from "@/shared/model";
 
@@ -113,12 +113,12 @@ export const DeleteDialogDisplay: Story = {
 		const deleteButton = canvas.getByRole("button", { name: /削除/i });
 		await userEvent.click(deleteButton);
 
-		// 確認ダイアログが表示されることを確認
-		const dialogTitle = await canvas.findByText("記事の削除");
+		// 確認ダイアログが表示されることを確認（Portal経由でレンダリングされるためscreenを使用）
+		const dialogTitle = await screen.findByText("記事の削除");
 		await expect(dialogTitle).toBeInTheDocument();
 
 		const dialogDescription =
-			await canvas.findByText(/記事「テスト記事」を削除しますか？/i);
+			await screen.findByText(/記事「テスト記事」を削除しますか？/i);
 		await expect(dialogDescription).toBeInTheDocument();
 	},
 };

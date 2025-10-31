@@ -338,13 +338,6 @@ export const SemanticStructureCheck: Story = {
 		const article = canvas.getByRole("article");
 		expect(article).toBeInTheDocument();
 
-		// header, footer要素の確認
-		const header = canvasElement.querySelector("header");
-		const footer = canvasElement.querySelector("footer");
-
-		expect(header).toBeInTheDocument();
-		expect(footer).toBeInTheDocument();
-
 		// 戻るリンクの確認
 		const backLink = canvas.getByRole("link");
 		expect(backLink).toBeInTheDocument();

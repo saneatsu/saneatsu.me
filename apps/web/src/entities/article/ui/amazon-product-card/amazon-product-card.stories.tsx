@@ -1,7 +1,17 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { expect } from "storybook/test";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { HttpResponse, http } from "msw";
+import { expect, within } from "storybook/test";
 
 import { AmazonProductCard } from "./amazon-product-card";
+
+const queryClient = new QueryClient({
+	defaultOptions: {
+		queries: {
+			retry: false,
+		},
+	},
+});
 
 const meta = {
 	component: AmazonProductCard,
@@ -9,7 +19,36 @@ const meta = {
 		viewport: {
 			defaultViewport: "reset",
 		},
+		msw: {
+			handlers: [
+				http.get("*/api/ogp", ({ request }) => {
+					const url = new URL(request.url);
+					const targetUrl = url.searchParams.get("url");
+
+					// モックOGPデータを返す
+					return HttpResponse.json({
+						data: {
+							title: "テスト商品のタイトル",
+							description: "これはテスト用の商品説明です。",
+							image: "https://via.placeholder.com/300",
+							favicon: "https://www.amazon.co.jp/favicon.ico",
+							siteName: "Amazon.co.jp",
+							url: targetUrl || "https://www.amazon.co.jp",
+						},
+					});
+				}),
+			],
+		},
 	},
+	decorators: [
+		(Story) => (
+			<QueryClientProvider client={queryClient}>
+				<div className="p-4">
+					<Story />
+				</div>
+			</QueryClientProvider>
+		),
+	],
 } satisfies Meta<typeof AmazonProductCard>;
 
 export default meta;
@@ -66,37 +105,30 @@ export const ButtonValidation: Story = {
 		domain: "amazon.co.jp",
 	},
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		// Wait for loading to complete (this is a mock, so might be instant)
-		await new Promise((resolve) => setTimeout(resolve, 1000));
+		const canvas = within(canvasElement);
 
-		// 「Amazonで見る」ボタンが存在することを確認
-		const button = canvasElement.querySelector("a[href]");
-		await expect(button).toBeInTheDocument();
+		// 「Amazonで見る」ボタンが表示されるまで待つ
+		const link = await canvas.findByRole("link");
+		await expect(link).toBeInTheDocument();
 
 		// ボタンのhref属性にAmazon URLが含まれることを確認
-		if (button) {
-			await expect(button).toHaveAttribute(
-				"href",
-				expect.stringContaining("amazon.co.jp")
-			);
-			await expect(button).toHaveAttribute(
-				"href",
-				expect.stringContaining("B08N5WRWNW")
-			);
-		}
+		await expect(link).toHaveAttribute(
+			"href",
+			expect.stringContaining("amazon.co.jp")
+		);
+		await expect(link).toHaveAttribute(
+			"href",
+			expect.stringContaining("B08N5WRWNW")
+		);
 
 		// rel属性に "sponsored" が含まれることを確認（アフィリエイトリンクであることを示す）
-		if (button) {
-			await expect(button).toHaveAttribute(
-				"rel",
-				expect.stringContaining("sponsored")
-			);
-		}
+		await expect(link).toHaveAttribute(
+			"rel",
+			expect.stringContaining("sponsored")
+		);
 
 		// target="_blank" が設定されていることを確認
-		if (button) {
-			await expect(button).toHaveAttribute("target", "_blank");
-		}
+		await expect(link).toHaveAttribute("target", "_blank");
 	},
 };
 
@@ -166,28 +198,20 @@ export const BrandColorValidation: Story = {
 		domain: "amazon.co.jp",
 	},
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		// Wait for potential loading
-		await new Promise((resolve) => setTimeout(resolve, 1000));
+		const canvas = within(canvasElement);
+
+		// リンクが表示されるまで待つ
+		const link = await canvas.findByRole("link");
 
 		// カードのボーダーカラーがAmazonオレンジ系であることを確認
 		const card = canvasElement.querySelector(".border");
 		if (card) {
-			const _borderColor = window.getComputedStyle(card).borderColor;
-			// border-[#FF9900]/20 が適用されているか確認
-			// 正確な色の検証は難しいので、border要素の存在のみ確認
+			// border要素の存在を確認
 			await expect(card).toHaveClass("border");
 		}
 
-		// ボタンの背景色がAmazonオレンジであることを確認
-		const button = canvasElement.querySelector("a[href] > button, a[href]");
-		if (button) {
-			// bg-[#FF9900] クラスが適用されているか確認
-			const classes = button.className;
-			if (classes) {
-				// クラスリストに bg- が含まれていることを確認
-				await expect(classes).toBeTruthy();
-			}
-		}
+		// リンク要素のクラス名が存在することを確認
+		await expect(link.className).toBeTruthy();
 	},
 };
 
@@ -228,30 +252,22 @@ export const ShortUrlValidation: Story = {
 		// asin は省略
 	},
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		// Wait for loading
-		await new Promise((resolve) => setTimeout(resolve, 1000));
+		const canvas = within(canvasElement);
 
 		// 「Amazon商品（短縮URL）」と表示されることを確認
-		const text = canvasElement.textContent;
-		if (text) {
-			await expect(text).toContain("Amazon商品（短縮URL）");
-		}
+		await canvas.findByText(/Amazon商品（短縮URL）/);
 
 		// ドメイン（amzn.to）が表示されることを確認
-		if (text) {
-			await expect(text).toContain("amzn.to");
-		}
+		await canvas.findByText(/amzn\.to/);
 
 		// リンクが存在することを確認
-		const link = canvasElement.querySelector("a[href]");
+		const link = await canvas.findByRole("link");
 		await expect(link).toBeInTheDocument();
 
 		// リンクのhref属性に短縮URLが含まれることを確認
-		if (link) {
-			await expect(link).toHaveAttribute(
-				"href",
-				expect.stringContaining("amzn.to")
-			);
-		}
+		await expect(link).toHaveAttribute(
+			"href",
+			expect.stringContaining("amzn.to")
+		);
 	},
 };
