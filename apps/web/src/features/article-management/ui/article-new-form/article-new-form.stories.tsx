@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { expect, userEvent, waitFor, within } from "@storybook/test";
 import { HttpResponse, http } from "msw";
+import { expect, userEvent, waitFor, within } from "storybook/test";
 
 import { ArticleNewForm } from "./article-new-form";
 
@@ -989,9 +989,9 @@ export const CtrlDForwardDelete: Story = {
 	name: "Ctrl+Dで前方削除（Forward Delete）",
 	tags: ["code-only", "!test"],
 	play: async ({ canvas }) => {
-		const editorContainer = await within(canvas as HTMLElement).findByTestId(
-			"md-editor"
-		);
+		const editorContainer = await within(
+			canvas as unknown as HTMLElement
+		).findByTestId("md-editor");
 		const editorTextarea = within(editorContainer).getByRole(
 			"textbox"
 		) as HTMLTextAreaElement;
@@ -1104,9 +1104,9 @@ export const WikiLinkPopoverAppears: Story = {
 	name: "[[入力時にWiki Link Popoverが表示される",
 	tags: ["code-only", "!test"],
 	play: async ({ canvas }) => {
-		const editorContainer = await within(canvas as HTMLElement).findByTestId(
-			"md-editor"
-		);
+		const editorContainer = await within(
+			canvas as unknown as HTMLElement
+		).findByTestId("md-editor");
 		const editorTextarea = within(editorContainer).getByRole(
 			"textbox"
 		) as HTMLTextAreaElement;
@@ -1117,7 +1117,7 @@ export const WikiLinkPopoverAppears: Story = {
 		// Wiki Link サジェストポップアップが表示されることを確認
 		await waitFor(
 			() => {
-				const popup = within(canvas as HTMLElement).queryByTestId(
+				const popup = within(canvas as unknown as HTMLElement).queryByTestId(
 					"wiki-link-suggestions"
 				);
 				expect(popup).toBeInTheDocument();
@@ -1131,7 +1131,7 @@ export const WikiLinkPopoverAppears: Story = {
 		// Wiki Link サジェストポップアップが非表示になることを確認
 		await waitFor(
 			() => {
-				const popup = within(canvas as HTMLElement).queryByTestId(
+				const popup = within(canvas as unknown as HTMLElement).queryByTestId(
 					"wiki-link-suggestions"
 				);
 				expect(popup).not.toBeInTheDocument();
@@ -1145,7 +1145,7 @@ export const WikiLinkPopoverAppears: Story = {
 		// Wiki Link サジェストポップアップが表示されることを確認
 		await waitFor(
 			() => {
-				const popup = within(canvas as HTMLElement).queryByTestId(
+				const popup = within(canvas as unknown as HTMLElement).queryByTestId(
 					"wiki-link-suggestions"
 				);
 				expect(popup).toBeInTheDocument();
@@ -1160,7 +1160,7 @@ export const WikiLinkPopoverAppears: Story = {
 		// Wiki Link サジェストポップアップが表示されることを確認
 		await waitFor(
 			() => {
-				const popup = within(canvas as HTMLElement).queryByTestId(
+				const popup = within(canvas as unknown as HTMLElement).queryByTestId(
 					"wiki-link-suggestions"
 				);
 				expect(popup).toBeInTheDocument();
@@ -1177,9 +1177,9 @@ export const WikiLinkJapaneseInput: Story = {
 	name: "日本語入力時にWiki Link Popoverが表示される",
 	tags: ["code-only", "!test"],
 	play: async ({ canvas }) => {
-		const editorContainer = await within(canvas as HTMLElement).findByTestId(
-			"md-editor"
-		);
+		const editorContainer = await within(
+			canvas as unknown as HTMLElement
+		).findByTestId("md-editor");
 		const editorTextarea = within(editorContainer).getByRole(
 			"textbox"
 		) as HTMLTextAreaElement;
@@ -1190,7 +1190,7 @@ export const WikiLinkJapaneseInput: Story = {
 		// Wiki Link サジェストポップアップが表示されることを確認
 		await waitFor(
 			() => {
-				const popup = within(canvas as HTMLElement).queryByTestId(
+				const popup = within(canvas as unknown as HTMLElement).queryByTestId(
 					"wiki-link-suggestions"
 				);
 				expect(popup).toBeInTheDocument();
@@ -1207,7 +1207,7 @@ export const WikiLinkJapaneseInput: Story = {
 		// Wiki Link サジェストポップアップが表示されることを確認
 		await waitFor(
 			() => {
-				const popup = within(canvas as HTMLElement).queryByTestId(
+				const popup = within(canvas as unknown as HTMLElement).queryByTestId(
 					"wiki-link-suggestions"
 				);
 				expect(popup).toBeInTheDocument();
@@ -1230,7 +1230,7 @@ export const WikiLinkJapaneseInput: Story = {
 		// Wiki Link サジェストポップアップが表示されることを確認
 		await waitFor(
 			() => {
-				const popup = within(canvas as HTMLElement).queryByTestId(
+				const popup = within(canvas as unknown as HTMLElement).queryByTestId(
 					"wiki-link-suggestions"
 				);
 				expect(popup).toBeInTheDocument();
@@ -1245,7 +1245,7 @@ export const WikiLinkJapaneseInput: Story = {
 		// Wiki Link サジェストポップアップが表示されることを確認
 		await waitFor(
 			() => {
-				const popup = within(canvas as HTMLElement).queryByTestId(
+				const popup = within(canvas as unknown as HTMLElement).queryByTestId(
 					"wiki-link-suggestions"
 				);
 				expect(popup).toBeInTheDocument();
@@ -1262,9 +1262,9 @@ export const WikiLinkPopoverPositioning: Story = {
 	name: "Popover位置が入力テキストと重ならない",
 	tags: ["code-only", "!test"],
 	play: async ({ canvas }) => {
-		const editorContainer = await within(canvas as HTMLElement).findByTestId(
-			"md-editor"
-		);
+		const editorContainer = await within(
+			canvas as unknown as HTMLElement
+		).findByTestId("md-editor");
 		const editorTextarea = within(editorContainer).getByRole(
 			"textbox"
 		) as HTMLTextAreaElement;
@@ -1290,7 +1290,7 @@ export const WikiLinkPopoverPositioning: Story = {
 		// Wiki Link サジェストポップアップが表示されることを確認
 		await waitFor(
 			() => {
-				const popup = within(canvas as HTMLElement).queryByTestId(
+				const popup = within(canvas as unknown as HTMLElement).queryByTestId(
 					"wiki-link-suggestions"
 				);
 				expect(popup).toBeInTheDocument();
@@ -1299,7 +1299,7 @@ export const WikiLinkPopoverPositioning: Story = {
 		);
 
 		// Popoverの位置を取得
-		const popup = within(canvas as HTMLElement).getByTestId(
+		const popup = within(canvas as unknown as HTMLElement).getByTestId(
 			"wiki-link-suggestions"
 		);
 		const popupRect = popup.getBoundingClientRect();
@@ -1338,9 +1338,12 @@ export const WikiLinkHashNotTriggerTag: Story = {
 	tags: ["code-only", "!test"],
 	play: async ({ canvas }) => {
 		// エディタのtextareaを取得
-		const editorContainer = within(canvas as HTMLElement).getByRole("textbox", {
-			name: /本文/,
-		});
+		const editorContainer = within(canvas as unknown as HTMLElement).getByRole(
+			"textbox",
+			{
+				name: /本文/,
+			}
+		);
 		const editorTextarea = editorContainer.querySelector(
 			".w-md-editor-text-input"
 		) as HTMLTextAreaElement;
@@ -1366,15 +1369,15 @@ export const WikiLinkHashNotTriggerTag: Story = {
 		await new Promise((resolve) => setTimeout(resolve, 300));
 
 		// タグサジェストポップアップが表示されていないことを確認
-		const tagPopup = within(canvas as HTMLElement).queryByTestId(
+		const tagPopup = within(canvas as unknown as HTMLElement).queryByTestId(
 			"tag-suggestions"
 		);
 		expect(tagPopup).not.toBeInTheDocument();
 
 		// Wiki Link サジェストポップアップも表示されていないことを確認
-		const wikiLinkPopup = within(canvas as HTMLElement).queryByTestId(
-			"wiki-link-suggestions"
-		);
+		const wikiLinkPopup = within(
+			canvas as unknown as HTMLElement
+		).queryByTestId("wiki-link-suggestions");
 		expect(wikiLinkPopup).not.toBeInTheDocument();
 	},
 };
@@ -1384,9 +1387,12 @@ export const WikiLinkClosingBracketsNotTriggerTag: Story = {
 	tags: ["code-only", "!test"],
 	play: async ({ canvas }) => {
 		// エディタのtextareaを取得
-		const editorContainer = within(canvas as HTMLElement).getByRole("textbox", {
-			name: /本文/,
-		});
+		const editorContainer = within(canvas as unknown as HTMLElement).getByRole(
+			"textbox",
+			{
+				name: /本文/,
+			}
+		);
 		const editorTextarea = editorContainer.querySelector(
 			".w-md-editor-text-input"
 		) as HTMLTextAreaElement;
@@ -1410,7 +1416,7 @@ export const WikiLinkClosingBracketsNotTriggerTag: Story = {
 		await new Promise((resolve) => setTimeout(resolve, 300));
 
 		// タグサジェストポップアップが表示されていないことを確認
-		const tagPopup = within(canvas as HTMLElement).queryByTestId(
+		const tagPopup = within(canvas as unknown as HTMLElement).queryByTestId(
 			"tag-suggestions"
 		);
 		expect(tagPopup).not.toBeInTheDocument();

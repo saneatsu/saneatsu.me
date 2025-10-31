@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { expect, within } from "@storybook/test";
 import { HttpResponse, http } from "msw";
+import { expect, within } from "storybook/test";
 
 import { WikiLink } from "./wiki-link";
 

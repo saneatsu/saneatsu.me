@@ -1,24 +1,26 @@
-import { dirname, join } from "node:path";
 import type { StorybookConfig } from "@storybook/nextjs";
 
-/**
- * This function is used to resolve the absolute path of a package.
- * It is needed in projects that use Yarn PnP or are set up within a monorepo.
- */
-function getAbsolutePath(value: string): string {
-	return dirname(require.resolve(join(value, "package.json")));
-}
 const config: StorybookConfig = {
 	stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
 	addons: [
-		getAbsolutePath("@storybook/addon-docs"),
-		getAbsolutePath("@storybook/addon-onboarding"),
+		"@storybook/addon-docs",
+		"@storybook/addon-onboarding",
 		"msw-storybook-addon",
 	],
 	framework: {
-		name: getAbsolutePath("@storybook/nextjs"),
+		name: "@storybook/nextjs",
 		options: {},
 	},
 	staticDirs: ["../public"],
+	env: (config) => ({
+		...config,
+		// Storybook環境用の環境変数をモック
+		// これにより、@t3-oss/env-nextjsの環境変数検証が成功する
+		NEXT_PUBLIC_API_URL:
+			process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080",
+		NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH:
+			process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH ||
+			"mock-hash-for-storybook",
+	}),
 };
 export default config;

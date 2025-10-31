@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { expect, fn, userEvent, waitFor, within } from "@storybook/test";
 import { HttpResponse, http } from "msw";
 import React from "react";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 import type { SuggestionItem } from "@/entities/article";
 

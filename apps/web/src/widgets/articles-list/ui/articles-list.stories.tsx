@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { expect, userEvent, within } from "@storybook/test";
 import { HttpResponse, http } from "msw";
+import { expect, userEvent, within } from "storybook/test";
 
 import type { Article, ArticlesResponse } from "@/shared/model";
 
@@ -75,7 +75,7 @@ export const FirstPage: Story = {
 	parameters: {
 		msw: {
 			handlers: [
-				http.get("http://localhost:8888/api/articles", ({ request }) => {
+				http.get("*/api/articles", ({ request }) => {
 					const url = new URL(request.url);
 					const page = Number.parseInt(url.searchParams.get("page") || "1", 10);
 					const limit = Number.parseInt(
@@ -116,7 +116,7 @@ export const MiddlePage: Story = {
 	parameters: {
 		msw: {
 			handlers: [
-				http.get("http://localhost:8888/api/articles", ({ request }) => {
+				http.get("*/api/articles", ({ request }) => {
 					const url = new URL(request.url);
 					const page = Number.parseInt(url.searchParams.get("page") || "1", 10);
 					const limit = Number.parseInt(
@@ -161,7 +161,7 @@ export const LastPage: Story = {
 	parameters: {
 		msw: {
 			handlers: [
-				http.get("http://localhost:8888/api/articles", ({ request }) => {
+				http.get("*/api/articles", ({ request }) => {
 					const url = new URL(request.url);
 					const page = Number.parseInt(url.searchParams.get("page") || "1", 10);
 					const limit = Number.parseInt(
@@ -207,7 +207,7 @@ export const SinglePage: Story = {
 	parameters: {
 		msw: {
 			handlers: [
-				http.get("http://localhost:8888/api/articles", ({ request }) => {
+				http.get("*/api/articles", ({ request }) => {
 					const url = new URL(request.url);
 					const page = Number.parseInt(url.searchParams.get("page") || "1", 10);
 					const limit = Number.parseInt(
@@ -250,7 +250,7 @@ export const WithLimit: Story = {
 	parameters: {
 		msw: {
 			handlers: [
-				http.get("http://localhost:8888/api/articles", ({ request }) => {
+				http.get("*/api/articles", ({ request }) => {
 					const url = new URL(request.url);
 					const page = Number.parseInt(url.searchParams.get("page") || "1", 10);
 					const limit = Number.parseInt(
@@ -280,7 +280,7 @@ export const WithLimit: Story = {
 				// 「すべての記事を見る」リンクが表示される
 				const link = canvas.getByText(/すべての記事を見る/);
 				expect(link).toBeInTheDocument();
-				expect(link).toHaveAttribute("href", "/blog");
+				expect(link).toHaveAttribute("href", "/ja/blog");
 			}
 		);
 	},
@@ -295,7 +295,7 @@ export const PageSwitching: Story = {
 	parameters: {
 		msw: {
 			handlers: [
-				http.get("http://localhost:8888/api/articles", ({ request }) => {
+				http.get("*/api/articles", ({ request }) => {
 					const url = new URL(request.url);
 					const page = Number.parseInt(url.searchParams.get("page") || "1", 10);
 					const limit = Number.parseInt(

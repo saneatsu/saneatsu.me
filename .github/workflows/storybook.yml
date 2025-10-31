@@ -1,0 +1,53 @@
+name: 📚 Storybook
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # workspaceの依存関係をビルド
+      - name: Build workspace dependencies
+        run: pnpm --filter @saneatsu/web^... build
+
+      # Playwrightをインストール（test-runnerが使用）
+      - name: Install Playwright
+        run: pnpm --filter @saneatsu/web exec playwright install --with-deps
+
+      # Storybookをビルドする前にキャッシュをクリーンアップ
+      - name: Clean build cache
+        run: |
+          rm -rf apps/web/storybook-static
+          rm -rf apps/web/node_modules/.cache
+          rm -rf apps/web/.next
+
+      # Storybookをビルド
+      - name: Build Storybook
+        run: pnpm --filter @saneatsu/web build-storybook
+
+      # Storybookの静的ファイルをサーブしてテストを実行
+      - name: Serve Storybook and run tests
+        run: |
+          npx http-server apps/web/storybook-static --port 6016 --silent &
+          npx wait-on http://127.0.0.1:6016
+          pnpm --filter @saneatsu/web test-storybook

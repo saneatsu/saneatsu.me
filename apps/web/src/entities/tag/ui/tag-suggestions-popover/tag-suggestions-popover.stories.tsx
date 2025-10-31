@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { expect, fn, within } from "@storybook/test";
 import { HttpResponse, http } from "msw";
+import { expect, fn, within } from "storybook/test";
 
 import type { TagSuggestionItem } from "./tag-suggestions-popover";
 import { TagSuggestionsPopover } from "./tag-suggestions-popover";

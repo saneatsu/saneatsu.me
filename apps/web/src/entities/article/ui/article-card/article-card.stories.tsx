@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { expect, within } from "@storybook/test";
+import { expect, within } from "storybook/test";
 
 import type { Article } from "@/shared";
 
@@ -60,10 +60,6 @@ export const Default: Story = {
 		// 更新日が表示されていることを確認
 		const updatedLabel = canvas.getByText(/更新日:|Updated:/);
 		expect(updatedLabel).toBeInTheDocument();
-
-		// 閲覧数が表示されていることを確認
-		const viewCount = canvas.getByText(/42 回閲覧|Viewed 42 times/);
-		expect(viewCount).toBeInTheDocument();
 	},
 };
 

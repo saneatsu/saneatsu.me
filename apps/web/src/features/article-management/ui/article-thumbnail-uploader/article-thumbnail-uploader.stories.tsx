@@ -1,29 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { fn } from "@storybook/test";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { vi } from "vitest";
+import { fn } from "storybook/test";
 
 import { ArticleThumbnailUploader } from "./article-thumbnail-uploader";
-
-/**
- * useUploadThumbnail と useDeleteThumbnail のモック
- */
-const { mockUseUploadThumbnail, mockUseDeleteThumbnail } = vi.hoisted(() => ({
-	mockUseUploadThumbnail: vi.fn(),
-	mockUseDeleteThumbnail: vi.fn(),
-}));
-
-vi.mock("@/entities/article", async () => {
-	const actual =
-		await vi.importActual<typeof import("@/entities/article")>(
-			"@/entities/article"
-		);
-	return {
-		...actual,
-		useUploadThumbnail: () => mockUseUploadThumbnail(),
-		useDeleteThumbnail: () => mockUseDeleteThumbnail(),
-	};
-});
 
 const queryClient = new QueryClient({
 	defaultOptions: {
@@ -67,16 +46,6 @@ export const NoThumbnail: Story = {
 		onDeleteSuccess: fn(),
 		onError: fn(),
 	},
-	beforeEach: () => {
-		mockUseUploadThumbnail.mockReturnValue({
-			mutateAsync: fn(),
-			isPending: false,
-		});
-		mockUseDeleteThumbnail.mockReturnValue({
-			mutateAsync: fn(),
-			isPending: false,
-		});
-	},
 };
 
 /**
@@ -91,16 +60,6 @@ export const WithThumbnail: Story = {
 		onUploadSuccess: fn(),
 		onDeleteSuccess: fn(),
 		onError: fn(),
-	},
-	beforeEach: () => {
-		mockUseUploadThumbnail.mockReturnValue({
-			mutateAsync: fn(),
-			isPending: false,
-		});
-		mockUseDeleteThumbnail.mockReturnValue({
-			mutateAsync: fn(),
-			isPending: false,
-		});
 	},
 };
 
@@ -118,16 +77,6 @@ export const DisabledState: Story = {
 		onDeleteSuccess: fn(),
 		onError: fn(),
 	},
-	beforeEach: () => {
-		mockUseUploadThumbnail.mockReturnValue({
-			mutateAsync: fn(),
-			isPending: false,
-		});
-		mockUseDeleteThumbnail.mockReturnValue({
-			mutateAsync: fn(),
-			isPending: false,
-		});
-	},
 };
 
 /**
@@ -143,16 +92,6 @@ export const Uploading: Story = {
 		onDeleteSuccess: fn(),
 		onError: fn(),
 	},
-	beforeEach: () => {
-		mockUseUploadThumbnail.mockReturnValue({
-			mutateAsync: fn(),
-			isPending: true,
-		});
-		mockUseDeleteThumbnail.mockReturnValue({
-			mutateAsync: fn(),
-			isPending: false,
-		});
-	},
 };
 
 /**
@@ -167,15 +106,5 @@ export const Deleting: Story = {
 		onUploadSuccess: fn(),
 		onDeleteSuccess: fn(),
 		onError: fn(),
-	},
-	beforeEach: () => {
-		mockUseUploadThumbnail.mockReturnValue({
-			mutateAsync: fn(),
-			isPending: false,
-		});
-		mockUseDeleteThumbnail.mockReturnValue({
-			mutateAsync: fn(),
-			isPending: true,
-		});
 	},
 };
