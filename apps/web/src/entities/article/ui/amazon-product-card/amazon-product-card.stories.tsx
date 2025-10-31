@@ -266,10 +266,11 @@ export const ShortUrlValidation: Story = {
 		const canvas = within(canvasElement);
 
 		// 「Amazon商品（短縮URL）」と表示されることを確認
-		await canvas.findByText(/Amazon商品（短縮URL）/);
+		// リトライ遅延を考慮して、タイムアウトを5000msに設定
+		await canvas.findByText(/Amazon商品（短縮URL）/, {}, { timeout: 5000 });
 
 		// ドメイン（amzn.to）が表示されることを確認
-		await canvas.findByText(/amzn\.to/);
+		await canvas.findByText(/amzn\.to/, {}, { timeout: 5000 });
 
 		// リンクが存在することを確認
 		const link = await canvas.findByRole("link");
