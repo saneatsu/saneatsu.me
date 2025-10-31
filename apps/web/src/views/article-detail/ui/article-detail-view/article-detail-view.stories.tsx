@@ -11,6 +11,9 @@ const meta: Meta<typeof ArticleDetailView> = {
 		viewport: {
 			defaultViewport: "reset",
 		},
+		nextjs: {
+			appDirectory: true,
+		},
 	},
 };
 
