@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
-import { useEffect } from "react";
+import { Children, isValidElement, useEffect } from "react";
 import type { Components } from "react-markdown";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
@@ -138,6 +138,43 @@ function extractTextFromChildren(children: React.ReactNode): string {
 }
 
 /**
+ * 子要素にブロック画像コンポーネントまたは画像タグが含まれているかチェックする
+ *
+ * @description
+ * 以下のいずれかが含まれている場合にtrueを返す:
+ * 1. ZoomableImageまたはArticleImageコンポーネント
+ * 2. `<img>`タグ（ReactMarkdownが生成するもの）
+ *
+ * これらは内部で`<div>`を使用するか、`<div>`に変換されるため、
+ * `<p>`タグの中に入れるとHTMLの仕様違反となりハイドレーションエラーが発生する。
+ *
+ * @param children - React children
+ * @returns ブロック画像コンポーネントまたは画像タグが含まれている場合はtrue
+ */
+function hasBlockImage(children: React.ReactNode): boolean {
+	const childArray = Children.toArray(children);
+	return childArray.some((child) => {
+		if (isValidElement(child)) {
+			// ZoomableImageまたはArticleImageの場合
+			if (child.type === ZoomableImage || child.type === ArticleImage) {
+				return true;
+			}
+			// ReactMarkdownが生成する<img>タグの場合
+			// node.tagNameまたはsrcプロパティで判定
+			// imgコンポーネントでZoomableImageに変換される前にチェックする必要がある
+			const props = child.props as {
+				node?: { tagName?: string };
+				src?: string;
+			};
+			if (props?.node?.tagName === "img" || props?.src) {
+				return true;
+			}
+		}
+		return false;
+	});
+}
+
+/**
  * デフォルトのMarkdownコンポーネントを生成する関数
  *
  * @description
@@ -223,9 +260,15 @@ export function createDefaultMarkdownComponents(
 			</h6>
 		),
 		// 段落のカスタムレンダリング
-		p: ({ children }) => (
-			<p className="mb-4 text-muted-foreground leading-relaxed">{children}</p>
-		),
+		p: ({ children }) => {
+			// ブロック画像が含まれている場合はdivでラップ（HTMLの仕様違反を避けるため）
+			if (hasBlockImage(children)) {
+				return <div className="mb-4">{children}</div>;
+			}
+			return (
+				<p className="mb-4 text-muted-foreground leading-relaxed">{children}</p>
+			);
+		},
 		// リストのカスタムレンダリング
 		ul: ({ children }) => (
 			<ul className="mb-0 ml-0 list-disc space-y-0">{children}</ul>

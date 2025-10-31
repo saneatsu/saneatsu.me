@@ -30,17 +30,19 @@ export function ZoomableImage({ src, alt, className }: ZoomableImageProps) {
 
 	return (
 		<>
-			<button
-				type="button"
-				onClick={() => setOpen(true)}
-				className={cn(
-					"cursor-zoom-in rounded-lg my-4 hover:opacity-90 transition-opacity border-0 p-0 bg-transparent",
-					className
-				)}
-			>
-				{/* biome-ignore lint/performance/noImgElement: ReactMarkdownから生成される画像は外部URLの可能性があるため<img>を使用 */}
-				<img src={src} alt={alt} className="rounded-lg object-contain" />
-			</button>
+			<div className="flex justify-center">
+				<button
+					type="button"
+					onClick={() => setOpen(true)}
+					className={cn(
+						"cursor-zoom-in rounded-lg hover:opacity-90 transition-opacity border-0 p-0 bg-transparent",
+						className
+					)}
+				>
+					{/* biome-ignore lint/performance/noImgElement: ReactMarkdownから生成される画像は外部URLの可能性があるため<img>を使用 */}
+					<img src={src} alt={alt} className="rounded-lg" />
+				</button>
+			</div>
 			<YetAnotherLightbox
 				open={open}
 				close={() => setOpen(false)}
