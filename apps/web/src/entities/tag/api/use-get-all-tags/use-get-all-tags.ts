@@ -10,6 +10,8 @@ import type { TagsResponse } from "@/shared/model";
  * タグ一覧取得のオプション
  */
 type UseGetAllTagsOptions = {
+	/** 記事のステータスでフィルタリング（指定なしの場合は全ステータス） */
+	status?: "published" | "draft" | "archived";
 	/** React Queryの設定 */
 	queryConfig?: QueryConfig<() => Promise<TagsResponse>>;
 };
@@ -22,20 +24,31 @@ type UseGetAllTagsOptions = {
  * 作成日時の昇順でソートされる。
  *
  * @param options - 取得オプション
+ * @param options.status - 記事のステータスでフィルタリング
+ * @param options.queryConfig - React Queryの設定
  * @returns タグ一覧を含むクエリ結果
  *
  * @example
  * ```tsx
- * const { data, isLoading, error } = useGetAllTags();
+ * // 公開記事のみのタグ数を取得
+ * const { data } = useGetAllTags({ status: 'published' });
+ *
+ * // 全ステータスのタグ数を取得
+ * const { data } = useGetAllTags();
  * ```
  */
-export function useGetAllTags({ queryConfig = {} }: UseGetAllTagsOptions = {}) {
+export function useGetAllTags({
+	status,
+	queryConfig = {},
+}: UseGetAllTagsOptions = {}) {
 	const client = useHonoClient();
 
 	return useQuery({
-		queryKey: queryKeys.tag.all(),
+		queryKey: queryKeys.tag.all(status),
 		queryFn: async () => {
-			const response = await client.api.tags.$get();
+			const response = await client.api.tags.$get({
+				query: status ? { status } : {},
+			});
 
 			if (!response.ok) {
 				const error = await response.json();
