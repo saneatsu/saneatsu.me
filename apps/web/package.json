@@ -23,7 +23,7 @@
 		"e2e:ui": "playwright test --ui",
 		"storybook": "storybook dev -p 6016",
 		"build-storybook": "storybook build",
-		"test-storybook": "test-storybook"
+		"test-storybook": "test-storybook --url http://127.0.0.1:6016"
 	},
 	"dependencies": {
 		"@auth/core": "^0.40.0",

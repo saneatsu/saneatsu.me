@@ -41,6 +41,6 @@ jobs:
       # Storybookの静的ファイルをサーブしてテストを実行
       - name: Serve Storybook and run tests
         run: |
-          npx http-server apps/web/storybook-static --port 6006 --silent &
-          npx wait-on http://127.0.0.1:6006
+          npx http-server apps/web/storybook-static --port 6016 --silent &
+          npx wait-on http://127.0.0.1:6016
           pnpm --filter @saneatsu/web test-storybook
