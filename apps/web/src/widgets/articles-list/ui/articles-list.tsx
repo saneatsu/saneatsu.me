@@ -2,11 +2,13 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { parseAsInteger, useQueryState } from "nuqs";
+import { parseAsInteger } from "nuqs";
 
 import { ArticleCard, useGetAllArticles } from "@/entities/article";
-import { Link } from "@/shared/lib";
+import { Link, usePersistentQueryStates } from "@/shared/lib";
 import { Button } from "@/shared/ui";
+
+import { parseAsCommaSeparatedNumbers } from "../lib/parse-as-comma-separated-numbers";
 
 interface ArticlesListProps {
 	/** 表示する記事の数（省略時は全て表示） */
@@ -24,7 +26,21 @@ export function ArticlesList({ limit }: ArticlesListProps) {
 	const locale = useLocale();
 	const t = useTranslations("pagination");
 	const tList = useTranslations("articlesList");
-	const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
+
+	// URL状態からpageとtagIdsを読み取り（同じusePersistentQueryStatesで管理）
+	const [params, setParams] = usePersistentQueryStates(
+		"articles-list-filters",
+		{
+			page: parseAsInteger.withDefault(1),
+			tagIds: parseAsCommaSeparatedNumbers,
+		},
+		{
+			scroll: false,
+			history: "push",
+		}
+	);
+
+	const { page, tagIds } = params;
 
 	const {
 		data: articlesResponse,
@@ -38,6 +54,7 @@ export function ArticlesList({ limit }: ArticlesListProps) {
 		status: ["published"],
 		sortBy: "updatedAt",
 		sortOrder: "desc",
+		tagIds: tagIds.length > 0 ? tagIds : undefined,
 	});
 
 	const articles = articlesResponse?.data || [];
@@ -109,14 +126,14 @@ export function ArticlesList({ limit }: ArticlesListProps) {
 
 	const handlePrevPage = () => {
 		if (hasPrevPage) {
-			setPage(page - 1);
+			setParams({ page: page - 1 });
 			window.scrollTo({ top: 0, behavior: "smooth" });
 		}
 	};
 
 	const handleNextPage = () => {
 		if (hasNextPage) {
-			setPage(page + 1);
+			setParams({ page: page + 1 });
 			window.scrollTo({ top: 0, behavior: "smooth" });
 		}
 	};
