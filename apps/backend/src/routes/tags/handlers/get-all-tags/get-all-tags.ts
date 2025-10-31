@@ -13,21 +13,30 @@ type Handler = RouteHandler<typeof getAllTagsRoute, { Bindings: Env }>;
  *
  * @description
  * 1. DBクライアントを作成
- * 2. タグ一覧を取得
- * 3. 各タグの記事数をカウント
- * 4. 各タグの翻訳データを取得
- * 5. レスポンスを返す
+ * 2. クエリパラメータを取得（status）
+ * 3. タグ一覧を取得
+ * 4. 各タグの記事数をカウント（statusでフィルタリング）
+ * 5. 各タグの翻訳データを取得
+ * 6. レスポンスを返す
  */
 export const getAllTags: Handler = async (c) => {
 	try {
 		// 1. DBクライアントを作成
-		const { createDatabaseClient, articleTags, tags, tagTranslations } =
-			await getDatabase();
+		const {
+			createDatabaseClient,
+			articles,
+			articleTags,
+			tags,
+			tagTranslations,
+		} = await getDatabase();
 		const db = createDatabaseClient(c.env);
 
-		// 2. タグ一覧を取得（記事数も含める）
+		// 2. クエリパラメータを取得
+		const { status } = c.req.valid("query");
+
+		// 3. タグ一覧を取得（記事数も含める）
 		// 更新日の降順でソート（最新のものが上に来る）
-		const tagList = await db
+		const tagListQuery = db
 			.select({
 				id: tags.id,
 				slug: tags.slug,
@@ -37,6 +46,14 @@ export const getAllTags: Handler = async (c) => {
 			})
 			.from(tags)
 			.leftJoin(articleTags, eq(tags.id, articleTags.tagId))
+			.leftJoin(articles, eq(articleTags.articleId, articles.id))
+			.$dynamic();
+
+		// statusパラメータがある場合はフィルタリング
+		const tagList = await (status
+			? tagListQuery.where(eq(articles.status, status))
+			: tagListQuery
+		)
 			.groupBy(tags.id)
 			.orderBy(desc(tags.updatedAt));
 

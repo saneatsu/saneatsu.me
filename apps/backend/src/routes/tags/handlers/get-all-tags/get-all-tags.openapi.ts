@@ -64,11 +64,25 @@ const TagsResponseSchema = z.object({
 });
 
 /**
+ * OpenAPI用クエリパラメータスキーマ
+ */
+const tagsQuerySchema = z.object({
+	status: z.enum(["published", "draft", "archived"]).optional().openapi({
+		example: "published",
+		description:
+			"記事のステータスでフィルタリング（指定なしの場合は全ステータス）",
+	}),
+});
+
+/**
  * タグ一覧取得のルート定義
  */
 export const getAllTagsRoute = createRoute({
 	method: "get",
 	path: "/",
+	request: {
+		query: tagsQuerySchema,
+	},
 	responses: {
 		200: {
 			content: {
