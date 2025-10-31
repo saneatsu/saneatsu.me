@@ -3,14 +3,15 @@
 import { Laptop, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+
+import { Button } from "../button/button";
 import {
-	Button,
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuRadioGroup,
 	DropdownMenuRadioItem,
 	DropdownMenuTrigger,
-} from "@/shared/ui";
+} from "../dropdown-menu/dropdown-menu";
 
 export type Theme = "light" | "dark" | "system";
 
