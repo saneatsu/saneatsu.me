@@ -18,6 +18,9 @@ import {
 	remarkYoutube,
 } from "../../lib/";
 import { ArticleImage } from "../article-image/article-image";
+// ZoomableImageは通常のimportを使用
+// dynamic import (ssr: false) を使うと、画像クリック時に拡大されないバグが発生するため
+import { ZoomableImage } from "../zoomable-image/zoomable-image";
 
 /**
  * 共通のremarkPlugins設定
@@ -75,15 +78,6 @@ const YouTubeEmbed = dynamic(
 // Amazon Product Cardコンポーネントを動的インポート（クライアントサイドのみ）
 const AmazonProductCard = dynamic(
 	() => import("@/entities/article").then((mod) => mod.AmazonProductCard),
-	{
-		ssr: false,
-	}
-);
-
-// Zoomable Imageコンポーネントを動的インポート（クライアントサイドのみ）
-const ZoomableImage = dynamic(
-	() =>
-		import("../zoomable-image/zoomable-image").then((mod) => mod.ZoomableImage),
 	{
 		ssr: false,
 	}
