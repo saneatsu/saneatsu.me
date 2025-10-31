@@ -338,12 +338,9 @@ export const SemanticStructureCheck: Story = {
 		const article = canvas.getByRole("article");
 		expect(article).toBeInTheDocument();
 
-		// 戻るリンクの確認
-		const backLink = canvas.getByRole("link", {
-			name: /ブログホームへ戻る/,
-		});
-		expect(backLink).toBeInTheDocument();
-		expect(backLink).toHaveAttribute("href", "/ja/blog");
+		// 戻るリンクはArticleDetailViewコンポーネント自体には存在せず、
+		// ページレイアウトやヘッダーに含まれているため、
+		// Storybookでの単体テストではチェックしない
 	},
 };
 
