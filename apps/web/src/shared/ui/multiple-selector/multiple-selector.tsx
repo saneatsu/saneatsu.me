@@ -6,13 +6,13 @@ import * as React from "react";
 import { forwardRef, useEffect } from "react";
 
 import { cn } from "@/shared/lib/utils";
+import { Badge } from "../badge/badge";
 import {
-	Badge,
 	Command,
 	CommandGroup,
 	CommandItem,
 	CommandList,
-} from "@/shared/ui";
+} from "../command/command";
 
 /**
  * ref: https://shadcnui-expansions.typeart.cc/docs/multiple-selector

@@ -12,7 +12,7 @@ import {
 	TooltipContent,
 	TooltipProvider,
 	TooltipTrigger,
-} from "@/shared/ui";
+} from "../tooltip/tooltip";
 
 /**
  * ShareButtonsコンポーネントのプロパティ
