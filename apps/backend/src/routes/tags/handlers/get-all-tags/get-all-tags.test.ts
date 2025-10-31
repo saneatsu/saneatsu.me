@@ -22,6 +22,7 @@ describe("GET /tags - タグ一覧取得", () => {
 			const { getDatabase } = await import("@/lib/database");
 			(getDatabase as any).mockResolvedValue({
 				createDatabaseClient: vi.fn().mockReturnValue(mockDb),
+				articles: {},
 				articleTags: {},
 				tags: {},
 				tagTranslations: {},
@@ -44,12 +45,15 @@ describe("GET /tags - タグ一覧取得", () => {
 				},
 			];
 
-			// タグ一覧取得のモック（LEFT JOIN → GROUP BY → ORDER BY）
+			// タグ一覧取得のモック（LEFT JOIN → LEFT JOIN → $dynamic → GROUP BY → ORDER BY）
 			const tagListMock = {
 				from: vi.fn().mockReturnValue({
 					leftJoin: vi.fn().mockReturnValue({
-						groupBy: vi.fn().mockReturnValue({
-							orderBy: vi.fn().mockResolvedValue(mockTags),
+						leftJoin: vi.fn().mockReturnValue({
+							$dynamic: vi.fn().mockReturnThis(),
+							groupBy: vi.fn().mockReturnValue({
+								orderBy: vi.fn().mockResolvedValue(mockTags),
+							}),
 						}),
 					}),
 				}),
@@ -98,6 +102,7 @@ describe("GET /tags - タグ一覧取得", () => {
 			const { getDatabase } = await import("@/lib/database");
 			(getDatabase as any).mockResolvedValue({
 				createDatabaseClient: vi.fn().mockReturnValue(mockDb),
+				articles: {},
 				articleTags: {},
 				tags: {},
 				tagTranslations: {},
@@ -106,8 +111,11 @@ describe("GET /tags - タグ一覧取得", () => {
 			const tagListMock = {
 				from: vi.fn().mockReturnValue({
 					leftJoin: vi.fn().mockReturnValue({
-						groupBy: vi.fn().mockReturnValue({
-							orderBy: vi.fn().mockResolvedValue([]),
+						leftJoin: vi.fn().mockReturnValue({
+							$dynamic: vi.fn().mockReturnThis(),
+							groupBy: vi.fn().mockReturnValue({
+								orderBy: vi.fn().mockResolvedValue([]),
+							}),
 						}),
 					}),
 				}),
@@ -139,6 +147,7 @@ describe("GET /tags - タグ一覧取得", () => {
 			const { getDatabase } = await import("@/lib/database");
 			(getDatabase as any).mockResolvedValue({
 				createDatabaseClient: vi.fn().mockReturnValue(mockDb),
+				articles: {},
 				articleTags: {},
 				tags: {},
 				tagTranslations: {},
@@ -164,8 +173,11 @@ describe("GET /tags - タグ一覧取得", () => {
 			const tagListMock = {
 				from: vi.fn().mockReturnValue({
 					leftJoin: vi.fn().mockReturnValue({
-						groupBy: vi.fn().mockReturnValue({
-							orderBy: vi.fn().mockResolvedValue(mockTags),
+						leftJoin: vi.fn().mockReturnValue({
+							$dynamic: vi.fn().mockReturnThis(),
+							groupBy: vi.fn().mockReturnValue({
+								orderBy: vi.fn().mockResolvedValue(mockTags),
+							}),
 						}),
 					}),
 				}),
@@ -252,6 +264,7 @@ describe("GET /tags - タグ一覧取得", () => {
 			const { getDatabase } = await import("@/lib/database");
 			(getDatabase as any).mockResolvedValue({
 				createDatabaseClient: vi.fn().mockReturnValue(mockDb),
+				articles: {},
 				articleTags: {},
 				tags: {},
 				tagTranslations: {},
@@ -278,8 +291,11 @@ describe("GET /tags - タグ一覧取得", () => {
 			const tagListMock = {
 				from: vi.fn().mockReturnValue({
 					leftJoin: vi.fn().mockReturnValue({
-						groupBy: vi.fn().mockReturnValue({
-							orderBy: vi.fn().mockResolvedValue(mockTags),
+						leftJoin: vi.fn().mockReturnValue({
+							$dynamic: vi.fn().mockReturnThis(),
+							groupBy: vi.fn().mockReturnValue({
+								orderBy: vi.fn().mockResolvedValue(mockTags),
+							}),
 						}),
 					}),
 				}),
@@ -309,7 +325,7 @@ describe("GET /tags - タグ一覧取得", () => {
 
 			// orderByが呼ばれたことを確認
 			expect(
-				tagListMock.from().leftJoin().groupBy().orderBy
+				tagListMock.from().leftJoin().leftJoin().groupBy().orderBy
 			).toHaveBeenCalled();
 		});
 
@@ -321,6 +337,7 @@ describe("GET /tags - タグ一覧取得", () => {
 			const { getDatabase } = await import("@/lib/database");
 			(getDatabase as any).mockResolvedValue({
 				createDatabaseClient: vi.fn().mockReturnValue(mockDb),
+				articles: {},
 				articleTags: {},
 				tags: {},
 				tagTranslations: {},
@@ -352,12 +369,15 @@ describe("GET /tags - タグ一覧取得", () => {
 				{ tagId: 2, language: "en", name: "JavaScript" },
 			];
 
-			// タグ一覧取得のモック（LEFT JOIN → GROUP BY → ORDER BY）
+			// タグ一覧取得のモック（LEFT JOIN → LEFT JOIN → $dynamic → GROUP BY → ORDER BY）
 			const tagListMock = {
 				from: vi.fn().mockReturnValue({
 					leftJoin: vi.fn().mockReturnValue({
-						groupBy: vi.fn().mockReturnValue({
-							orderBy: vi.fn().mockResolvedValue(mockTags),
+						leftJoin: vi.fn().mockReturnValue({
+							$dynamic: vi.fn().mockReturnThis(),
+							groupBy: vi.fn().mockReturnValue({
+								orderBy: vi.fn().mockResolvedValue(mockTags),
+							}),
 						}),
 					}),
 				}),
@@ -410,6 +430,7 @@ describe("GET /tags - タグ一覧取得", () => {
 			const { getDatabase } = await import("@/lib/database");
 			(getDatabase as any).mockResolvedValue({
 				createDatabaseClient: vi.fn().mockReturnValue(mockDb),
+				articles: {},
 				articleTags: {},
 				tags: {},
 				tagTranslations: {},
@@ -442,8 +463,11 @@ describe("GET /tags - タグ一覧取得", () => {
 			const tagListMock = {
 				from: vi.fn().mockReturnValue({
 					leftJoin: vi.fn().mockReturnValue({
-						groupBy: vi.fn().mockReturnValue({
-							orderBy: vi.fn().mockResolvedValue(mockTags),
+						leftJoin: vi.fn().mockReturnValue({
+							$dynamic: vi.fn().mockReturnThis(),
+							groupBy: vi.fn().mockReturnValue({
+								orderBy: vi.fn().mockResolvedValue(mockTags),
+							}),
 						}),
 					}),
 				}),
@@ -486,6 +510,278 @@ describe("GET /tags - タグ一覧取得", () => {
 					en: null,
 				},
 			});
+		});
+
+		it("status=published でリクエストした場合、公開記事のみがカウントされる", async () => {
+			// Arrange
+			const { mockDb } = setupDbMocks();
+
+			// getDatabase関数がmockDbとスキーマを返すように設定
+			const { getDatabase } = await import("@/lib/database");
+			(getDatabase as any).mockResolvedValue({
+				createDatabaseClient: vi.fn().mockReturnValue(mockDb),
+				articles: {},
+				articleTags: {},
+				tags: {},
+				tagTranslations: {},
+			});
+
+			// 公開記事のみの数がカウントされたタグデータ
+			const mockTags = [
+				{
+					id: 1,
+					slug: "typescript",
+					createdAt: "2024-01-01T00:00:00.000Z",
+					updatedAt: "2024-01-02T00:00:00.000Z",
+					articleCount: 5, // 公開記事のみ
+				},
+			];
+
+			// タグ一覧取得のモック（articlesテーブルjoin追加、$dynamic()、where追加）
+			const tagListMock = {
+				from: vi.fn().mockReturnValue({
+					leftJoin: vi.fn().mockReturnValue({
+						leftJoin: vi.fn().mockReturnValue({
+							$dynamic: vi.fn().mockReturnThis(),
+							where: vi.fn().mockReturnThis(),
+							groupBy: vi.fn().mockReturnValue({
+								orderBy: vi.fn().mockResolvedValue(mockTags),
+							}),
+						}),
+					}),
+				}),
+			};
+
+			// 翻訳データ取得のモック
+			const translationsMock = {
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue([]),
+				}),
+			};
+
+			mockDb.select
+				.mockReturnValueOnce(tagListMock) // タグ一覧取得
+				.mockReturnValueOnce(translationsMock); // 翻訳データ取得
+
+			// Act
+			const client = testClient(tagsRoute, {
+				TURSO_DATABASE_URL: "test://test.db",
+				TURSO_AUTH_TOKEN: "test-token",
+			}) as any;
+			const res = await client.index.$get({ query: { status: "published" } });
+
+			// Assert
+			expect(res.status).toBe(200);
+			const data = await res.json();
+
+			expect(data.data).toHaveLength(1);
+			expect(data.data[0].articleCount).toBe(5);
+			// where句が呼ばれたことを確認（statusでフィルタリング）
+			expect(tagListMock.from().leftJoin().leftJoin().where).toHaveBeenCalled();
+		});
+
+		it("status=draft でリクエストした場合、下書き記事のみがカウントされる", async () => {
+			// Arrange
+			const { mockDb } = setupDbMocks();
+
+			// getDatabase関数がmockDbとスキーマを返すように設定
+			const { getDatabase } = await import("@/lib/database");
+			(getDatabase as any).mockResolvedValue({
+				createDatabaseClient: vi.fn().mockReturnValue(mockDb),
+				articles: {},
+				articleTags: {},
+				tags: {},
+				tagTranslations: {},
+			});
+
+			// 下書き記事のみの数がカウントされたタグデータ
+			const mockTags = [
+				{
+					id: 1,
+					slug: "typescript",
+					createdAt: "2024-01-01T00:00:00.000Z",
+					updatedAt: "2024-01-02T00:00:00.000Z",
+					articleCount: 3, // 下書き記事のみ
+				},
+			];
+
+			// タグ一覧取得のモック
+			const tagListMock = {
+				from: vi.fn().mockReturnValue({
+					leftJoin: vi.fn().mockReturnValue({
+						leftJoin: vi.fn().mockReturnValue({
+							$dynamic: vi.fn().mockReturnThis(),
+							where: vi.fn().mockReturnThis(),
+							groupBy: vi.fn().mockReturnValue({
+								orderBy: vi.fn().mockResolvedValue(mockTags),
+							}),
+						}),
+					}),
+				}),
+			};
+
+			// 翻訳データ取得のモック
+			const translationsMock = {
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue([]),
+				}),
+			};
+
+			mockDb.select
+				.mockReturnValueOnce(tagListMock)
+				.mockReturnValueOnce(translationsMock);
+
+			// Act
+			const client = testClient(tagsRoute, {
+				TURSO_DATABASE_URL: "test://test.db",
+				TURSO_AUTH_TOKEN: "test-token",
+			}) as any;
+			const res = await client.index.$get({ query: { status: "draft" } });
+
+			// Assert
+			expect(res.status).toBe(200);
+			const data = await res.json();
+
+			expect(data.data).toHaveLength(1);
+			expect(data.data[0].articleCount).toBe(3);
+			expect(tagListMock.from().leftJoin().leftJoin().where).toHaveBeenCalled();
+		});
+
+		it("status=archived でリクエストした場合、アーカイブ記事のみがカウントされる", async () => {
+			// Arrange
+			const { mockDb } = setupDbMocks();
+
+			// getDatabase関数がmockDbとスキーマを返すように設定
+			const { getDatabase } = await import("@/lib/database");
+			(getDatabase as any).mockResolvedValue({
+				createDatabaseClient: vi.fn().mockReturnValue(mockDb),
+				articles: {},
+				articleTags: {},
+				tags: {},
+				tagTranslations: {},
+			});
+
+			// アーカイブ記事のみの数がカウントされたタグデータ
+			const mockTags = [
+				{
+					id: 1,
+					slug: "typescript",
+					createdAt: "2024-01-01T00:00:00.000Z",
+					updatedAt: "2024-01-02T00:00:00.000Z",
+					articleCount: 2, // アーカイブ記事のみ
+				},
+			];
+
+			// タグ一覧取得のモック
+			const tagListMock = {
+				from: vi.fn().mockReturnValue({
+					leftJoin: vi.fn().mockReturnValue({
+						leftJoin: vi.fn().mockReturnValue({
+							$dynamic: vi.fn().mockReturnThis(),
+							where: vi.fn().mockReturnThis(),
+							groupBy: vi.fn().mockReturnValue({
+								orderBy: vi.fn().mockResolvedValue(mockTags),
+							}),
+						}),
+					}),
+				}),
+			};
+
+			// 翻訳データ取得のモック
+			const translationsMock = {
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue([]),
+				}),
+			};
+
+			mockDb.select
+				.mockReturnValueOnce(tagListMock)
+				.mockReturnValueOnce(translationsMock);
+
+			// Act
+			const client = testClient(tagsRoute, {
+				TURSO_DATABASE_URL: "test://test.db",
+				TURSO_AUTH_TOKEN: "test-token",
+			}) as any;
+			const res = await client.index.$get({ query: { status: "archived" } });
+
+			// Assert
+			expect(res.status).toBe(200);
+			const data = await res.json();
+
+			expect(data.data).toHaveLength(1);
+			expect(data.data[0].articleCount).toBe(2);
+			expect(tagListMock.from().leftJoin().leftJoin().where).toHaveBeenCalled();
+		});
+
+		it("statusパラメータなしでリクエストした場合、全ステータスの記事がカウントされる（後方互換性）", async () => {
+			// Arrange
+			const { mockDb } = setupDbMocks();
+
+			// getDatabase関数がmockDbとスキーマを返すように設定
+			const { getDatabase } = await import("@/lib/database");
+			(getDatabase as any).mockResolvedValue({
+				createDatabaseClient: vi.fn().mockReturnValue(mockDb),
+				articles: {},
+				articleTags: {},
+				tags: {},
+				tagTranslations: {},
+			});
+
+			// 全ステータスの記事がカウントされたタグデータ
+			const mockTags = [
+				{
+					id: 1,
+					slug: "typescript",
+					createdAt: "2024-01-01T00:00:00.000Z",
+					updatedAt: "2024-01-02T00:00:00.000Z",
+					articleCount: 10, // published(5) + draft(3) + archived(2)
+				},
+			];
+
+			// タグ一覧取得のモック
+			const tagListMock = {
+				from: vi.fn().mockReturnValue({
+					leftJoin: vi.fn().mockReturnValue({
+						leftJoin: vi.fn().mockReturnValue({
+							$dynamic: vi.fn().mockReturnThis(),
+							where: vi.fn().mockReturnThis(),
+							groupBy: vi.fn().mockReturnValue({
+								orderBy: vi.fn().mockResolvedValue(mockTags),
+							}),
+						}),
+					}),
+				}),
+			};
+
+			// 翻訳データ取得のモック
+			const translationsMock = {
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue([]),
+				}),
+			};
+
+			mockDb.select
+				.mockReturnValueOnce(tagListMock)
+				.mockReturnValueOnce(translationsMock);
+
+			// Act
+			const client = testClient(tagsRoute, {
+				TURSO_DATABASE_URL: "test://test.db",
+				TURSO_AUTH_TOKEN: "test-token",
+			}) as any;
+			const res = await client.index.$get(); // statusパラメータなし
+
+			// Assert
+			expect(res.status).toBe(200);
+			const data = await res.json();
+
+			expect(data.data).toHaveLength(1);
+			expect(data.data[0].articleCount).toBe(10);
+			// where句が呼ばれていないことを確認（statusでフィルタリングされていない）
+			expect(
+				tagListMock.from().leftJoin().leftJoin().where
+			).not.toHaveBeenCalled();
 		});
 	});
 });
