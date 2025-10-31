@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { expect, within } from "storybook/test";
+import { expect, waitFor, within } from "storybook/test";
 
 import { MarkdownPreview } from "./markdown-preview";
 
@@ -730,11 +730,17 @@ https://www.youtube.com/watch?v=jNQXAC9IVRw
 		);
 
 		// iframe（埋め込み動画）が存在することを確認
-		const iframe = canvasElement.querySelector("iframe");
-		expect(iframe).toBeInTheDocument();
-		expect(iframe).toHaveAttribute(
-			"src",
-			expect.stringContaining("jNQXAC9IVRw")
+		// YouTube埋め込みのレンダリングを待つためにwaitForを使用
+		await waitFor(
+			() => {
+				const iframe = canvasElement.querySelector("iframe");
+				expect(iframe).toBeInTheDocument();
+				expect(iframe).toHaveAttribute(
+					"src",
+					expect.stringContaining("jNQXAC9IVRw")
+				);
+			},
+			{ timeout: 5000 }
 		);
 	},
 };
