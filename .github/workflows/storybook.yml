@@ -28,7 +28,7 @@ jobs:
 
       # workspaceの依存関係をビルド
       - name: Build workspace dependencies
-        run: pnpm --filter @saneatsu/web... build
+        run: pnpm --filter @saneatsu/web^... build
 
       # Playwrightをインストール（test-runnerが使用）
       - name: Install Playwright
