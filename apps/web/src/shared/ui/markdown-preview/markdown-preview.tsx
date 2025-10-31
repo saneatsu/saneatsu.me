@@ -17,6 +17,7 @@ import {
 	remarkWikiLink,
 	remarkYoutube,
 } from "../../lib/";
+import { removeMarkdownLinks } from "../../lib/extract-headings";
 import { ArticleImage } from "../article-image/article-image";
 // ZoomableImageは通常のimportを使用
 // dynamic import (ssr: false) を使うと、画像クリック時に拡大されないバグが発生するため
@@ -104,6 +105,39 @@ export interface MarkdownPreviewProps {
 }
 
 /**
+ * React childrenからテキストを再帰的に抽出する
+ *
+ * @description
+ * ReactMarkdownがリンクを含む見出しをレンダリングする際、
+ * childrenは文字列ではなくReactエレメント（<a>要素など）になる。
+ * この関数はそのようなネストされた構造からテキストのみを抽出する。
+ *
+ * @param children - React children（文字列、配列、Reactエレメント）
+ * @returns 抽出されたテキスト
+ */
+function extractTextFromChildren(children: React.ReactNode): string {
+	if (typeof children === "string") {
+		return children;
+	}
+	if (typeof children === "number") {
+		return String(children);
+	}
+	if (Array.isArray(children)) {
+		return children.map((child) => extractTextFromChildren(child)).join("");
+	}
+	if (
+		children !== null &&
+		typeof children === "object" &&
+		"props" in children
+	) {
+		return extractTextFromChildren(
+			(children as React.ReactElement).props.children
+		);
+	}
+	return "";
+}
+
+/**
  * デフォルトのMarkdownコンポーネントを生成する関数
  *
  * @description
@@ -119,11 +153,30 @@ export function createDefaultMarkdownComponents(
 	imageComponent: "article" | "zoomable" = "article",
 	headings?: Array<{ id: string; text: string }>
 ): Partial<Components> {
+	/**
+	 * childrenからマッチする見出しのIDを取得する
+	 *
+	 * @description
+	 * React childrenからテキストを抽出し、リンク構文を除去した後、
+	 * headings配列から一致する見出しを検索してそのIDを返す。
+	 *
+	 * @param children - React children
+	 * @returns マッチした見出しのID、なければundefined
+	 */
+	const getMatchedHeadingId = (
+		children: React.ReactNode
+	): string | undefined => {
+		const childrenText = extractTextFromChildren(children);
+		const cleanedText = removeMarkdownLinks(childrenText);
+		const matchedHeading = headings?.find((h) => h.text === cleanedText);
+		return matchedHeading?.id;
+	};
+
 	return {
 		// 見出しのカスタムレンダリング
 		h1: ({ children }) => (
 			<h1
-				id={headings?.find((h) => h.text === children?.toString())?.id}
+				id={getMatchedHeadingId(children)}
 				className="text-2xl font-semibold mt-16 mb-3 border-b-4 border-double border-border pb-2 scroll-mt-20"
 			>
 				{children}
@@ -131,7 +184,7 @@ export function createDefaultMarkdownComponents(
 		),
 		h2: ({ children }) => (
 			<h2
-				id={headings?.find((h) => h.text === children?.toString())?.id}
+				id={getMatchedHeadingId(children)}
 				className="text-2xl font-bold mt-16 mb-3 border-b-4 border-double border-border pb-2 scroll-mt-20"
 			>
 				{children}
@@ -139,7 +192,7 @@ export function createDefaultMarkdownComponents(
 		),
 		h3: ({ children }) => (
 			<h3
-				id={headings?.find((h) => h.text === children?.toString())?.id}
+				id={getMatchedHeadingId(children)}
 				className="text-xl font-semibold mt-4 mb-2 border-b border-border pb-1 scroll-mt-20"
 			>
 				{children}
@@ -147,7 +200,7 @@ export function createDefaultMarkdownComponents(
 		),
 		h4: ({ children }) => (
 			<h4
-				id={headings?.find((h) => h.text === children?.toString())?.id}
+				id={getMatchedHeadingId(children)}
 				className="text-lg font-semibold mt-3 mb-2 border-b border-dashed border-border pb-1 scroll-mt-20"
 			>
 				{children}
@@ -155,7 +208,7 @@ export function createDefaultMarkdownComponents(
 		),
 		h5: ({ children }) => (
 			<h5
-				id={headings?.find((h) => h.text === children?.toString())?.id}
+				id={getMatchedHeadingId(children)}
 				className="text-base font-semibold mt-2 mb-1 scroll-mt-20"
 			>
 				{children}
@@ -163,7 +216,7 @@ export function createDefaultMarkdownComponents(
 		),
 		h6: ({ children }) => (
 			<h6
-				id={headings?.find((h) => h.text === children?.toString())?.id}
+				id={getMatchedHeadingId(children)}
 				className="text-sm font-semibold mt-2 mb-1 scroll-mt-20"
 			>
 				{children}

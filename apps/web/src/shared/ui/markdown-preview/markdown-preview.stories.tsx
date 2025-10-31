@@ -100,8 +100,6 @@ console.log(sum(1, 2)); // 3
 	},
 	parameters: {},
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		const canvas = within(canvasElement);
-
 		// TypeScriptコードブロックの確認（シンタックスハイライトでテキストが分割されるため、textContentで確認）
 		const codeElements = canvasElement.querySelectorAll("pre code");
 		const tsCodeBlock = Array.from(codeElements).find((code) =>

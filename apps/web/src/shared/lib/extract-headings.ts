@@ -15,6 +15,35 @@ export interface HeadingItem {
 }
 
 /**
+ * Markdownのリンク構文と画像構文を除去する
+ *
+ * @description
+ * - リンク構文 `[テキスト](URL)` からテキスト部分のみを抽出
+ * - 画像構文 `![alt](URL)` を完全に除去
+ *
+ * @param text - 処理する文字列
+ * @returns リンク構文を除去した文字列
+ *
+ * @example
+ * ```typescript
+ * removeMarkdownLinks("[hoge](https://example.com)"); // "hoge"
+ * removeMarkdownLinks("![画像](https://example.com/img.png)"); // ""
+ * removeMarkdownLinks("[foo](url) と [bar](url)"); // "foo と bar"
+ * ```
+ */
+export function removeMarkdownLinks(text: string): string {
+	return (
+		text
+			// 画像構文を完全に除去: ![alt](url)
+			.replace(/!\[([^\]]*)\]\([^)]*\)/g, "")
+			// リンク構文からテキストだけを抽出: [text](url) -> text
+			.replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+			// 余分な空白を整理
+			.trim()
+	);
+}
+
+/**
  * 文字列をURL-safeなスラッグに変換する
  *
  * @description
@@ -87,7 +116,8 @@ export function extractHeadings(markdown: string): HeadingItem[] {
 
 		if (match) {
 			const level = match[1].length; // #の数がレベル
-			const text = match[2].trim(); // ヘッダーテキスト
+			const rawText = match[2].trim(); // ヘッダーテキスト（リンク構文含む）
+			const text = removeMarkdownLinks(rawText); // リンク構文を除去
 
 			// アンカーID生成（重複防止のため連番を付与）
 			const baseId = slugify(text);
