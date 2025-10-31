@@ -2,6 +2,7 @@
 
 import { Calendar, TrendingUp } from "lucide-react";
 import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 import {
 	Bar,
 	BarChart,
@@ -48,6 +49,35 @@ export function ViewsTrendChart({
 		days: selectedDays,
 	});
 
+	// CSS変数から実際の色値を取得するstate
+	const [primaryColor, setPrimaryColor] = useState<string>("#000000");
+
+	/**
+	 * テーマ変更時にprimaryカラーを取得
+	 */
+	useEffect(() => {
+		if (typeof window === "undefined") return;
+
+		const updatePrimaryColor = () => {
+			const styles = getComputedStyle(document.documentElement);
+			const primary = styles.getPropertyValue("--primary").trim();
+			// CSS変数はすでにhsl()形式なのでそのまま使用
+			setPrimaryColor(primary);
+		};
+
+		// 初回実行
+		updatePrimaryColor();
+
+		// テーマ変更を監視するために、MutationObserverを使用
+		const observer = new MutationObserver(updatePrimaryColor);
+		observer.observe(document.documentElement, {
+			attributes: true,
+			attributeFilter: ["class"],
+		});
+
+		return () => observer.disconnect();
+	}, []);
+
 	/**
 	 * 日付フォーマット関数
 	 */
@@ -72,7 +102,7 @@ export function ViewsTrendChart({
 	const getChartColors = () => {
 		const isDark = theme === "dark";
 		return {
-			barFill: "hsl(var(--chart-1))", // チャート専用カラーを使用
+			barFill: primaryColor, // 実際のprimaryカラーの値を使用
 			axisStroke: isDark ? "#9ca3af" : "#6b7280", // ダークモード: gray-400, ライトモード: gray-500
 			gridStroke: isDark ? "#374151" : "#e5e7eb", // ダークモード: gray-700, ライトモード: gray-200
 		};
