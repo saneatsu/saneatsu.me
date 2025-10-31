@@ -78,7 +78,7 @@ export function useGetAllArticles({
 					language,
 					// 配列の場合はカンマ区切りの文字列に変換
 					status: status && status.length > 0 ? status.join(",") : undefined,
-					tags: tagIds && tagIds.length > 0 ? tagIds.join(",") : undefined,
+					tagIds: tagIds && tagIds.length > 0 ? tagIds.join(",") : undefined,
 					search,
 					sortBy,
 					sortOrder,
