@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 
 import { BlogNotice } from "@/shared/ui";
-import { ArticlesList } from "@/widgets";
+import { ArticlesList, TagFilter } from "@/widgets";
 
 /**
  * 記事一覧ページ
@@ -22,6 +22,9 @@ export default function ArticlesPage() {
 
 				{/* Blog運営方針 */}
 				<BlogNotice />
+
+				{/* タグフィルター */}
+				<TagFilter />
 
 				<ArticlesList />
 			</div>
