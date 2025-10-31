@@ -339,9 +339,11 @@ export const SemanticStructureCheck: Story = {
 		expect(article).toBeInTheDocument();
 
 		// 戻るリンクの確認
-		const backLink = canvas.getByRole("link");
+		const backLink = canvas.getByRole("link", {
+			name: /ブログホームへ戻る/,
+		});
 		expect(backLink).toBeInTheDocument();
-		expect(backLink).toHaveAttribute("href", "/ja");
+		expect(backLink).toHaveAttribute("href", "/ja/blog");
 	},
 };
 
