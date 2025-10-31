@@ -32,11 +32,13 @@ jobs:
 
       # Storybookをビルド
       - name: Build Storybook
-        run: pnpm --filter @saneatsu/web build-storybook
+        working-directory: apps/web
+        run: pnpm build-storybook
 
       # Storybookの静的ファイルをサーブしてテストを実行
       - name: Serve Storybook and run tests
+        working-directory: apps/web
         run: |
-          npx http-server apps/web/storybook-static --port 6006 --silent &
+          npx http-server storybook-static --port 6006 --silent &
           npx wait-on http://127.0.0.1:6006
-          pnpm --filter @saneatsu/web test-storybook
+          pnpm test-storybook
