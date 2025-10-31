@@ -156,11 +156,12 @@ export const ResponsiveDesign: Story = {
 		const container = iframe?.parentElement;
 		await expect(container).toBeInTheDocument();
 
-		// アスペクト比が16:9であることを確認（paddingBottom: 56.25%）
-		const paddingBottom = window.getComputedStyle(
-			container as HTMLElement
-		).paddingBottom;
-		await expect(paddingBottom).toBe("56.25%");
+		// アスペクト比が16:9であることを確認
+		// paddingBottomはインラインスタイルで56.25%が指定されているが、
+		// getComputedStyle()はピクセル値で返す場合がある
+		const containerElement = container as HTMLElement;
+		const inlineStyle = containerElement.style.paddingBottom;
+		await expect(inlineStyle).toBe("56.25%");
 	},
 };
 
