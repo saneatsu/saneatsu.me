@@ -1,3 +1,5 @@
+import type { ArticleStatus } from "@saneatsu/schemas";
+
 /**
  * React Query用のクエリキー定義
  *
@@ -47,8 +49,9 @@ export const queryKeys = {
 	 * タグ関連のクエリキー
 	 */
 	tag: {
-		// すべてのタグ
-		all: () => ["tags"] as const,
+		// すべてのタグ（ステータスフィルタリング可能）
+		all: (status?: ArticleStatus) =>
+			status ? (["tags", { status }] as const) : (["tags"] as const),
 	},
 
 	/**
