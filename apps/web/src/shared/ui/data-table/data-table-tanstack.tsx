@@ -3,20 +3,23 @@
 import type { Table as ReactTable } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+
+import { Button } from "../button/button";
 import {
-	Button,
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
+} from "../select/select";
+import {
 	Table,
 	TableBody,
 	TableCell,
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "@/shared/ui";
+} from "../table/table";
 
 /**
  * DataTableコンポーネントのプロパティ

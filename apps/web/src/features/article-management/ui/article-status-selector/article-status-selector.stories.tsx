@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { expect, fn, userEvent, within } from "@storybook/test";
 import { useState } from "react";
+import { expect, fn, userEvent, within } from "storybook/test";
 
 import type { ArticleStatus } from "@/shared/model";
 
@@ -133,20 +133,20 @@ export const StatusSelectionInteraction: Story = {
 		const canvas = within(canvasElement);
 
 		// Publishedを選択
-		const publishedLabel = canvas.getByText("公開");
+		const publishedLabel = canvas.getByText("公開済み");
 		await userEvent.click(publishedLabel);
-		await expect(
-			canvas.getByRole("radio", { name: "published" })
-		).toBeChecked();
+		await expect(canvas.getByRole("radio", { name: "公開済み" })).toBeChecked();
 
 		// Archivedを選択
 		const archivedLabel = canvas.getByText("アーカイブ");
 		await userEvent.click(archivedLabel);
-		await expect(canvas.getByRole("radio", { name: "archived" })).toBeChecked();
+		await expect(
+			canvas.getByRole("radio", { name: "アーカイブ" })
+		).toBeChecked();
 
 		// Draftを選択
 		const draftLabel = canvas.getByText("下書き");
 		await userEvent.click(draftLabel);
-		await expect(canvas.getByRole("radio", { name: "draft" })).toBeChecked();
+		await expect(canvas.getByRole("radio", { name: "下書き" })).toBeChecked();
 	},
 };

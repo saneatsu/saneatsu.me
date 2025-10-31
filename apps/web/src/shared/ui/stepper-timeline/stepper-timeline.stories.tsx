@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { within } from "@storybook/test";
 import { siNextdotjs, siReact, siTypescript } from "simple-icons";
+import { within } from "storybook/test";
 
 import { StepperTimeline } from "./stepper-timeline";
 
@@ -115,14 +115,12 @@ export const 空: Story = {
 		items: [],
 	},
 	render: ({ items }) => {
-		const result = <StepperTimeline items={items} />;
-
-		// 空の場合はnullが返されるため、説明テキストを表示
-		if (result === null) {
+		// 空の場合は説明テキストを表示
+		if (items.length === 0) {
 			return <div className="text-muted-foreground">アイテムがありません</div>;
 		}
 
-		return result;
+		return <StepperTimeline items={items} />;
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);

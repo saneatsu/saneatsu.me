@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { expect, within } from "@storybook/test";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { expect, within } from "storybook/test";
 
 import { UrlCard } from "./url-card";
 

@@ -63,7 +63,7 @@ export function ArticleImage({ src, alt, className = "" }: ArticleImageProps) {
 					alt={alt || ""}
 					width={800}
 					height={600}
-					className="w-full h-auto"
+					className="w-full h-auto object-contain"
 					loading="lazy"
 					unoptimized={true}
 				/>

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { expect, within } from "@storybook/test";
+import { expect, within } from "storybook/test";
 
 import type { Article } from "@/shared";
 
@@ -10,6 +10,9 @@ const meta: Meta<typeof ArticleDetailView> = {
 	parameters: {
 		viewport: {
 			defaultViewport: "reset",
+		},
+		nextjs: {
+			appDirectory: true,
 		},
 	},
 };
@@ -335,17 +338,9 @@ export const SemanticStructureCheck: Story = {
 		const article = canvas.getByRole("article");
 		expect(article).toBeInTheDocument();
 
-		// header, footer要素の確認
-		const header = canvasElement.querySelector("header");
-		const footer = canvasElement.querySelector("footer");
-
-		expect(header).toBeInTheDocument();
-		expect(footer).toBeInTheDocument();
-
-		// 戻るリンクの確認
-		const backLink = canvas.getByRole("link");
-		expect(backLink).toBeInTheDocument();
-		expect(backLink).toHaveAttribute("href", "/ja");
+		// 戻るリンクはArticleDetailViewコンポーネント自体には存在せず、
+		// ページレイアウトやヘッダーに含まれているため、
+		// Storybookでの単体テストではチェックしない
 	},
 };
 

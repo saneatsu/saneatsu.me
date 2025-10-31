@@ -2,20 +2,23 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type * as React from "react";
+
+import { Button } from "../button/button";
 import {
-	Button,
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
+} from "../select/select";
+import {
 	Table,
 	TableBody,
 	TableCell,
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "@/shared/ui";
+} from "../table/table";
 
 /**
  * テーブルカラムの定義
