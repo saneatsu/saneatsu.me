@@ -34,6 +34,13 @@ jobs:
       - name: Install Playwright
         run: pnpm --filter @saneatsu/web exec playwright install --with-deps
 
+      # Storybookをビルドする前にキャッシュをクリーンアップ
+      - name: Clean build cache
+        run: |
+          rm -rf apps/web/storybook-static
+          rm -rf apps/web/node_modules/.cache
+          rm -rf apps/web/.next
+
       # Storybookをビルド
       - name: Build Storybook
         run: pnpm --filter @saneatsu/web build-storybook
