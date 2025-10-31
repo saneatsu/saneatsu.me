@@ -72,7 +72,7 @@ export function ViewsTrendChart({
 	const getChartColors = () => {
 		const isDark = theme === "dark";
 		return {
-			barFill: "hsl(var(--primary))", // primaryカラーを使用
+			barFill: "hsl(var(--chart-1))", // チャート専用カラーを使用
 			axisStroke: isDark ? "#9ca3af" : "#6b7280", // ダークモード: gray-400, ライトモード: gray-500
 			gridStroke: isDark ? "#374151" : "#e5e7eb", // ダークモード: gray-700, ライトモード: gray-200
 		};
