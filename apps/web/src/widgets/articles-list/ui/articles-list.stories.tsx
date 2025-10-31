@@ -280,7 +280,7 @@ export const WithLimit: Story = {
 				// 「すべての記事を見る」リンクが表示される
 				const link = canvas.getByText(/すべての記事を見る/);
 				expect(link).toBeInTheDocument();
-				expect(link).toHaveAttribute("href", "/blog");
+				expect(link).toHaveAttribute("href", "/ja/blog");
 			}
 		);
 	},

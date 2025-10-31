@@ -25,7 +25,15 @@ const meta = {
 					const url = new URL(request.url);
 					const targetUrl = url.searchParams.get("url");
 
-					// モックOGPデータを返す
+					// 短縮URL（amzn.to、amzn.asia）の場合はエラーを返す
+					if (targetUrl?.includes("amzn.to") || targetUrl?.includes("amzn.asia")) {
+						return HttpResponse.json(
+							{ error: "OGP data not available for short URLs" },
+							{ status: 404 }
+						);
+					}
+
+					// 通常のAmazon URLの場合はモックOGPデータを返す
 					return HttpResponse.json({
 						data: {
 							title: "テスト商品のタイトル",
