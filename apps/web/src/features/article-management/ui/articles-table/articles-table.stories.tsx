@@ -42,7 +42,7 @@ type Story = StoryObj<typeof meta>;
 /**
  * テスト用の記事データ
  */
-const mockArticles: Article[] = [
+const _mockArticles: Article[] = [
 	{
 		id: 1,
 		slug: "react-hooks-guide",

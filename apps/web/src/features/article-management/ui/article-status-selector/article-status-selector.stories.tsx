@@ -135,14 +135,14 @@ export const StatusSelectionInteraction: Story = {
 		// Publishedを選択
 		const publishedLabel = canvas.getByText("公開済み");
 		await userEvent.click(publishedLabel);
-		await expect(
-			canvas.getByRole("radio", { name: "公開済み" })
-		).toBeChecked();
+		await expect(canvas.getByRole("radio", { name: "公開済み" })).toBeChecked();
 
 		// Archivedを選択
 		const archivedLabel = canvas.getByText("アーカイブ");
 		await userEvent.click(archivedLabel);
-		await expect(canvas.getByRole("radio", { name: "アーカイブ" })).toBeChecked();
+		await expect(
+			canvas.getByRole("radio", { name: "アーカイブ" })
+		).toBeChecked();
 
 		// Draftを選択
 		const draftLabel = canvas.getByText("下書き");
