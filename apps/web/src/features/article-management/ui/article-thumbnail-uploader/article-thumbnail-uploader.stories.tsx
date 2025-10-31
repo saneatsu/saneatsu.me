@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { fn } from "@storybook/test";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { fn } from "storybook/test";
 import { vi } from "vitest";
 
 import { ArticleThumbnailUploader } from "./article-thumbnail-uploader";

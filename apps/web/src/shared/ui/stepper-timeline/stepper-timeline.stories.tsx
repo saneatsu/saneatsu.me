@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { within } from "@storybook/test";
 import { siNextdotjs, siReact, siTypescript } from "simple-icons";
+import { within } from "storybook/test";
 
 import { StepperTimeline } from "./stepper-timeline";
 

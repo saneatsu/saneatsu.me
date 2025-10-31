@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { expect, within } from "@storybook/test";
+import { expect, within } from "storybook/test";
 
 import type { HeadingItem } from "@/shared/lib";
 

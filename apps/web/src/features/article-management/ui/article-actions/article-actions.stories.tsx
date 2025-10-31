@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { expect, fn, userEvent, within } from "@storybook/test";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { vi } from "vitest";
 
 import type { Article } from "@/shared/model";

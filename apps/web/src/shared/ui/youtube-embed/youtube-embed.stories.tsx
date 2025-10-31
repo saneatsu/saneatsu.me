@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { expect } from "@storybook/test";
+import { expect } from "storybook/test";
 
 import { YouTubeEmbed } from "./youtube-embed";
 
