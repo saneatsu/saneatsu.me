@@ -18,7 +18,6 @@ import {
 	remarkYoutube,
 } from "../../lib/";
 import { ArticleImage } from "../article-image/article-image";
-import { ZoomableImage } from "../zoomable-image/zoomable-image";
 
 /**
  * 共通のremarkPlugins設定
@@ -76,6 +75,15 @@ const YouTubeEmbed = dynamic(
 // Amazon Product Cardコンポーネントを動的インポート（クライアントサイドのみ）
 const AmazonProductCard = dynamic(
 	() => import("@/entities/article").then((mod) => mod.AmazonProductCard),
+	{
+		ssr: false,
+	}
+);
+
+// Zoomable Imageコンポーネントを動的インポート（クライアントサイドのみ）
+const ZoomableImage = dynamic(
+	() =>
+		import("../zoomable-image/zoomable-image").then((mod) => mod.ZoomableImage),
 	{
 		ssr: false,
 	}
