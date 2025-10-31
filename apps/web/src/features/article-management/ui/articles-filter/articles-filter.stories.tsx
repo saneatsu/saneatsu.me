@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { expect, fn, userEvent, within } from "storybook/test";
+import { expect, fn, screen, userEvent, within } from "storybook/test";
 
 import type { ArticleFilters } from "@/shared/model";
 
@@ -103,8 +103,8 @@ export const StatusFilterSelection: Story = {
 		const statusFilter = canvas.getByRole("combobox", { name: /ステータス/i });
 		await userEvent.click(statusFilter);
 
-		// 「公開済み」を選択
-		const publishedOption = await canvas.findByRole("option", {
+		// 「公開済み」を選択（Portal経由でレンダリングされるためscreenを使用）
+		const publishedOption = await screen.findByRole("option", {
 			name: /公開済み/i,
 		});
 		await userEvent.click(publishedOption);
