@@ -1,5 +1,6 @@
 "use client";
 
+import { Mail } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { SimpleIcon } from "simple-icons";
 import {
@@ -271,29 +272,40 @@ export function AboutView() {
 					{/* SNS・Webサイトセクション */}
 					<section className="space-y-4">
 						<h2 className="text-2xl font-bold">{t("contact.title")}</h2>
-						<div className="flex flex-wrap gap-2">
+						<div className="space-y-2">
 							{socialLinks.map((social) => (
-								<a
-									key={social.name}
-									href={social.url}
-									target="_blank"
-									rel="noopener noreferrer"
-									className="inline-block transition-opacity hover:opacity-80"
-								>
-									<BadgeWithIcon icon={social.icon} text={social.username} />
-								</a>
+								<div key={social.name}>
+									<a
+										href={social.url}
+										target="_blank"
+										rel="noopener noreferrer"
+										className="inline-flex items-center gap-2 text-foreground hover:underline"
+									>
+										<svg
+											role="img"
+											viewBox="0 0 24 24"
+											className="h-4 w-4"
+											fill={`#${social.icon.hex}`}
+											aria-label={social.icon.title}
+										>
+											<title>{social.icon.title}</title>
+											<path d={social.icon.path} />
+										</svg>
+										<span>
+											{social.name}: {social.username}
+										</span>
+									</a>
+								</div>
 							))}
-						</div>
-						<div className="text-muted-foreground">
-							<p>
-								Email:{" "}
+							<div>
 								<a
 									href="mailto:nito.tech.official@gmail.com"
-									className="text-foreground hover:underline"
+									className="inline-flex items-center gap-2 text-foreground hover:underline"
 								>
-									nito.tech.official@gmail.com
+									<Mail className="h-4 w-4" />
+									<span>Email: nito.tech.official@gmail.com</span>
 								</a>
-							</p>
+							</div>
 						</div>
 					</section>
 				</div>
