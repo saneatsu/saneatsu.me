@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import YetAnotherLightbox from "yet-another-react-lightbox";
-import "yet-another-react-lightbox/styles.css";
 
 import { cn } from "@/shared/lib/utils";
 

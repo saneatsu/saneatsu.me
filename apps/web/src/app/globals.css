@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "yet-another-react-lightbox/styles.css";
 @plugin 'tailwindcss-animate';
 @plugin '@tailwindcss/typography';
 
