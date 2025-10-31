@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertCircle, BarChart3 } from "lucide-react";
+import { AlertCircle, BarChart3, ExternalLink } from "lucide-react";
 import { useState } from "react";
 
 import {
@@ -9,6 +9,7 @@ import {
 	useDashboardOverview,
 	ViewsTrendChart,
 } from "@/features/dashboard";
+import { AmazonLogo } from "@/shared/image";
 import { Alert, AlertDescription } from "@/shared/ui/alert/alert";
 import {
 	Card,
@@ -76,10 +77,24 @@ export function DashboardMain() {
 
 	return (
 		<div className="space-y-6">
-			{/* 最終更新時刻 */}
+			{/* Amazonアソシエイトレポートと最終更新時刻 */}
 			{dashboardData && !isLoading && (
-				<div className="text-sm text-muted-foreground">
-					最終更新: {formatLastUpdated(dashboardData.lastUpdated)}
+				<div className="flex items-center justify-between text-sm text-muted-foreground">
+					{/* Amazonアソシエイトレポートリンク */}
+					<a
+						href="https://affiliate.amazon.co.jp/p/reporting/earnings"
+						target="_blank"
+						rel="noopener noreferrer"
+						className="flex items-center gap-2 hover:underline hover:decoration-dotted transition-colors"
+						aria-label="Amazonアソシエイトレポートを新しいタブで開く"
+					>
+						<AmazonLogo className="h-4 w-4 text-[#FF9900] hover:text-[#FF9900]/90" />
+						<span>Amazonアソシエイトレポート</span>
+						<ExternalLink className="h-3.5 w-3.5" />
+					</a>
+
+					{/* 最終更新時刻 */}
+					<div>最終更新: {formatLastUpdated(dashboardData.lastUpdated)}</div>
 				</div>
 			)}
 
