@@ -26,19 +26,21 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # workspaceの依存関係をビルド
+      - name: Build workspace dependencies
+        run: pnpm --filter @saneatsu/web... build
+
       # Playwrightをインストール（test-runnerが使用）
       - name: Install Playwright
         run: pnpm --filter @saneatsu/web exec playwright install --with-deps
 
       # Storybookをビルド
       - name: Build Storybook
-        working-directory: apps/web
-        run: pnpm build-storybook
+        run: cd apps/web && pnpm build-storybook
 
       # Storybookの静的ファイルをサーブしてテストを実行
       - name: Serve Storybook and run tests
-        working-directory: apps/web
         run: |
-          npx http-server storybook-static --port 6006 --silent &
+          npx http-server apps/web/storybook-static --port 6006 --silent &
           npx wait-on http://127.0.0.1:6006
-          pnpm test-storybook
+          pnpm --filter @saneatsu/web test-storybook
