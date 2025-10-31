@@ -1,6 +1,8 @@
 "use client";
 
-import { ExternalLink, ShoppingCart } from "lucide-react";
+import { ExternalLink } from "lucide-react";
+
+import { AmazonLogo } from "@/shared/image";
 
 import { useOgp } from "../../api/use-ogp/use-ogp";
 
@@ -80,7 +82,7 @@ export function AmazonProductCard({
 				className="block not-prose my-4 cursor-pointer"
 			>
 				<div className="border border-[#FF9900]/20 rounded-lg p-4 hover:shadow-md transition-shadow flex items-center gap-3 bg-gradient-to-br from-white to-orange-50 dark:from-gray-900 dark:to-orange-950/20">
-					<ShoppingCart className="w-5 h-5 text-[#FF9900] shrink-0" />
+					<AmazonLogo className="w-5 h-5 text-[#FF9900] shrink-0" />
 					<div className="flex-1 min-w-0">
 						<div className="font-medium text-sm">
 							{asin ? `Amazon商品 (ASIN: ${asin})` : "Amazon商品（短縮URL）"}
@@ -148,7 +150,7 @@ export function AmazonProductCard({
 								<span className="truncate">{formattedDomain}</span>
 							</div>
 							<div className="bg-[#FF9900] hover:bg-[#FF9900]/90 text-white px-3 py-1.5 rounded-md text-sm font-medium shrink-0 flex items-center gap-1.5 pointer-events-none">
-								<ShoppingCart className="w-4 h-4" />
+								<AmazonLogo className="w-4 h-4" />
 								Amazonで見る
 							</div>
 						</div>
