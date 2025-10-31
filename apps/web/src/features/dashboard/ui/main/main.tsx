@@ -88,7 +88,9 @@ export function DashboardMain() {
 						className="flex items-center gap-2 hover:underline hover:decoration-dotted transition-colors"
 						aria-label="Amazonアソシエイトレポートを新しいタブで開く"
 					>
-						<AmazonLogo className="h-4 w-4 text-[#FF9900] hover:text-[#FF9900]/90" />
+						<div className="rounded-full bg-[#FF9900] p-1 flex items-center justify-center">
+							<AmazonLogo className="h-3 w-3 text-primary" />
+						</div>
 						<span>Amazonアソシエイトレポート</span>
 						<ExternalLink className="h-3.5 w-3.5" />
 					</a>
