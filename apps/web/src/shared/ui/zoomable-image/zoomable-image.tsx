@@ -40,7 +40,7 @@ export function ZoomableImage({ src, alt, className }: ZoomableImageProps) {
 				)}
 			>
 				{/* biome-ignore lint/performance/noImgElement: ReactMarkdownから生成される画像は外部URLの可能性があるため<img>を使用 */}
-				<img src={src} alt={alt} className="rounded-lg" />
+				<img src={src} alt={alt} className="rounded-lg object-contain" />
 			</button>
 			<YetAnotherLightbox
 				open={open}
