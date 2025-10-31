@@ -235,10 +235,10 @@ export function ArticleNewForm() {
 
 	return (
 		<>
-			<form onSubmit={handleSubmit(onSubmit)} className="space-y-8 max-w-4xl">
+			<form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
 				{/* バリデーションエラー表示 */}
 				{validationError && (
-					<Alert variant="destructive">
+					<Alert variant="destructive" className="max-w-7xl">
 						<AlertCircle className="h-4 w-4" />
 						<AlertTitle>エラーが発生しました</AlertTitle>
 						<AlertDescription>{validationError}</AlertDescription>
@@ -247,7 +247,7 @@ export function ArticleNewForm() {
 
 				{/* サムネイルエラー表示 */}
 				{thumbnailError && (
-					<Alert variant="destructive">
+					<Alert variant="destructive" className="max-w-7xl">
 						<AlertCircle className="h-4 w-4" />
 						<AlertTitle>サムネイル画像エラー</AlertTitle>
 						<AlertDescription>{thumbnailError}</AlertDescription>
@@ -255,14 +255,16 @@ export function ArticleNewForm() {
 				)}
 
 				{/* サムネイル画像 */}
-				<ArticleThumbnailUploader
-					mode="create"
-					onFileSelect={setThumbnailFile}
-					onError={setThumbnailError}
-				/>
+				<div className="max-w-7xl">
+					<ArticleThumbnailUploader
+						mode="create"
+						onFileSelect={setThumbnailFile}
+						onError={setThumbnailError}
+					/>
+				</div>
 
 				{/* タイトル */}
-				<div className="space-y-2">
+				<div className="space-y-2 max-w-7xl">
 					<Label htmlFor="title" className="required">
 						タイトル
 					</Label>
@@ -278,7 +280,7 @@ export function ArticleNewForm() {
 				</div>
 
 				{/* スラッグ */}
-				<div className="space-y-2">
+				<div className="space-y-2 max-w-7xl">
 					<Label htmlFor="slug" className="required">
 						スラッグ
 						{slugChecking && (
@@ -319,19 +321,21 @@ export function ArticleNewForm() {
 				</div>
 
 				{/* ステータス */}
-				<ArticleStatusSelector
-					value={watchStatus}
-					onValueChange={(value) =>
-						setValue("status", value as "draft" | "published")
-					}
-					statuses={["draft", "published"]}
-					label="公開ステータス"
-					required
-					error={errors.status?.message}
-				/>
+				<div className="max-w-7xl">
+					<ArticleStatusSelector
+						value={watchStatus}
+						onValueChange={(value) =>
+							setValue("status", value as "draft" | "published")
+						}
+						statuses={["draft", "published"]}
+						label="公開ステータス"
+						required
+						error={errors.status?.message}
+					/>
+				</div>
 
 				{/* タグ選択 */}
-				<div className="space-y-2">
+				<div className="space-y-2 max-w-7xl">
 					<Label htmlFor="tags">タグ</Label>
 					<MultipleSelector
 						value={selectedTags}
@@ -357,7 +361,7 @@ export function ArticleNewForm() {
 
 				{/* 公開日時（公開時のみ表示） */}
 				{watch("status") === "published" && (
-					<div className="space-y-2">
+					<div className="space-y-2 max-w-7xl">
 						<Label htmlFor="publishedAt">公開日時</Label>
 						<DateTimePicker
 							value={publishedAtDate}
@@ -384,7 +388,7 @@ export function ArticleNewForm() {
 							value={markdownValue}
 							onChange={handleEditorChange}
 							setValue={setValue as (name: string, value: string) => void}
-							height={500}
+							height={800}
 							language="ja"
 						/>
 					</div>
