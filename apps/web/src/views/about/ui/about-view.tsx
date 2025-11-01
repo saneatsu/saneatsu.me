@@ -4,9 +4,11 @@ import { Mail } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { SimpleIcon } from "simple-icons";
 import {
+	siBiome,
 	siCloudflare,
 	siCss,
 	siDart,
+	siDependabot,
 	siDjango,
 	siDocker,
 	siDotnet,
@@ -30,6 +32,8 @@ import {
 	siNuxt,
 	siPinia,
 	siPostgresql,
+	siPrettier,
+	siPrimevue,
 	siPrisma,
 	siPython,
 	siPytorch,
@@ -137,6 +141,9 @@ export function AboutView() {
 			{ name: "React Hook Form", icon: siReacthookform },
 			{ name: "React Flow", icon: siXyflow },
 			{ name: "Konva", icon: siKonva },
+			{ name: "PrimeVue", icon: siPrimevue },
+			{ name: "Biome", icon: siBiome },
+			{ name: "Prettier", icon: siPrettier },
 		],
 		databases: [
 			{ name: "PostgreSQL", icon: siPostgresql },
@@ -155,6 +162,7 @@ export function AboutView() {
 			{ name: "Notion", icon: siNotion },
 			{ name: "Slack", icon: siSlack },
 			{ name: "Stripe", icon: siStripe },
+			{ name: "Dependabot", icon: siDependabot },
 		],
 	};
 
