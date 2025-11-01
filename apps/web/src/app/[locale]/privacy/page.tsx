@@ -44,7 +44,7 @@ export default async function PrivacyPage({
 				</section>
 
 				<p className="text-sm text-muted-foreground mt-8">
-					{t("lastUpdated")}: 2025-10-29
+					{t("lastUpdated")}: 2025-11-01
 				</p>
 			</div>
 		</div>
