@@ -77,8 +77,8 @@ export const createArticle: Handler = async (c) => {
 			content,
 		});
 
-		// 6. 英語への自動翻訳を実行（非同期）
-		if (c.env.GEMINI_API_KEY) {
+		// 6. 英語への自動翻訳を実行（公開記事の場合のみ）
+		if (status === "published" && c.env.GEMINI_API_KEY) {
 			try {
 				const translationService = createTranslationService({
 					GEMINI_API_KEY: c.env.GEMINI_API_KEY,
@@ -108,6 +108,8 @@ export const createArticle: Handler = async (c) => {
 				// 翻訳エラーが発生してもメインの処理は続行
 				console.error(`Translation error for article ${newArticle.id}:`, error);
 			}
+		} else if (status === "draft") {
+			console.log(`Article ${newArticle.id} is a draft, skipping translation`);
 		} else {
 			console.log("GEMINI_API_KEY not configured, skipping translation");
 		}

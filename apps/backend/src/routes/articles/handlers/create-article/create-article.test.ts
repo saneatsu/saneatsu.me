@@ -3,6 +3,14 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { articlesRoute } from "@/routes/articles";
 import { setupDbMocks } from "@/utils/drizzle-test";
 
+// 翻訳サービスのモック
+const mockTranslateArticle = vi.fn();
+vi.mock("@/services/gemini-translation/gemini-translation", () => ({
+	createTranslationService: vi.fn(() => ({
+		translateArticle: mockTranslateArticle,
+	})),
+}));
+
 // モック設定
 vi.mock("@saneatsu/db/worker", () => ({
 	articles: {},
@@ -792,6 +800,168 @@ describe("POST /articles - 記事作成", () => {
 				// Assert
 				expect(res.status).toBe(201);
 			});
+		});
+	});
+
+	describe("翻訳機能", () => {
+		it("下書きとして作成した場合、翻訳が実行されないこと", async () => {
+			// Arrange
+			const { mockDb } = setupDbMocks();
+			const { createDatabaseClient } = await import("@saneatsu/db");
+			(createDatabaseClient as any).mockReturnValue(mockDb);
+
+			mockTranslateArticle.mockClear();
+
+			const mockNewArticle = {
+				id: 1,
+				slug: "draft-article",
+				status: "draft",
+				cfImageId: null,
+				createdAt: "2024-01-01T00:00:00.000Z",
+				updatedAt: "2024-01-01T00:00:00.000Z",
+				publishedAt: null,
+			};
+
+			const insertArticleMock = {
+				values: vi.fn().mockReturnValue({
+					returning: vi.fn().mockResolvedValue([mockNewArticle]),
+				}),
+			};
+
+			const insertTranslationMock = {
+				values: vi.fn().mockResolvedValue({}),
+			};
+
+			const selectArticleMock = {
+				from: vi.fn().mockReturnValue({
+					leftJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockReturnValue({
+							limit: vi.fn().mockResolvedValue([
+								{
+									...mockNewArticle,
+									title: "下書き記事",
+									content: "下書きコンテンツ",
+									viewCount: 0,
+								},
+							]),
+						}),
+					}),
+				}),
+			};
+
+			mockDb.select.mockReturnValueOnce({
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([]),
+					}),
+				}),
+			});
+			mockDb.insert.mockReturnValueOnce(insertArticleMock);
+			mockDb.insert.mockReturnValueOnce(insertTranslationMock);
+			mockDb.select.mockReturnValueOnce(selectArticleMock);
+
+			// Act
+			const client = testClient(articlesRoute, {
+				TURSO_DATABASE_URL: "test://test.db",
+				TURSO_AUTH_TOKEN: "test-token",
+				GEMINI_API_KEY: "test-gemini-key",
+			}) as any;
+			const res = await client.index.$post({
+				json: {
+					title: "下書き記事",
+					slug: "draft-article",
+					content: "下書きコンテンツ",
+					status: "draft",
+				},
+			});
+
+			// Assert
+			expect(res.status).toBe(201);
+			expect(mockTranslateArticle).not.toHaveBeenCalled();
+		});
+
+		it("公開記事として作成した場合、翻訳が実行されること", async () => {
+			// Arrange
+			const { mockDb } = setupDbMocks();
+			const { createDatabaseClient } = await import("@saneatsu/db");
+			(createDatabaseClient as any).mockReturnValue(mockDb);
+
+			mockTranslateArticle.mockClear();
+			mockTranslateArticle.mockResolvedValueOnce({
+				title: "Published Article",
+				content: "Published content",
+			});
+
+			const mockNewArticle = {
+				id: 1,
+				slug: "published-article",
+				status: "published",
+				cfImageId: null,
+				createdAt: "2024-01-01T00:00:00.000Z",
+				updatedAt: "2024-01-01T00:00:00.000Z",
+				publishedAt: "2024-01-01T00:00:00.000Z",
+			};
+
+			const insertArticleMock = {
+				values: vi.fn().mockReturnValue({
+					returning: vi.fn().mockResolvedValue([mockNewArticle]),
+				}),
+			};
+
+			const insertTranslationMock = {
+				values: vi.fn().mockResolvedValue({}),
+			};
+
+			const selectArticleMock = {
+				from: vi.fn().mockReturnValue({
+					leftJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockReturnValue({
+							limit: vi.fn().mockResolvedValue([
+								{
+									...mockNewArticle,
+									title: "公開記事",
+									content: "公開コンテンツ",
+									viewCount: 0,
+								},
+							]),
+						}),
+					}),
+				}),
+			};
+
+			mockDb.select.mockReturnValueOnce({
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([]),
+					}),
+				}),
+			});
+			mockDb.insert.mockReturnValueOnce(insertArticleMock);
+			mockDb.insert.mockReturnValueOnce(insertTranslationMock);
+			mockDb.insert.mockReturnValueOnce(insertTranslationMock);
+			mockDb.select.mockReturnValueOnce(selectArticleMock);
+
+			// Act
+			const client = testClient(articlesRoute, {
+				TURSO_DATABASE_URL: "test://test.db",
+				TURSO_AUTH_TOKEN: "test-token",
+				GEMINI_API_KEY: "test-gemini-key",
+			}) as any;
+			const res = await client.index.$post({
+				json: {
+					title: "公開記事",
+					slug: "published-article",
+					content: "公開コンテンツ",
+					status: "published",
+				},
+			});
+
+			// Assert
+			expect(res.status).toBe(201);
+			expect(mockTranslateArticle).toHaveBeenCalledWith(
+				"公開記事",
+				"公開コンテンツ"
+			);
 		});
 	});
 });
