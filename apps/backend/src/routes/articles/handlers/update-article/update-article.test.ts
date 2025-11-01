@@ -935,4 +935,203 @@ describe("PUT /articles/:id - 記事更新", () => {
 			});
 		});
 	});
+
+	describe("翻訳機能のスキップ", () => {
+		it("下書きとして更新した場合、翻訳が実行されないこと", async () => {
+			// Arrange
+			const { mockDb } = setupDbMocks();
+			const { createDatabaseClient } = await import("@saneatsu/db");
+			(createDatabaseClient as any).mockReturnValue(mockDb);
+
+			mockTranslateArticle.mockClear();
+
+			const selectArticleMock = {
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([{ id: 1, slug: "test-article" }]),
+					}),
+				}),
+			};
+
+			const selectDuplicateMock = {
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([]),
+					}),
+				}),
+			};
+
+			const updateMock = {
+				set: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue({}),
+				}),
+			};
+
+			const upsertMock = {
+				values: vi.fn().mockReturnValue({
+					onConflictDoUpdate: vi.fn().mockResolvedValue({}),
+				}),
+			};
+
+			const deleteMock = {
+				where: vi.fn().mockResolvedValue({}),
+			};
+
+			const selectFinalMock = {
+				from: vi.fn().mockReturnValue({
+					leftJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockReturnValue({
+							limit: vi.fn().mockResolvedValue([
+								{
+									id: 1,
+									slug: "draft-article",
+									cfImageId: null,
+									status: "draft",
+									publishedAt: null,
+									updatedAt: "2024-01-02T00:00:00.000Z",
+									title: "下書き記事",
+									content: "下書きコンテンツ",
+									viewCount: 0,
+								},
+							]),
+						}),
+					}),
+				}),
+			};
+
+			mockDb.select
+				.mockReturnValueOnce(selectArticleMock)
+				.mockReturnValueOnce(selectDuplicateMock)
+				.mockReturnValueOnce(selectFinalMock);
+			mockDb.update.mockReturnValueOnce(updateMock);
+			mockDb.insert.mockReturnValueOnce(upsertMock);
+			mockDb.delete.mockReturnValueOnce(deleteMock);
+
+			// Act
+			const client = testClient(articlesRoute, {
+				TURSO_DATABASE_URL: "test://test.db",
+				TURSO_AUTH_TOKEN: "test-token",
+				GEMINI_API_KEY: "test-gemini-key",
+			}) as any;
+			const res = await client[":id"].$put({
+				param: { id: "1" },
+				json: {
+					title: "下書き記事",
+					slug: "draft-article",
+					content: "下書きコンテンツ",
+					status: "draft",
+				},
+			});
+
+			// Assert
+			expect(res.status).toBe(200);
+			expect(mockTranslateArticle).not.toHaveBeenCalled();
+		});
+
+		it("公開記事として更新した場合、翻訳が実行されること", async () => {
+			// Arrange
+			const { mockDb } = setupDbMocks();
+			const { createDatabaseClient } = await import("@saneatsu/db");
+			(createDatabaseClient as any).mockReturnValue(mockDb);
+
+			mockTranslateArticle.mockClear();
+			mockTranslateArticle.mockResolvedValueOnce({
+				title: "Published Article",
+				content: "Published content",
+			});
+
+			const selectArticleMock = {
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([{ id: 1, slug: "test-article" }]),
+					}),
+				}),
+			};
+
+			const selectDuplicateMock = {
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([]),
+					}),
+				}),
+			};
+
+			const updateMock = {
+				set: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue({}),
+				}),
+			};
+
+			const upsertJaMock = {
+				values: vi.fn().mockReturnValue({
+					onConflictDoUpdate: vi.fn().mockResolvedValue({}),
+				}),
+			};
+
+			const upsertEnMock = {
+				values: vi.fn().mockReturnValue({
+					onConflictDoUpdate: vi.fn().mockResolvedValue({}),
+				}),
+			};
+
+			const deleteMock = {
+				where: vi.fn().mockResolvedValue({}),
+			};
+
+			const selectFinalMock = {
+				from: vi.fn().mockReturnValue({
+					leftJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockReturnValue({
+							limit: vi.fn().mockResolvedValue([
+								{
+									id: 1,
+									slug: "published-article",
+									cfImageId: null,
+									status: "published",
+									publishedAt: "2024-01-02T00:00:00.000Z",
+									updatedAt: "2024-01-02T00:00:00.000Z",
+									title: "公開記事",
+									content: "公開コンテンツ",
+									viewCount: 0,
+								},
+							]),
+						}),
+					}),
+				}),
+			};
+
+			mockDb.select
+				.mockReturnValueOnce(selectArticleMock)
+				.mockReturnValueOnce(selectDuplicateMock)
+				.mockReturnValueOnce(selectFinalMock);
+			mockDb.update.mockReturnValueOnce(updateMock);
+			mockDb.insert
+				.mockReturnValueOnce(upsertJaMock)
+				.mockReturnValueOnce(upsertEnMock);
+			mockDb.delete.mockReturnValueOnce(deleteMock);
+
+			// Act
+			const client = testClient(articlesRoute, {
+				TURSO_DATABASE_URL: "test://test.db",
+				TURSO_AUTH_TOKEN: "test-token",
+				GEMINI_API_KEY: "test-gemini-key",
+			}) as any;
+			const res = await client[":id"].$put({
+				param: { id: "1" },
+				json: {
+					title: "公開記事",
+					slug: "published-article",
+					content: "公開コンテンツ",
+					status: "published",
+				},
+			});
+
+			// Assert
+			expect(res.status).toBe(200);
+			expect(mockTranslateArticle).toHaveBeenCalledWith(
+				"公開記事",
+				"公開コンテンツ"
+			);
+		});
+	});
 });
