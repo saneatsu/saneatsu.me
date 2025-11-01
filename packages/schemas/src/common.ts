@@ -41,6 +41,29 @@ export const idSchema = z
 /** オプショナルなCloudflare Images ID */
 export const cloudflareImageIdSchema = z.string().optional();
 
+/**
+ * Cloudflare Images バリアント
+ *
+ * @description
+ * すべてのバリアントは Cloudflare 側で設定されています。
+ *
+ * バリアント一覧:
+ * - small (400x, contain): サムネイル、小さな画像プレビュー
+ * - medium (800x, contain): 記事一覧のサムネイル
+ * - original (800x, scale-down): 記事内画像の保存・表示用（アップロード時のデフォルト）
+ * - large (1200x, contain): Lightbox拡大表示（中）
+ * - xlarge (1600x, contain): Lightbox拡大表示（大）
+ *
+ * @see docs/cloudflare-images.md - 詳細な設定ガイド
+ */
+export const imageVariantSchema = z.enum([
+	"small",
+	"medium",
+	"original",
+	"large",
+	"xlarge",
+]);
+
 export type Language = z.infer<typeof languageSchema>;
 export type ArticleStatus = z.infer<typeof articleStatusSchema>;
 export type Slug = z.infer<typeof slugSchema>;
@@ -48,3 +71,4 @@ export type Email = z.infer<typeof emailSchema>;
 export type DateTime = z.infer<typeof dateTimeSchema>;
 export type Id = z.infer<typeof idSchema>;
 export type CloudflareImageId = z.infer<typeof cloudflareImageIdSchema>;
+export type ImageVariant = z.infer<typeof imageVariantSchema>;

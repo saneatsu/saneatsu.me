@@ -1,21 +1,6 @@
-import { env } from "@/env";
+import type { ImageVariant } from "@saneatsu/schemas";
 
-/**
- * Cloudflare Images Variant型
- *
- * @description
- * すべてのバリアントは Cloudflare 側で `fit=scale-down` に設定されています。
- * これにより、小さい画像は元のサイズのまま表示され、大きい画像のみ指定サイズに縮小されます。
- *
- * バリアント一覧:
- * - small (400x): サムネイル、小さな画像プレビュー
- * - medium (800x): 記事一覧のサムネイル
- * - large (1200x): 記事本文内の画像（通常表示）
- * - xlarge (1600x): Lightbox拡大表示
- *
- * @see docs/cloudflare-images.md - 詳細な設定ガイド
- */
-export type ImageVariant = "small" | "medium" | "large" | "xlarge";
+import { env } from "@/env";
 
 /**
  * Cloudflare Images URLを生成する
