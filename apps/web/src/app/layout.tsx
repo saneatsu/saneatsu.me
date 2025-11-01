@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 
 import { Providers } from "./providers";
 import "./globals.css";
@@ -18,11 +18,6 @@ export const metadata: Metadata = {
 		default: "saneatsu.me",
 		template: "%s - saneatsu.me",
 	},
-	// ブラウザUIの色をページ背景色と統一（globals.cssの--backgroundの値を使用）
-	themeColor: [
-		{ media: "(prefers-color-scheme: light)", color: "hsl(0 0% 100%)" },
-		{ media: "(prefers-color-scheme: dark)", color: "hsl(0 0% 3.9%)" },
-	],
 	openGraph: {
 		type: "website",
 		locale: "ja_JP",
@@ -33,6 +28,19 @@ export const metadata: Metadata = {
 		site: "@saneatsu_wakana",
 		creator: "@saneatsu_wakana",
 	},
+};
+
+/**
+ * ビューポート設定
+ *
+ * @description
+ * ブラウザUIの色をページ背景色と統一（globals.cssの--backgroundの値を使用）
+ */
+export const viewport: Viewport = {
+	themeColor: [
+		{ media: "(prefers-color-scheme: light)", color: "hsl(0 0% 100%)" },
+		{ media: "(prefers-color-scheme: dark)", color: "hsl(0 0% 3.9%)" },
+	],
 };
 
 export default function RootLayout({
