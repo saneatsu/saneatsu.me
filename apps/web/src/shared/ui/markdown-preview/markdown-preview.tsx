@@ -107,6 +107,31 @@ export interface MarkdownPreviewProps {
 }
 
 /**
+ * Markdownコンテンツから画像URLを抽出する
+ *
+ * @param content - Markdownコンテンツ
+ * @returns 画像URLの配列（出現順）
+ *
+ * @description
+ * Markdown画像構文 `![alt](url)` から画像URLを抽出する。
+ * 抽出される順序は記事内での出現順と一致する。
+ */
+function extractImageUrls(content: string): string[] {
+	// Markdown画像構文: ![alt](url)
+	const imageRegex = /!\[.*?\]\((.*?)\)/g;
+	const matches = content.matchAll(imageRegex);
+	const urls: string[] = [];
+
+	for (const match of matches) {
+		if (match[1]) {
+			urls.push(match[1]);
+		}
+	}
+
+	return urls;
+}
+
+/**
  * React childrenからテキストを再帰的に抽出する
  *
  * @description
@@ -186,11 +211,13 @@ function hasBlockImage(children: React.ReactNode): boolean {
  * @param language - 言語設定（Wiki Link用）
  * @param imageComponent - 画像コンポーネントの種類
  * @param headings - 見出し情報（アンカーリンク用）
+ * @param imageUrls - 記事内の全画像URLリスト（Lightboxナビゲーション用）
  */
 export function createDefaultMarkdownComponents(
 	language: "ja" | "en" = "ja",
 	imageComponent: "article" | "zoomable" = "article",
-	headings?: Array<{ id: string; text: string }>
+	headings?: Array<{ id: string; text: string }>,
+	imageUrls?: string[]
 ): Partial<Components> {
 	/**
 	 * childrenからマッチする見出しのIDを取得する
@@ -341,7 +368,17 @@ export function createDefaultMarkdownComponents(
 		img: ({ src, alt, ...props }) => {
 			// 画像コンポーネントの種類に応じて切り替え
 			if (imageComponent === "zoomable") {
-				return <ZoomableImage src={src || ""} alt={alt || ""} />;
+				// 現在の画像のインデックスを計算（複数画像がある場合のナビゲーション用）
+				const currentIndex = imageUrls?.indexOf(src || "") ?? 0;
+
+				return (
+					<ZoomableImage
+						src={src || ""}
+						alt={alt || ""}
+						images={imageUrls}
+						currentIndex={currentIndex}
+					/>
+				);
 			}
 
 			// Cloudflare Images URLの場合はArticleImageを使用
@@ -439,10 +476,15 @@ export function MarkdownPreview({
 		};
 	}, [currentTheme]);
 
+	// 記事内の全画像URLを抽出（Lightboxナビゲーション用）
+	const imageUrls =
+		imageComponent === "zoomable" ? extractImageUrls(content) : undefined;
+
 	const defaultComponents = createDefaultMarkdownComponents(
 		language,
 		imageComponent,
-		headings
+		headings,
+		imageUrls
 	);
 
 	// カスタムコンポーネントとデフォルトコンポーネントをマージ
