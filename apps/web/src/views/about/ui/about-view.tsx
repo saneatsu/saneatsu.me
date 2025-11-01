@@ -273,30 +273,38 @@ export function AboutView() {
 					<section className="space-y-4">
 						<h2 className="text-2xl font-bold">{t("contact.title")}</h2>
 						<div className="space-y-2">
-							{socialLinks.map((social) => (
-								<div key={social.name}>
-									<a
-										href={social.url}
-										target="_blank"
-										rel="noopener noreferrer"
-										className="inline-flex items-center gap-2 text-foreground hover:underline"
-									>
-										<svg
-											role="img"
-											viewBox="0 0 24 24"
-											className="h-4 w-4"
-											fill={`#${social.icon.hex}`}
-											aria-label={social.icon.title}
+							{socialLinks.map((social) => {
+								// Zennはブランドカラーを保持、GitHub・Xはダークモード対応
+								const iconFill =
+									social.name === "Zenn"
+										? `#${social.icon.hex}`
+										: "currentColor";
+
+								return (
+									<div key={social.name}>
+										<a
+											href={social.url}
+											target="_blank"
+											rel="noopener noreferrer"
+											className="inline-flex items-center gap-2 text-foreground hover:underline"
 										>
-											<title>{social.icon.title}</title>
-											<path d={social.icon.path} />
-										</svg>
-										<span>
-											{social.name}: {social.username}
-										</span>
-									</a>
-								</div>
-							))}
+											<svg
+												role="img"
+												viewBox="0 0 24 24"
+												className="h-4 w-4"
+												fill={iconFill}
+												aria-label={social.icon.title}
+											>
+												<title>{social.icon.title}</title>
+												<path d={social.icon.path} />
+											</svg>
+											<span>
+												{social.name}: {social.username}
+											</span>
+										</a>
+									</div>
+								);
+							})}
 							<div>
 								<a
 									href="mailto:nito.tech.official@gmail.com"
