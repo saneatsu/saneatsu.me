@@ -30,7 +30,15 @@
 		}
 	},
 	"blog": {
-		"title": "Blog"
+		"title": "Blog",
+		"tagFilter": {
+			"title": "Tags",
+			"selected": "selected",
+			"placeholder": "Tags",
+			"noResults": "No results found",
+			"clear": "Clear",
+			"clearLabel": "Clear tag filter"
+		}
 	},
 	"about": {
 		"title": "About",

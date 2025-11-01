@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, PlusCircle, XCircle } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { parseAsInteger } from "nuqs";
 import { useCallback, useMemo, useState } from "react";
 
@@ -58,6 +59,8 @@ interface TagFilterOption {
  */
 export function TagFilter() {
 	const [open, setOpen] = useState(false);
+	const locale = useLocale();
+	const t = useTranslations("blog.tagFilter");
 
 	// URL状態からtagIdsとpageを読み取り・更新
 	const [{ tagIds }, setQuery] = usePersistentQueryStates(
@@ -82,11 +85,14 @@ export function TagFilter() {
 		return tagsData.data
 			.filter((tag) => tag.articleCount > 0)
 			.map((tag) => ({
-				label: tag.translations.ja || tag.slug,
+				label:
+					tag.translations[locale as "ja" | "en"] ||
+					tag.translations.ja ||
+					tag.slug,
 				value: tag.id.toString(),
 				count: tag.articleCount,
 			}));
-	}, [tagsData]);
+	}, [tagsData, locale]);
 
 	// 選択中のタグID
 	const selectedValues = new Set(tagIds.map(String));
@@ -147,7 +153,7 @@ export function TagFilter() {
 						// biome-ignore lint/a11y/useSemanticElements: PopoverTrigger内のカスタムクリアボタンコンポーネント
 						<div
 							role="button"
-							aria-label="タグフィルターをクリア"
+							aria-label={t("clearLabel")}
 							tabIndex={0}
 							onClick={onReset}
 							onKeyDown={(e) => {
@@ -163,7 +169,7 @@ export function TagFilter() {
 					) : (
 						<PlusCircle className="mr-2 h-4 w-4" />
 					)}
-					タグ
+					{t("title")}
 					{selectedValues?.size > 0 && (
 						<>
 							<Separator orientation="vertical" className="mx-2 h-4" />
@@ -179,7 +185,7 @@ export function TagFilter() {
 										variant="secondary"
 										className="rounded-sm px-1 font-normal"
 									>
-										{selectedValues.size} 選択中
+										{selectedValues.size} {t("selected")}
 									</Badge>
 								) : (
 									tagOptions
@@ -201,9 +207,9 @@ export function TagFilter() {
 			</PopoverTrigger>
 			<PopoverContent className="w-[200px] p-0" align="start">
 				<Command>
-					<CommandInput placeholder="タグ" />
+					<CommandInput placeholder={t("placeholder")} />
 					<CommandList>
-						<CommandEmpty>結果が見つかりません</CommandEmpty>
+						<CommandEmpty>{t("noResults")}</CommandEmpty>
 						<CommandGroup>
 							{tagOptions.map((option) => {
 								const isSelected = selectedValues.has(option.value);
@@ -241,7 +247,7 @@ export function TagFilter() {
 										onSelect={() => onReset()}
 										className="cursor-pointer justify-center text-center"
 									>
-										クリア
+										{t("clear")}
 									</CommandItem>
 								</CommandGroup>
 							</>
