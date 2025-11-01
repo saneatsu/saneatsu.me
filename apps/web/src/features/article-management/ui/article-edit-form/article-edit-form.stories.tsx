@@ -91,6 +91,7 @@ const mockArticle = {
 	content: "# React Hooks完全ガイド\n\nReact Hooksの使い方を解説します。",
 	status: "published" as const,
 	publishedAt: "2024-01-10T00:00:00Z",
+	updatedAt: "2024-01-15T10:30:00Z",
 	cfImageId: "test-image-id",
 	tags: [
 		{
@@ -168,6 +169,66 @@ export const NoTags: Story = {
 		article: {
 			...mockArticle,
 			tags: [],
+		},
+	},
+};
+
+/**
+ * 更新日：30分前
+ */
+export const UpdatedMinutesAgo: Story = {
+	name: "更新日：30分前",
+	tags: ["code-only"],
+	args: {
+		article: {
+			...mockArticle,
+			// 現在時刻の30分前を設定
+			updatedAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+		},
+	},
+};
+
+/**
+ * 更新日：5時間前
+ */
+export const UpdatedHoursAgo: Story = {
+	name: "更新日：5時間前",
+	tags: ["code-only"],
+	args: {
+		article: {
+			...mockArticle,
+			// 現在時刻の5時間前を設定
+			updatedAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
+		},
+	},
+};
+
+/**
+ * 更新日：3日前
+ */
+export const UpdatedDaysAgo: Story = {
+	name: "更新日：3日前",
+	tags: ["code-only"],
+	args: {
+		article: {
+			...mockArticle,
+			// 現在時刻の3日前を設定
+			updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+		},
+	},
+};
+
+/**
+ * 更新日：15日前（絶対日付のみ表示）
+ */
+export const UpdatedLongAgo: Story = {
+	name: "更新日：15日前（絶対日付のみ表示）",
+	tags: ["code-only"],
+	args: {
+		article: {
+			...mockArticle,
+			// 現在時刻の15日前を設定
+			updatedAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
 		},
 	},
 };
