@@ -1,7 +1,9 @@
+"use client";
+
 import { useTranslations } from "next-intl";
 
 import { BlogNotice } from "@/shared/ui";
-import { ArticlesList } from "@/widgets";
+import { ArticlesList, PopularArticlesList } from "@/widgets";
 
 /**
  * ホームページのメインビューコンポーネント
@@ -24,7 +26,15 @@ export function HomeView() {
 				{/* Blog運営方針 */}
 				<BlogNotice />
 
-				{/* Articles Section */}
+				{/* Popular Articles Section */}
+				<section>
+					<h2 className="text-2xl font-bold mb-6">
+						{t("popularArticles.title")}
+					</h2>
+					<PopularArticlesList />
+				</section>
+
+				{/* Latest Articles Section */}
 				<section>
 					<h2 className="text-2xl font-bold mb-6">{t("articles.title")}</h2>
 					<ArticlesList limit={6} />

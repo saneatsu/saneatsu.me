@@ -25,6 +25,9 @@
 			"title": "saneatsu.me",
 			"description": "Articles about programming, development tools, and daily insights on technology and lifestyle."
 		},
+		"popularArticles": {
+			"title": "Popular Articles"
+		},
 		"articles": {
 			"title": "Latest Articles"
 		}
