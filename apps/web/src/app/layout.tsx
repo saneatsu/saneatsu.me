@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 
+import { GoogleAnalytics, PageViewTracker } from "@/shared/lib";
+
 import { Providers } from "./providers";
 import "./globals.css";
 
@@ -50,8 +52,12 @@ export default function RootLayout({
 }) {
 	return (
 		<html lang="ja" suppressHydrationWarning>
+			<GoogleAnalytics />
 			<body>
-				<Providers>{children}</Providers>
+				<Providers>
+					<PageViewTracker />
+					{children}
+				</Providers>
 			</body>
 		</html>
 	);
