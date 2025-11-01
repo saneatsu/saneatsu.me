@@ -52,6 +52,7 @@ import {
 	siVitest,
 	siVuedotjs,
 	siX,
+	siXyflow,
 	siZenn,
 	siZod,
 } from "simple-icons";
@@ -133,6 +134,7 @@ export function AboutView() {
 			{ name: "Prisma", icon: siPrisma },
 			{ name: "Zod", icon: siZod },
 			{ name: "React Hook Form", icon: siReacthookform },
+			{ name: "React Flow", icon: siXyflow },
 		],
 		databases: [
 			{ name: "PostgreSQL", icon: siPostgresql },
