@@ -65,7 +65,7 @@ export function Header() {
 							href="https://github.com/saneatsu/saneatsu.me"
 							target="_blank"
 							rel="noopener noreferrer"
-							className="text-foreground/60 transition-colors hover:text-foreground/80"
+							className="text-foreground transition-colors hover:text-foreground/80"
 							aria-label="GitHub"
 						>
 							<svg
@@ -82,7 +82,7 @@ export function Header() {
 							href="https://x.com/saneatsu_wakana"
 							target="_blank"
 							rel="noopener noreferrer"
-							className="text-foreground/60 transition-colors hover:text-foreground/80"
+							className="text-foreground transition-colors hover:text-foreground/80"
 							aria-label="X"
 						>
 							<svg
