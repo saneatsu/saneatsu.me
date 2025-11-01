@@ -5,6 +5,10 @@ export { useUpdateTag } from "./api/use-update-tag/use-update-tag";
 
 // UI Components
 export {
+	TagBadge,
+	type TagBadgeProps,
+} from "./ui/tag-badge/tag-badge";
+export {
 	type TagSuggestionItem,
 	TagSuggestionsPopover,
 } from "./ui/tag-suggestions-popover/tag-suggestions-popover";
