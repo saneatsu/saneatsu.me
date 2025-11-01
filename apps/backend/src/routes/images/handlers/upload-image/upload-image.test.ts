@@ -37,7 +37,7 @@ describe("ユニットテスト", () => {
 				imageId: mockCustomId,
 			});
 			mockGetImageUrl.mockReturnValue(
-				`https://imagedelivery.net/test-hash/${mockCustomId}/medium`
+				`https://imagedelivery.net/test-hash/${mockCustomId}/original`
 			);
 
 			// Act
@@ -57,7 +57,7 @@ describe("ユニットテスト", () => {
 			const data = await res.json();
 			expect(data).toEqual({
 				imageId: mockCustomId,
-				imageUrl: `https://imagedelivery.net/test-hash/${mockCustomId}/medium`,
+				imageUrl: `https://imagedelivery.net/test-hash/${mockCustomId}/original`,
 				message: "画像が正常にアップロードされました",
 			});
 
@@ -72,10 +72,10 @@ describe("ユニットテスト", () => {
 				{ prefix: "content" }
 			);
 
-			// Image URL should be generated with medium variant
+			// Image URL should be generated with original variant
 			expect(mockGetImageUrl).toHaveBeenCalledWith(
 				mockCustomId,
-				"medium",
+				"original",
 				"test-hash"
 			);
 		});
@@ -208,7 +208,7 @@ describe("ユニットテスト", () => {
 				imageId: mockPngCustomId,
 			});
 			mockGetImageUrl.mockReturnValue(
-				`https://imagedelivery.net/test-hash/${mockPngCustomId}/medium`
+				`https://imagedelivery.net/test-hash/${mockPngCustomId}/original`
 			);
 
 			// Act
@@ -236,7 +236,7 @@ describe("ユニットテスト", () => {
 				imageId: mockGifCustomId,
 			});
 			mockGetImageUrl.mockReturnValue(
-				`https://imagedelivery.net/test-hash/${mockGifCustomId}/medium`
+				`https://imagedelivery.net/test-hash/${mockGifCustomId}/original`
 			);
 
 			// Act
@@ -264,7 +264,7 @@ describe("ユニットテスト", () => {
 				imageId: mockWebpCustomId,
 			});
 			mockGetImageUrl.mockReturnValue(
-				`https://imagedelivery.net/test-hash/${mockWebpCustomId}/medium`
+				`https://imagedelivery.net/test-hash/${mockWebpCustomId}/original`
 			);
 
 			// Act
