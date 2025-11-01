@@ -248,36 +248,48 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 			// タグIDを抽出
 			const tagIds = selectedTags.map((tag) => Number.parseInt(tag.value, 10));
 
-			const response = await updateMutation.mutateAsync({
-				id: article.id,
-				data: {
-					...data,
-					publishedAt: publishedAtISO,
-					// 常にtagIdsを送信（空配列でも送信）
-					tagIds,
-				},
-			});
+			await toast.promise(
+				updateMutation.mutateAsync({
+					id: article.id,
+					data: {
+						...data,
+						publishedAt: publishedAtISO,
+						// 常にtagIdsを送信（空配列でも送信）
+						tagIds,
+					},
+				}),
+				{
+					loading:
+						data.status === "draft"
+							? "下書きを更新しています..."
+							: "記事を更新して翻訳しています...",
+					success: (result) => {
+						// 警告メッセージがあれば表示
+						if (result.warnings && result.warnings.length > 0) {
+							setWarnings(result.warnings);
+							// 各警告をtoastでも表示
+							for (const warning of result.warnings) {
+								toast.warning(warning.message);
+							}
+						}
 
-			toast.success("記事を更新しました");
-
-			if (response.warnings && response.warnings.length > 0) {
-				// 警告メッセージがあれば表示
-				setWarnings(response.warnings);
-				// 各警告をtoastでも表示
-				for (const warning of response.warnings) {
-					toast.warning(warning.message);
+						if (data.status === "draft") {
+							return "下書きとして更新されました（翻訳はスキップされました）";
+						}
+						return "記事が更新されました";
+					},
+					error: "記事の更新に失敗しました",
 				}
-			}
+			);
 		} catch (error) {
-			// エラーメッセージを表示
+			// エラーメッセージを表示（Alert用）
 			const errorMessage =
 				error instanceof Error
 					? error.message
 					: "記事の更新中にエラーが発生しました";
 
-			// Alert と toast の両方で表示
+			// Alertで表示（Toastは toast.promise() で既に表示済み）
 			setFormError(errorMessage);
-			toast.error(errorMessage);
 		}
 	};
 
