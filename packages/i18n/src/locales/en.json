@@ -261,7 +261,7 @@
 		},
 		"thirdParty": {
 			"title": "Third-Party Services",
-			"content": "The Site may use third-party services for purposes such as access analytics. When using these services, the privacy policies of each service apply."
+			"content": "The Site uses Google Analytics for access analysis. Google Analytics uses cookies to collect visitor behavior data in a non-personally identifiable manner. For information about the data collected and how it is used, please refer to Google's Privacy Policy."
 		},
 		"contact": {
 			"title": "Contact Us",
