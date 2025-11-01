@@ -39,6 +39,14 @@ export const env = createEnv({
 		 * 画像配信URLの生成に使用される
 		 */
 		NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH: z.string().min(1),
+
+		/**
+		 * Google Analytics 4 測定ID
+		 * 形式: "G-XXXXXXXXXX"
+		 * Google Analytics管理画面から取得可能
+		 * 本番環境のみ設定し、開発環境では空文字列でもOK
+		 */
+		NEXT_PUBLIC_GA_ID: z.string().optional(),
 	},
 
 	/**
@@ -50,6 +58,7 @@ export const env = createEnv({
 		NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
 		NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH:
 			process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH,
+		NEXT_PUBLIC_GA_ID: process.env.NEXT_PUBLIC_GA_ID,
 	},
 
 	/**
