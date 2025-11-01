@@ -3,7 +3,8 @@
 import { useState } from "react";
 import YetAnotherLightbox from "yet-another-react-lightbox";
 
-import { cn } from "@/shared/lib/utils";
+import type { ImageVariant } from "@/shared/lib";
+import { cn, extractImageId, getImageUrl } from "@/shared/lib";
 
 interface ZoomableImageProps {
 	/** 画像のURL */
@@ -15,11 +16,57 @@ interface ZoomableImageProps {
 }
 
 /**
+ * URLからバリアント名を抽出する
+ *
+ * @param url - Cloudflare Images URL
+ * @returns バリアント名、抽出できない場合はnull
+ *
+ * @example
+ * extractVariant("https://imagedelivery.net/.../id/original") // => "original"
+ */
+function extractVariant(url: string): ImageVariant | null {
+	const match = url.match(/\/(small|medium|original|large|xlarge)$/);
+	return match ? (match[1] as ImageVariant) : null;
+}
+
+/**
+ * 次のバリアント（1段階上のサイズ）を取得する
+ *
+ * @param variant - 現在のバリアント
+ * @returns 次のバリアント
+ *
+ * @description
+ * スマートサイジングのロジック：
+ * - original (800px) → large (1200px)
+ * - medium (800px) → large (1200px)
+ * - large (1200px) → xlarge (1600px)
+ * - xlarge (1600px) → xlarge (1600px、最大サイズ)
+ * - null → large (1200px、デフォルト)
+ */
+function getNextVariant(variant: ImageVariant | null): ImageVariant {
+	if (variant === "original" || variant === "medium") {
+		return "large";
+	}
+	if (variant === "large") {
+		return "xlarge";
+	}
+	if (variant === "xlarge") {
+		return "xlarge";
+	}
+	// デフォルト: small または抽出失敗の場合
+	return "large";
+}
+
+/**
  * クリックで拡大表示できる画像コンポーネント
  *
  * @description
  * Lightboxコンポーネントを使用して、画像をクリックすると
  * 拡大表示する機能を提供する。
+ * Lightbox表示時は元の画像バリアントより1段階大きいサイズを表示：
+ * - original/medium (800px) → large (1200px)
+ * - large (1200px) → xlarge (1600px)
+ * - xlarge (1600px) → xlarge (1600px)
  *
  * @param props.src - 画像のURL
  * @param props.alt - 画像の代替テキスト
@@ -27,6 +74,20 @@ interface ZoomableImageProps {
  */
 export function ZoomableImage({ src, alt, className }: ZoomableImageProps) {
 	const [open, setOpen] = useState(false);
+
+	/**
+	 * Lightbox表示用のURLを生成
+	 *
+	 * 1. Cloudflare Images URLから画像IDを抽出
+	 * 2. URLから現在のバリアントを抽出
+	 * 3. 次のバリアント（1段階上）を決定
+	 * 4. 新しいバリアントでURLを再生成
+	 * 5. 抽出失敗時は元のURLをそのまま使用
+	 */
+	const imageId = extractImageId(src);
+	const currentVariant = extractVariant(src);
+	const lightboxVariant = getNextVariant(currentVariant);
+	const lightboxUrl = imageId ? getImageUrl(imageId, lightboxVariant) : src;
 
 	return (
 		<>
@@ -46,7 +107,7 @@ export function ZoomableImage({ src, alt, className }: ZoomableImageProps) {
 			<YetAnotherLightbox
 				open={open}
 				close={() => setOpen(false)}
-				slides={[{ src, alt }]}
+				slides={[{ src: lightboxUrl, alt }]}
 				controller={{ closeOnBackdropClick: true }}
 				styles={{
 					container: {

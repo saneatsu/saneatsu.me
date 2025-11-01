@@ -95,10 +95,10 @@ export const uploadImageHandler: Handler = async (c) => {
 			{ prefix: "content" }
 		);
 
-		// 6. 画像URL（mediumバリアント）を生成
+		// 6. 画像URL（originalバリアント）を生成
 		const imageUrl = getImageUrl(
 			imageId,
-			"medium",
+			"original",
 			c.env.CLOUDFLARE_ACCOUNT_HASH
 		);
 

@@ -1,3 +1,5 @@
+import type { ImageVariant } from "@saneatsu/schemas";
+
 import type { Env } from "@/env";
 import type { CustomImageId, Environment, ImageIdPrefix } from "@/lib";
 import { createCustomImageId, isCustomImageId } from "@/lib";
@@ -208,17 +210,17 @@ export async function deleteImage(
  * このURLは公開アクセス可能で、CDNでキャッシュされる。
  *
  * @param imageId - 画像ID
- * @param variant - Variant名（small, medium, large, xlarge）
+ * @param variant - Variant名（small, medium, original, large, xlarge）
  * @param accountHash - Cloudflare Account Hash
  * @returns 画像配信URL
  *
  * @example
- * const url = getImageUrl("2cdc28f0-017a-49c4-9ed7-87056c83901f", "medium", "abc123");
- * // url: "https://imagedelivery.net/abc123/2cdc28f0-017a-49c4-9ed7-87056c83901f/medium"
+ * const url = getImageUrl("2cdc28f0-017a-49c4-9ed7-87056c83901f", "original", "abc123");
+ * // url: "https://imagedelivery.net/abc123/2cdc28f0-017a-49c4-9ed7-87056c83901f/original"
  */
 export function getImageUrl(
 	imageId: string,
-	variant: "small" | "medium" | "large" | "xlarge",
+	variant: ImageVariant,
 	accountHash: string
 ): string {
 	return `https://imagedelivery.net/${accountHash}/${imageId}/${variant}`;
