@@ -25,6 +25,11 @@ pre-commit:
       run: cd apps/web && pnpm test run
       # test runでwatchモードを無効化
 
+    # apps/webのStorybook テストを実行
+    storybook-test:
+      run: cd apps/web && pnpm test-storybook
+      # Storybookサーバー（http://127.0.0.1:6016）が起動していることが前提
+
 # commit-msg フック設定
 commit-msg:
   commands:
