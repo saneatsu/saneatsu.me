@@ -1,5 +1,6 @@
 // Shared Lib Segment Public API
 
+export type { ImageVariant } from "@saneatsu/schemas";
 // API Client
 export {
 	ApiClientError,
@@ -15,7 +16,6 @@ export {
 	updateArticleStatus,
 	upsertUser,
 } from "./api-client";
-
 // Cloudflare Images
 export { getCloudflareImageUrl, getOgImageUrl } from "./cloudflare-images";
 // Extract Error Message
@@ -36,11 +36,7 @@ export {
 } from "./format-date/format-date";
 // Get Article Emoji
 export { getArticleEmoji } from "./get-article-emoji";
-export {
-	extractImageId,
-	getImageUrl,
-	type ImageVariant,
-} from "./get-image-url";
+export { extractImageId, getImageUrl } from "./get-image-url";
 // Hono Hook
 export { type HonoClient, useHonoClient } from "./hono/use-client";
 export { usePersistentQueryStates } from "./hooks";
