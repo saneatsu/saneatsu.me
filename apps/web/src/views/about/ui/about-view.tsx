@@ -21,6 +21,7 @@ import {
 	siHono,
 	siHtml5,
 	siJavascript,
+	siKonva,
 	siMantine,
 	siMui,
 	siNextdotjs,
@@ -135,6 +136,7 @@ export function AboutView() {
 			{ name: "Zod", icon: siZod },
 			{ name: "React Hook Form", icon: siReacthookform },
 			{ name: "React Flow", icon: siXyflow },
+			{ name: "Konva", icon: siKonva },
 		],
 		databases: [
 			{ name: "PostgreSQL", icon: siPostgresql },
