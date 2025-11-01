@@ -154,24 +154,28 @@ export function ArticleNewForm() {
 		try {
 			// 1. サムネイル画像がある場合、先にアップロード
 			if (thumbnailFile) {
-				try {
-					const uploadResult = await uploadImageMutation.mutateAsync({
+				await toast.promise(
+					uploadImageMutation.mutateAsync({
 						file: thumbnailFile,
-					});
-					uploadedImageId = uploadResult.imageId;
-					console.log("画像アップロード成功:", uploadedImageId);
-				} catch (uploadError) {
-					console.error("画像アップロードエラー:", uploadError);
-					const errorMessage =
-						uploadError &&
-						typeof uploadError === "object" &&
-						"error" in uploadError
-							? (uploadError.error as { message: string }).message
-							: "サムネイル画像のアップロードに失敗しました";
-					toast.error(errorMessage);
-					// 画像アップロード失敗時は処理を中止
-					return;
-				}
+					}),
+					{
+						loading: "画像をアップロードしています...",
+						success: (result) => {
+							console.log("画像アップロード成功:", result.imageId);
+							uploadedImageId = result.imageId;
+							// 成功メッセージは表示せず、次の処理に進む
+							return "";
+						},
+						error: (err) => {
+							console.error("画像アップロードエラー:", err);
+							const errorMessage =
+								err && typeof err === "object" && "error" in err
+									? (err.error as { message: string }).message
+									: "サムネイル画像のアップロードに失敗しました";
+							return errorMessage;
+						},
+					}
+				);
 			}
 
 			// 2. 公開日時の処理
@@ -185,18 +189,31 @@ export function ArticleNewForm() {
 			const tagIds = selectedTags.map((tag) => Number.parseInt(tag.value, 10));
 
 			// 4. 記事を作成（cfImageIdを含む）
-			const response = await createArticleMutation.mutateAsync({
-				title: data.title,
-				slug: data.slug,
-				content: data.content,
-				status: data.status,
-				publishedAt,
-				tagIds: tagIds.length > 0 ? tagIds : undefined,
-				cfImageId: uploadedImageId,
-			});
-
-			console.log("記事作成成功:", response);
-			toast.success(`記事「${response.data.title}」が作成されました！`);
+			await toast.promise(
+				createArticleMutation.mutateAsync({
+					title: data.title,
+					slug: data.slug,
+					content: data.content,
+					status: data.status,
+					publishedAt,
+					tagIds: tagIds.length > 0 ? tagIds : undefined,
+					cfImageId: uploadedImageId,
+				}),
+				{
+					loading:
+						data.status === "draft"
+							? "下書きを保存しています..."
+							: "記事を保存して翻訳しています...",
+					success: (result) => {
+						console.log("記事作成成功:", result);
+						if (result.data.status === "draft") {
+							return "下書きとして保存されました（翻訳はスキップされました）";
+						}
+						return `記事「${result.data.title}」が作成され、英語に翻訳されました`;
+					},
+					error: "記事の作成に失敗しました",
+				}
+			);
 
 			// 記事一覧ページにリダイレクト
 			router.push("/admin/articles");
@@ -215,13 +232,12 @@ export function ArticleNewForm() {
 				}
 			}
 
-			// エラーメッセージを表示
+			// エラーメッセージを表示（Alert用）
 			const errorMessage =
 				error instanceof Error ? error.message : "記事の作成に失敗しました";
 
-			// Alert と toast の両方で表示
+			// Alertで表示（Toastは toast.promise() で既に表示済み）
 			setValidationError(errorMessage);
-			toast.error(errorMessage);
 		}
 	};
 
