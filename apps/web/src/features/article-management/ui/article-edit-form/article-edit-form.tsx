@@ -10,7 +10,7 @@ import { z } from "zod";
 import { useCheckSlug, useUpdate } from "@/entities/article";
 import { useGetAllTags } from "@/entities/tag";
 import { ArticleMarkdownEditor } from "@/features/article-editor";
-import { getImageUrl, useDebounce } from "@/shared/lib";
+import { formatRelativeDate, getImageUrl, useDebounce } from "@/shared/lib";
 import type { Option } from "@/shared/ui";
 import {
 	Alert,
@@ -66,6 +66,7 @@ interface ArticleEditFormProps {
 		content: string | null;
 		status: "draft" | "published" | "archived";
 		publishedAt: string | null;
+		updatedAt: string | null;
 		cfImageId: string | null;
 		translations?: {
 			ja: {
@@ -136,6 +137,60 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 		}
 		return getImageUrl(article.cfImageId, "medium");
 	}, [article.cfImageId]);
+
+	/**
+	 * 更新日をフォーマット
+	 *
+	 * @description
+	 * 絶対日付と相対日付を組み合わせて表示する。
+	 * 例: "2024年1月15日 （3日前）"
+	 */
+	const formattedUpdatedAt = useMemo(() => {
+		if (!article.updatedAt) {
+			return "未設定";
+		}
+
+		try {
+			const updatedDate = new Date(article.updatedAt);
+
+			// 無効な日付の場合
+			if (Number.isNaN(updatedDate.getTime())) {
+				return "未設定";
+			}
+
+			// 絶対日付をフォーマット
+			const absoluteDate = updatedDate.toLocaleDateString("ja-JP", {
+				year: "numeric",
+				month: "long",
+				day: "numeric",
+			});
+
+			// 相対日付を取得
+			const relativeInfo = formatRelativeDate(article.updatedAt, "ja");
+
+			// 相対日付をテキストに変換
+			let relativeText = "";
+			if (relativeInfo?.isRelative) {
+				if (relativeInfo.minutes !== undefined) {
+					relativeText =
+						relativeInfo.minutes === 0
+							? "たった今"
+							: `${relativeInfo.minutes}分前`;
+				} else if (relativeInfo.hours !== undefined) {
+					relativeText = `${relativeInfo.hours}時間前`;
+				} else if (relativeInfo.days !== undefined) {
+					relativeText = `${relativeInfo.days}日前`;
+				}
+			}
+
+			// 絶対日付 (相対日付) の形式で返す
+			return relativeText
+				? `${absoluteDate} （${relativeText}）`
+				: absoluteDate;
+		} catch {
+			return "未設定";
+		}
+	}, [article.updatedAt]);
 
 	const {
 		register,
@@ -377,6 +432,12 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 					</p>
 				</div>
 			)}
+
+			{/* 更新日 */}
+			<div className="space-y-2 max-w-7xl">
+				<Label htmlFor="updatedAt">更新日</Label>
+				<Input id="updatedAt" value={formattedUpdatedAt} disabled />
+			</div>
 
 			{/* タグ選択 */}
 			<div className="space-y-2 max-w-7xl">

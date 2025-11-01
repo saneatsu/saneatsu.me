@@ -146,6 +146,7 @@ describe("ArticleEditForm", () => {
 					content: "Test content",
 					status: "published" as const,
 					publishedAt: "2024-01-15T10:30:00.000Z", // ISO 8601形式
+					updatedAt: "2024-01-15T10:30:00.000Z",
 					cfImageId: null,
 					tags: [],
 				};
@@ -174,6 +175,7 @@ describe("ArticleEditForm", () => {
 					content: "Draft content",
 					status: "published" as const,
 					publishedAt: null,
+					updatedAt: "2024-01-15T10:30:00.000Z",
 					cfImageId: null,
 					tags: [],
 				};
