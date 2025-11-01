@@ -52,22 +52,24 @@ export function ArticleImage({ src, alt, className = "" }: ArticleImageProps) {
 
 	return (
 		<>
-			<button
-				type="button"
-				onClick={() => setLightboxOpen(true)}
-				className={`cursor-pointer hover:opacity-90 transition-opacity border-0 bg-transparent p-0 ${className}`}
-				aria-label={alt ? `${alt}を拡大表示` : "画像を拡大表示"}
-			>
-				<Image
-					src={src}
-					alt={alt || ""}
-					width={800}
-					height={600}
-					className="w-full h-auto object-contain"
-					loading="lazy"
-					unoptimized={true}
-				/>
-			</button>
+			<div className="flex justify-center">
+				<button
+					type="button"
+					onClick={() => setLightboxOpen(true)}
+					className={`cursor-pointer hover:opacity-90 transition-opacity border-0 bg-transparent p-0 ${className}`}
+					aria-label={alt ? `${alt}を拡大表示` : "画像を拡大表示"}
+				>
+					<Image
+						src={src}
+						alt={alt || ""}
+						width={800}
+						height={600}
+						className="h-auto object-contain rounded-lg"
+						loading="lazy"
+						unoptimized={true}
+					/>
+				</button>
+			</div>
 
 			<YetAnotherLightbox
 				open={lightboxOpen}
