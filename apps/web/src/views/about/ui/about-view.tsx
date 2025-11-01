@@ -35,6 +35,7 @@ import {
 	siQiita,
 	siRadixui,
 	siReact,
+	siReacthookform,
 	siRemix,
 	siSass,
 	siShadcnui,
@@ -52,6 +53,7 @@ import {
 	siVuedotjs,
 	siX,
 	siZenn,
+	siZod,
 } from "simple-icons";
 
 import type { TimelineItem } from "@/shared/types";
@@ -129,6 +131,8 @@ export function AboutView() {
 			{ name: "Kysely" },
 			{ name: "Drizzle ORM", icon: siDrizzle },
 			{ name: "Prisma", icon: siPrisma },
+			{ name: "Zod", icon: siZod },
+			{ name: "React Hook Form", icon: siReacthookform },
 		],
 		databases: [
 			{ name: "PostgreSQL", icon: siPostgresql },
