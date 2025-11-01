@@ -1,6 +1,8 @@
 // Shared Lib Segment Public API
 
 export type { ImageVariant } from "@saneatsu/schemas";
+// Analytics
+export { GoogleAnalytics, PageViewTracker } from "./analytics";
 // API Client
 export {
 	ApiClientError,
