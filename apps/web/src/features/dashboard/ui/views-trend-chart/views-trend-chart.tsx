@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import {
 	Bar,
 	BarChart,
+	CartesianGrid,
 	ResponsiveContainer,
 	Tooltip,
 	XAxis,
@@ -198,6 +199,11 @@ export function ViewsTrendChart({
 								data={data.data}
 								margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
 							>
+								<CartesianGrid
+									strokeDasharray="3 3"
+									stroke={getChartColors().gridStroke}
+									vertical={false}
+								/>
 								<XAxis
 									dataKey="date"
 									tickFormatter={formatDate}
