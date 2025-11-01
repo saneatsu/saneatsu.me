@@ -32,6 +32,7 @@ import {
 	siPrisma,
 	siPython,
 	siPytorch,
+	siQiita,
 	siRadixui,
 	siReact,
 	siRemix,
@@ -169,6 +170,12 @@ export function AboutView() {
 			url: "https://zenn.dev/saneatsu",
 			username: "@saneatsu",
 		},
+		{
+			name: "Qiita",
+			icon: siQiita,
+			url: "https://qiita.com/saneatsu",
+			username: "@saneatsu",
+		},
 	];
 
 	// 経歴データの定義
@@ -274,9 +281,9 @@ export function AboutView() {
 						<h2 className="text-2xl font-bold">{t("contact.title")}</h2>
 						<div className="space-y-2">
 							{socialLinks.map((social) => {
-								// Zennはブランドカラーを保持、GitHub・Xはダークモード対応
+								// Zenn・Qiitaはブランドカラーを保持、GitHub・Xはダークモード対応
 								const iconFill =
-									social.name === "Zenn"
+									social.name === "Zenn" || social.name === "Qiita"
 										? `#${social.icon.hex}`
 										: "currentColor";
 
