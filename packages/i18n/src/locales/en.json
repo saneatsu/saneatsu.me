@@ -2,7 +2,8 @@
 	"navigation": {
 		"home": "Home",
 		"blog": "Blog",
-		"about": "About"
+		"about": "About",
+		"top": "Top"
 	},
 	"theme": {
 		"light": "Light",
