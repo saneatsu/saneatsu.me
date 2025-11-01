@@ -25,6 +25,9 @@
 			"title": "saneatsu.me",
 			"description": "技術とライフスタイルに関する記事を発信しています。プログラミング、開発ツール、日常の気づきなど、さまざまなトピックを扱います。"
 		},
+		"popularArticles": {
+			"title": "人気記事"
+		},
 		"articles": {
 			"title": "最新の記事"
 		}
