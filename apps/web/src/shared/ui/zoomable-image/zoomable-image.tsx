@@ -13,6 +13,10 @@ interface ZoomableImageProps {
 	alt: string;
 	/** 追加のCSSクラス */
 	className?: string;
+	/** 記事内の全画像URLリスト（省略可） */
+	images?: string[];
+	/** 現在の画像のインデックス（省略可） */
+	currentIndex?: number;
 }
 
 /**
@@ -68,11 +72,21 @@ function getNextVariant(variant: ImageVariant | null): ImageVariant {
  * - large (1200px) → xlarge (1600px)
  * - xlarge (1600px) → xlarge (1600px)
  *
+ * 複数画像が提供されている場合、矢印ボタンで前後の画像に移動可能。
+ *
  * @param props.src - 画像のURL
  * @param props.alt - 画像の代替テキスト
  * @param props.className - 追加のCSSクラス
+ * @param props.images - 記事内の全画像URLリスト（省略可）
+ * @param props.currentIndex - 現在の画像のインデックス（省略可）
  */
-export function ZoomableImage({ src, alt, className }: ZoomableImageProps) {
+export function ZoomableImage({
+	src,
+	alt,
+	className,
+	images,
+	currentIndex,
+}: ZoomableImageProps) {
 	const [open, setOpen] = useState(false);
 
 	/**
@@ -88,6 +102,21 @@ export function ZoomableImage({ src, alt, className }: ZoomableImageProps) {
 	const currentVariant = extractVariant(src);
 	const lightboxVariant = getNextVariant(currentVariant);
 	const lightboxUrl = imageId ? getImageUrl(imageId, lightboxVariant) : src;
+
+	/**
+	 * Lightbox用のスライドを生成
+	 *
+	 * 1. imagesが提供されている場合、全画像のスライドを作成
+	 * 2. 各画像のバリアントを1段階上げたURLを使用
+	 * 3. 提供されていない場合は従来通り単一画像のみ
+	 */
+	const slides = images?.map((url) => {
+		const id = extractImageId(url);
+		const variant = extractVariant(url);
+		const nextVariant = getNextVariant(variant);
+		const lbUrl = id ? getImageUrl(id, nextVariant) : url;
+		return { src: lbUrl };
+	}) || [{ src: lightboxUrl }];
 
 	return (
 		<>
@@ -107,7 +136,8 @@ export function ZoomableImage({ src, alt, className }: ZoomableImageProps) {
 			<YetAnotherLightbox
 				open={open}
 				close={() => setOpen(false)}
-				slides={[{ src: lightboxUrl, alt }]}
+				slides={slides}
+				index={currentIndex}
 				controller={{ closeOnBackdropClick: true }}
 				styles={{
 					container: {
