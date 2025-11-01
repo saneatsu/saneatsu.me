@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { expect, within } from "storybook/test";
 
-import type { Article } from "@/shared";
+import type { Article, Tag } from "@/shared";
 
 import { ArticleCard } from "./article-card";
 
@@ -23,6 +23,67 @@ const meta = {
 
 export default meta;
 type Story = StoryObj<typeof meta>;
+
+/**
+ * タグのテストデータ
+ */
+const testTags: Tag[] = [
+	{
+		id: 1,
+		slug: "typescript",
+		articleCount: 10,
+		createdAt: "2024-01-01T00:00:00.000Z",
+		updatedAt: "2024-01-01T00:00:00.000Z",
+		translations: {
+			ja: "TypeScript",
+			en: "TypeScript",
+		},
+	},
+	{
+		id: 2,
+		slug: "react",
+		articleCount: 15,
+		createdAt: "2024-01-01T00:00:00.000Z",
+		updatedAt: "2024-01-01T00:00:00.000Z",
+		translations: {
+			ja: "React",
+			en: "React",
+		},
+	},
+	{
+		id: 3,
+		slug: "nextjs",
+		articleCount: 20,
+		createdAt: "2024-01-01T00:00:00.000Z",
+		updatedAt: "2024-01-01T00:00:00.000Z",
+		translations: {
+			ja: "Next.js",
+			en: "Next.js",
+		},
+	},
+	{
+		id: 4,
+		slug: "testing",
+		articleCount: 8,
+		createdAt: "2024-01-01T00:00:00.000Z",
+		updatedAt: "2024-01-01T00:00:00.000Z",
+		translations: {
+			ja: "テスト",
+			en: "Testing",
+		},
+	},
+	{
+		id: 5,
+		slug: "performance",
+		articleCount: 5,
+		createdAt: "2024-01-01T00:00:00.000Z",
+		updatedAt: "2024-01-01T00:00:00.000Z",
+		translations: {
+			ja: "パフォーマンス",
+			en: "Performance",
+		},
+	},
+];
 
 /**
  * 記事カードのベースデータ
@@ -390,4 +451,105 @@ export const GridLayout: Story = {
 			/>
 		</div>
 	),
+};
+
+export const WithSingleTag: Story = {
+	name: "タグが1つの場合",
+	tags: ["validation"],
+	args: {
+		article: {
+			...baseArticle,
+			tags: [testTags[0]],
+		},
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+
+		// タイトルが表示されていることを確認
+		const title = canvas.getByText("テスト記事のタイトル");
+		expect(title).toBeInTheDocument();
+
+		// タグが表示されていることを確認
+		const tag = canvas.getByText("TypeScript");
+		expect(tag).toBeInTheDocument();
+
+		// 更新日が表示されていることを確認
+		const updatedLabel = canvas.getByText(/更新日:|Updated:/);
+		expect(updatedLabel).toBeInTheDocument();
+	},
+};
+
+export const WithThreeTags: Story = {
+	name: "タグが3つの場合（表示上限）",
+	tags: ["validation"],
+	args: {
+		article: {
+			...baseArticle,
+			tags: [testTags[0], testTags[1], testTags[2]],
+		},
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+
+		// 3つのタグすべてが表示されていることを確認
+		const typescriptTag = canvas.getByText("TypeScript");
+		expect(typescriptTag).toBeInTheDocument();
+
+		const reactTag = canvas.getByText("React");
+		expect(reactTag).toBeInTheDocument();
+
+		const nextjsTag = canvas.getByText("Next.js");
+		expect(nextjsTag).toBeInTheDocument();
+
+		// +N表示がないことを確認
+		const overflowIndicator = canvas.queryByText(/^\+\d+$/);
+		expect(overflowIndicator).not.toBeInTheDocument();
+	},
+};
+
+export const WithFiveTags: Story = {
+	name: "タグが5つの場合（+2表示）",
+	tags: ["validation"],
+	args: {
+		article: {
+			...baseArticle,
+			tags: testTags,
+		},
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+
+		// 最初の3つのタグが表示されていることを確認
+		const typescriptTag = canvas.getByText("TypeScript");
+		expect(typescriptTag).toBeInTheDocument();
+
+		const reactTag = canvas.getByText("React");
+		expect(reactTag).toBeInTheDocument();
+
+		const nextjsTag = canvas.getByText("Next.js");
+		expect(nextjsTag).toBeInTheDocument();
+
+		// 4つ目と5つ目のタグは表示されていないことを確認
+		const testingTag = canvas.queryByText("テスト");
+		expect(testingTag).not.toBeInTheDocument();
+
+		const performanceTag = canvas.queryByText("パフォーマンス");
+		expect(performanceTag).not.toBeInTheDocument();
+
+		// +2表示があることを確認
+		const overflowIndicator = canvas.getByText("+2");
+		expect(overflowIndicator).toBeInTheDocument();
+	},
+};
+
+export const WithTagsAndThumbnail: Story = {
+	name: "タグとサムネイルの組み合わせ",
+	tags: ["code-only"],
+	args: {
+		article: {
+			...baseArticle,
+			cfImageId: "test-image-id",
+			tags: [testTags[0], testTags[1]],
+		},
+	},
 };

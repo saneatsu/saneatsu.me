@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 
+import { TagBadge } from "@/entities/tag";
 import type { Article } from "@/shared";
 import {
 	formatRelativeDate,
@@ -65,20 +66,38 @@ export function ArticleCard({ article }: ArticleCardProps) {
 						{excerpt}...
 					</p>
 
-					{updatedDateInfo && (
-						<time className="text-xs text-muted-foreground">
-							{t("updatedAt")}:{" "}
-							{updatedDateInfo.isRelative
-								? updatedDateInfo.minutes !== undefined
-									? updatedDateInfo.minutes === 0
-										? t("justNow")
-										: t("minutesAgo", { minutes: updatedDateInfo.minutes })
-									: updatedDateInfo.hours !== undefined
-										? t("hoursAgo", { hours: updatedDateInfo.hours })
-										: t("daysAgo", { days: updatedDateInfo.days })
-								: updatedDateInfo.formatted}
-						</time>
-					)}
+					{/* タグと更新日を表示 */}
+					<div className="flex items-center gap-2 flex-wrap">
+						{/* タグ表示（最大3つまで） */}
+						{article.tags.length > 0 && (
+							<div className="flex gap-1 flex-wrap">
+								{article.tags.slice(0, 3).map((tag) => (
+									<TagBadge key={tag.id} tag={tag} />
+								))}
+								{article.tags.length > 3 && (
+									<span className="text-xs text-muted-foreground">
+										+{article.tags.length - 3}
+									</span>
+								)}
+							</div>
+						)}
+
+						{/* 更新日 */}
+						{updatedDateInfo && (
+							<time className="text-xs text-muted-foreground">
+								{t("updatedAt")}:{" "}
+								{updatedDateInfo.isRelative
+									? updatedDateInfo.minutes !== undefined
+										? updatedDateInfo.minutes === 0
+											? t("justNow")
+											: t("minutesAgo", { minutes: updatedDateInfo.minutes })
+										: updatedDateInfo.hours !== undefined
+											? t("hoursAgo", { hours: updatedDateInfo.hours })
+											: t("daysAgo", { days: updatedDateInfo.days })
+									: updatedDateInfo.formatted}
+							</time>
+						)}
+					</div>
 				</div>
 			</div>
 		</Link>
