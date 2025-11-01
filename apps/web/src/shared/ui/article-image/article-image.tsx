@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
 import YetAnotherLightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
@@ -24,19 +23,20 @@ export interface ArticleImageProps {
  *
  * @description
  * 記事本文内で使用する画像コンポーネント。
- * Cloudflare Imagesの画像をmedium variantで表示し、クリックでLightbox拡大表示。
+ * Cloudflare Imagesの画像を自然なサイズで表示し、クリックでLightbox拡大表示。
  *
  * 機能：
- * 1. medium variant（800x600）で画像表示
+ * 1. 画像を自然なサイズで表示（横幅いっぱいに引き伸ばさない）
  * 2. クリックでLightbox表示（xlarge variant: 1600px）
  * 3. Lazy loading
  * 4. ホバーエフェクト（opacity-90）
  * 5. カーソルをpointerに変更（クリック可能を示す）
+ * 6. 中央揃え
  *
  * @example
  * ```tsx
  * <ArticleImage
- *   src="https://imagedelivery.net/{hash}/{imageId}/medium"
+ *   src="https://imagedelivery.net/{hash}/{imageId}/original"
  *   alt="記事内の画像"
  * />
  * ```
@@ -59,14 +59,12 @@ export function ArticleImage({ src, alt, className = "" }: ArticleImageProps) {
 					className={`cursor-pointer hover:opacity-90 transition-opacity border-0 bg-transparent p-0 ${className}`}
 					aria-label={alt ? `${alt}を拡大表示` : "画像を拡大表示"}
 				>
-					<Image
+					{/* biome-ignore lint/performance/noImgElement: Cloudflare ImagesのURLは既に最適化されているため<img>を使用 */}
+					<img
 						src={src}
 						alt={alt || ""}
-						width={800}
-						height={600}
-						className="h-auto object-contain rounded-lg"
+						className="rounded-lg"
 						loading="lazy"
-						unoptimized={true}
 					/>
 				</button>
 			</div>
