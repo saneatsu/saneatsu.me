@@ -6,6 +6,7 @@ import { Children, isValidElement, useEffect } from "react";
 import type { Components } from "react-markdown";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
+import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import type { PluggableList } from "unified";
 
@@ -32,6 +33,7 @@ import { ZoomableImage } from "../zoomable-image/zoomable-image";
  */
 export const defaultRemarkPlugins = [
 	remarkGfm,
+	remarkBreaks,
 	remarkUrlCard,
 	remarkWikiLink,
 	remarkTag,
