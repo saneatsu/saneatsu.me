@@ -6,21 +6,26 @@ import { cn } from "@/shared/lib/utils";
 
 /**
  * ヘッダーレベルに応じたインデントクラスを返す
+ *
+ * @description
+ * 記事コンテンツではH2が最上位の見出しとなるため、
+ * H2をインデントなし（pl-0）として、H3以降を1段階ずつインデントする。
  */
 function getIndentClass(level: number): string {
 	switch (level) {
 		case 1:
+			// H1は使用を禁止しているので発生しえない
 			return "pl-0";
 		case 2:
-			return "pl-3";
+			return "pl-0";
 		case 3:
-			return "pl-6";
+			return "pl-3";
 		case 4:
-			return "pl-9";
+			return "pl-6";
 		case 5:
-			return "pl-12";
+			return "pl-9";
 		case 6:
-			return "pl-15";
+			return "pl-12";
 		default:
 			return "pl-0";
 	}
