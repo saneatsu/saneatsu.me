@@ -61,6 +61,18 @@ export function MobileMenu() {
 			>
 				<nav className="flex flex-col space-y-4">
 					<Link
+						href="/"
+						className={cn(
+							"text-base transition-colors hover:text-foreground/80",
+							isActivePath("/")
+								? "text-foreground font-semibold"
+								: "text-foreground/70"
+						)}
+						onClick={() => setIsOpen(false)}
+					>
+						{t("top")}
+					</Link>
+					<Link
 						href="/blog"
 						className={cn(
 							"text-base transition-colors hover:text-foreground/80",
