@@ -11,19 +11,37 @@ import { ImageResponse } from "next/og";
 import { OG_IMAGE_SIZE } from "./og-image-constants";
 
 /**
- * 共通のグラデーション背景スタイル
+ * 共通の背景スタイル（黒ベース+グリッドパターン）
  *
  * @description
- * OG画像の背景グラデーション色。
+ * OG画像の背景色とパターン。
+ * 黒を基調とした幾何学模様・グリッドデザイン。
  * server-side only で使用される。
+ *
+ * @remarks
+ * - ベース色: #0a0a0a（純黒ではなく微妙に明るい黒）
+ * - グリッドパターン: 40px四方の格子状パターン
+ * - 格子線の色: rgba(255, 255, 255, 0.08)（視認しやすい白）
+ * - 斜線の色: rgba(255, 255, 255, 0.04)（控えめな白）
  */
-const GRADIENT_BACKGROUND = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+const BACKGROUND_STYLES = {
+	background: "#0a0a0a",
+	backgroundImage: `
+		linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+		linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+		linear-gradient(45deg, rgba(255, 255, 255, 0.04) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.04) 75%, rgba(255, 255, 255, 0.04)),
+		linear-gradient(-45deg, rgba(255, 255, 255, 0.04) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.04) 75%, rgba(255, 255, 255, 0.04))
+	`,
+	backgroundSize: "40px 40px, 40px 40px, 80px 80px, 80px 80px",
+	backgroundPosition: "0 0, 0 0, 0 0, 40px 40px",
+};
 
 /**
  * OG画像の共通レイアウトコンポーネント
  *
  * @description
  * OG画像の共通レイアウト（背景、パディング、中央配置）を提供する。
+ * 黒ベース+幾何学模様・グリッドパターンの背景を適用。
  *
  * @param props.children - レイアウト内に表示するコンテンツ
  */
@@ -37,7 +55,7 @@ function OgImageLayout({ children }: { children: React.ReactNode }) {
 				flexDirection: "column",
 				alignItems: "center",
 				justifyContent: "center",
-				background: GRADIENT_BACKGROUND,
+				...BACKGROUND_STYLES,
 				padding: "80px",
 			}}
 		>
