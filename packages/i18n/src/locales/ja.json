@@ -30,7 +30,15 @@
 		}
 	},
 	"blog": {
-		"title": "Blog"
+		"title": "Blog",
+		"tagFilter": {
+			"title": "タグ",
+			"selected": "選択中",
+			"placeholder": "タグ",
+			"noResults": "結果が見つかりません",
+			"clear": "クリア",
+			"clearLabel": "タグフィルターをクリア"
+		}
 	},
 	"about": {
 		"title": "About",
