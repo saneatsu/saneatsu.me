@@ -45,7 +45,7 @@
   - Supabase
   - PostgreSQL
 - インフラ
-  - Vercel
+  - Cloudflare Workers（Next.jsアプリケーションのホスティング）
   - Cloudflare Images（画像配信・最適化）
     - すべてのバリアント（small/medium/large/xlarge）は `fit=scale-down` を使用
     - 小さい画像を引き伸ばさず、元のサイズで表示するため
