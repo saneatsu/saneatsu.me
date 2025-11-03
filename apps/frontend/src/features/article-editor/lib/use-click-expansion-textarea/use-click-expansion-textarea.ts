@@ -28,8 +28,15 @@ export function useClickExpansionTextarea({
 	textareaRef,
 }: UseClickExpansionTextareaProps) {
 	useEffect(() => {
+		// IME入力中かどうかのフラグ
+		let isComposing = false;
+
 		// 1. エディタコンテナのクリックイベントをリッスン
 		const handleEditorClick = (e: MouseEvent) => {
+			// IME入力中はクリックイベントを無視
+			if (isComposing) {
+				return;
+			}
 			const target = e.target as HTMLElement;
 			const editorContainer = editorRef.current;
 			const textarea = textareaRef.current;
@@ -80,12 +87,34 @@ export function useClickExpansionTextarea({
 			textarea.setSelectionRange(length, length);
 		};
 
-		// 9. クリックイベントリスナーを追加
+		// 9. IME入力イベントリスナーを追加
+		const handleCompositionStart = () => {
+			isComposing = true;
+		};
+
+		const handleCompositionEnd = () => {
+			isComposing = false;
+		};
+
+		const textarea = textareaRef.current;
+		if (textarea) {
+			textarea.addEventListener("compositionstart", handleCompositionStart);
+			textarea.addEventListener("compositionend", handleCompositionEnd);
+		}
+
+		// 10. クリックイベントリスナーを追加
 		document.addEventListener("click", handleEditorClick);
 
-		// 10. クリーンアップ関数を返す
+		// 11. クリーンアップ関数を返す
 		return () => {
 			document.removeEventListener("click", handleEditorClick);
+			if (textarea) {
+				textarea.removeEventListener(
+					"compositionstart",
+					handleCompositionStart
+				);
+				textarea.removeEventListener("compositionend", handleCompositionEnd);
+			}
 		};
 	}, [editorRef, textareaRef]);
 }

@@ -235,5 +235,78 @@ describe("useClickExpansionTextarea", () => {
 			// textareaがフォーカスされていないことを確認
 			expect(focusSpy).not.toHaveBeenCalled();
 		});
+
+		it("should not move cursor when clicking during IME composition", () => {
+			// フックをレンダリング
+			renderHook(() => useClickExpansionTextarea({ editorRef, textareaRef }));
+
+			// カーソルを途中に設定
+			textarea.setSelectionRange(5, 5);
+
+			// IME入力開始
+			const compositionStartEvent = new CompositionEvent("compositionstart", {
+				bubbles: true,
+				cancelable: true,
+			});
+			textarea.dispatchEvent(compositionStartEvent);
+
+			// setSelectionRangeをスパイ
+			const setSelectionRangeSpy = vi.spyOn(textarea, "setSelectionRange");
+
+			// エディタコンテナの境界を取得
+			const rect = editorContainer.getBoundingClientRect();
+
+			// IME入力中にクリックイベントが発火
+			const clickEvent = new MouseEvent("click", {
+				bubbles: true,
+				cancelable: true,
+				clientX: rect.left + rect.width / 2,
+				clientY: rect.top + rect.height / 2,
+			});
+			editorContainer.dispatchEvent(clickEvent);
+
+			// setSelectionRangeが呼ばれていないことを確認（IME入力中は無視される）
+			expect(setSelectionRangeSpy).not.toHaveBeenCalled();
+		});
+
+		it("should resume normal behavior after IME composition ends", () => {
+			// フックをレンダリング
+			renderHook(() => useClickExpansionTextarea({ editorRef, textareaRef }));
+
+			// カーソルを途中に設定
+			textarea.setSelectionRange(5, 5);
+
+			// IME入力開始
+			const compositionStartEvent = new CompositionEvent("compositionstart", {
+				bubbles: true,
+				cancelable: true,
+			});
+			textarea.dispatchEvent(compositionStartEvent);
+
+			// IME入力終了
+			const compositionEndEvent = new CompositionEvent("compositionend", {
+				bubbles: true,
+				cancelable: true,
+			});
+			textarea.dispatchEvent(compositionEndEvent);
+
+			// setSelectionRangeをスパイ
+			const setSelectionRangeSpy = vi.spyOn(textarea, "setSelectionRange");
+
+			// エディタコンテナの境界を取得
+			const rect = editorContainer.getBoundingClientRect();
+
+			// IME入力終了後にクリック
+			const clickEvent = new MouseEvent("click", {
+				bubbles: true,
+				cancelable: true,
+				clientX: rect.left + rect.width / 2,
+				clientY: rect.top + rect.height / 2,
+			});
+			editorContainer.dispatchEvent(clickEvent);
+
+			// カーソルが最後に移動していることを確認（IME入力終了後は正常動作）
+			expect(setSelectionRangeSpy).toHaveBeenCalledWith(11, 11);
+		});
 	});
 });
