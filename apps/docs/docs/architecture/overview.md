@@ -50,7 +50,7 @@ graph TB
     
     subgraph "External Services"
         D1[Supabase] --> D2[Cloudflare Images]
-        D2 --> D3[Vercel Edge]
+        D2 --> D3[Cloudflare Workers]
     end
     
     A1 <--> B1
@@ -351,7 +351,7 @@ CREATE TABLE articles (
 - **Response Caching**: CDN レベルでのキャッシュ
 
 #### **インフラ最適化**
-- **Edge Computing**: Vercel Edge Functions
+- **Edge Computing**: Cloudflare Workers
 - **CDN**: グローバル配信ネットワーク
 - **Asset Optimization**: 自動的な画像・CSS最適化
 

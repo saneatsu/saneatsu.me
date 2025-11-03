@@ -78,7 +78,7 @@ graph TB
 |------|------|----------|
 | **Supabase** | BaaS | PostgreSQL、認証、リアルタイム機能 |
 | **PostgreSQL** | データベース | 高機能、JSON対応、拡張性 |
-| **Vercel** | ホスティング | Next.js最適化、エッジ配信 |
+| **Cloudflare Workers** | ホスティング | エッジ配信、高速実行、OpenNext統合 |
 
 ### **Development Tools**
 
@@ -125,7 +125,7 @@ graph TB
 ### **バックエンド**
 - **API レスポンス**: Hono による高速レスポンス（~3倍 vs Express）
 - **データベース**: Connection pooling、効率的なクエリ
-- **キャッシュ**: Vercel Edge Functions でのエッジキャッシュ
+- **キャッシュ**: Cloudflare Workers でのエッジキャッシュ
 
 ### **開発効率**
 - **型安全性**: コンパイル時エラー検出による品質向上

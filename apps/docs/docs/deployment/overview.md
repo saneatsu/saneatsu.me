@@ -8,7 +8,7 @@ saneatsu.meプロジェクトのデプロイメントとインフラストラク
 
 ## インフラアーキテクチャ
 
-### Cloudflare Workers（推奨）
+### Cloudflare Workers
 
 ```mermaid
 graph TB
@@ -35,34 +35,9 @@ graph TB
     DNS --> Frontend
 ```
 
-### Vercel（従来）
-
-```mermaid
-graph TB
-    User[ユーザー]
-    
-    subgraph "Vercel"
-        Frontend[Next.js Frontend]
-        API[Hono API]
-    end
-    
-    subgraph "Turso"
-        DB[(SQLite Database)]
-    end
-    
-    subgraph "Cloudflare"
-        Images[Images CDN]
-    end
-    
-    User --> Frontend
-    Frontend --> API
-    API --> DB
-    Frontend --> Images
-```
-
 ## 使用サービス
 
-### Cloudflare Workers（推奨）
+### Cloudflare Workers
 
 - **用途**: フロントエンドとAPIのホスティング
 - **機能**:
@@ -70,16 +45,7 @@ graph TB
   - 自動スケーリング
   - ゼロコールドスタート
   - グローバルなエッジネットワーク
-  - 自動デプロイ（GitHub Actions）
-
-### Vercel（従来）
-
-- **用途**: フロントエンドとAPIのホスティング
-- **機能**:
-  - 自動デプロイ（GitHubとの連携）
-  - エッジファンクション
-  - プレビューデプロイ
-  - アナリティクス
+  - 自動デプロイ（GitHub Actions + wrangler）
 
 ### Turso
 
@@ -114,12 +80,12 @@ pnpm start
 
 ### 2. プレビューデプロイ
 
-プルリクエストを作成すると自動的にプレビュー環境がデプロイされます：
+プルリクエストを作成すると、GitHub Actionsで自動的にプレビュー環境がデプロイされます：
 
 1. PRを作成
-2. Vercelが自動的にビルド
-3. プレビューURLがPRにコメントされる
-4. レビュアーが動作確認
+2. GitHub Actionsがビルドを実行
+3. Cloudflare Workersにデプロイ
+4. プレビューURLで動作確認
 
 ### 3. 本番デプロイ
 
@@ -160,26 +126,40 @@ TURSO_AUTH_TOKEN=...
 CORS_ORIGIN=http://localhost:3210
 ```
 
-## Vercelの設定
+## Cloudflare Workersの設定
 
-### vercel.json
+### wrangler.toml
 
-```json
-{
-  "framework": "nextjs",
-  "buildCommand": "pnpm build",
-  "devCommand": "pnpm dev",
-  "installCommand": "pnpm install",
-  "outputDirectory": ".next"
-}
+プロジェクトのデプロイ設定は `apps/web/wrangler.toml` で管理されています：
+
+```toml
+name = "saneatsu-me-web"
+main = ".open-next/worker.js"
+compatibility_date = "2024-01-01"
+
+# 環境別の設定
+[env.dev]
+# 開発環境の設定
+
+[env.preview]
+# プレビュー環境の設定
+
+[env.production]
+# 本番環境の設定
 ```
 
-### プロジェクト設定
+### デプロイコマンド
 
-- **Framework Preset**: Next.js
-- **Node.js Version**: 20.x
-- **Package Manager**: pnpm
-- **Root Directory**: `./` (モノレポのルート)
+```bash
+# 開発環境
+pnpm build:cloudflare && wrangler deploy --env dev
+
+# プレビュー環境
+pnpm build:cloudflare && wrangler deploy --env preview
+
+# 本番環境
+pnpm build:cloudflare && wrangler deploy --env production
+```
 
 ## データベースマイグレーション
 
@@ -207,12 +187,6 @@ pnpm db:migrate:deploy
 
 ## モニタリングとログ
 
-### Vercel Analytics
-
-- ページビュー
-- Web Vitals
-- エラー監視
-
 ### ログ管理
 
 ```typescript
@@ -233,10 +207,10 @@ logger.error('Payment failed', {
 
 ## セキュリティ設定
 
-### 環境変数の暗号化
+### 環境変数の管理
 
-- Vercelで自動的に暗号化
-- ビルド時のみ復号化
+- GitHub Secretsで安全に管理
+- Cloudflare Worker Secretsで実行時に利用
 - クライアントサイドには`NEXT_PUBLIC_`プレフィックスのみ公開
 
 ### CORS設定
@@ -332,7 +306,8 @@ export async function GET() {
    ```
 
 2. **環境変数の不足**
-   - Vercelダッシュボードで環境変数を確認
+   - GitHub Secretsで環境変数を確認
+   - Cloudflare Worker Secretsで実行時環境変数を確認
    - 必要な変数がすべて設定されているか確認
 
 3. **型エラー**
@@ -343,9 +318,9 @@ export async function GET() {
 
 ### パフォーマンス問題
 
-1. **Vercel Functionsのタイムアウト**
+1. **Cloudflare Workersの実行時間制限**
    - 処理を最適化
-   - エッジファンクションの使用を検討
+   - 重い処理は非同期化を検討
 
 2. **データベース接続エラー**
    - Tursoの接続制限を確認
@@ -353,10 +328,10 @@ export async function GET() {
 
 ## コスト最適化
 
-### Vercel
+### Cloudflare Workers
 
-- **Hobby Plan**: 個人プロジェクト向け（無料）
-- **Pro Plan**: 商用利用（$20/月〜）
+- **Free Plan**: 月100,000リクエストまで無料
+- **Paid Plan**: 従量課金制（$5/月〜）
 
 ### Turso
 

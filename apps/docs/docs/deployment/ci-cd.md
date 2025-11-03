@@ -4,7 +4,7 @@ sidebar_position: 2
 
 # CI/CD パイプライン
 
-GitHub ActionsとVercelを使用した継続的インテグレーション・デプロイメントの設定です。
+GitHub ActionsとCloudflare Workersを使用した継続的インテグレーション・デプロイメントの設定です。
 
 ## GitHub Actions ワークフロー
 
@@ -196,27 +196,47 @@ jobs:
         run: pnpm db:migrate:deploy
 ```
 
-## Vercel設定
+## Cloudflare Workers デプロイ設定
 
-### 自動デプロイ設定
+### wranglerによる自動デプロイ
 
-1. **GitHubとの連携**
-   - VercelダッシュボードでGitHubリポジトリを接続
-   - 自動デプロイを有効化
+Cloudflare Workersへのデプロイは、GitHub Actionsとwranglerを使用して自動化されています。
 
-2. **ブランチ設定**
-   - Production Branch: `main`
-   - Preview Branches: すべてのブランチ
+### デプロイワークフローの例
 
-3. **ビルド設定**
-   ```json
-   {
-     "buildCommand": "pnpm build",
-     "outputDirectory": "apps/web/.next",
-     "installCommand": "pnpm install",
-     "framework": "nextjs"
-   }
-   ```
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy to Cloudflare Workers
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build for Cloudflare
+        run: pnpm build:cloudflare
+
+      - name: Deploy to Cloudflare Workers
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: pnpm wrangler deploy --env production
+```
 
 ## 環境別の設定
 
@@ -235,13 +255,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: amondnet/vercel-action@v25
+
+      - uses: pnpm/action-setup@v2
         with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          scope: ${{ secrets.VERCEL_ORG_ID }}
-          alias-domains: dev.saneatsu.me
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build for Cloudflare
+        run: pnpm build:cloudflare
+
+      - name: Deploy to Development
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: pnpm wrangler deploy --env dev
 ```
 
 ### ステージング環境
@@ -259,13 +291,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: amondnet/vercel-action@v25
+
+      - uses: pnpm/action-setup@v2
         with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          scope: ${{ secrets.VERCEL_ORG_ID }}
-          alias-domains: staging.saneatsu.me
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build for Cloudflare
+        run: pnpm build:cloudflare
+
+      - name: Deploy to Staging
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: pnpm wrangler deploy --env preview
 ```
 
 ## リリース自動化
@@ -388,7 +432,8 @@ GitHub Actionsの設定で失敗時のメール通知を有効化
 
 2. **環境変数の不足**
    - GitHub Secretsを確認
-   - Vercel環境変数を確認
+   - Cloudflare Worker Secretsを確認
+   - wrangler.tomlの環境変数設定を確認
 
 3. **タイムアウト**
    ```yaml
