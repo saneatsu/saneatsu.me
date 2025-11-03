@@ -32,7 +32,7 @@ function renderWithIntl(ui: React.ReactElement) {
 			<NextIntlClientProvider locale="ja" messages={jaMessages as any}>
 				{ui}
 			</NextIntlClientProvider>
-		</QueryClientProvider>,
+		</QueryClientProvider>
 	);
 }
 
@@ -49,7 +49,7 @@ describe("Unit Test", () => {
 					value="# Test"
 					onChange={mockOnChange}
 					setValue={mockSetValue}
-				/>,
+				/>
 			);
 
 			// Assert
@@ -71,7 +71,7 @@ describe("Unit Test", () => {
 					value=""
 					onChange={mockOnChange}
 					setValue={mockSetValue}
-				/>,
+				/>
 			);
 
 			const textarea = screen.getByRole("textbox", {
@@ -96,7 +96,7 @@ describe("Unit Test", () => {
 					value=""
 					onChange={mockOnChange}
 					setValue={mockSetValue}
-				/>,
+				/>
 			);
 
 			// Assert
@@ -105,7 +105,7 @@ describe("Unit Test", () => {
 			});
 			expect(textarea).toHaveAttribute(
 				"placeholder",
-				"Markdownを入力してください...",
+				"Markdownを入力してください..."
 			);
 		});
 
@@ -122,13 +122,13 @@ describe("Unit Test", () => {
 					onChange={mockOnChange}
 					setValue={mockSetValue}
 					height={customHeight}
-				/>,
+				/>
 			);
 
 			// Assert
 			// エディタとプレビューのコンテナが指定した高さを持つことを確認
 			const editorContainer = container.querySelector(
-				'div[style*="height"]',
+				'div[style*="height"]'
 			) as HTMLElement;
 			expect(editorContainer).toHaveStyle({ height: `${customHeight}px` });
 		});
@@ -146,7 +146,7 @@ describe("Unit Test", () => {
 					onChange={mockOnChange}
 					setValue={mockSetValue}
 					className={customClass}
-				/>,
+				/>
 			);
 
 			// Assert
@@ -166,7 +166,7 @@ describe("Unit Test", () => {
 					value={markdownContent}
 					onChange={mockOnChange}
 					setValue={mockSetValue}
-				/>,
+				/>
 			);
 
 			// Assert
@@ -191,7 +191,7 @@ describe("Unit Test", () => {
 					value=""
 					onChange={mockOnChange}
 					setValue={mockSetValue}
-				/>,
+				/>
 			);
 
 			const textarea = screen.getByRole("textbox", {
@@ -217,7 +217,7 @@ describe("Unit Test", () => {
 					value="["
 					onChange={mockOnChange}
 					setValue={mockSetValue}
-				/>,
+				/>
 			);
 
 			const textarea = screen.getByRole("textbox", {
@@ -246,7 +246,7 @@ describe("Unit Test", () => {
 					value=""
 					onChange={mockOnChange}
 					setValue={mockSetValue}
-				/>,
+				/>
 			);
 
 			const textarea = screen.getByRole("textbox", {
@@ -272,7 +272,7 @@ describe("Unit Test", () => {
 					value=""
 					onChange={mockOnChange}
 					setValue={mockSetValue}
-				/>,
+				/>
 			);
 
 			const textarea = screen.getByRole("textbox", {
@@ -298,7 +298,7 @@ describe("Unit Test", () => {
 					value="hello"
 					onChange={mockOnChange}
 					setValue={mockSetValue}
-				/>,
+				/>
 			);
 
 			const textarea = screen.getByRole("textbox", {
@@ -327,7 +327,7 @@ describe("Unit Test", () => {
 					value="[]"
 					onChange={mockOnChange}
 					setValue={mockSetValue}
-				/>,
+				/>
 			);
 
 			const textarea = screen.getByRole("textbox", {
@@ -358,7 +358,7 @@ describe("Unit Test", () => {
 					value=""
 					onChange={mockOnChange}
 					setValue={mockSetValue}
-				/>,
+				/>
 			);
 
 			const textarea = screen.getByRole("textbox", {
@@ -384,7 +384,7 @@ describe("Unit Test", () => {
 					value=""
 					onChange={mockOnChange}
 					setValue={mockSetValue}
-				/>,
+				/>
 			);
 
 			const textarea = screen.getByRole("textbox", {
@@ -410,7 +410,7 @@ describe("Unit Test", () => {
 					value=""
 					onChange={mockOnChange}
 					setValue={mockSetValue}
-				/>,
+				/>
 			);
 
 			const textarea = screen.getByRole("textbox", {
@@ -439,7 +439,7 @@ describe("Unit Test", () => {
 						value="[]"
 						onChange={mockOnChange}
 						setValue={mockSetValue}
-					/>,
+					/>
 				);
 
 				const textarea = screen.getByRole("textbox", {
@@ -468,7 +468,7 @@ describe("Unit Test", () => {
 						value="()"
 						onChange={mockOnChange}
 						setValue={mockSetValue}
-					/>,
+					/>
 				);
 
 				const textarea = screen.getByRole("textbox", {
@@ -496,7 +496,7 @@ describe("Unit Test", () => {
 						value="{}"
 						onChange={mockOnChange}
 						setValue={mockSetValue}
-					/>,
+					/>
 				);
 
 				const textarea = screen.getByRole("textbox", {
@@ -524,7 +524,7 @@ describe("Unit Test", () => {
 						value="``"
 						onChange={mockOnChange}
 						setValue={mockSetValue}
-					/>,
+					/>
 				);
 
 				const textarea = screen.getByRole("textbox", {
@@ -552,7 +552,7 @@ describe("Unit Test", () => {
 						value='""'
 						onChange={mockOnChange}
 						setValue={mockSetValue}
-					/>,
+					/>
 				);
 
 				const textarea = screen.getByRole("textbox", {
@@ -580,7 +580,7 @@ describe("Unit Test", () => {
 						value="''"
 						onChange={mockOnChange}
 						setValue={mockSetValue}
-					/>,
+					/>
 				);
 
 				const textarea = screen.getByRole("textbox", {
@@ -608,7 +608,7 @@ describe("Unit Test", () => {
 						value="[[]]"
 						onChange={mockOnChange}
 						setValue={mockSetValue}
-					/>,
+					/>
 				);
 
 				const textarea = screen.getByRole("textbox", {
@@ -637,7 +637,7 @@ describe("Unit Test", () => {
 						value="hello"
 						onChange={mockOnChange}
 						setValue={mockSetValue}
-					/>,
+					/>
 				);
 
 				const textarea = screen.getByRole("textbox", {
@@ -666,7 +666,7 @@ describe("Unit Test", () => {
 						value="hello world"
 						onChange={mockOnChange}
 						setValue={mockSetValue}
-					/>,
+					/>
 				);
 
 				const textarea = screen.getByRole("textbox", {
@@ -697,7 +697,7 @@ describe("Unit Test", () => {
 						value="[]"
 						onChange={mockOnChange}
 						setValue={mockSetValue}
-					/>,
+					/>
 				);
 
 				const textarea = screen.getByRole("textbox", {
@@ -726,7 +726,7 @@ describe("Unit Test", () => {
 						value="()"
 						onChange={mockOnChange}
 						setValue={mockSetValue}
-					/>,
+					/>
 				);
 
 				const textarea = screen.getByRole("textbox", {
@@ -754,7 +754,7 @@ describe("Unit Test", () => {
 						value="hello"
 						onChange={mockOnChange}
 						setValue={mockSetValue}
-					/>,
+					/>
 				);
 
 				const textarea = screen.getByRole("textbox", {
@@ -786,7 +786,7 @@ describe("Unit Test", () => {
 							value="Hello World"
 							onChange={mockOnChange}
 							setValue={mockSetValue}
-						/>,
+						/>
 					);
 
 					const textarea = screen.getByRole("textbox", {
@@ -822,7 +822,7 @@ describe("Unit Test", () => {
 							value="Hello World"
 							onChange={mockOnChange}
 							setValue={mockSetValue}
-						/>,
+						/>
 					);
 
 					const textarea = screen.getByRole("textbox", {
@@ -858,7 +858,7 @@ describe("Unit Test", () => {
 							value="Hello World"
 							onChange={mockOnChange}
 							setValue={mockSetValue}
-						/>,
+						/>
 					);
 
 					const textarea = screen.getByRole("textbox", {
@@ -889,7 +889,7 @@ describe("Unit Test", () => {
 							value="Hello World"
 							onChange={mockOnChange}
 							setValue={mockSetValue}
-						/>,
+						/>
 					);
 
 					const textarea = screen.getByRole("textbox", {
@@ -922,7 +922,7 @@ describe("Unit Test", () => {
 							value="Hello World"
 							onChange={mockOnChange}
 							setValue={mockSetValue}
-						/>,
+						/>
 					);
 
 					const textarea = screen.getByRole("textbox", {
@@ -953,7 +953,7 @@ describe("Unit Test", () => {
 							value="Hello World"
 							onChange={mockOnChange}
 							setValue={mockSetValue}
-						/>,
+						/>
 					);
 
 					const textarea = screen.getByRole("textbox", {
@@ -988,7 +988,7 @@ describe("Unit Test", () => {
 							value="- Hello"
 							onChange={mockOnChange}
 							setValue={mockSetValue}
-						/>,
+						/>
 					);
 
 					const textarea = screen.getByRole("textbox", {
@@ -1019,7 +1019,7 @@ describe("Unit Test", () => {
 							value="- "
 							onChange={mockOnChange}
 							setValue={mockSetValue}
-						/>,
+						/>
 					);
 
 					const textarea = screen.getByRole("textbox", {
@@ -1050,7 +1050,7 @@ describe("Unit Test", () => {
 							value="* Item"
 							onChange={mockOnChange}
 							setValue={mockSetValue}
-						/>,
+						/>
 					);
 
 					const textarea = screen.getByRole("textbox", {
@@ -1078,7 +1078,7 @@ describe("Unit Test", () => {
 							value="+ Item"
 							onChange={mockOnChange}
 							setValue={mockSetValue}
-						/>,
+						/>
 					);
 
 					const textarea = screen.getByRole("textbox", {
@@ -1106,7 +1106,7 @@ describe("Unit Test", () => {
 							value="  - Indented"
 							onChange={mockOnChange}
 							setValue={mockSetValue}
-						/>,
+						/>
 					);
 
 					const textarea = screen.getByRole("textbox", {
@@ -1136,7 +1136,7 @@ describe("Unit Test", () => {
 							value="1. First"
 							onChange={mockOnChange}
 							setValue={mockSetValue}
-						/>,
+						/>
 					);
 
 					const textarea = screen.getByRole("textbox", {
@@ -1164,7 +1164,7 @@ describe("Unit Test", () => {
 							value="1. "
 							onChange={mockOnChange}
 							setValue={mockSetValue}
-						/>,
+						/>
 					);
 
 					const textarea = screen.getByRole("textbox", {
@@ -1192,7 +1192,7 @@ describe("Unit Test", () => {
 							value="  2. Second"
 							onChange={mockOnChange}
 							setValue={mockSetValue}
-						/>,
+						/>
 					);
 
 					const textarea = screen.getByRole("textbox", {
@@ -1222,7 +1222,7 @@ describe("Unit Test", () => {
 							value="- [ ] Task"
 							onChange={mockOnChange}
 							setValue={mockSetValue}
-						/>,
+						/>
 					);
 
 					const textarea = screen.getByRole("textbox", {
@@ -1250,7 +1250,7 @@ describe("Unit Test", () => {
 							value="- [x] Done"
 							onChange={mockOnChange}
 							setValue={mockSetValue}
-						/>,
+						/>
 					);
 
 					const textarea = screen.getByRole("textbox", {
@@ -1278,7 +1278,7 @@ describe("Unit Test", () => {
 							value="- [ ] "
 							onChange={mockOnChange}
 							setValue={mockSetValue}
-						/>,
+						/>
 					);
 
 					const textarea = screen.getByRole("textbox", {
@@ -1306,7 +1306,7 @@ describe("Unit Test", () => {
 							value="* [ ] Task"
 							onChange={mockOnChange}
 							setValue={mockSetValue}
-						/>,
+						/>
 					);
 
 					const textarea = screen.getByRole("textbox", {
@@ -1334,7 +1334,7 @@ describe("Unit Test", () => {
 							value="+ [x] Completed"
 							onChange={mockOnChange}
 							setValue={mockSetValue}
-						/>,
+						/>
 					);
 
 					const textarea = screen.getByRole("textbox", {
@@ -1364,7 +1364,7 @@ describe("Unit Test", () => {
 							value="- Hello World"
 							onChange={mockOnChange}
 							setValue={mockSetValue}
-						/>,
+						/>
 					);
 
 					const textarea = screen.getByRole("textbox", {
@@ -1394,7 +1394,7 @@ describe("Unit Test", () => {
 							value="- Hello"
 							onChange={mockOnChange}
 							setValue={mockSetValue}
-						/>,
+						/>
 					);
 
 					const textarea = screen.getByRole("textbox", {
@@ -1422,7 +1422,7 @@ describe("Unit Test", () => {
 							value="Regular text"
 							onChange={mockOnChange}
 							setValue={mockSetValue}
-						/>,
+						/>
 					);
 
 					const textarea = screen.getByRole("textbox", {
@@ -1454,7 +1454,7 @@ describe("Unit Test", () => {
 							value="Hello World"
 							onChange={mockOnChange}
 							setValue={mockSetValue}
-						/>,
+						/>
 					);
 
 					const textarea = screen.getByRole("textbox", {
@@ -1473,7 +1473,7 @@ describe("Unit Test", () => {
 					expect(mockOnChange).toHaveBeenCalledWith("Hello **World**");
 					expect(mockSetValue).toHaveBeenCalledWith(
 						"content",
-						"Hello **World**",
+						"Hello **World**"
 					);
 				});
 
@@ -1488,7 +1488,7 @@ describe("Unit Test", () => {
 							value="Hello **World**"
 							onChange={mockOnChange}
 							setValue={mockSetValue}
-						/>,
+						/>
 					);
 
 					const textarea = screen.getByRole("textbox", {
@@ -1519,7 +1519,7 @@ describe("Unit Test", () => {
 							value="Hello World"
 							onChange={mockOnChange}
 							setValue={mockSetValue}
-						/>,
+						/>
 					);
 
 					const textarea = screen.getByRole("textbox", {
@@ -1551,7 +1551,7 @@ describe("Unit Test", () => {
 							value="Hello World"
 							onChange={mockOnChange}
 							setValue={mockSetValue}
-						/>,
+						/>
 					);
 
 					const textarea = screen.getByRole("textbox", {
@@ -1582,7 +1582,7 @@ describe("Unit Test", () => {
 							value="Hello *World*"
 							onChange={mockOnChange}
 							setValue={mockSetValue}
-						/>,
+						/>
 					);
 
 					const textarea = screen.getByRole("textbox", {
@@ -1613,7 +1613,7 @@ describe("Unit Test", () => {
 							value="Hello World"
 							onChange={mockOnChange}
 							setValue={mockSetValue}
-						/>,
+						/>
 					);
 
 					const textarea = screen.getByRole("textbox", {
@@ -1682,7 +1682,7 @@ describe("Unit Test", () => {
 					onChange={mockOnChange}
 					setValue={mockSetValue}
 					onTagDetection={mockOnTagDetection}
-				/>,
+				/>
 			);
 
 			const textarea = screen.getByRole("textbox", {
@@ -1711,7 +1711,7 @@ describe("Unit Test", () => {
 					onChange={mockOnChange}
 					setValue={mockSetValue}
 					onTagDetection={mockOnTagDetection}
-				/>,
+				/>
 			);
 
 			const textarea = screen.getByRole("textbox", {
@@ -1740,7 +1740,7 @@ describe("Unit Test", () => {
 					onChange={mockOnChange}
 					setValue={mockSetValue}
 					onTagDetection={mockOnTagDetection}
-				/>,
+				/>
 			);
 
 			const textarea = screen.getByRole("textbox", {
@@ -1804,7 +1804,7 @@ describe("Unit Test", () => {
 					onChange={mockOnChange}
 					setValue={mockSetValue}
 					onTagDetection={mockOnTagDetection}
-				/>,
+				/>
 			);
 
 			const textarea = screen.getByRole("textbox", {
