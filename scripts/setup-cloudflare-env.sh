@@ -88,7 +88,7 @@ read -p "API URL を入力してください [${DEFAULT_API_URL}]: " NEXT_PUBLIC
 NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-$DEFAULT_API_URL}
 
 if [ -n "$NEXT_PUBLIC_API_URL" ]; then
-    echo "$NEXT_PUBLIC_API_URL" | wrangler secret put NEXT_PUBLIC_API_URL --env "$ENVIRONMENT" --name saneatsu-web
+    echo "$NEXT_PUBLIC_API_URL" | wrangler secret put NEXT_PUBLIC_API_URL --env "$ENVIRONMENT" --name saneatsu-frontend
     echo -e "${GREEN}✅ NEXT_PUBLIC_API_URL を設定しました${NC}"
 fi
 
@@ -106,8 +106,8 @@ wrangler secret list --env "$ENVIRONMENT" 2>/dev/null || echo "環境変数が�
 cd ../..
 
 echo ""
-echo -e "${YELLOW}フロントエンド (saneatsu-web):${NC}"
-cd apps/web
+echo -e "${YELLOW}フロントエンド (saneatsu-frontend):${NC}"
+cd apps/frontend
 wrangler secret list --env "$ENVIRONMENT" 2>/dev/null || echo "環境変数が設定されていません"
 cd ../..
 

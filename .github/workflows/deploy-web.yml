@@ -6,7 +6,7 @@ on:
     branches:
       - main
     paths:
-      - "apps/web/**"
+      - "apps/frontend/**"
       - "packages/**"
       - ".github/workflows/deploy-web.yml"
       - ".github/workflows/_deploy-web.yml"
@@ -14,7 +14,7 @@ on:
   pull_request:
     types: [opened, reopened, synchronize, ready_for_review]
     paths:
-      - "apps/web/**"
+      - "apps/frontend/**"
       - "packages/**"
       - ".github/workflows/deploy-web.yml"
       - ".github/workflows/_deploy-web.yml"

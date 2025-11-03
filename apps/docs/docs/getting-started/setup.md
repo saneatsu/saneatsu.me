@@ -73,10 +73,10 @@ JWT_SECRET=your-secret-key-here
 
 ### 2. フロントエンド環境変数
 
-`apps/web/.env.local`ファイルを作成：
+`apps/frontend/.env.local`ファイルを作成：
 
 ```bash
-cp apps/web/.env.example apps/web/.env.local
+cp apps/frontend/.env.example apps/frontend/.env.local
 ```
 
 必要な環境変数を設定：
@@ -130,7 +130,7 @@ pnpm dev
 
 ```bash
 # フロントエンドのみ
-pnpm --filter @saneatsu/web dev
+pnpm --filter @saneatsu/frontend dev
 
 # バックエンドのみ
 pnpm --filter @saneatsu/backend dev
