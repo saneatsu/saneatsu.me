@@ -1,9 +1,22 @@
+import jaMessages from "@saneatsu/i18n/src/locales/ja.json";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { NextIntlClientProvider } from "next-intl";
 import React from "react";
 import { describe, expect, it, vi } from "vitest";
 
 import { CustomMarkdownEditor } from "./custom-markdown-editor";
+
+/**
+ * next-intlプロバイダーでラップしたカスタムrender関数
+ */
+function renderWithIntl(ui: React.ReactElement) {
+	return render(
+		<NextIntlClientProvider locale="ja" messages={jaMessages as any}>
+			{ui}
+		</NextIntlClientProvider>
+	);
+}
 
 describe("Unit Test", () => {
 	describe("CustomMarkdownEditor", () => {
@@ -13,7 +26,7 @@ describe("Unit Test", () => {
 			const mockSetValue = vi.fn();
 
 			// Act
-			render(
+			renderWithIntl(
 				<CustomMarkdownEditor
 					value="# Test"
 					onChange={mockOnChange}
@@ -35,7 +48,7 @@ describe("Unit Test", () => {
 			const mockOnChange = vi.fn();
 			const mockSetValue = vi.fn();
 
-			render(
+			renderWithIntl(
 				<CustomMarkdownEditor
 					value=""
 					onChange={mockOnChange}
@@ -60,7 +73,7 @@ describe("Unit Test", () => {
 			const mockSetValue = vi.fn();
 
 			// Act
-			render(
+			renderWithIntl(
 				<CustomMarkdownEditor
 					value=""
 					onChange={mockOnChange}
@@ -85,7 +98,7 @@ describe("Unit Test", () => {
 			const customHeight = 800;
 
 			// Act
-			const { container } = render(
+			const { container } = renderWithIntl(
 				<CustomMarkdownEditor
 					value=""
 					onChange={mockOnChange}
@@ -109,7 +122,7 @@ describe("Unit Test", () => {
 			const customClass = "custom-test-class";
 
 			// Act
-			const { container } = render(
+			const { container } = renderWithIntl(
 				<CustomMarkdownEditor
 					value=""
 					onChange={mockOnChange}
@@ -130,7 +143,7 @@ describe("Unit Test", () => {
 			const markdownContent = "# Heading\n\nParagraph";
 
 			// Act
-			render(
+			renderWithIntl(
 				<CustomMarkdownEditor
 					value={markdownContent}
 					onChange={mockOnChange}
@@ -155,7 +168,7 @@ describe("Unit Test", () => {
 			const mockOnChange = vi.fn();
 			const mockSetValue = vi.fn();
 
-			render(
+			renderWithIntl(
 				<CustomMarkdownEditor
 					value=""
 					onChange={mockOnChange}
@@ -181,7 +194,7 @@ describe("Unit Test", () => {
 			const mockOnChange = vi.fn();
 			const mockSetValue = vi.fn();
 
-			render(
+			renderWithIntl(
 				<CustomMarkdownEditor
 					value="["
 					onChange={mockOnChange}
@@ -210,7 +223,7 @@ describe("Unit Test", () => {
 			const mockOnChange = vi.fn();
 			const mockSetValue = vi.fn();
 
-			render(
+			renderWithIntl(
 				<CustomMarkdownEditor
 					value=""
 					onChange={mockOnChange}
@@ -236,7 +249,7 @@ describe("Unit Test", () => {
 			const mockOnChange = vi.fn();
 			const mockSetValue = vi.fn();
 
-			render(
+			renderWithIntl(
 				<CustomMarkdownEditor
 					value=""
 					onChange={mockOnChange}
@@ -262,7 +275,7 @@ describe("Unit Test", () => {
 			const mockOnChange = vi.fn();
 			const mockSetValue = vi.fn();
 
-			render(
+			renderWithIntl(
 				<CustomMarkdownEditor
 					value="hello"
 					onChange={mockOnChange}
@@ -291,7 +304,7 @@ describe("Unit Test", () => {
 			const mockOnChange = vi.fn();
 			const mockSetValue = vi.fn();
 
-			render(
+			renderWithIntl(
 				<CustomMarkdownEditor
 					value="[]"
 					onChange={mockOnChange}
@@ -322,7 +335,7 @@ describe("Unit Test", () => {
 			const mockOnChange = vi.fn();
 			const mockSetValue = vi.fn();
 
-			render(
+			renderWithIntl(
 				<CustomMarkdownEditor
 					value=""
 					onChange={mockOnChange}
@@ -348,7 +361,7 @@ describe("Unit Test", () => {
 			const mockOnChange = vi.fn();
 			const mockSetValue = vi.fn();
 
-			render(
+			renderWithIntl(
 				<CustomMarkdownEditor
 					value=""
 					onChange={mockOnChange}
@@ -374,7 +387,7 @@ describe("Unit Test", () => {
 			const mockOnChange = vi.fn();
 			const mockSetValue = vi.fn();
 
-			render(
+			renderWithIntl(
 				<CustomMarkdownEditor
 					value=""
 					onChange={mockOnChange}
@@ -403,7 +416,7 @@ describe("Unit Test", () => {
 				const mockOnChange = vi.fn();
 				const mockSetValue = vi.fn();
 
-				render(
+				renderWithIntl(
 					<CustomMarkdownEditor
 						value="[]"
 						onChange={mockOnChange}
@@ -432,7 +445,7 @@ describe("Unit Test", () => {
 				const mockOnChange = vi.fn();
 				const mockSetValue = vi.fn();
 
-				render(
+				renderWithIntl(
 					<CustomMarkdownEditor
 						value="()"
 						onChange={mockOnChange}
@@ -460,7 +473,7 @@ describe("Unit Test", () => {
 				const mockOnChange = vi.fn();
 				const mockSetValue = vi.fn();
 
-				render(
+				renderWithIntl(
 					<CustomMarkdownEditor
 						value="{}"
 						onChange={mockOnChange}
@@ -488,7 +501,7 @@ describe("Unit Test", () => {
 				const mockOnChange = vi.fn();
 				const mockSetValue = vi.fn();
 
-				render(
+				renderWithIntl(
 					<CustomMarkdownEditor
 						value="``"
 						onChange={mockOnChange}
@@ -516,7 +529,7 @@ describe("Unit Test", () => {
 				const mockOnChange = vi.fn();
 				const mockSetValue = vi.fn();
 
-				render(
+				renderWithIntl(
 					<CustomMarkdownEditor
 						value='""'
 						onChange={mockOnChange}
@@ -544,7 +557,7 @@ describe("Unit Test", () => {
 				const mockOnChange = vi.fn();
 				const mockSetValue = vi.fn();
 
-				render(
+				renderWithIntl(
 					<CustomMarkdownEditor
 						value="''"
 						onChange={mockOnChange}
@@ -572,7 +585,7 @@ describe("Unit Test", () => {
 				const mockOnChange = vi.fn();
 				const mockSetValue = vi.fn();
 
-				render(
+				renderWithIntl(
 					<CustomMarkdownEditor
 						value="[[]]"
 						onChange={mockOnChange}
@@ -601,7 +614,7 @@ describe("Unit Test", () => {
 				const mockOnChange = vi.fn();
 				const mockSetValue = vi.fn();
 
-				render(
+				renderWithIntl(
 					<CustomMarkdownEditor
 						value="hello"
 						onChange={mockOnChange}
@@ -630,7 +643,7 @@ describe("Unit Test", () => {
 				const mockOnChange = vi.fn();
 				const mockSetValue = vi.fn();
 
-				render(
+				renderWithIntl(
 					<CustomMarkdownEditor
 						value="hello world"
 						onChange={mockOnChange}
@@ -661,7 +674,7 @@ describe("Unit Test", () => {
 				const mockOnChange = vi.fn();
 				const mockSetValue = vi.fn();
 
-				render(
+				renderWithIntl(
 					<CustomMarkdownEditor
 						value="[]"
 						onChange={mockOnChange}
@@ -690,7 +703,7 @@ describe("Unit Test", () => {
 				const mockOnChange = vi.fn();
 				const mockSetValue = vi.fn();
 
-				render(
+				renderWithIntl(
 					<CustomMarkdownEditor
 						value="()"
 						onChange={mockOnChange}
@@ -718,7 +731,7 @@ describe("Unit Test", () => {
 				const mockOnChange = vi.fn();
 				const mockSetValue = vi.fn();
 
-				render(
+				renderWithIntl(
 					<CustomMarkdownEditor
 						value="hello"
 						onChange={mockOnChange}
@@ -750,7 +763,7 @@ describe("Unit Test", () => {
 					const mockOnChange = vi.fn();
 					const mockSetValue = vi.fn();
 
-					render(
+					renderWithIntl(
 						<CustomMarkdownEditor
 							value="Hello World"
 							onChange={mockOnChange}
@@ -786,7 +799,7 @@ describe("Unit Test", () => {
 					const mockOnChange = vi.fn();
 					const mockSetValue = vi.fn();
 
-					render(
+					renderWithIntl(
 						<CustomMarkdownEditor
 							value="Hello World"
 							onChange={mockOnChange}
@@ -822,7 +835,7 @@ describe("Unit Test", () => {
 					const mockOnChange = vi.fn();
 					const mockSetValue = vi.fn();
 
-					render(
+					renderWithIntl(
 						<CustomMarkdownEditor
 							value="Hello World"
 							onChange={mockOnChange}
@@ -853,7 +866,7 @@ describe("Unit Test", () => {
 					const mockOnChange = vi.fn();
 					const mockSetValue = vi.fn();
 
-					render(
+					renderWithIntl(
 						<CustomMarkdownEditor
 							value="Hello World"
 							onChange={mockOnChange}
@@ -886,7 +899,7 @@ describe("Unit Test", () => {
 					const mockOnChange = vi.fn();
 					const mockSetValue = vi.fn();
 
-					render(
+					renderWithIntl(
 						<CustomMarkdownEditor
 							value="Hello World"
 							onChange={mockOnChange}
@@ -917,7 +930,7 @@ describe("Unit Test", () => {
 					const mockOnChange = vi.fn();
 					const mockSetValue = vi.fn();
 
-					render(
+					renderWithIntl(
 						<CustomMarkdownEditor
 							value="Hello World"
 							onChange={mockOnChange}
@@ -952,7 +965,7 @@ describe("Unit Test", () => {
 					const mockOnChange = vi.fn();
 					const mockSetValue = vi.fn();
 
-					render(
+					renderWithIntl(
 						<CustomMarkdownEditor
 							value="- Hello"
 							onChange={mockOnChange}
@@ -983,7 +996,7 @@ describe("Unit Test", () => {
 					const mockOnChange = vi.fn();
 					const mockSetValue = vi.fn();
 
-					render(
+					renderWithIntl(
 						<CustomMarkdownEditor
 							value="- "
 							onChange={mockOnChange}
@@ -1014,7 +1027,7 @@ describe("Unit Test", () => {
 					const mockOnChange = vi.fn();
 					const mockSetValue = vi.fn();
 
-					render(
+					renderWithIntl(
 						<CustomMarkdownEditor
 							value="* Item"
 							onChange={mockOnChange}
@@ -1042,7 +1055,7 @@ describe("Unit Test", () => {
 					const mockOnChange = vi.fn();
 					const mockSetValue = vi.fn();
 
-					render(
+					renderWithIntl(
 						<CustomMarkdownEditor
 							value="+ Item"
 							onChange={mockOnChange}
@@ -1070,7 +1083,7 @@ describe("Unit Test", () => {
 					const mockOnChange = vi.fn();
 					const mockSetValue = vi.fn();
 
-					render(
+					renderWithIntl(
 						<CustomMarkdownEditor
 							value="  - Indented"
 							onChange={mockOnChange}
@@ -1100,7 +1113,7 @@ describe("Unit Test", () => {
 					const mockOnChange = vi.fn();
 					const mockSetValue = vi.fn();
 
-					render(
+					renderWithIntl(
 						<CustomMarkdownEditor
 							value="1. First"
 							onChange={mockOnChange}
@@ -1128,7 +1141,7 @@ describe("Unit Test", () => {
 					const mockOnChange = vi.fn();
 					const mockSetValue = vi.fn();
 
-					render(
+					renderWithIntl(
 						<CustomMarkdownEditor
 							value="1. "
 							onChange={mockOnChange}
@@ -1156,7 +1169,7 @@ describe("Unit Test", () => {
 					const mockOnChange = vi.fn();
 					const mockSetValue = vi.fn();
 
-					render(
+					renderWithIntl(
 						<CustomMarkdownEditor
 							value="  2. Second"
 							onChange={mockOnChange}
@@ -1186,7 +1199,7 @@ describe("Unit Test", () => {
 					const mockOnChange = vi.fn();
 					const mockSetValue = vi.fn();
 
-					render(
+					renderWithIntl(
 						<CustomMarkdownEditor
 							value="- [ ] Task"
 							onChange={mockOnChange}
@@ -1214,7 +1227,7 @@ describe("Unit Test", () => {
 					const mockOnChange = vi.fn();
 					const mockSetValue = vi.fn();
 
-					render(
+					renderWithIntl(
 						<CustomMarkdownEditor
 							value="- [x] Done"
 							onChange={mockOnChange}
@@ -1242,7 +1255,7 @@ describe("Unit Test", () => {
 					const mockOnChange = vi.fn();
 					const mockSetValue = vi.fn();
 
-					render(
+					renderWithIntl(
 						<CustomMarkdownEditor
 							value="- [ ] "
 							onChange={mockOnChange}
@@ -1270,7 +1283,7 @@ describe("Unit Test", () => {
 					const mockOnChange = vi.fn();
 					const mockSetValue = vi.fn();
 
-					render(
+					renderWithIntl(
 						<CustomMarkdownEditor
 							value="* [ ] Task"
 							onChange={mockOnChange}
@@ -1298,7 +1311,7 @@ describe("Unit Test", () => {
 					const mockOnChange = vi.fn();
 					const mockSetValue = vi.fn();
 
-					render(
+					renderWithIntl(
 						<CustomMarkdownEditor
 							value="+ [x] Completed"
 							onChange={mockOnChange}
@@ -1328,7 +1341,7 @@ describe("Unit Test", () => {
 					const mockOnChange = vi.fn();
 					const mockSetValue = vi.fn();
 
-					render(
+					renderWithIntl(
 						<CustomMarkdownEditor
 							value="- Hello World"
 							onChange={mockOnChange}
@@ -1358,7 +1371,7 @@ describe("Unit Test", () => {
 					const mockOnChange = vi.fn();
 					const mockSetValue = vi.fn();
 
-					render(
+					renderWithIntl(
 						<CustomMarkdownEditor
 							value="- Hello"
 							onChange={mockOnChange}
@@ -1386,7 +1399,7 @@ describe("Unit Test", () => {
 					const mockOnChange = vi.fn();
 					const mockSetValue = vi.fn();
 
-					render(
+					renderWithIntl(
 						<CustomMarkdownEditor
 							value="Regular text"
 							onChange={mockOnChange}
@@ -1418,7 +1431,7 @@ describe("Unit Test", () => {
 					const mockOnChange = vi.fn();
 					const mockSetValue = vi.fn();
 
-					render(
+					renderWithIntl(
 						<CustomMarkdownEditor
 							value="Hello World"
 							onChange={mockOnChange}
@@ -1452,7 +1465,7 @@ describe("Unit Test", () => {
 					const mockOnChange = vi.fn();
 					const mockSetValue = vi.fn();
 
-					render(
+					renderWithIntl(
 						<CustomMarkdownEditor
 							value="Hello **World**"
 							onChange={mockOnChange}
@@ -1483,7 +1496,7 @@ describe("Unit Test", () => {
 					const mockOnChange = vi.fn();
 					const mockSetValue = vi.fn();
 
-					render(
+					renderWithIntl(
 						<CustomMarkdownEditor
 							value="Hello World"
 							onChange={mockOnChange}
@@ -1515,7 +1528,7 @@ describe("Unit Test", () => {
 					const mockOnChange = vi.fn();
 					const mockSetValue = vi.fn();
 
-					render(
+					renderWithIntl(
 						<CustomMarkdownEditor
 							value="Hello World"
 							onChange={mockOnChange}
@@ -1546,7 +1559,7 @@ describe("Unit Test", () => {
 					const mockOnChange = vi.fn();
 					const mockSetValue = vi.fn();
 
-					render(
+					renderWithIntl(
 						<CustomMarkdownEditor
 							value="Hello *World*"
 							onChange={mockOnChange}
@@ -1577,7 +1590,7 @@ describe("Unit Test", () => {
 					const mockOnChange = vi.fn();
 					const mockSetValue = vi.fn();
 
-					render(
+					renderWithIntl(
 						<CustomMarkdownEditor
 							value="Hello World"
 							onChange={mockOnChange}
@@ -1623,7 +1636,7 @@ describe("Unit Test", () => {
 				);
 			}
 
-			render(<TestComponent />);
+			renderWithIntl(<TestComponent />);
 
 			const textarea = screen.getByRole("textbox", {
 				name: /markdown editor/i,
@@ -1645,7 +1658,7 @@ describe("Unit Test", () => {
 			const mockSetValue = vi.fn();
 			const mockOnTagDetection = vi.fn();
 
-			render(
+			renderWithIntl(
 				<CustomMarkdownEditor
 					value=""
 					onChange={mockOnChange}
@@ -1674,7 +1687,7 @@ describe("Unit Test", () => {
 			const mockSetValue = vi.fn();
 			const mockOnTagDetection = vi.fn();
 
-			render(
+			renderWithIntl(
 				<CustomMarkdownEditor
 					value=""
 					onChange={mockOnChange}
@@ -1703,7 +1716,7 @@ describe("Unit Test", () => {
 			const mockSetValue = vi.fn();
 			const mockOnTagDetection = vi.fn();
 
-			render(
+			renderWithIntl(
 				<CustomMarkdownEditor
 					value=""
 					onChange={mockOnChange}
@@ -1744,7 +1757,7 @@ describe("Unit Test", () => {
 				);
 			}
 
-			render(<TestComponent />);
+			renderWithIntl(<TestComponent />);
 
 			const textarea = screen.getByRole("textbox", {
 				name: /markdown editor/i,
@@ -1767,7 +1780,7 @@ describe("Unit Test", () => {
 			const mockSetValue = vi.fn();
 			const mockOnTagDetection = vi.fn();
 
-			render(
+			renderWithIntl(
 				<CustomMarkdownEditor
 					value=""
 					onChange={mockOnChange}
