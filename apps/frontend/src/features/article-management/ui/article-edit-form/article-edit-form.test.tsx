@@ -54,7 +54,7 @@ vi.mock("@/entities/tag", () => ({
 }));
 
 vi.mock("@/features/article-editor", () => ({
-	ArticleMarkdownEditor: ({
+	CustomMarkdownEditor: ({
 		value,
 		onChange,
 	}: {
