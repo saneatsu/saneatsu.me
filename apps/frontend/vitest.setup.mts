@@ -28,10 +28,6 @@ vi.mock("next/server", () => ({
 	},
 }));
 
-// CSSファイルのモック
-vi.mock("@uiw/react-md-editor/markdown-editor.css", () => ({}));
-vi.mock("@uiw/react-markdown-preview/markdown.css", () => ({}));
-
 // グローバルモック設定
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
 	observe: vi.fn(),

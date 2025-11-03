@@ -9,7 +9,7 @@ import { z } from "zod";
 
 import { useCheckSlug, useUpdate } from "@/entities/article";
 import { useGetAllTags } from "@/entities/tag";
-import { ArticleMarkdownEditor } from "@/features/article-editor";
+import { CustomMarkdownEditor } from "@/features/article-editor";
 import { formatRelativeDate, getImageUrl, useDebounce } from "@/shared/lib";
 import type { Option } from "@/shared/ui";
 import {
@@ -484,7 +484,7 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 						errors.content ? "border border-destructive rounded-md" : ""
 					}
 				>
-					<ArticleMarkdownEditor
+					<CustomMarkdownEditor
 						value={markdownValue}
 						onChange={handleEditorChange}
 						setValue={setValue as (name: string, value: string) => void}

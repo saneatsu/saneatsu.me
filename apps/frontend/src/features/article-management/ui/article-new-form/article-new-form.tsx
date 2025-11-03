@@ -15,7 +15,7 @@ import {
 	useUploadImage,
 } from "@/entities/article";
 import { useGetAllTags } from "@/entities/tag";
-import { ArticleMarkdownEditor } from "@/features/article-editor";
+import { CustomMarkdownEditor } from "@/features/article-editor";
 import { useDebounce } from "@/shared/lib";
 import {
 	Alert,
@@ -400,7 +400,7 @@ export function ArticleNewForm() {
 							errors.content ? "border border-destructive rounded-md" : ""
 						}
 					>
-						<ArticleMarkdownEditor
+						<CustomMarkdownEditor
 							value={markdownValue}
 							onChange={handleEditorChange}
 							setValue={setValue as (name: string, value: string) => void}

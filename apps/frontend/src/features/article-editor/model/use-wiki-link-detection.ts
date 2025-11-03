@@ -1,11 +1,11 @@
-import { useEffect } from "react";
+import { type RefObject, useEffect } from "react";
 
 /**
  * Wiki Link検知フックの設定
  */
 interface WikiLinkDetectionConfig {
-	/** サジェストを表示するかどうか */
-	showSuggestions: boolean;
+	/** textareaのref */
+	textareaRef: RefObject<HTMLTextAreaElement>;
 	/** サジェスト表示状態を設定する関数 */
 	setShowSuggestions: (show: boolean) => void;
 	/** サジェストクエリを設定する関数 */
@@ -22,12 +22,12 @@ interface WikiLinkDetectionConfig {
  * Wiki Link検知フック
  *
  * @description
- * MDEditor内のテキストエリアでWiki Link記法（[[]]）を検知し、
+ * textarea内でWiki Link記法（[[]]）を検知し、
  * 適切な位置にサジェストポップアップを表示するためのフック。
  * 記事サジェストと見出しサジェストの両方に対応。
  */
 export function useWikiLinkDetection({
-	showSuggestions,
+	textareaRef,
 	setShowSuggestions,
 	setSuggestionQuery,
 	setCursorPosition,
@@ -39,8 +39,8 @@ export function useWikiLinkDetection({
 		let isComposing = false;
 
 		const checkWikiLink = (_source: string) => {
-			const textarea = document.querySelector(".w-md-editor-text-input");
-			if (!textarea || !(textarea instanceof HTMLTextAreaElement)) {
+			const textarea = textareaRef.current;
+			if (!textarea) {
 				return;
 			}
 
@@ -57,9 +57,7 @@ export function useWikiLinkDetection({
 
 			if (lastBracketIndex === -1) {
 				// [[が見つからない場合は非表示
-				if (showSuggestions) {
-					setShowSuggestions(false);
-				}
+				setShowSuggestions(false);
 				return;
 			}
 
@@ -68,25 +66,20 @@ export function useWikiLinkDetection({
 
 			// ]]が含まれている場合は閉じられている
 			if (afterBracket.includes("]]")) {
-				if (showSuggestions) {
-					setShowSuggestions(false);
-				}
+				setShowSuggestions(false);
 				return;
 			}
 
 			// カーソル後の最初の]]を探す
 			const closingBracketIndex = afterCursor.indexOf("]]");
 
-			// カーソルが]]より前に文字がある場合のみ非表示
-			// （例: `[[test]]more` でカーソルが "e]" の間にある場合）
-			if (closingBracketIndex > 0) {
-				if (showSuggestions) {
-					setShowSuggestions(false);
-				}
+			// カーソルの直後に]]がない場合はサジェスト非表示
+			if (closingBracketIndex !== 0) {
+				setShowSuggestions(false);
 				return;
 			}
 
-			// ]]が見つからない場合（[[入力中）またはカーソルが空のWiki Link内にある場合はサジェスト表示
+			// カーソルの直後に]]がある場合はサジェスト表示
 
 			// #が含まれているかチェック（見出しサジェスト）
 			const hashIndex = afterBracket.indexOf("#");
@@ -97,9 +90,7 @@ export function useWikiLinkDetection({
 
 				// 記事スラッグが空の場合はサジェストを表示しない
 				if (!articleSlug) {
-					if (showSuggestions) {
-						setShowSuggestions(false);
-					}
+					setShowSuggestions(false);
 					return;
 				}
 
@@ -186,53 +177,25 @@ export function useWikiLinkDetection({
 			document.removeEventListener("selectionchange", handleSelectionChange);
 		};
 
-		// 初期のtextareaを探す
-		const textarea = document.querySelector(".w-md-editor-text-input");
+		// textareaRefからtextareaを取得してリスナーを設定
+		const textarea = textareaRef.current;
 
-		if (textarea instanceof HTMLTextAreaElement) {
+		if (textarea) {
 			attachListeners(textarea);
 		}
 
-		// MutationObserverでtextareaの出現を監視
-		const observer = new MutationObserver(() => {
-			const newTextarea = document.querySelector(".w-md-editor-text-input");
-			if (
-				newTextarea instanceof HTMLTextAreaElement &&
-				!newTextarea.dataset.wikiLinkListener
-			) {
-				// 既存のリスナーをクリーンアップ
-				const existingTextareas = document.querySelectorAll(
-					".w-md-editor-text-input[data-wiki-link-listener]"
-				);
-				existingTextareas.forEach((ta) => {
-					if (ta instanceof HTMLTextAreaElement) {
-						detachListeners(ta);
-						delete ta.dataset.wikiLinkListener;
-					}
-				});
-
-				newTextarea.dataset.wikiLinkListener = "true";
-				attachListeners(newTextarea);
-			}
-		});
-
-		observer.observe(document.body, { childList: true, subtree: true });
-
 		return () => {
-			observer.disconnect();
-			const currentTextarea = document.querySelector(".w-md-editor-text-input");
-			if (currentTextarea instanceof HTMLTextAreaElement) {
+			const currentTextarea = textareaRef.current;
+			if (currentTextarea) {
 				detachListeners(currentTextarea);
 			}
-			// documentレベルのイベントリスナーもクリーンアップ
-			document.removeEventListener("selectionchange", handleSelectionChange);
 		};
 	}, [
-		showSuggestions,
-		setShowSuggestions,
-		setSuggestionQuery,
+		textareaRef,
 		setCursorPosition,
 		setIsHeadingSuggestion,
+		setShowSuggestions,
+		setSuggestionQuery, // 通常の記事サジェスト
 		setTargetArticleSlug,
 	]);
 }
