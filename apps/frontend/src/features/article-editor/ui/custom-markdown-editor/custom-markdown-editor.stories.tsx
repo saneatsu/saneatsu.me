@@ -690,3 +690,46 @@ export const ContextMenuUploadDemo: Story = {
 		);
 	},
 };
+
+/**
+ * クリック領域拡張機能のデモ
+ *
+ * エディタコンテナの空白部分をクリックすると、
+ * 自動的にtextareaにフォーカスしてカーソルが最後に移動します。
+ */
+export const ClickExpansionDemo: Story = {
+	name: "クリック領域拡張のデモ",
+	tags: ["code-only"],
+	render: () => {
+		const [value, setValue] = useState(
+			"# クリック領域拡張のテスト\n\nエディタの空白部分（border周辺など）をクリックしてください。\n\n自動的にtextareaにフォーカスして、カーソルが最後に移動します。\n"
+		);
+
+		return (
+			<div className="p-4">
+				<div className="mb-4 p-4 border border-indigo-500 bg-indigo-50 rounded">
+					<h3 className="font-bold mb-2">テスト手順：</h3>
+					<ol className="list-decimal list-inside space-y-1 text-sm">
+						<li>エディタコンテナの空白部分（border周辺など）をクリック</li>
+						<li>
+							textareaに自動的にフォーカスされ、カーソルが最後に移動することを確認
+						</li>
+						<li>
+							textarea自体をクリックした場合は、通常通りクリックした位置にカーソルが移動することを確認
+						</li>
+					</ol>
+					<p className="mt-2 text-sm text-gray-600">
+						※
+						この機能により、エディタ全体がクリック可能な領域となり、UXが向上します
+					</p>
+				</div>
+				<CustomMarkdownEditor
+					value={value}
+					onChange={setValue}
+					setValue={(_, val) => setValue(val)}
+					height={600}
+				/>
+			</div>
+		);
+	},
+};
