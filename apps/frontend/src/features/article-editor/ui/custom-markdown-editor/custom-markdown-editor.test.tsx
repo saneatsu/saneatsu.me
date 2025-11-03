@@ -942,5 +942,471 @@ describe("Unit Test", () => {
 				});
 			});
 		});
+
+		describe("List Auto-continuation", () => {
+			describe("Bullet List", () => {
+				it("should create a new bullet item when Enter is pressed with content", async () => {
+					// Arrange
+					const user = userEvent.setup();
+					const mockOnChange = vi.fn();
+					const mockSetValue = vi.fn();
+
+					render(
+						<CustomMarkdownEditor
+							value="- Hello"
+							onChange={mockOnChange}
+							setValue={mockSetValue}
+						/>
+					);
+
+					const textarea = screen.getByRole("textbox", {
+						name: /markdown editor/i,
+					}) as HTMLTextAreaElement;
+
+					// Act
+					await user.click(textarea);
+					// カーソルを末尾に配置
+					textarea.setSelectionRange(7, 7);
+					textarea.focus();
+					// Enter を押す
+					await user.keyboard("{Enter}");
+
+					// Assert
+					expect(mockOnChange).toHaveBeenCalledWith("- Hello\n- ");
+					expect(mockSetValue).toHaveBeenCalledWith("content", "- Hello\n- ");
+				});
+
+				it("should exit list when Enter is pressed on empty bullet item", async () => {
+					// Arrange
+					const user = userEvent.setup();
+					const mockOnChange = vi.fn();
+					const mockSetValue = vi.fn();
+
+					render(
+						<CustomMarkdownEditor
+							value="- "
+							onChange={mockOnChange}
+							setValue={mockSetValue}
+						/>
+					);
+
+					const textarea = screen.getByRole("textbox", {
+						name: /markdown editor/i,
+					}) as HTMLTextAreaElement;
+
+					// Act
+					await user.click(textarea);
+					// カーソルを末尾に配置
+					textarea.setSelectionRange(2, 2);
+					textarea.focus();
+					// Enter を押す
+					await user.keyboard("{Enter}");
+
+					// Assert
+					expect(mockOnChange).toHaveBeenCalledWith("");
+					expect(mockSetValue).toHaveBeenCalledWith("content", "");
+				});
+
+				it("should work with asterisk marker (*)", async () => {
+					// Arrange
+					const user = userEvent.setup();
+					const mockOnChange = vi.fn();
+					const mockSetValue = vi.fn();
+
+					render(
+						<CustomMarkdownEditor
+							value="* Item"
+							onChange={mockOnChange}
+							setValue={mockSetValue}
+						/>
+					);
+
+					const textarea = screen.getByRole("textbox", {
+						name: /markdown editor/i,
+					}) as HTMLTextAreaElement;
+
+					// Act
+					await user.click(textarea);
+					textarea.setSelectionRange(6, 6);
+					textarea.focus();
+					await user.keyboard("{Enter}");
+
+					// Assert
+					expect(mockOnChange).toHaveBeenCalledWith("* Item\n* ");
+				});
+
+				it("should work with plus marker (+)", async () => {
+					// Arrange
+					const user = userEvent.setup();
+					const mockOnChange = vi.fn();
+					const mockSetValue = vi.fn();
+
+					render(
+						<CustomMarkdownEditor
+							value="+ Item"
+							onChange={mockOnChange}
+							setValue={mockSetValue}
+						/>
+					);
+
+					const textarea = screen.getByRole("textbox", {
+						name: /markdown editor/i,
+					}) as HTMLTextAreaElement;
+
+					// Act
+					await user.click(textarea);
+					textarea.setSelectionRange(6, 6);
+					textarea.focus();
+					await user.keyboard("{Enter}");
+
+					// Assert
+					expect(mockOnChange).toHaveBeenCalledWith("+ Item\n+ ");
+				});
+
+				it("should preserve indentation", async () => {
+					// Arrange
+					const user = userEvent.setup();
+					const mockOnChange = vi.fn();
+					const mockSetValue = vi.fn();
+
+					render(
+						<CustomMarkdownEditor
+							value="  - Indented"
+							onChange={mockOnChange}
+							setValue={mockSetValue}
+						/>
+					);
+
+					const textarea = screen.getByRole("textbox", {
+						name: /markdown editor/i,
+					}) as HTMLTextAreaElement;
+
+					// Act
+					await user.click(textarea);
+					textarea.setSelectionRange(12, 12);
+					textarea.focus();
+					await user.keyboard("{Enter}");
+
+					// Assert
+					expect(mockOnChange).toHaveBeenCalledWith("  - Indented\n  - ");
+				});
+			});
+
+			describe("Ordered List", () => {
+				it("should create a new ordered item with incremented number", async () => {
+					// Arrange
+					const user = userEvent.setup();
+					const mockOnChange = vi.fn();
+					const mockSetValue = vi.fn();
+
+					render(
+						<CustomMarkdownEditor
+							value="1. First"
+							onChange={mockOnChange}
+							setValue={mockSetValue}
+						/>
+					);
+
+					const textarea = screen.getByRole("textbox", {
+						name: /markdown editor/i,
+					}) as HTMLTextAreaElement;
+
+					// Act
+					await user.click(textarea);
+					textarea.setSelectionRange(9, 9);
+					textarea.focus();
+					await user.keyboard("{Enter}");
+
+					// Assert
+					expect(mockOnChange).toHaveBeenCalledWith("1. First\n2. ");
+				});
+
+				it("should exit list when Enter is pressed on empty ordered item", async () => {
+					// Arrange
+					const user = userEvent.setup();
+					const mockOnChange = vi.fn();
+					const mockSetValue = vi.fn();
+
+					render(
+						<CustomMarkdownEditor
+							value="1. "
+							onChange={mockOnChange}
+							setValue={mockSetValue}
+						/>
+					);
+
+					const textarea = screen.getByRole("textbox", {
+						name: /markdown editor/i,
+					}) as HTMLTextAreaElement;
+
+					// Act
+					await user.click(textarea);
+					textarea.setSelectionRange(3, 3);
+					textarea.focus();
+					await user.keyboard("{Enter}");
+
+					// Assert
+					expect(mockOnChange).toHaveBeenCalledWith("");
+				});
+
+				it("should preserve indentation with incremented number", async () => {
+					// Arrange
+					const user = userEvent.setup();
+					const mockOnChange = vi.fn();
+					const mockSetValue = vi.fn();
+
+					render(
+						<CustomMarkdownEditor
+							value="  2. Second"
+							onChange={mockOnChange}
+							setValue={mockSetValue}
+						/>
+					);
+
+					const textarea = screen.getByRole("textbox", {
+						name: /markdown editor/i,
+					}) as HTMLTextAreaElement;
+
+					// Act
+					await user.click(textarea);
+					textarea.setSelectionRange(12, 12);
+					textarea.focus();
+					await user.keyboard("{Enter}");
+
+					// Assert
+					expect(mockOnChange).toHaveBeenCalledWith("  2. Second\n  3. ");
+				});
+			});
+
+			describe("Checkbox", () => {
+				it("should create a new unchecked checkbox when Enter is pressed with content", async () => {
+					// Arrange
+					const user = userEvent.setup();
+					const mockOnChange = vi.fn();
+					const mockSetValue = vi.fn();
+
+					render(
+						<CustomMarkdownEditor
+							value="- [ ] Task"
+							onChange={mockOnChange}
+							setValue={mockSetValue}
+						/>
+					);
+
+					const textarea = screen.getByRole("textbox", {
+						name: /markdown editor/i,
+					}) as HTMLTextAreaElement;
+
+					// Act
+					await user.click(textarea);
+					textarea.setSelectionRange(11, 11);
+					textarea.focus();
+					await user.keyboard("{Enter}");
+
+					// Assert
+					expect(mockOnChange).toHaveBeenCalledWith("- [ ] Task\n- [ ] ");
+				});
+
+				it("should create unchecked checkbox from checked checkbox", async () => {
+					// Arrange
+					const user = userEvent.setup();
+					const mockOnChange = vi.fn();
+					const mockSetValue = vi.fn();
+
+					render(
+						<CustomMarkdownEditor
+							value="- [x] Done"
+							onChange={mockOnChange}
+							setValue={mockSetValue}
+						/>
+					);
+
+					const textarea = screen.getByRole("textbox", {
+						name: /markdown editor/i,
+					}) as HTMLTextAreaElement;
+
+					// Act
+					await user.click(textarea);
+					textarea.setSelectionRange(10, 10);
+					textarea.focus();
+					await user.keyboard("{Enter}");
+
+					// Assert
+					expect(mockOnChange).toHaveBeenCalledWith("- [x] Done\n- [ ] ");
+				});
+
+				it("should exit list when Enter is pressed on empty checkbox", async () => {
+					// Arrange
+					const user = userEvent.setup();
+					const mockOnChange = vi.fn();
+					const mockSetValue = vi.fn();
+
+					render(
+						<CustomMarkdownEditor
+							value="- [ ] "
+							onChange={mockOnChange}
+							setValue={mockSetValue}
+						/>
+					);
+
+					const textarea = screen.getByRole("textbox", {
+						name: /markdown editor/i,
+					}) as HTMLTextAreaElement;
+
+					// Act
+					await user.click(textarea);
+					textarea.setSelectionRange(6, 6);
+					textarea.focus();
+					await user.keyboard("{Enter}");
+
+					// Assert
+					expect(mockOnChange).toHaveBeenCalledWith("");
+				});
+
+				it("should work with asterisk marker (*)", async () => {
+					// Arrange
+					const user = userEvent.setup();
+					const mockOnChange = vi.fn();
+					const mockSetValue = vi.fn();
+
+					render(
+						<CustomMarkdownEditor
+							value="* [ ] Task"
+							onChange={mockOnChange}
+							setValue={mockSetValue}
+						/>
+					);
+
+					const textarea = screen.getByRole("textbox", {
+						name: /markdown editor/i,
+					}) as HTMLTextAreaElement;
+
+					// Act
+					await user.click(textarea);
+					textarea.setSelectionRange(11, 11);
+					textarea.focus();
+					await user.keyboard("{Enter}");
+
+					// Assert
+					expect(mockOnChange).toHaveBeenCalledWith("* [ ] Task\n* [ ] ");
+				});
+
+				it("should work with plus marker (+)", async () => {
+					// Arrange
+					const user = userEvent.setup();
+					const mockOnChange = vi.fn();
+					const mockSetValue = vi.fn();
+
+					render(
+						<CustomMarkdownEditor
+							value="+ [x] Completed"
+							onChange={mockOnChange}
+							setValue={mockSetValue}
+						/>
+					);
+
+					const textarea = screen.getByRole("textbox", {
+						name: /markdown editor/i,
+					}) as HTMLTextAreaElement;
+
+					// Act
+					await user.click(textarea);
+					textarea.setSelectionRange(15, 15);
+					textarea.focus();
+					await user.keyboard("{Enter}");
+
+					// Assert
+					expect(mockOnChange).toHaveBeenCalledWith("+ [x] Completed\n+ [ ] ");
+				});
+			});
+
+			describe("Edge Cases", () => {
+				it("should perform normal Enter when text is selected", async () => {
+					// Arrange
+					const user = userEvent.setup();
+					const mockOnChange = vi.fn();
+					const mockSetValue = vi.fn();
+
+					render(
+						<CustomMarkdownEditor
+							value="- Hello World"
+							onChange={mockOnChange}
+							setValue={mockSetValue}
+						/>
+					);
+
+					const textarea = screen.getByRole("textbox", {
+						name: /markdown editor/i,
+					}) as HTMLTextAreaElement;
+
+					// Act
+					await user.click(textarea);
+					// テキストを選択
+					textarea.setSelectionRange(2, 7);
+					textarea.focus();
+					await user.keyboard("{Enter}");
+
+					// Assert: リスト継続ではなく通常の改行が行われる
+					// 選択範囲が削除され、改行が挿入される
+					expect(mockOnChange).toHaveBeenCalledWith("- \n World");
+				});
+
+				it("should perform normal Enter when Shift is pressed", async () => {
+					// Arrange
+					const user = userEvent.setup();
+					const mockOnChange = vi.fn();
+					const mockSetValue = vi.fn();
+
+					render(
+						<CustomMarkdownEditor
+							value="- Hello"
+							onChange={mockOnChange}
+							setValue={mockSetValue}
+						/>
+					);
+
+					const textarea = screen.getByRole("textbox", {
+						name: /markdown editor/i,
+					}) as HTMLTextAreaElement;
+
+					// Act
+					await user.click(textarea);
+					textarea.setSelectionRange(7, 7);
+					textarea.focus();
+					await user.keyboard("{Shift>}{Enter}{/Shift}");
+
+					// Assert: リスト継続ではなく通常の改行
+					expect(mockOnChange).toHaveBeenCalledWith("- Hello\n");
+				});
+
+				it("should perform normal Enter on non-list line", async () => {
+					// Arrange
+					const user = userEvent.setup();
+					const mockOnChange = vi.fn();
+					const mockSetValue = vi.fn();
+
+					render(
+						<CustomMarkdownEditor
+							value="Regular text"
+							onChange={mockOnChange}
+							setValue={mockSetValue}
+						/>
+					);
+
+					const textarea = screen.getByRole("textbox", {
+						name: /markdown editor/i,
+					}) as HTMLTextAreaElement;
+
+					// Act
+					await user.click(textarea);
+					textarea.setSelectionRange(7, 7);
+					textarea.focus();
+					await user.keyboard("{Enter}");
+
+					// Assert
+					expect(mockOnChange).toHaveBeenCalledWith("Regular\n text");
+				});
+			});
+		});
 	});
 });

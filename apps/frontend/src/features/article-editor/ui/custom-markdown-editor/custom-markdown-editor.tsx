@@ -7,6 +7,7 @@ import { extractHeadings } from "@/shared/lib";
 import { MarkdownPreview } from "@/shared/ui";
 
 import { useBracketCompletion } from "../../lib/use-bracket-completion/use-bracket-completion";
+import { useListAutoContinuation } from "../../lib/use-list-auto-continuation/use-list-auto-continuation";
 import { useUnixKeybindings } from "../../lib/use-unix-keybindings/use-unix-keybindings";
 
 /**
@@ -57,6 +58,13 @@ export function CustomMarkdownEditor({
 
 	// 括弧自動補完
 	useBracketCompletion({
+		textareaRef,
+		setMarkdownValue: onChange,
+		setValue,
+	});
+
+	// リスト自動継続
+	useListAutoContinuation({
 		textareaRef,
 		setMarkdownValue: onChange,
 		setValue,
