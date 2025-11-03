@@ -4,11 +4,21 @@ import { useTheme } from "next-themes";
 import { useEffect, useRef } from "react";
 
 import { extractHeadings } from "@/shared/lib";
-import { MarkdownPreview } from "@/shared/ui";
+import {
+	ContextMenu,
+	ContextMenuContent,
+	ContextMenuItem,
+	ContextMenuTrigger,
+	MarkdownPreview,
+} from "@/shared/ui";
 
 import { useBracketCompletion } from "../../lib/use-bracket-completion/use-bracket-completion";
+import { useDropImageTextarea } from "../../lib/use-drop-image-textarea/use-drop-image-textarea";
+import { useImageUpload } from "../../lib/use-image-upload/use-image-upload";
+import { useImageUploadFile } from "../../lib/use-image-upload-file/use-image-upload-file";
 import { useListAutoContinuation } from "../../lib/use-list-auto-continuation/use-list-auto-continuation";
 import { useMarkdownFormatting } from "../../lib/use-markdown-formatting/use-markdown-formatting";
+import { usePasteImageTextarea } from "../../lib/use-paste-image-textarea/use-paste-image-textarea";
 import { useTagDetection } from "../../lib/use-tag-detection/use-tag-detection";
 import { useUnixKeybindings } from "../../lib/use-unix-keybindings/use-unix-keybindings";
 
@@ -60,6 +70,22 @@ export function CustomMarkdownEditor({
 
 	// Markdownから見出しを抽出（プレビュー用）
 	const headings = extractHeadings(value);
+
+	// 画像アップロード
+	const { uploadImage } = useImageUpload();
+
+	// ペースト画像アップロード
+	usePasteImageTextarea(textareaRef, uploadImage, onChange);
+
+	// ドラッグ&ドロップ画像アップロード
+	useDropImageTextarea(textareaRef, uploadImage, onChange);
+
+	// ファイル選択画像アップロード
+	const { openFileDialog } = useImageUploadFile(
+		textareaRef,
+		uploadImage,
+		onChange
+	);
 
 	// 括弧自動補完
 	useBracketCompletion({
@@ -164,14 +190,23 @@ export function CustomMarkdownEditor({
 						style={{ height }}
 						data-color-mode={theme === "dark" ? "dark" : "light"}
 					>
-						<textarea
-							ref={textareaRef}
-							value={value}
-							onChange={handleChange}
-							className="w-full h-full p-4 bg-background text-foreground resize-none focus:outline-none font-mono text-sm"
-							placeholder="Markdownを入力してください..."
-							aria-label="Markdown editor"
-						/>
+						<ContextMenu>
+							<ContextMenuTrigger asChild>
+								<textarea
+									ref={textareaRef}
+									value={value}
+									onChange={handleChange}
+									className="w-full h-full p-4 bg-background text-foreground resize-none focus:outline-none font-mono text-sm"
+									placeholder="Markdownを入力してください..."
+									aria-label="Markdown editor"
+								/>
+							</ContextMenuTrigger>
+							<ContextMenuContent>
+								<ContextMenuItem onSelect={openFileDialog}>
+									画像をアップロード
+								</ContextMenuItem>
+							</ContextMenuContent>
+						</ContextMenu>
 					</div>
 				</div>
 
