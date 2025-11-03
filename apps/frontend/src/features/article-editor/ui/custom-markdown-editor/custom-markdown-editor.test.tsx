@@ -740,5 +740,207 @@ describe("Unit Test", () => {
 				expect(mockOnChange).toHaveBeenCalledWith("ello");
 			});
 		});
+
+		describe("Unix Keybindings", () => {
+			describe("Ctrl+A (move to beginning of line)", () => {
+				it("should move cursor to the beginning of the current line", async () => {
+					// Arrange
+					const user = userEvent.setup();
+					const mockOnChange = vi.fn();
+					const mockSetValue = vi.fn();
+
+					render(
+						<CustomMarkdownEditor
+							value="Hello World"
+							onChange={mockOnChange}
+							setValue={mockSetValue}
+						/>
+					);
+
+					const textarea = screen.getByRole("textbox", {
+						name: /markdown editor/i,
+					}) as HTMLTextAreaElement;
+
+					// Act
+					await user.click(textarea);
+					// カーソルを中央に配置
+					textarea.setSelectionRange(6, 6); // "Hello |World"
+					textarea.focus();
+					// Ctrl+A を押す
+					await user.keyboard("{Control>}a{/Control}");
+
+					// Assert
+					expect(textarea.selectionStart).toBe(0);
+					expect(textarea.selectionEnd).toBe(0);
+				});
+
+				// Note: Multi-line Ctrl+A test is skipped due to JSDOM limitations.
+				// This functionality is tested in Storybook with real browser environment.
+			});
+
+			describe("Ctrl+E (move to end of line)", () => {
+				it("should move cursor to the end of the current line", async () => {
+					// Arrange
+					const user = userEvent.setup();
+					const mockOnChange = vi.fn();
+					const mockSetValue = vi.fn();
+
+					render(
+						<CustomMarkdownEditor
+							value="Hello World"
+							onChange={mockOnChange}
+							setValue={mockSetValue}
+						/>
+					);
+
+					const textarea = screen.getByRole("textbox", {
+						name: /markdown editor/i,
+					}) as HTMLTextAreaElement;
+
+					// Act
+					await user.click(textarea);
+					// カーソルを先頭に配置
+					textarea.setSelectionRange(0, 0);
+					textarea.focus();
+					// Ctrl+E を押す
+					await user.keyboard("{Control>}e{/Control}");
+
+					// Assert
+					expect(textarea.selectionStart).toBe(11);
+					expect(textarea.selectionEnd).toBe(11);
+				});
+
+				// Note: Multi-line Ctrl+E test is skipped due to JSDOM limitations.
+				// This functionality is tested in Storybook with real browser environment.
+			});
+
+			describe("Ctrl+B (move backward one character)", () => {
+				it("should move cursor backward by one character", async () => {
+					// Arrange
+					const user = userEvent.setup();
+					const mockOnChange = vi.fn();
+					const mockSetValue = vi.fn();
+
+					render(
+						<CustomMarkdownEditor
+							value="Hello World"
+							onChange={mockOnChange}
+							setValue={mockSetValue}
+						/>
+					);
+
+					const textarea = screen.getByRole("textbox", {
+						name: /markdown editor/i,
+					}) as HTMLTextAreaElement;
+
+					// Act
+					await user.click(textarea);
+					// カーソルを中央に配置
+					textarea.setSelectionRange(6, 6); // "Hello |World"
+					textarea.focus();
+					// Ctrl+B を押す
+					await user.keyboard("{Control>}b{/Control}");
+
+					// Assert
+					expect(textarea.selectionStart).toBe(5);
+					expect(textarea.selectionEnd).toBe(5);
+				});
+
+				it("should not move cursor when at the beginning", async () => {
+					// Arrange
+					const user = userEvent.setup();
+					const mockOnChange = vi.fn();
+					const mockSetValue = vi.fn();
+
+					render(
+						<CustomMarkdownEditor
+							value="Hello World"
+							onChange={mockOnChange}
+							setValue={mockSetValue}
+						/>
+					);
+
+					const textarea = screen.getByRole("textbox", {
+						name: /markdown editor/i,
+					}) as HTMLTextAreaElement;
+
+					// Act
+					await user.click(textarea);
+					// カーソルを先頭に配置
+					textarea.setSelectionRange(0, 0);
+					textarea.focus();
+					// Ctrl+B を押す
+					await user.keyboard("{Control>}b{/Control}");
+
+					// Assert
+					expect(textarea.selectionStart).toBe(0);
+					expect(textarea.selectionEnd).toBe(0);
+				});
+			});
+
+			describe("Ctrl+F (move forward one character)", () => {
+				it("should move cursor forward by one character", async () => {
+					// Arrange
+					const user = userEvent.setup();
+					const mockOnChange = vi.fn();
+					const mockSetValue = vi.fn();
+
+					render(
+						<CustomMarkdownEditor
+							value="Hello World"
+							onChange={mockOnChange}
+							setValue={mockSetValue}
+						/>
+					);
+
+					const textarea = screen.getByRole("textbox", {
+						name: /markdown editor/i,
+					}) as HTMLTextAreaElement;
+
+					// Act
+					await user.click(textarea);
+					// カーソルを先頭に配置
+					textarea.setSelectionRange(0, 0);
+					textarea.focus();
+					// Ctrl+F を押す
+					await user.keyboard("{Control>}f{/Control}");
+
+					// Assert
+					expect(textarea.selectionStart).toBe(1);
+					expect(textarea.selectionEnd).toBe(1);
+				});
+
+				it("should not move cursor when at the end", async () => {
+					// Arrange
+					const user = userEvent.setup();
+					const mockOnChange = vi.fn();
+					const mockSetValue = vi.fn();
+
+					render(
+						<CustomMarkdownEditor
+							value="Hello World"
+							onChange={mockOnChange}
+							setValue={mockSetValue}
+						/>
+					);
+
+					const textarea = screen.getByRole("textbox", {
+						name: /markdown editor/i,
+					}) as HTMLTextAreaElement;
+
+					// Act
+					await user.click(textarea);
+					// カーソルを末尾に配置
+					textarea.setSelectionRange(11, 11);
+					textarea.focus();
+					// Ctrl+F を押す
+					await user.keyboard("{Control>}f{/Control}");
+
+					// Assert
+					expect(textarea.selectionStart).toBe(11);
+					expect(textarea.selectionEnd).toBe(11);
+				});
+			});
+		});
 	});
 });

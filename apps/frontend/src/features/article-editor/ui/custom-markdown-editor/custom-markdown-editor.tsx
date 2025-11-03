@@ -7,6 +7,7 @@ import { extractHeadings } from "@/shared/lib";
 import { MarkdownPreview } from "@/shared/ui";
 
 import { useBracketCompletion } from "../../lib/use-bracket-completion/use-bracket-completion";
+import { useUnixKeybindings } from "../../lib/use-unix-keybindings/use-unix-keybindings";
 
 /**
  * CustomMarkdownEditorのプロパティ
@@ -59,6 +60,11 @@ export function CustomMarkdownEditor({
 		textareaRef,
 		setMarkdownValue: onChange,
 		setValue,
+	});
+
+	// Unixキーバインディング
+	useUnixKeybindings({
+		textareaRef,
 	});
 
 	// スクロール同期（エディタ → プレビュー）
