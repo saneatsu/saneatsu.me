@@ -6,6 +6,8 @@ import { useEffect, useRef } from "react";
 import { extractHeadings } from "@/shared/lib";
 import { MarkdownPreview } from "@/shared/ui";
 
+import { useBracketCompletion } from "../../lib/use-bracket-completion/use-bracket-completion";
+
 /**
  * CustomMarkdownEditorのプロパティ
  */
@@ -38,7 +40,7 @@ interface CustomMarkdownEditorProps {
 export function CustomMarkdownEditor({
 	value,
 	onChange,
-	setValue: _setValue,
+	setValue,
 	height = 500,
 	className = "",
 	language = "ja",
@@ -51,6 +53,13 @@ export function CustomMarkdownEditor({
 
 	// Markdownから見出しを抽出（プレビュー用）
 	const headings = extractHeadings(value);
+
+	// 括弧自動補完
+	useBracketCompletion({
+		textareaRef,
+		setMarkdownValue: onChange,
+		setValue,
+	});
 
 	// スクロール同期（エディタ → プレビュー）
 	useEffect(() => {

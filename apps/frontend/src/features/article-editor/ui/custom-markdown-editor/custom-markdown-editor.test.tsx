@@ -146,4 +146,251 @@ describe("Unit Test", () => {
 			expect(textarea).toHaveValue(markdownContent);
 		});
 	});
+
+	describe("Bracket Auto-completion", () => {
+		it("should auto-complete brackets when [ is typed", async () => {
+			// Arrange
+			const user = userEvent.setup();
+			const mockOnChange = vi.fn();
+			const mockSetValue = vi.fn();
+
+			render(
+				<CustomMarkdownEditor
+					value=""
+					onChange={mockOnChange}
+					setValue={mockSetValue}
+				/>
+			);
+
+			const textarea = screen.getByRole("textbox", {
+				name: /markdown editor/i,
+			}) as HTMLTextAreaElement;
+
+			// Act
+			await user.click(textarea);
+			await user.keyboard("{[}");
+
+			// Assert
+			expect(mockOnChange).toHaveBeenCalledWith("[]");
+		});
+
+		it("should auto-complete to [[]] when [[ is typed", async () => {
+			// Arrange
+			const user = userEvent.setup();
+			const mockOnChange = vi.fn();
+			const mockSetValue = vi.fn();
+
+			render(
+				<CustomMarkdownEditor
+					value="["
+					onChange={mockOnChange}
+					setValue={mockSetValue}
+				/>
+			);
+
+			const textarea = screen.getByRole("textbox", {
+				name: /markdown editor/i,
+			}) as HTMLTextAreaElement;
+
+			// カーソルを最後に移動
+			textarea.setSelectionRange(1, 1);
+
+			// Act
+			await user.click(textarea);
+			await user.keyboard("{[}");
+
+			// Assert
+			expect(mockOnChange).toHaveBeenCalledWith("[[]]");
+		});
+
+		it("should auto-complete parentheses", async () => {
+			// Arrange
+			const user = userEvent.setup();
+			const mockOnChange = vi.fn();
+			const mockSetValue = vi.fn();
+
+			render(
+				<CustomMarkdownEditor
+					value=""
+					onChange={mockOnChange}
+					setValue={mockSetValue}
+				/>
+			);
+
+			const textarea = screen.getByRole("textbox", {
+				name: /markdown editor/i,
+			});
+
+			// Act
+			await user.click(textarea);
+			await user.keyboard("(");
+
+			// Assert
+			expect(mockOnChange).toHaveBeenCalledWith("()");
+		});
+
+		it("should auto-complete curly braces", async () => {
+			// Arrange
+			const user = userEvent.setup();
+			const mockOnChange = vi.fn();
+			const mockSetValue = vi.fn();
+
+			render(
+				<CustomMarkdownEditor
+					value=""
+					onChange={mockOnChange}
+					setValue={mockSetValue}
+				/>
+			);
+
+			const textarea = screen.getByRole("textbox", {
+				name: /markdown editor/i,
+			});
+
+			// Act
+			await user.click(textarea);
+			await user.keyboard("{{}");
+
+			// Assert
+			expect(mockOnChange).toHaveBeenCalledWith("{}");
+		});
+
+		it("should wrap selected text with brackets", async () => {
+			// Arrange
+			const user = userEvent.setup();
+			const mockOnChange = vi.fn();
+			const mockSetValue = vi.fn();
+
+			render(
+				<CustomMarkdownEditor
+					value="hello"
+					onChange={mockOnChange}
+					setValue={mockSetValue}
+				/>
+			);
+
+			const textarea = screen.getByRole("textbox", {
+				name: /markdown editor/i,
+			}) as HTMLTextAreaElement;
+
+			// Act
+			await user.click(textarea);
+			// クリック後に全選択
+			textarea.setSelectionRange(0, 5);
+			textarea.focus();
+			await user.keyboard("{[}");
+
+			// Assert
+			expect(mockOnChange).toHaveBeenCalledWith("[hello]");
+		});
+
+		it("should skip closing bracket when cursor is before it", async () => {
+			// Arrange
+			const user = userEvent.setup();
+			const mockOnChange = vi.fn();
+			const mockSetValue = vi.fn();
+
+			render(
+				<CustomMarkdownEditor
+					value="[]"
+					onChange={mockOnChange}
+					setValue={mockSetValue}
+				/>
+			);
+
+			const textarea = screen.getByRole("textbox", {
+				name: /markdown editor/i,
+			}) as HTMLTextAreaElement;
+
+			// Act
+			await user.click(textarea);
+			// クリック後にカーソルを ] の直前に配置
+			textarea.setSelectionRange(1, 1);
+			textarea.focus();
+			await user.keyboard("]");
+
+			// Assert
+			// 値は変更されず、カーソルだけが移動する
+			expect(mockOnChange).not.toHaveBeenCalled();
+			expect(textarea.selectionStart).toBe(2);
+		});
+
+		it("should auto-complete backticks", async () => {
+			// Arrange
+			const user = userEvent.setup();
+			const mockOnChange = vi.fn();
+			const mockSetValue = vi.fn();
+
+			render(
+				<CustomMarkdownEditor
+					value=""
+					onChange={mockOnChange}
+					setValue={mockSetValue}
+				/>
+			);
+
+			const textarea = screen.getByRole("textbox", {
+				name: /markdown editor/i,
+			});
+
+			// Act
+			await user.click(textarea);
+			await user.keyboard("`");
+
+			// Assert
+			expect(mockOnChange).toHaveBeenCalledWith("``");
+		});
+
+		it("should auto-complete double quotes", async () => {
+			// Arrange
+			const user = userEvent.setup();
+			const mockOnChange = vi.fn();
+			const mockSetValue = vi.fn();
+
+			render(
+				<CustomMarkdownEditor
+					value=""
+					onChange={mockOnChange}
+					setValue={mockSetValue}
+				/>
+			);
+
+			const textarea = screen.getByRole("textbox", {
+				name: /markdown editor/i,
+			});
+
+			// Act
+			await user.click(textarea);
+			await user.keyboard('"');
+
+			// Assert
+			expect(mockOnChange).toHaveBeenCalledWith('""');
+		});
+
+		it("should auto-complete single quotes", async () => {
+			// Arrange
+			const user = userEvent.setup();
+			const mockOnChange = vi.fn();
+			const mockSetValue = vi.fn();
+
+			render(
+				<CustomMarkdownEditor
+					value=""
+					onChange={mockOnChange}
+					setValue={mockSetValue}
+				/>
+			);
+
+			const textarea = screen.getByRole("textbox", {
+				name: /markdown editor/i,
+			});
+
+			// Act
+			await user.click(textarea);
+			await user.keyboard("'");
+
+			// Assert
+			expect(mockOnChange).toHaveBeenCalledWith("''");
+		});
+	});
 });
