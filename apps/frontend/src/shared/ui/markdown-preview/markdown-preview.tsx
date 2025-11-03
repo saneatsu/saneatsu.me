@@ -29,7 +29,7 @@ import { ZoomableImage } from "../zoomable-image/zoomable-image";
  *
  * @description
  * MarkdownPreviewで使用するremarkプラグインのリスト。
- * ArticleMarkdownEditorなど他のコンポーネントでも再利用可能。
+ * CustomMarkdownEditorなど他のコンポーネントでも再利用可能。
  */
 export const defaultRemarkPlugins = [
 	remarkGfm,
@@ -206,7 +206,7 @@ function hasBlockImage(children: React.ReactNode): boolean {
  *
  * @description
  * MarkdownPreviewで使用するデフォルトコンポーネント。
- * ArticleMarkdownEditorなど他のコンポーネントでも再利用可能。
+ * CustomMarkdownEditorなど他のコンポーネントでも再利用可能。
  *
  * @param language - 言語設定（Wiki Link用）
  * @param imageComponent - 画像コンポーネントの種類
