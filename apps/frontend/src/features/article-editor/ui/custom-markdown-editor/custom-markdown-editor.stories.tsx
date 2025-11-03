@@ -272,6 +272,44 @@ export const WikiLinkPairDeletionBackspace: Story = {
 };
 
 /**
+ * Wiki Linkペア削除（Ctrl+H）のテスト
+ */
+export const WikiLinkPairDeletionCtrlH: Story = {
+	name: "Wiki Linkペア削除（Ctrl+H）",
+	render: () => {
+		const [value, setValue] = useState("[[]]");
+
+		return (
+			<div className="p-4">
+				<CustomMarkdownEditor
+					value={value}
+					onChange={setValue}
+					setValue={(_, val) => setValue(val)}
+					height={400}
+				/>
+			</div>
+		);
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const textarea = canvas.getByRole("textbox", {
+			name: /markdown editor/i,
+		}) as HTMLTextAreaElement;
+
+		// Wait for textarea to be ready
+		await userEvent.click(textarea);
+
+		// カーソルを最初の [ と 2つ目の [ の間に配置 (position 1)
+		textarea.setSelectionRange(1, 1);
+		textarea.focus();
+
+		// Ctrl+Hで [[]] → []
+		await userEvent.keyboard("{Control>}h{/Control}");
+		await waitFor(() => expect(textarea.value).toBe("[]"));
+	},
+};
+
+/**
  * 括弧ペア削除（Backspace）のテスト
  */
 export const BracketPairDeletionBackspace: Story = {
