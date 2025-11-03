@@ -733,3 +733,88 @@ export const ClickExpansionDemo: Story = {
 		);
 	},
 };
+
+/**
+ * IME入力中のクリック領域拡張機能のテスト
+ *
+ * IME入力中（日本語入力中）にクリックイベントが発火しても、
+ * カーソルが移動しないことを確認します。
+ */
+export const IMEInputClickExpansion: Story = {
+	name: "IME入力中のクリック領域拡張",
+	render: () => {
+		const [value, setValue] = useState("テスト");
+
+		return (
+			<div className="p-4">
+				<CustomMarkdownEditor
+					value={value}
+					onChange={setValue}
+					setValue={(_, val) => setValue(val)}
+					height={400}
+				/>
+			</div>
+		);
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const textarea = canvas.getByRole("textbox", {
+			name: /markdown editor/i,
+		}) as HTMLTextAreaElement;
+
+		// Wait for textarea to be ready
+		await userEvent.click(textarea);
+
+		// カーソルを途中に配置（「テ」の後ろ、position 1）
+		textarea.setSelectionRange(1, 1);
+		textarea.focus();
+
+		// 現在のカーソル位置を保存
+		const initialCursorPos = textarea.selectionStart;
+		expect(initialCursorPos).toBe(1);
+
+		// IME入力開始イベントをディスパッチ
+		const compositionStartEvent = new CompositionEvent("compositionstart", {
+			bubbles: true,
+			cancelable: true,
+		});
+		textarea.dispatchEvent(compositionStartEvent);
+
+		// エディタコンテナを取得
+		const editorContainer = textarea.closest(".border");
+		expect(editorContainer).not.toBeNull();
+
+		// IME入力中にエディタコンテナをクリック
+		if (editorContainer) {
+			await userEvent.click(editorContainer as HTMLElement);
+		}
+
+		// カーソル位置が移動していないことを確認（IME入力中は無視される）
+		await waitFor(() => {
+			expect(textarea.selectionStart).toBe(initialCursorPos);
+			expect(textarea.selectionEnd).toBe(initialCursorPos);
+		});
+
+		// IME入力終了イベントをディスパッチ
+		const compositionEndEvent = new CompositionEvent("compositionend", {
+			bubbles: true,
+			cancelable: true,
+		});
+		textarea.dispatchEvent(compositionEndEvent);
+
+		// カーソルを再度途中に配置
+		textarea.setSelectionRange(1, 1);
+		textarea.focus();
+
+		// IME入力終了後にエディタコンテナをクリック
+		if (editorContainer) {
+			await userEvent.click(editorContainer as HTMLElement);
+		}
+
+		// カーソルが最後に移動していることを確認（IME入力終了後は正常動作）
+		await waitFor(() => {
+			expect(textarea.selectionStart).toBe(textarea.value.length);
+			expect(textarea.selectionEnd).toBe(textarea.value.length);
+		});
+	},
+};
