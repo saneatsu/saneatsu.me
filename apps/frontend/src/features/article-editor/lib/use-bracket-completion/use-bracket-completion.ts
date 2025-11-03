@@ -140,8 +140,13 @@ export function useBracketCompletion({
 				}
 			}
 
-			// Backspaceでの括弧ペア削除処理
-			if (e.key === "Backspace" && !e.ctrlKey && !e.metaKey && !e.altKey) {
+			// Backspace または Ctrl+H での括弧ペア削除処理
+			if (
+				((e.key === "Backspace" && !e.ctrlKey) ||
+					(e.ctrlKey && (e.key === "h" || e.key === "H"))) &&
+				!e.metaKey &&
+				!e.altKey
+			) {
 				const start = textarea.selectionStart;
 				const end = textarea.selectionEnd;
 				const value = textarea.value;
@@ -150,6 +155,30 @@ export function useBracketCompletion({
 				if (start === end && start > 0) {
 					const charBefore = value.charAt(start - 1);
 					const charAfter = value.charAt(start);
+
+					// [|[]] の形式で、最初の [ と最後の ] を削除
+					// 例: [[]] → []
+					if (
+						start === 1 &&
+						charBefore === "[" &&
+						charAfter === "[" &&
+						value.length >= 4 &&
+						value.charAt(value.length - 2) === "]" &&
+						value.charAt(value.length - 1) === "]"
+					) {
+						e.preventDefault();
+						const newValue = value.slice(1, value.length - 1); // 最初の '[' と最後の ']' を削除
+
+						setMarkdownValue(newValue);
+						setValue("content", newValue);
+
+						setTimeout(() => {
+							textarea.value = newValue;
+							textarea.setSelectionRange(0, 0);
+							textarea.focus();
+						}, 0);
+						return;
+					}
 
 					// [[ と ]] のペアをチェック
 					if (

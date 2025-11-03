@@ -162,6 +162,116 @@ export const BracketAutoCompletion: Story = {
 };
 
 /**
+ * Wiki Link自動補完のテスト
+ */
+export const WikiLinkAutoCompletion: Story = {
+	name: "Wiki Link自動補完",
+	render: () => {
+		const [value, setValue] = useState("");
+
+		return (
+			<div className="p-4">
+				<CustomMarkdownEditor
+					value={value}
+					onChange={setValue}
+					setValue={(_, val) => setValue(val)}
+					height={400}
+				/>
+			</div>
+		);
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const textarea = canvas.getByRole("textbox", {
+			name: /markdown editor/i,
+		}) as HTMLTextAreaElement;
+
+		// Wait for textarea to be ready
+		await userEvent.click(textarea);
+
+		// Test Wiki Link auto-completion: [[ → [[]]
+		await userEvent.keyboard("{[}{[}");
+		await waitFor(() => expect(textarea.value).toBe("[[]]"));
+		expect(textarea.selectionStart).toBe(2);
+		expect(textarea.selectionEnd).toBe(2);
+	},
+};
+
+/**
+ * 単一括弧自動補完のテスト
+ */
+export const SingleBracketAutoCompletion: Story = {
+	name: "単一括弧自動補完",
+	render: () => {
+		const [value, setValue] = useState("");
+
+		return (
+			<div className="p-4">
+				<CustomMarkdownEditor
+					value={value}
+					onChange={setValue}
+					setValue={(_, val) => setValue(val)}
+					height={400}
+				/>
+			</div>
+		);
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const textarea = canvas.getByRole("textbox", {
+			name: /markdown editor/i,
+		}) as HTMLTextAreaElement;
+
+		// Wait for textarea to be ready
+		await userEvent.click(textarea);
+
+		// Test: [ → []
+		await userEvent.keyboard("{[}");
+		await waitFor(() => expect(textarea.value).toBe("[]"));
+		expect(textarea.selectionStart).toBe(1);
+		expect(textarea.selectionEnd).toBe(1);
+	},
+};
+
+/**
+ * Wiki Linkペア削除（Backspace）のテスト
+ */
+export const WikiLinkPairDeletionBackspace: Story = {
+	name: "Wiki Linkペア削除（Backspace）",
+	render: () => {
+		const [value, setValue] = useState("[[]]");
+
+		return (
+			<div className="p-4">
+				<CustomMarkdownEditor
+					value={value}
+					onChange={setValue}
+					setValue={(_, val) => setValue(val)}
+					height={400}
+				/>
+			</div>
+		);
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const textarea = canvas.getByRole("textbox", {
+			name: /markdown editor/i,
+		}) as HTMLTextAreaElement;
+
+		// Wait for textarea to be ready
+		await userEvent.click(textarea);
+
+		// カーソルを最初の [ と 2つ目の [ の間に配置 (position 1)
+		textarea.setSelectionRange(1, 1);
+		textarea.focus();
+
+		// Backspaceで [[]] → []
+		await userEvent.keyboard("{Backspace}");
+		await waitFor(() => expect(textarea.value).toBe("[]"));
+	},
+};
+
+/**
  * 括弧ペア削除（Backspace）のテスト
  */
 export const BracketPairDeletionBackspace: Story = {
