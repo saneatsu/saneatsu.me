@@ -536,3 +536,157 @@ export const ListAutoContinuationExitList: Story = {
 		await waitFor(() => expect(textarea.value).toBe(""));
 	},
 };
+
+/**
+ * 画像アップロード機能のデモ
+ *
+ * 以下の3つの方法で画像をアップロードできます：
+ * 1. クリップボードから画像をペースト（Ctrl+V / Cmd+V）
+ * 2. 画像ファイルをドラッグ&ドロップ
+ * 3. テキストエリアを右クリック → 「画像をアップロード」を選択
+ *
+ * 注意：実際の画像アップロードAPIはモックされています
+ */
+export const ImageUploadDemo: Story = {
+	name: "画像アップロード機能（デモ）",
+	tags: ["code-only"],
+	render: () => {
+		const [value, setValue] = useState(
+			"# 画像アップロードのテスト\n\n以下の方法で画像をアップロードできます：\n\n1. 画像をクリップボードにコピーして、エディタにペースト（Ctrl+V / Cmd+V）\n2. 画像ファイルをエディタにドラッグ&ドロップ\n3. エディタを右クリック → 「画像をアップロード」を選択\n\n"
+		);
+
+		return (
+			<div className="p-4">
+				<div className="mb-4 p-4 border border-blue-500 bg-blue-50 rounded">
+					<h3 className="font-bold mb-2">使い方：</h3>
+					<ul className="list-disc list-inside space-y-1 text-sm">
+						<li>
+							<strong>ペースト：</strong>
+							画像をクリップボードにコピーして、エディタ上で Ctrl+V（Mac:
+							Cmd+V）
+						</li>
+						<li>
+							<strong>ドラッグ&ドロップ：</strong>
+							画像ファイルをエディタにドラッグ&ドロップ
+						</li>
+						<li>
+							<strong>ファイル選択：</strong>
+							エディタを右クリック → 「画像をアップロード」を選択
+						</li>
+					</ul>
+					<p className="mt-2 text-sm text-gray-600">
+						※
+						実際の画像アップロードAPIはモックされているため、プレースホルダーURLが挿入されます
+					</p>
+				</div>
+				<CustomMarkdownEditor
+					value={value}
+					onChange={setValue}
+					setValue={(_, val) => setValue(val)}
+					height={600}
+				/>
+			</div>
+		);
+	},
+};
+
+/**
+ * 画像ペーストのデモ
+ */
+export const PasteImageDemo: Story = {
+	name: "画像ペースト（Ctrl+V）のデモ",
+	tags: ["code-only"],
+	render: () => {
+		const [value, setValue] = useState(
+			"# 画像ペーストのテスト\n\n画像をクリップボードにコピーして、このエディタ上でペースト（Ctrl+V / Cmd+V）してください。\n\n"
+		);
+
+		return (
+			<div className="p-4">
+				<div className="mb-4 p-4 border border-green-500 bg-green-50 rounded">
+					<h3 className="font-bold mb-2">テスト手順：</h3>
+					<ol className="list-decimal list-inside space-y-1 text-sm">
+						<li>画像ファイルをコピー、またはスクリーンショットを撮る</li>
+						<li>エディタをクリックしてフォーカスする</li>
+						<li>Ctrl+V（Mac: Cmd+V）でペースト</li>
+						<li>プレビューに画像Markdownが表示されることを確認</li>
+					</ol>
+				</div>
+				<CustomMarkdownEditor
+					value={value}
+					onChange={setValue}
+					setValue={(_, val) => setValue(val)}
+					height={600}
+				/>
+			</div>
+		);
+	},
+};
+
+/**
+ * ドラッグ&ドロップのデモ
+ */
+export const DragDropImageDemo: Story = {
+	name: "画像ドラッグ&ドロップのデモ",
+	tags: ["code-only"],
+	render: () => {
+		const [value, setValue] = useState(
+			"# 画像ドラッグ&ドロップのテスト\n\n画像ファイルをこのエディタにドラッグ&ドロップしてください。\n\n"
+		);
+
+		return (
+			<div className="p-4">
+				<div className="mb-4 p-4 border border-purple-500 bg-purple-50 rounded">
+					<h3 className="font-bold mb-2">テスト手順：</h3>
+					<ol className="list-decimal list-inside space-y-1 text-sm">
+						<li>ローカルの画像ファイルを選択</li>
+						<li>エディタ領域にドラッグ&ドロップ</li>
+						<li>プレビューに画像Markdownが表示されることを確認</li>
+					</ol>
+					<p className="mt-2 text-sm text-gray-600">
+						※ 対応形式: PNG, JPG, GIF, WebP など
+					</p>
+				</div>
+				<CustomMarkdownEditor
+					value={value}
+					onChange={setValue}
+					setValue={(_, val) => setValue(val)}
+					height={600}
+				/>
+			</div>
+		);
+	},
+};
+
+/**
+ * Context Menuからのファイル選択のデモ
+ */
+export const ContextMenuUploadDemo: Story = {
+	name: "Context Menuからの画像アップロードのデモ",
+	tags: ["code-only"],
+	render: () => {
+		const [value, setValue] = useState(
+			"# Context Menuからの画像アップロード\n\nエディタを右クリックして「画像をアップロード」を選択してください。\n\n"
+		);
+
+		return (
+			<div className="p-4">
+				<div className="mb-4 p-4 border border-orange-500 bg-orange-50 rounded">
+					<h3 className="font-bold mb-2">テスト手順：</h3>
+					<ol className="list-decimal list-inside space-y-1 text-sm">
+						<li>エディタ領域を右クリック</li>
+						<li>「画像をアップロード」メニュー項目を選択</li>
+						<li>ファイル選択ダイアログから画像を選択</li>
+						<li>プレビューに画像Markdownが表示されることを確認</li>
+					</ol>
+				</div>
+				<CustomMarkdownEditor
+					value={value}
+					onChange={setValue}
+					setValue={(_, val) => setValue(val)}
+					height={600}
+				/>
+			</div>
+		);
+	},
+};
