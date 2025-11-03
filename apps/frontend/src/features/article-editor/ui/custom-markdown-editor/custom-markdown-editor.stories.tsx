@@ -236,3 +236,155 @@ export const BracketPairDeletionDelete: Story = {
 		expect(textarea.value).toBe("");
 	},
 };
+
+/**
+ * リスト自動継続（箇条書き）のテスト
+ */
+export const ListAutoContinuationBullet: Story = {
+	name: "リスト自動継続（箇条書き）",
+	render: () => {
+		const [value, setValue] = useState("- First item");
+
+		return (
+			<div className="p-4">
+				<CustomMarkdownEditor
+					value={value}
+					onChange={setValue}
+					setValue={(_, val) => setValue(val)}
+					height={400}
+				/>
+			</div>
+		);
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const textarea = canvas.getByRole("textbox", {
+			name: /markdown editor/i,
+		}) as HTMLTextAreaElement;
+
+		// Wait for textarea to be ready
+		await userEvent.click(textarea);
+
+		// カーソルを末尾に配置
+		textarea.setSelectionRange(12, 12);
+		textarea.focus();
+
+		// Enterで新しいリスト項目が作成されることを確認
+		await userEvent.keyboard("{Enter}");
+		await waitFor(() => expect(textarea.value).toBe("- First item\n- "));
+	},
+};
+
+/**
+ * リスト自動継続（番号付きリスト）のテスト
+ */
+export const ListAutoContinuationOrdered: Story = {
+	name: "リスト自動継続（番号付きリスト）",
+	render: () => {
+		const [value, setValue] = useState("1. First item");
+
+		return (
+			<div className="p-4">
+				<CustomMarkdownEditor
+					value={value}
+					onChange={setValue}
+					setValue={(_, val) => setValue(val)}
+					height={400}
+				/>
+			</div>
+		);
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const textarea = canvas.getByRole("textbox", {
+			name: /markdown editor/i,
+		}) as HTMLTextAreaElement;
+
+		// Wait for textarea to be ready
+		await userEvent.click(textarea);
+
+		// カーソルを末尾に配置
+		textarea.setSelectionRange(13, 13);
+		textarea.focus();
+
+		// Enterで番号がインクリメントされたリスト項目が作成されることを確認
+		await userEvent.keyboard("{Enter}");
+		await waitFor(() => expect(textarea.value).toBe("1. First item\n2. "));
+	},
+};
+
+/**
+ * リスト自動継続（チェックボックス）のテスト
+ */
+export const ListAutoContinuationCheckbox: Story = {
+	name: "リスト自動継続（チェックボックス）",
+	render: () => {
+		const [value, setValue] = useState("- [ ] Task");
+
+		return (
+			<div className="p-4">
+				<CustomMarkdownEditor
+					value={value}
+					onChange={setValue}
+					setValue={(_, val) => setValue(val)}
+					height={400}
+				/>
+			</div>
+		);
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const textarea = canvas.getByRole("textbox", {
+			name: /markdown editor/i,
+		}) as HTMLTextAreaElement;
+
+		// Wait for textarea to be ready
+		await userEvent.click(textarea);
+
+		// カーソルを末尾に配置
+		textarea.setSelectionRange(11, 11);
+		textarea.focus();
+
+		// Enterで新しい未チェックボックスが作成されることを確認
+		await userEvent.keyboard("{Enter}");
+		await waitFor(() => expect(textarea.value).toBe("- [ ] Task\n- [ ] "));
+	},
+};
+
+/**
+ * リスト自動継続（空のリスト項目）のテスト
+ */
+export const ListAutoContinuationExitList: Story = {
+	name: "リスト自動継続（空のリスト項目で抜ける）",
+	render: () => {
+		const [value, setValue] = useState("- ");
+
+		return (
+			<div className="p-4">
+				<CustomMarkdownEditor
+					value={value}
+					onChange={setValue}
+					setValue={(_, val) => setValue(val)}
+					height={400}
+				/>
+			</div>
+		);
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const textarea = canvas.getByRole("textbox", {
+			name: /markdown editor/i,
+		}) as HTMLTextAreaElement;
+
+		// Wait for textarea to be ready
+		await userEvent.click(textarea);
+
+		// カーソルを末尾に配置
+		textarea.setSelectionRange(2, 2);
+		textarea.focus();
+
+		// Enterでリストから抜けることを確認
+		await userEvent.keyboard("{Enter}");
+		await waitFor(() => expect(textarea.value).toBe(""));
+	},
+};
