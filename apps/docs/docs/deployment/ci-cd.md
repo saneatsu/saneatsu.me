@@ -90,10 +90,10 @@ jobs:
       - run: pnpm install --frozen-lockfile
       
       - name: Build Storybook
-        run: pnpm --filter @saneatsu/web build-storybook
-        
+        run: pnpm --filter @saneatsu/frontend build-storybook
+
       - name: Run Storybook tests
-        run: pnpm --filter @saneatsu/web test-storybook
+        run: pnpm --filter @saneatsu/frontend test-storybook
 
   e2e:
     name: E2E Tests
@@ -150,7 +150,7 @@ jobs:
         
       - name: Check build output
         run: |
-          if [ ! -d "apps/web/.next" ]; then
+          if [ ! -d "apps/frontend/.next" ]; then
             echo "Build failed: .next directory not found"
             exit 1
           fi
