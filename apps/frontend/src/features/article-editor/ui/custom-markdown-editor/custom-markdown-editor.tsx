@@ -8,6 +8,7 @@ import { MarkdownPreview } from "@/shared/ui";
 
 import { useBracketCompletion } from "../../lib/use-bracket-completion/use-bracket-completion";
 import { useListAutoContinuation } from "../../lib/use-list-auto-continuation/use-list-auto-continuation";
+import { useMarkdownFormatting } from "../../lib/use-markdown-formatting/use-markdown-formatting";
 import { useUnixKeybindings } from "../../lib/use-unix-keybindings/use-unix-keybindings";
 
 /**
@@ -65,6 +66,13 @@ export function CustomMarkdownEditor({
 
 	// リスト自動継続
 	useListAutoContinuation({
+		textareaRef,
+		setMarkdownValue: onChange,
+		setValue,
+	});
+
+	// Markdownフォーマット
+	useMarkdownFormatting({
 		textareaRef,
 		setMarkdownValue: onChange,
 		setValue,
