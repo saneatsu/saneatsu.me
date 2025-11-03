@@ -16,7 +16,7 @@
 .
 ├── apps/
 │   ├── backend/     # バックエンドAPI (Cloudflare Workers)
-│   ├── web/         # フロントエンド (Next.js)
+│   ├── frontend/    # フロントエンド (Next.js)
 │   └── docs/        # ドキュメント (Docusaurus)
 ├── packages/
 │   ├── db/          # データベーススキーマ・ユーティリティ
@@ -123,7 +123,7 @@ LEFT JOIN article_translations at_en
 pnpm dev
 
 # フロントエンドのみ
-pnpm --filter @saneatsu/web dev
+pnpm --filter @saneatsu/frontend dev
 
 # バックエンドのみ
 pnpm --filter @saneatsu/backend dev

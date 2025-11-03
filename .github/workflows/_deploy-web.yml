@@ -48,16 +48,16 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: web-env-file-${{ env.ENV }}
-          path: apps/web
+          path: apps/frontend
 
       - name: Verify .env file
         run: |
-          echo "📁 Files in apps/web:"
-          ls -la apps/web/
-          if [ -f apps/web/.env ]; then
+          echo "📁 Files in apps/frontend:"
+          ls -la apps/frontend/
+          if [ -f apps/frontend/.env ]; then
             echo "✅ .env file exists"
             echo "📄 .env contents (masked):"
-            sed 's/=.*/=***/' apps/web/.env
+            sed 's/=.*/=***/' apps/frontend/.env
           else
             echo "❌ .env file not found"
             exit 1
@@ -65,19 +65,19 @@ jobs:
 
       - name: Build for Cloudflare
         run: |
-          cd apps/web
+          cd apps/frontend
           set -a
           source .env
           set +a
           cd ../..
-          pnpm --filter @saneatsu/web build:cloudflare
+          pnpm --filter @saneatsu/frontend build:cloudflare
         env:
           NODE_ENV: production
 
       - name: Deploy to Cloudflare Workers with environment variables
         id: cloudflare-wrangler
         run: |
-          cd apps/web
+          cd apps/frontend
           
           # .envファイルから環境変数を読み込む
           export $(cat .env | xargs)
