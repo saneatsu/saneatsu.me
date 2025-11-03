@@ -1408,5 +1408,198 @@ describe("Unit Test", () => {
 				});
 			});
 		});
+
+		describe("Markdown Formatting", () => {
+			describe("Bold (Cmd+B)", () => {
+				it("should wrap selected text with ** when Cmd+B is pressed", async () => {
+					// Arrange
+					const user = userEvent.setup();
+					const mockOnChange = vi.fn();
+					const mockSetValue = vi.fn();
+
+					render(
+						<CustomMarkdownEditor
+							value="Hello World"
+							onChange={mockOnChange}
+							setValue={mockSetValue}
+						/>
+					);
+
+					const textarea = screen.getByRole("textbox", {
+						name: /markdown editor/i,
+					}) as HTMLTextAreaElement;
+
+					// Act
+					await user.click(textarea);
+					// "World"を選択
+					textarea.setSelectionRange(6, 11);
+					textarea.focus();
+					// Cmd+B を押す
+					await user.keyboard("{Meta>}b{/Meta}");
+
+					// Assert
+					expect(mockOnChange).toHaveBeenCalledWith("Hello **World**");
+					expect(mockSetValue).toHaveBeenCalledWith(
+						"content",
+						"Hello **World**"
+					);
+				});
+
+				it("should unwrap text when it is already bold", async () => {
+					// Arrange
+					const user = userEvent.setup();
+					const mockOnChange = vi.fn();
+					const mockSetValue = vi.fn();
+
+					render(
+						<CustomMarkdownEditor
+							value="Hello **World**"
+							onChange={mockOnChange}
+							setValue={mockSetValue}
+						/>
+					);
+
+					const textarea = screen.getByRole("textbox", {
+						name: /markdown editor/i,
+					}) as HTMLTextAreaElement;
+
+					// Act
+					await user.click(textarea);
+					// "World"を選択（**の間）
+					textarea.setSelectionRange(8, 13);
+					textarea.focus();
+					// Cmd+B を押す
+					await user.keyboard("{Meta>}b{/Meta}");
+
+					// Assert
+					expect(mockOnChange).toHaveBeenCalledWith("Hello World");
+					expect(mockSetValue).toHaveBeenCalledWith("content", "Hello World");
+				});
+
+				it("should not apply bold when no text is selected", async () => {
+					// Arrange
+					const user = userEvent.setup();
+					const mockOnChange = vi.fn();
+					const mockSetValue = vi.fn();
+
+					render(
+						<CustomMarkdownEditor
+							value="Hello World"
+							onChange={mockOnChange}
+							setValue={mockSetValue}
+						/>
+					);
+
+					const textarea = screen.getByRole("textbox", {
+						name: /markdown editor/i,
+					}) as HTMLTextAreaElement;
+
+					// Act
+					await user.click(textarea);
+					// カーソルのみ配置（選択なし）
+					textarea.setSelectionRange(5, 5);
+					textarea.focus();
+					// Cmd+B を押す
+					await user.keyboard("{Meta>}b{/Meta}");
+
+					// Assert: 変更されない
+					expect(mockOnChange).not.toHaveBeenCalled();
+				});
+			});
+
+			describe("Italic (Cmd+I)", () => {
+				it("should wrap selected text with * when Cmd+I is pressed", async () => {
+					// Arrange
+					const user = userEvent.setup();
+					const mockOnChange = vi.fn();
+					const mockSetValue = vi.fn();
+
+					render(
+						<CustomMarkdownEditor
+							value="Hello World"
+							onChange={mockOnChange}
+							setValue={mockSetValue}
+						/>
+					);
+
+					const textarea = screen.getByRole("textbox", {
+						name: /markdown editor/i,
+					}) as HTMLTextAreaElement;
+
+					// Act
+					await user.click(textarea);
+					// "World"を選択
+					textarea.setSelectionRange(6, 11);
+					textarea.focus();
+					// Cmd+I を押す
+					await user.keyboard("{Meta>}i{/Meta}");
+
+					// Assert
+					expect(mockOnChange).toHaveBeenCalledWith("Hello *World*");
+					expect(mockSetValue).toHaveBeenCalledWith("content", "Hello *World*");
+				});
+
+				it("should unwrap text when it is already italic", async () => {
+					// Arrange
+					const user = userEvent.setup();
+					const mockOnChange = vi.fn();
+					const mockSetValue = vi.fn();
+
+					render(
+						<CustomMarkdownEditor
+							value="Hello *World*"
+							onChange={mockOnChange}
+							setValue={mockSetValue}
+						/>
+					);
+
+					const textarea = screen.getByRole("textbox", {
+						name: /markdown editor/i,
+					}) as HTMLTextAreaElement;
+
+					// Act
+					await user.click(textarea);
+					// "World"を選択（*の間）
+					textarea.setSelectionRange(7, 12);
+					textarea.focus();
+					// Cmd+I を押す
+					await user.keyboard("{Meta>}i{/Meta}");
+
+					// Assert
+					expect(mockOnChange).toHaveBeenCalledWith("Hello World");
+					expect(mockSetValue).toHaveBeenCalledWith("content", "Hello World");
+				});
+
+				it("should not apply italic when no text is selected", async () => {
+					// Arrange
+					const user = userEvent.setup();
+					const mockOnChange = vi.fn();
+					const mockSetValue = vi.fn();
+
+					render(
+						<CustomMarkdownEditor
+							value="Hello World"
+							onChange={mockOnChange}
+							setValue={mockSetValue}
+						/>
+					);
+
+					const textarea = screen.getByRole("textbox", {
+						name: /markdown editor/i,
+					}) as HTMLTextAreaElement;
+
+					// Act
+					await user.click(textarea);
+					// カーソルのみ配置（選択なし）
+					textarea.setSelectionRange(5, 5);
+					textarea.focus();
+					// Cmd+I を押す
+					await user.keyboard("{Meta>}i{/Meta}");
+
+					// Assert: 変更されない
+					expect(mockOnChange).not.toHaveBeenCalled();
+				});
+			});
+		});
 	});
 });
