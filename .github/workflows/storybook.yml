@@ -28,26 +28,26 @@ jobs:
 
       # workspaceの依存関係をビルド
       - name: Build workspace dependencies
-        run: pnpm --filter @saneatsu/web^... build
+        run: pnpm --filter @saneatsu/frontend^... build
 
       # Playwrightをインストール（test-runnerが使用）
       - name: Install Playwright
-        run: pnpm --filter @saneatsu/web exec playwright install --with-deps
+        run: pnpm --filter @saneatsu/frontend exec playwright install --with-deps
 
       # Storybookをビルドする前にキャッシュをクリーンアップ
       - name: Clean build cache
         run: |
-          rm -rf apps/web/storybook-static
-          rm -rf apps/web/node_modules/.cache
-          rm -rf apps/web/.next
+          rm -rf apps/frontend/storybook-static
+          rm -rf apps/frontend/node_modules/.cache
+          rm -rf apps/frontend/.next
 
       # Storybookをビルド
       - name: Build Storybook
-        run: pnpm --filter @saneatsu/web build-storybook
+        run: pnpm --filter @saneatsu/frontend build-storybook
 
       # Storybookの静的ファイルをサーブしてテストを実行
       - name: Serve Storybook and run tests
         run: |
-          npx http-server apps/web/storybook-static --port 6016 --silent &
+          npx http-server apps/frontend/storybook-static --port 6016 --silent &
           npx wait-on http://127.0.0.1:6016
-          pnpm --filter @saneatsu/web test-storybook
+          pnpm --filter @saneatsu/frontend test-storybook

@@ -171,7 +171,7 @@ TURSO_AUTH_TOKEN=your-dev-token
 CORS_ORIGIN=http://localhost:3210
 ADMIN_EMAILS=your-email@gmail.com
 
-# apps/web/.env
+# apps/frontend/.env
 NEXT_PUBLIC_API_URL=http://localhost:3333
 NEXTAUTH_URL=http://localhost:3210
 NEXTAUTH_SECRET=your-dev-secret-32-chars-or-more
@@ -241,9 +241,9 @@ GitHub Secrets/Variablesを更新した後：
    ```bash
    # Backendの再デプロイ
    pnpm --filter @saneatsu/backend deploy:production
-   
-   # Webの再デプロイ  
-   pnpm --filter @saneatsu/web deploy:production
+
+   # Webの再デプロイ
+   pnpm --filter @saneatsu/frontend deploy:production
    ```
 
 ### ADMIN_EMAILSが正しく動作しない
