@@ -13,6 +13,7 @@ import {
 } from "@/shared/ui";
 
 import { useBracketCompletion } from "../../lib/use-bracket-completion/use-bracket-completion";
+import { useClickExpansionTextarea } from "../../lib/use-click-expansion-textarea/use-click-expansion-textarea";
 import { useDropImageTextarea } from "../../lib/use-drop-image-textarea/use-drop-image-textarea";
 import { useImageUpload } from "../../lib/use-image-upload/use-image-upload";
 import { useImageUploadFile } from "../../lib/use-image-upload-file/use-image-upload-file";
@@ -117,6 +118,12 @@ export function CustomMarkdownEditor({
 	useTagDetection({
 		textareaRef,
 		onTagDetection,
+	});
+
+	// クリック領域拡張
+	useClickExpansionTextarea({
+		editorRef,
+		textareaRef,
 	});
 
 	// スクロール同期（エディタ → プレビュー）
