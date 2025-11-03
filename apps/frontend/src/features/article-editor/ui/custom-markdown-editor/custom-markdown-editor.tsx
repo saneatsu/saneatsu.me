@@ -9,6 +9,7 @@ import { MarkdownPreview } from "@/shared/ui";
 import { useBracketCompletion } from "../../lib/use-bracket-completion/use-bracket-completion";
 import { useListAutoContinuation } from "../../lib/use-list-auto-continuation/use-list-auto-continuation";
 import { useMarkdownFormatting } from "../../lib/use-markdown-formatting/use-markdown-formatting";
+import { useTagDetection } from "../../lib/use-tag-detection/use-tag-detection";
 import { useUnixKeybindings } from "../../lib/use-unix-keybindings/use-unix-keybindings";
 
 /**
@@ -29,6 +30,8 @@ interface CustomMarkdownEditorProps {
 	language?: "ja" | "en";
 	/** 英語コンテンツ（プレビュー表示用） */
 	enContent?: string;
+	/** タグ検知時のコールバック */
+	onTagDetection?: (detected: boolean, query: string) => void;
 }
 
 /**
@@ -48,6 +51,7 @@ export function CustomMarkdownEditor({
 	className = "",
 	language = "ja",
 	enContent,
+	onTagDetection,
 }: CustomMarkdownEditorProps) {
 	const { theme } = useTheme();
 	const editorRef = useRef<HTMLDivElement>(null);
@@ -81,6 +85,12 @@ export function CustomMarkdownEditor({
 	// Unixキーバインディング
 	useUnixKeybindings({
 		textareaRef,
+	});
+
+	// タグ検知
+	useTagDetection({
+		textareaRef,
+		onTagDetection,
 	});
 
 	// スクロール同期（エディタ → プレビュー）

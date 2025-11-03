@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import React from "react";
 import { describe, expect, it, vi } from "vitest";
 
 import { CustomMarkdownEditor } from "./custom-markdown-editor";
@@ -1600,6 +1601,192 @@ describe("Unit Test", () => {
 					expect(mockOnChange).not.toHaveBeenCalled();
 				});
 			});
+		});
+	});
+
+	describe("Tag Detection", () => {
+		it("should detect tag when # followed by text", async () => {
+			// Arrange
+			const user = userEvent.setup();
+			const mockSetValue = vi.fn();
+			const mockOnTagDetection = vi.fn();
+
+			function TestComponent() {
+				const [value, setValue] = React.useState("");
+				return (
+					<CustomMarkdownEditor
+						value={value}
+						onChange={setValue}
+						setValue={mockSetValue}
+						onTagDetection={mockOnTagDetection}
+					/>
+				);
+			}
+
+			render(<TestComponent />);
+
+			const textarea = screen.getByRole("textbox", {
+				name: /markdown editor/i,
+			}) as HTMLTextAreaElement;
+
+			// Act
+			await user.click(textarea);
+			await user.type(textarea, "#tag");
+
+			// Assert
+			// タグ検知が呼ばれることを確認（detected: true, query: "tag"）
+			expect(mockOnTagDetection).toHaveBeenCalledWith(true, "tag");
+		});
+
+		it("should not detect tag when only # is typed", async () => {
+			// Arrange
+			const user = userEvent.setup();
+			const mockOnChange = vi.fn();
+			const mockSetValue = vi.fn();
+			const mockOnTagDetection = vi.fn();
+
+			render(
+				<CustomMarkdownEditor
+					value=""
+					onChange={mockOnChange}
+					setValue={mockSetValue}
+					onTagDetection={mockOnTagDetection}
+				/>
+			);
+
+			const textarea = screen.getByRole("textbox", {
+				name: /markdown editor/i,
+			}) as HTMLTextAreaElement;
+
+			// Act
+			await user.click(textarea);
+			await user.type(textarea, "#");
+
+			// Assert
+			// #のみの場合はタグ検知されない（または detected: false）
+			expect(mockOnTagDetection).toHaveBeenCalledWith(false, "");
+		});
+
+		it("should stop detecting tag when space is typed after tag", async () => {
+			// Arrange
+			const user = userEvent.setup();
+			const mockOnChange = vi.fn();
+			const mockSetValue = vi.fn();
+			const mockOnTagDetection = vi.fn();
+
+			render(
+				<CustomMarkdownEditor
+					value=""
+					onChange={mockOnChange}
+					setValue={mockSetValue}
+					onTagDetection={mockOnTagDetection}
+				/>
+			);
+
+			const textarea = screen.getByRole("textbox", {
+				name: /markdown editor/i,
+			}) as HTMLTextAreaElement;
+
+			// Act
+			await user.click(textarea);
+			await user.type(textarea, "#tag ");
+
+			// Assert
+			// スペース入力後はタグ検知が終了する（detected: false）
+			expect(mockOnTagDetection).toHaveBeenLastCalledWith(false, "");
+		});
+
+		it("should not detect tag inside Wiki Link", async () => {
+			// Arrange
+			const user = userEvent.setup();
+			const mockOnChange = vi.fn();
+			const mockSetValue = vi.fn();
+			const mockOnTagDetection = vi.fn();
+
+			render(
+				<CustomMarkdownEditor
+					value=""
+					onChange={mockOnChange}
+					setValue={mockSetValue}
+					onTagDetection={mockOnTagDetection}
+				/>
+			);
+
+			const textarea = screen.getByRole("textbox", {
+				name: /markdown editor/i,
+			}) as HTMLTextAreaElement;
+
+			// Act
+			await user.click(textarea);
+			// Wiki Link内でタグを入力
+			await user.type(textarea, "[[#tag");
+
+			// Assert
+			// Wiki Link内ではタグ検知されない
+			expect(mockOnTagDetection).toHaveBeenCalledWith(false, "");
+		});
+
+		it("should detect tag outside Wiki Link", async () => {
+			// Arrange
+			const user = userEvent.setup();
+			const mockSetValue = vi.fn();
+			const mockOnTagDetection = vi.fn();
+
+			function TestComponent() {
+				const [value, setValue] = React.useState("");
+				return (
+					<CustomMarkdownEditor
+						value={value}
+						onChange={setValue}
+						setValue={mockSetValue}
+						onTagDetection={mockOnTagDetection}
+					/>
+				);
+			}
+
+			render(<TestComponent />);
+
+			const textarea = screen.getByRole("textbox", {
+				name: /markdown editor/i,
+			}) as HTMLTextAreaElement;
+
+			// Act
+			await user.click(textarea);
+			// Wiki Link外でタグを入力
+			await user.type(textarea, "[[article]] #tag");
+
+			// Assert
+			// Wiki Link外ではタグ検知される
+			expect(mockOnTagDetection).toHaveBeenCalledWith(true, "tag");
+		});
+
+		it("should stop detecting tag after newline", async () => {
+			// Arrange
+			const user = userEvent.setup();
+			const mockOnChange = vi.fn();
+			const mockSetValue = vi.fn();
+			const mockOnTagDetection = vi.fn();
+
+			render(
+				<CustomMarkdownEditor
+					value=""
+					onChange={mockOnChange}
+					setValue={mockSetValue}
+					onTagDetection={mockOnTagDetection}
+				/>
+			);
+
+			const textarea = screen.getByRole("textbox", {
+				name: /markdown editor/i,
+			}) as HTMLTextAreaElement;
+
+			// Act
+			await user.click(textarea);
+			await user.type(textarea, "#tag{Enter}");
+
+			// Assert
+			// 改行後はタグ検知が終了する
+			expect(mockOnTagDetection).toHaveBeenLastCalledWith(false, "");
 		});
 	});
 });
