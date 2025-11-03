@@ -29,6 +29,9 @@ export function useBracketCompletion({
 	setValue,
 }: BracketCompletionConfig) {
 	useEffect(() => {
+		// IME入力中かどうかのフラグ
+		let isComposing = false;
+
 		// 括弧のペアを定義
 		const bracketPairs: { [key: string]: string } = {
 			"[": "]",
@@ -43,6 +46,21 @@ export function useBracketCompletion({
 		const closingBrackets = new Set(Object.values(bracketPairs));
 
 		const handleKeyDown = (e: KeyboardEvent) => {
+			// IME入力中は括弧自動補完を無効にする
+			// 複数の条件でIME入力を検出:
+			// 1. isComposingフラグ (compositionstart/endイベントで管理)
+			// 2. e.isComposing (KeyboardEventのプロパティ)
+			// 3. e.key === 'Process' (IME入力中の標準的な値)
+			// 4. e.keyCode === 229 (IME入力中の標準的なキーコード)
+			if (
+				isComposing ||
+				e.isComposing ||
+				e.key === "Process" ||
+				e.keyCode === 229
+			) {
+				return;
+			}
+
 			const textarea = textareaRef.current;
 			if (!textarea || document.activeElement !== textarea) return;
 
@@ -255,11 +273,34 @@ export function useBracketCompletion({
 			}
 		};
 
+		// IME入力イベントハンドラー
+		const handleCompositionStart = () => {
+			isComposing = true;
+		};
+
+		const handleCompositionEnd = () => {
+			isComposing = false;
+		};
+
+		// textareaにIMEイベントリスナーを追加
+		const textarea = textareaRef.current;
+		if (textarea) {
+			textarea.addEventListener("compositionstart", handleCompositionStart);
+			textarea.addEventListener("compositionend", handleCompositionEnd);
+		}
+
 		// キャプチャフェーズで処理
 		window.addEventListener("keydown", handleKeyDown, true);
 
 		return () => {
 			window.removeEventListener("keydown", handleKeyDown, true);
+			if (textarea) {
+				textarea.removeEventListener(
+					"compositionstart",
+					handleCompositionStart
+				);
+				textarea.removeEventListener("compositionend", handleCompositionEnd);
+			}
 		};
 	}, [textareaRef, setMarkdownValue, setValue]);
 }

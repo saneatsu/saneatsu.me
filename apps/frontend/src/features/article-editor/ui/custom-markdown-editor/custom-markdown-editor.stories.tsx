@@ -818,3 +818,90 @@ export const IMEInputClickExpansion: Story = {
 		});
 	},
 };
+
+/**
+ * IME入力中の括弧自動補完
+ *
+ * @description
+ * IME入力中（日本語入力中）に括弧キーを押しても、
+ * 自動補完が実行されないことを確認します。
+ * また、IME入力終了後は正常に括弧補完が動作することを確認します。
+ */
+export const IMEInputBracketCompletion: Story = {
+	name: "IME入力中の括弧自動補完",
+	render: () => {
+		const [value, setValue] = useState("");
+
+		return (
+			<div className="p-4">
+				<CustomMarkdownEditor
+					value={value}
+					onChange={setValue}
+					setValue={(_, val) => setValue(val)}
+					height={400}
+				/>
+			</div>
+		);
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const textarea = canvas.getByRole("textbox", {
+			name: /markdown editor/i,
+		}) as HTMLTextAreaElement;
+
+		// Wait for textarea to be ready
+		await userEvent.click(textarea);
+		textarea.focus();
+
+		// 初期状態を確認
+		expect(textarea.value).toBe("");
+
+		// IME入力開始イベントをディスパッチ
+		const compositionStartEvent = new CompositionEvent("compositionstart", {
+			bubbles: true,
+			cancelable: true,
+		});
+		textarea.dispatchEvent(compositionStartEvent);
+
+		// IME入力中に [ キーを押す（「を入力しようとしている）
+		const keydownEventDuringIME = new KeyboardEvent("keydown", {
+			key: "Process",
+			bubbles: true,
+			cancelable: true,
+		});
+		window.dispatchEvent(keydownEventDuringIME);
+
+		// 少し待機
+		await new Promise((resolve) => setTimeout(resolve, 100));
+
+		// 値が変わっていないことを確認（自動補完されていない）
+		await waitFor(() => {
+			// IME入力中は自動補完が実行されないため、値は空のまま
+			expect(textarea.value).toBe("");
+		});
+
+		// IME入力終了イベントをディスパッチ
+		const compositionEndEvent = new CompositionEvent("compositionend", {
+			bubbles: true,
+			cancelable: true,
+		});
+		textarea.dispatchEvent(compositionEndEvent);
+
+		// IME入力終了後に [ キーを押す
+		await userEvent.keyboard("{[}");
+
+		// 少し待機
+		await new Promise((resolve) => setTimeout(resolve, 100));
+
+		// 自動補完が実行されて [] になっていることを確認
+		await waitFor(() => {
+			expect(textarea.value).toBe("[]");
+		});
+
+		// カーソルが括弧の間にあることを確認
+		await waitFor(() => {
+			expect(textarea.selectionStart).toBe(1);
+			expect(textarea.selectionEnd).toBe(1);
+		});
+	},
+};
