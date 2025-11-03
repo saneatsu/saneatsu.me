@@ -393,4 +393,352 @@ describe("Unit Test", () => {
 			expect(mockOnChange).toHaveBeenCalledWith("''");
 		});
 	});
+
+	describe("Bracket Pair Deletion", () => {
+		describe("Backspace key", () => {
+			it("should delete both brackets when backspace is pressed between []", async () => {
+				// Arrange
+				const user = userEvent.setup();
+				const mockOnChange = vi.fn();
+				const mockSetValue = vi.fn();
+
+				render(
+					<CustomMarkdownEditor
+						value="[]"
+						onChange={mockOnChange}
+						setValue={mockSetValue}
+					/>
+				);
+
+				const textarea = screen.getByRole("textbox", {
+					name: /markdown editor/i,
+				}) as HTMLTextAreaElement;
+
+				// Act
+				await user.click(textarea);
+				// カーソルを括弧の間に配置
+				textarea.setSelectionRange(1, 1);
+				textarea.focus();
+				await user.keyboard("{Backspace}");
+
+				// Assert
+				expect(mockOnChange).toHaveBeenCalledWith("");
+			});
+
+			it("should delete both brackets when backspace is pressed between ()", async () => {
+				// Arrange
+				const user = userEvent.setup();
+				const mockOnChange = vi.fn();
+				const mockSetValue = vi.fn();
+
+				render(
+					<CustomMarkdownEditor
+						value="()"
+						onChange={mockOnChange}
+						setValue={mockSetValue}
+					/>
+				);
+
+				const textarea = screen.getByRole("textbox", {
+					name: /markdown editor/i,
+				}) as HTMLTextAreaElement;
+
+				// Act
+				await user.click(textarea);
+				textarea.setSelectionRange(1, 1);
+				textarea.focus();
+				await user.keyboard("{Backspace}");
+
+				// Assert
+				expect(mockOnChange).toHaveBeenCalledWith("");
+			});
+
+			it("should delete both brackets when backspace is pressed between {}", async () => {
+				// Arrange
+				const user = userEvent.setup();
+				const mockOnChange = vi.fn();
+				const mockSetValue = vi.fn();
+
+				render(
+					<CustomMarkdownEditor
+						value="{}"
+						onChange={mockOnChange}
+						setValue={mockSetValue}
+					/>
+				);
+
+				const textarea = screen.getByRole("textbox", {
+					name: /markdown editor/i,
+				}) as HTMLTextAreaElement;
+
+				// Act
+				await user.click(textarea);
+				textarea.setSelectionRange(1, 1);
+				textarea.focus();
+				await user.keyboard("{Backspace}");
+
+				// Assert
+				expect(mockOnChange).toHaveBeenCalledWith("");
+			});
+
+			it("should delete both backticks when backspace is pressed between ``", async () => {
+				// Arrange
+				const user = userEvent.setup();
+				const mockOnChange = vi.fn();
+				const mockSetValue = vi.fn();
+
+				render(
+					<CustomMarkdownEditor
+						value="``"
+						onChange={mockOnChange}
+						setValue={mockSetValue}
+					/>
+				);
+
+				const textarea = screen.getByRole("textbox", {
+					name: /markdown editor/i,
+				}) as HTMLTextAreaElement;
+
+				// Act
+				await user.click(textarea);
+				textarea.setSelectionRange(1, 1);
+				textarea.focus();
+				await user.keyboard("{Backspace}");
+
+				// Assert
+				expect(mockOnChange).toHaveBeenCalledWith("");
+			});
+
+			it('should delete both quotes when backspace is pressed between ""', async () => {
+				// Arrange
+				const user = userEvent.setup();
+				const mockOnChange = vi.fn();
+				const mockSetValue = vi.fn();
+
+				render(
+					<CustomMarkdownEditor
+						value='""'
+						onChange={mockOnChange}
+						setValue={mockSetValue}
+					/>
+				);
+
+				const textarea = screen.getByRole("textbox", {
+					name: /markdown editor/i,
+				}) as HTMLTextAreaElement;
+
+				// Act
+				await user.click(textarea);
+				textarea.setSelectionRange(1, 1);
+				textarea.focus();
+				await user.keyboard("{Backspace}");
+
+				// Assert
+				expect(mockOnChange).toHaveBeenCalledWith("");
+			});
+
+			it("should delete both quotes when backspace is pressed between ''", async () => {
+				// Arrange
+				const user = userEvent.setup();
+				const mockOnChange = vi.fn();
+				const mockSetValue = vi.fn();
+
+				render(
+					<CustomMarkdownEditor
+						value="''"
+						onChange={mockOnChange}
+						setValue={mockSetValue}
+					/>
+				);
+
+				const textarea = screen.getByRole("textbox", {
+					name: /markdown editor/i,
+				}) as HTMLTextAreaElement;
+
+				// Act
+				await user.click(textarea);
+				textarea.setSelectionRange(1, 1);
+				textarea.focus();
+				await user.keyboard("{Backspace}");
+
+				// Assert
+				expect(mockOnChange).toHaveBeenCalledWith("");
+			});
+
+			it("should delete [[ and ]] when backspace is pressed between [[]]", async () => {
+				// Arrange
+				const user = userEvent.setup();
+				const mockOnChange = vi.fn();
+				const mockSetValue = vi.fn();
+
+				render(
+					<CustomMarkdownEditor
+						value="[[]]"
+						onChange={mockOnChange}
+						setValue={mockSetValue}
+					/>
+				);
+
+				const textarea = screen.getByRole("textbox", {
+					name: /markdown editor/i,
+				}) as HTMLTextAreaElement;
+
+				// Act
+				await user.click(textarea);
+				// カーソルを [[ と ]] の間に配置
+				textarea.setSelectionRange(2, 2);
+				textarea.focus();
+				await user.keyboard("{Backspace}");
+
+				// Assert
+				expect(mockOnChange).toHaveBeenCalledWith("");
+			});
+
+			it("should perform normal backspace when not between bracket pairs", async () => {
+				// Arrange
+				const user = userEvent.setup();
+				const mockOnChange = vi.fn();
+				const mockSetValue = vi.fn();
+
+				render(
+					<CustomMarkdownEditor
+						value="hello"
+						onChange={mockOnChange}
+						setValue={mockSetValue}
+					/>
+				);
+
+				const textarea = screen.getByRole("textbox", {
+					name: /markdown editor/i,
+				}) as HTMLTextAreaElement;
+
+				// Act
+				await user.click(textarea);
+				// カーソルを最後に配置
+				textarea.setSelectionRange(5, 5);
+				textarea.focus();
+				await user.keyboard("{Backspace}");
+
+				// Assert
+				expect(mockOnChange).toHaveBeenCalledWith("hell");
+			});
+
+			it("should delete selection when backspace is pressed with selected text", async () => {
+				// Arrange
+				const user = userEvent.setup();
+				const mockOnChange = vi.fn();
+				const mockSetValue = vi.fn();
+
+				render(
+					<CustomMarkdownEditor
+						value="hello world"
+						onChange={mockOnChange}
+						setValue={mockSetValue}
+					/>
+				);
+
+				const textarea = screen.getByRole("textbox", {
+					name: /markdown editor/i,
+				}) as HTMLTextAreaElement;
+
+				// Act
+				await user.click(textarea);
+				// "world"を選択
+				textarea.setSelectionRange(6, 11);
+				textarea.focus();
+				await user.keyboard("{Backspace}");
+
+				// Assert
+				expect(mockOnChange).toHaveBeenCalledWith("hello ");
+			});
+		});
+
+		describe("Delete key", () => {
+			it("should delete both brackets when delete is pressed between []", async () => {
+				// Arrange
+				const user = userEvent.setup();
+				const mockOnChange = vi.fn();
+				const mockSetValue = vi.fn();
+
+				render(
+					<CustomMarkdownEditor
+						value="[]"
+						onChange={mockOnChange}
+						setValue={mockSetValue}
+					/>
+				);
+
+				const textarea = screen.getByRole("textbox", {
+					name: /markdown editor/i,
+				}) as HTMLTextAreaElement;
+
+				// Act
+				await user.click(textarea);
+				// カーソルを括弧の間に配置
+				textarea.setSelectionRange(1, 1);
+				textarea.focus();
+				await user.keyboard("{Delete}");
+
+				// Assert
+				expect(mockOnChange).toHaveBeenCalledWith("");
+			});
+
+			it("should delete both brackets when delete is pressed between ()", async () => {
+				// Arrange
+				const user = userEvent.setup();
+				const mockOnChange = vi.fn();
+				const mockSetValue = vi.fn();
+
+				render(
+					<CustomMarkdownEditor
+						value="()"
+						onChange={mockOnChange}
+						setValue={mockSetValue}
+					/>
+				);
+
+				const textarea = screen.getByRole("textbox", {
+					name: /markdown editor/i,
+				}) as HTMLTextAreaElement;
+
+				// Act
+				await user.click(textarea);
+				textarea.setSelectionRange(1, 1);
+				textarea.focus();
+				await user.keyboard("{Delete}");
+
+				// Assert
+				expect(mockOnChange).toHaveBeenCalledWith("");
+			});
+
+			it("should perform normal delete when not between bracket pairs", async () => {
+				// Arrange
+				const user = userEvent.setup();
+				const mockOnChange = vi.fn();
+				const mockSetValue = vi.fn();
+
+				render(
+					<CustomMarkdownEditor
+						value="hello"
+						onChange={mockOnChange}
+						setValue={mockSetValue}
+					/>
+				);
+
+				const textarea = screen.getByRole("textbox", {
+					name: /markdown editor/i,
+				}) as HTMLTextAreaElement;
+
+				// Act
+				await user.click(textarea);
+				// カーソルを最初に配置
+				textarea.setSelectionRange(0, 0);
+				textarea.focus();
+				await user.keyboard("{Delete}");
+
+				// Assert
+				expect(mockOnChange).toHaveBeenCalledWith("ello");
+			});
+		});
+	});
 });

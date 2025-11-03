@@ -139,6 +139,91 @@ export function useBracketCompletion({
 					return;
 				}
 			}
+
+			// Backspaceでの括弧ペア削除処理
+			if (e.key === "Backspace" && !e.ctrlKey && !e.metaKey && !e.altKey) {
+				const start = textarea.selectionStart;
+				const end = textarea.selectionEnd;
+				const value = textarea.value;
+
+				// 選択範囲がない場合のみペア削除を考慮
+				if (start === end && start > 0) {
+					const charBefore = value.charAt(start - 1);
+					const charAfter = value.charAt(start);
+
+					// [[ と ]] のペアをチェック
+					if (
+						start >= 2 &&
+						start < value.length - 1 &&
+						value.substring(start - 2, start) === "[[" &&
+						value.substring(start, start + 2) === "]]"
+					) {
+						e.preventDefault();
+						const newValue = value.slice(0, start - 2) + value.slice(start + 2);
+
+						setMarkdownValue(newValue);
+						setValue("content", newValue);
+
+						setTimeout(() => {
+							textarea.value = newValue;
+							textarea.setSelectionRange(start - 2, start - 2);
+							textarea.focus();
+						}, 0);
+						return;
+					}
+
+					// 通常の括弧ペアをチェック
+					if (
+						bracketPairs[charBefore] &&
+						bracketPairs[charBefore] === charAfter
+					) {
+						e.preventDefault();
+						const newValue = value.slice(0, start - 1) + value.slice(start + 1);
+
+						setMarkdownValue(newValue);
+						setValue("content", newValue);
+
+						setTimeout(() => {
+							textarea.value = newValue;
+							textarea.setSelectionRange(start - 1, start - 1);
+							textarea.focus();
+						}, 0);
+						return;
+					}
+				}
+			}
+
+			// Deleteでの括弧ペア削除処理
+			if (e.key === "Delete" && !e.ctrlKey && !e.metaKey && !e.altKey) {
+				const start = textarea.selectionStart;
+				const end = textarea.selectionEnd;
+				const value = textarea.value;
+
+				// 選択範囲がない場合のみペア削除を考慮
+				if (start === end && start > 0 && start < value.length) {
+					const charBefore = value.charAt(start - 1);
+					const charAfter = value.charAt(start);
+
+					// 括弧ペアの間にいる場合
+					if (
+						bracketPairs[charBefore] &&
+						bracketPairs[charBefore] === charAfter
+					) {
+						e.preventDefault();
+						const newValue = value.slice(0, start - 1) + value.slice(start + 1);
+
+						setMarkdownValue(newValue);
+						setValue("content", newValue);
+
+						setTimeout(() => {
+							textarea.value = newValue;
+							textarea.setSelectionRange(start - 1, start - 1);
+							textarea.focus();
+						}, 0);
+						return;
+					}
+				}
+			}
 		};
 
 		// キャプチャフェーズで処理
