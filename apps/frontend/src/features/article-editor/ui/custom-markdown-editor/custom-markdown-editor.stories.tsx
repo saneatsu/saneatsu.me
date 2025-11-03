@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { useState } from "react";
+import { expect, userEvent, waitFor, within } from "storybook/test";
 
 import { CustomMarkdownEditor } from "./custom-markdown-editor";
 
@@ -118,5 +119,120 @@ function hello() {
 				/>
 			</div>
 		);
+	},
+};
+
+/**
+ * 括弧自動補完のテスト
+ */
+export const BracketAutoCompletion: Story = {
+	name: "括弧自動補完",
+	render: () => {
+		const [value, setValue] = useState("");
+
+		return (
+			<div className="p-4">
+				<CustomMarkdownEditor
+					value={value}
+					onChange={setValue}
+					setValue={(_, val) => setValue(val)}
+					height={400}
+				/>
+			</div>
+		);
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const textarea = canvas.getByRole("textbox", {
+			name: /markdown editor/i,
+		}) as HTMLTextAreaElement;
+
+		// Wait for textarea to be ready
+		await userEvent.click(textarea);
+
+		// Test bracket auto-completion
+		await userEvent.keyboard("{[}");
+		await waitFor(() => expect(textarea.value).toBe("[]"));
+
+		// Test Wiki Link auto-completion
+		// カーソルは自動的に [] の間にあるので、もう一度 [ を入力
+		await userEvent.keyboard("{[}");
+		await waitFor(() => expect(textarea.value).toBe("[[]]"));
+	},
+};
+
+/**
+ * 括弧ペア削除（Backspace）のテスト
+ */
+export const BracketPairDeletionBackspace: Story = {
+	name: "括弧ペア削除（Backspace）",
+	render: () => {
+		const [value, setValue] = useState("[]");
+
+		return (
+			<div className="p-4">
+				<CustomMarkdownEditor
+					value={value}
+					onChange={setValue}
+					setValue={(_, val) => setValue(val)}
+					height={400}
+				/>
+			</div>
+		);
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const textarea = canvas.getByRole("textbox", {
+			name: /markdown editor/i,
+		}) as HTMLTextAreaElement;
+
+		// Wait for textarea to be ready
+		await userEvent.click(textarea);
+
+		// カーソルを括弧の間に配置
+		textarea.setSelectionRange(1, 1);
+		textarea.focus();
+
+		// Backspaceで両方の括弧が削除されることを確認
+		await userEvent.keyboard("{Backspace}");
+		expect(textarea.value).toBe("");
+	},
+};
+
+/**
+ * 括弧ペア削除（Delete）のテスト
+ */
+export const BracketPairDeletionDelete: Story = {
+	name: "括弧ペア削除（Delete）",
+	render: () => {
+		const [value, setValue] = useState("()");
+
+		return (
+			<div className="p-4">
+				<CustomMarkdownEditor
+					value={value}
+					onChange={setValue}
+					setValue={(_, val) => setValue(val)}
+					height={400}
+				/>
+			</div>
+		);
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const textarea = canvas.getByRole("textbox", {
+			name: /markdown editor/i,
+		}) as HTMLTextAreaElement;
+
+		// Wait for textarea to be ready
+		await userEvent.click(textarea);
+
+		// カーソルを括弧の間に配置
+		textarea.setSelectionRange(1, 1);
+		textarea.focus();
+
+		// Deleteで両方の括弧が削除されることを確認
+		await userEvent.keyboard("{Delete}");
+		expect(textarea.value).toBe("");
 	},
 };
