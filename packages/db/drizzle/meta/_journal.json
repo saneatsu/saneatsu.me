@@ -22,6 +22,13 @@
 			"when": 1761639855071,
 			"tag": "0002_add_unique_article_language",
 			"breakpoints": true
+		},
+		{
+			"idx": 3,
+			"version": "6",
+			"when": 1762247470949,
+			"tag": "0003_create_gallery_with_translations",
+			"breakpoints": true
 		}
 	]
 }
