@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { HttpResponse, http } from "msw";
+import { expect, userEvent, within } from "storybook/test";
 
 import { ArticleEditForm } from "./article-edit-form";
 
@@ -93,6 +94,17 @@ const mockArticle = {
 	publishedAt: "2024-01-10T00:00:00Z",
 	updatedAt: "2024-01-15T10:30:00Z",
 	cfImageId: "test-image-id",
+	translations: {
+		ja: {
+			title: "React Hooks完全ガイド",
+			content: "# React Hooks完全ガイド\n\nReact Hooksの使い方を解説します。",
+		},
+		en: {
+			title: "Complete Guide to React Hooks",
+			content:
+				"# Complete Guide to React Hooks\n\nThis guide explains how to use React Hooks.",
+		},
+	},
 	tags: [
 		{
 			id: 1,
@@ -230,5 +242,89 @@ export const UpdatedLongAgo: Story = {
 			// 現在時刻の15日前を設定
 			updatedAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
 		},
+	},
+};
+
+/**
+ * プレビュー言語切り替えテスト（日本語 → 英語）
+ */
+export const PreviewLanguageSwitchToEnglish: Story = {
+	name: "プレビュー言語切り替え（日本語 → 英語）",
+	args: {
+		article: mockArticle,
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const user = userEvent.setup();
+
+		// すべてのタブリストを取得（1つ目: タイトル言語、2つ目: プレビュー言語）
+		const tablists = canvas.getAllByRole("tablist");
+		expect(tablists).toHaveLength(2);
+
+		// 2つ目のタブリスト（プレビュー言語）の中のタブを取得
+		const previewTablist = tablists[1];
+		const tabs = within(previewTablist).getAllByRole("tab");
+
+		const japaneseTab = tabs.find((tab) => tab.textContent === "日本語");
+		const englishTab = tabs.find((tab) => tab.textContent === "English");
+
+		if (!japaneseTab || !englishTab) {
+			throw new Error("言語タブが見つかりません");
+		}
+
+		// 最初は日本語タブが選択されていることを確認
+		await expect(japaneseTab).toHaveAttribute("data-state", "active");
+
+		// 英語タブをクリック
+		await user.click(englishTab);
+
+		// 英語タブが選択されていることを確認
+		await expect(englishTab).toHaveAttribute("data-state", "active");
+		await expect(japaneseTab).toHaveAttribute("data-state", "inactive");
+	},
+};
+
+/**
+ * プレビュー言語切り替えテスト（英語 → 日本語）
+ */
+export const PreviewLanguageSwitchToJapanese: Story = {
+	name: "プレビュー言語切り替え（英語 → 日本語）",
+	args: {
+		article: mockArticle,
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const user = userEvent.setup();
+
+		// すべてのタブリストを取得（1つ目: タイトル言語、2つ目: プレビュー言語）
+		const tablists = canvas.getAllByRole("tablist");
+		expect(tablists).toHaveLength(2);
+
+		// 2つ目のタブリスト（プレビュー言語）の中のタブを取得
+		const previewTablist = tablists[1];
+		const tabs = within(previewTablist).getAllByRole("tab");
+
+		const japaneseTab = tabs.find((tab) => tab.textContent === "日本語");
+		const englishTab = tabs.find((tab) => tab.textContent === "English");
+
+		if (!japaneseTab || !englishTab) {
+			throw new Error("言語タブが見つかりません");
+		}
+
+		// 最初は日本語タブが選択されていることを確認
+		await expect(japaneseTab).toHaveAttribute("data-state", "active");
+
+		// 英語タブをクリック
+		await user.click(englishTab);
+
+		// 英語タブが選択されていることを確認
+		await expect(englishTab).toHaveAttribute("data-state", "active");
+
+		// 日本語タブをクリック
+		await user.click(japaneseTab);
+
+		// 日本語タブが選択されていることを確認
+		await expect(japaneseTab).toHaveAttribute("data-state", "active");
+		await expect(englishTab).toHaveAttribute("data-state", "inactive");
 	},
 };

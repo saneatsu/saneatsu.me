@@ -124,6 +124,9 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 	// タイトルの表示言語
 	const [titleLanguage, setTitleLanguage] = useState<"ja" | "en">("ja");
 
+	// プレビューの表示言語
+	const [previewLanguage, setPreviewLanguage] = useState<"ja" | "en">("ja");
+
 	/**
 	 * サムネイルURLを生成
 	 *
@@ -478,7 +481,22 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 
 			{/* 本文エディタ */}
 			<div className="space-y-2">
-				<Label>本文 *</Label>
+				<div className="flex items-center justify-between">
+					<Label>本文 *</Label>
+					<Tabs
+						value={previewLanguage}
+						onValueChange={(value) => setPreviewLanguage(value as "ja" | "en")}
+					>
+						<TabsList className="h-8">
+							<TabsTrigger value="ja" className="text-xs">
+								日本語
+							</TabsTrigger>
+							<TabsTrigger value="en" className="text-xs">
+								English
+							</TabsTrigger>
+						</TabsList>
+					</Tabs>
+				</div>
 				<div
 					className={
 						errors.content ? "border border-destructive rounded-md" : ""
@@ -489,7 +507,7 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 						onChange={handleEditorChange}
 						setValue={setValue as (name: string, value: string) => void}
 						height={800}
-						language="ja"
+						language={previewLanguage}
 						enContent={enContent}
 					/>
 				</div>
