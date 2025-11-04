@@ -3,6 +3,7 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, MapPin } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useLocale } from "next-intl";
 
 import type { GalleryImage } from "@/entities/gallery";
@@ -110,14 +111,19 @@ export const columns: ColumnDef<GalleryImage>[] = [
 			const description = jaTranslation?.description;
 
 			return (
-				<div className="flex flex-col gap-1">
-					<div className="font-medium">{title}</div>
-					{description && (
-						<div className="text-sm text-muted-foreground line-clamp-1">
-							{description}
-						</div>
-					)}
-				</div>
+				<Link
+					href={`/admin/gallery/${image.id}/edit`}
+					className="block hover:underline cursor-pointer transition-colors"
+				>
+					<div className="flex flex-col gap-1">
+						<div className="font-medium">{title}</div>
+						{description && (
+							<div className="text-sm text-muted-foreground line-clamp-1">
+								{description}
+							</div>
+						)}
+					</div>
+				</Link>
 			);
 		},
 	},
