@@ -1,7 +1,6 @@
 "use client";
 
-import { Pencil, Trash2 } from "lucide-react";
-import Link from "next/link";
+import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -37,7 +36,7 @@ interface GalleryActionsProps {
  * ギャラリーアクションコンポーネント
  *
  * @description
- * ギャラリー画像の編集・削除アクションを提供する。
+ * ギャラリー画像の削除アクションを提供する。
  * 削除時は確認ダイアログを表示する。
  */
 export function GalleryActions({ image, onAction }: GalleryActionsProps) {
@@ -90,43 +89,22 @@ export function GalleryActions({ image, onAction }: GalleryActionsProps) {
 	return (
 		<>
 			<TooltipProvider>
-				<div className="flex items-center gap-2">
-					{/* 編集ボタン */}
-					<Tooltip>
-						<TooltipTrigger asChild>
-							<Button
-								variant="ghost"
-								size="icon"
-								className="h-8 w-8"
-								asChild
-								disabled={loading}
-							>
-								<Link href={`/admin/gallery/${image.id}/edit`}>
-									<Pencil className="h-4 w-4" />
-									<span className="sr-only">編集</span>
-								</Link>
-							</Button>
-						</TooltipTrigger>
-						<TooltipContent>編集</TooltipContent>
-					</Tooltip>
-
-					{/* 削除ボタン */}
-					<Tooltip>
-						<TooltipTrigger asChild>
-							<Button
-								variant="ghost"
-								size="icon"
-								className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
-								onClick={handleDeleteClick}
-								disabled={loading}
-							>
-								<Trash2 className="h-4 w-4" />
-								<span className="sr-only">削除</span>
-							</Button>
-						</TooltipTrigger>
-						<TooltipContent>削除</TooltipContent>
-					</Tooltip>
-				</div>
+				{/* 削除ボタン */}
+				<Tooltip>
+					<TooltipTrigger asChild>
+						<Button
+							variant="ghost"
+							size="icon"
+							className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
+							onClick={handleDeleteClick}
+							disabled={loading}
+						>
+							<Trash2 className="h-4 w-4" />
+							<span className="sr-only">削除</span>
+						</Button>
+					</TooltipTrigger>
+					<TooltipContent>削除</TooltipContent>
+				</Tooltip>
 			</TooltipProvider>
 
 			{/* 削除確認ダイアログ */}
