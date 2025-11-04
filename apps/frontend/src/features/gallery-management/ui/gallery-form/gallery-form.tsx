@@ -150,9 +150,11 @@ export function GalleryForm({ mode = "create", imageId }: GalleryFormProps) {
 			form.reset({
 				titleJa: jaTranslation?.title || "",
 				descriptionJa: jaTranslation?.description || "",
-				takenAt: existingImage.takenAt
-					? new Date(existingImage.takenAt)
-					: undefined,
+				takenAt:
+					existingImage.takenAt &&
+					!Number.isNaN(new Date(existingImage.takenAt).getTime())
+						? new Date(existingImage.takenAt)
+						: undefined,
 				coordinates:
 					existingImage.latitude && existingImage.longitude
 						? {
