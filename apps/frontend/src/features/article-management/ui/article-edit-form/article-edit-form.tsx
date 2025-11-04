@@ -281,7 +281,19 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 						}
 						return "記事が更新されました";
 					},
-					error: "記事の更新に失敗しました",
+					error: (error) => {
+						// 詳細なエラーメッセージを取得
+						const errorMessage =
+							error instanceof Error
+								? error.message
+								: "記事の更新に失敗しました";
+
+						// Alertコンポーネント用にエラーを設定
+						setFormError(errorMessage);
+
+						// toastに表示するメッセージを返す
+						return errorMessage;
+					},
 				}
 			);
 		} catch (error) {
