@@ -1,4 +1,5 @@
 import { type RefObject, useEffect } from "react";
+import getCaretCoordinates from "textarea-caret";
 
 /**
  * Wiki Link検知フックの設定
@@ -106,38 +107,42 @@ export function useWikiLinkDetection({
 				setShowSuggestions(true);
 			}
 
-			// より正確なカーソル位置を計算
-			const rect = textarea.getBoundingClientRect();
+			// textarea-caretを使って正確なカーソル位置を取得
+			// この方法により、textarea内のキャレット位置を正確に取得できる
+			const caretCoordinates = getCaretCoordinates(textarea, cursorPos);
+			const textareaRect = textarea.getBoundingClientRect();
 
-			// テキストエリアのスタイルから実際のフォントサイズと行高を取得
+			// textareaのpaddingを取得（p-4 = 1rem = 16px）
+			// textarea-caretはpadding内側からの相対座標を返すため、paddingを加算する必要がある
 			const computedStyle = window.getComputedStyle(textarea);
-			const fontSize = parseInt(computedStyle.fontSize, 10) || 16;
-			const lineHeight =
-				parseInt(computedStyle.lineHeight, 10) || fontSize * 1.5;
-
-			// 改行数をカウント
-			const lines = beforeCursor.split("\n").length;
-
-			// 現在の行でのカーソル位置（[[の位置ではなく実際のカーソル位置）
-			const lastLineStart = beforeCursor.lastIndexOf("\n") + 1;
-			const currentLineText = beforeCursor.substring(lastLineStart);
-
-			// より正確な文字幅を計算（モノスペースフォントでない場合も考慮）
-			const charWidth = fontSize * 0.6; // 大まかな文字幅の推定
+			const paddingLeft = parseInt(computedStyle.paddingLeft, 10) || 0;
+			const paddingTop = parseInt(computedStyle.paddingTop, 10) || 0;
 
 			const calculatedPosition = {
-				top: rect.top + window.scrollY + (lines - 1) * lineHeight,
-				left: rect.left + window.scrollX + currentLineText.length * charWidth,
+				// position:fixedなので、viewport基準の座標を使用（scrollは加算しない）
+				// textareaのスクロール位置を考慮する必要がある
+				top:
+					textareaRect.top +
+					paddingTop +
+					caretCoordinates.top -
+					textarea.scrollTop,
+				left:
+					textareaRect.left +
+					paddingLeft +
+					caretCoordinates.left -
+					textarea.scrollLeft,
 			};
+
 			setCursorPosition(calculatedPosition);
 		};
 
 		const handleInput = (_e: Event) => {
 			if (!isComposing) {
 				// 少し遅延して処理を実行（入力処理の競合を避ける）
+				// 括弧自動補完の処理を待つために20msの遅延を設定
 				setTimeout(() => {
 					checkWikiLink("input");
-				}, 0);
+				}, 20);
 			}
 		};
 
@@ -156,7 +161,10 @@ export function useWikiLinkDetection({
 		const handleSelectionChange = () => {
 			// カーソル位置が変更されたらチェック
 			if (!isComposing) {
-				checkWikiLink("selectionchange");
+				// 括弧自動補完の処理を待つために20msの遅延を設定
+				setTimeout(() => {
+					checkWikiLink("selectionchange");
+				}, 20);
 			}
 		};
 
