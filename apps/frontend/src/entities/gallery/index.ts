@@ -4,7 +4,6 @@ export { useGetGalleryImages } from "./api/use-get-gallery-images/use-get-galler
 export { useSearchGeocoding } from "./api/use-search-geocoding/use-search-geocoding";
 export { useUpdateGalleryImage } from "./api/use-update-gallery-image/use-update-gallery-image";
 export { useUploadGalleryImage } from "./api/use-upload-gallery-image/use-upload-gallery-image";
-
 export type {
 	GalleryImage,
 	GalleryImageDeleteResponse,
@@ -19,3 +18,7 @@ export type {
 	GeocodingSearchParams,
 	GeocodingSearchResponse,
 } from "./model/types";
+export {
+	AddressSearch,
+	type AddressSearchProps,
+} from "./ui/address-search/address-search";
