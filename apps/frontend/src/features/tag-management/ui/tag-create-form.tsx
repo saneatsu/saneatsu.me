@@ -134,7 +134,14 @@ export function TagCreateForm() {
 			</div>
 
 			{/* 送信ボタン */}
-			<div className="flex gap-4">
+			<div className="flex justify-end space-x-4">
+				<Button
+					type="button"
+					variant="outline"
+					onClick={() => router.push("/admin/tags")}
+				>
+					キャンセル
+				</Button>
 				<Button type="submit" disabled={createMutation.isPending}>
 					{createMutation.isPending ? (
 						<>
@@ -142,15 +149,8 @@ export function TagCreateForm() {
 							作成中...
 						</>
 					) : (
-						"タグを作成"
+						"作成"
 					)}
-				</Button>
-				<Button
-					type="button"
-					variant="outline"
-					onClick={() => router.push("/admin/tags")}
-				>
-					キャンセル
 				</Button>
 			</div>
 		</form>
