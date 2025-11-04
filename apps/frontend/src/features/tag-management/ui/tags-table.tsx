@@ -190,7 +190,7 @@ export function TagsTable() {
 				<Button asChild>
 					<Link href="/admin/tags/new">
 						<Plus className="mr-2 h-4 w-4" />
-						タグを作成
+						作成
 					</Link>
 				</Button>
 			</div>
