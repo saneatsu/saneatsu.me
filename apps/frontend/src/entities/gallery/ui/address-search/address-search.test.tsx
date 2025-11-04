@@ -7,8 +7,13 @@ import { AddressSearch } from "./address-search";
 // useSearchGeocoding をモック
 const mockUseSearchGeocoding = vi.fn();
 
-vi.mock("@/entities/gallery", () => ({
+vi.mock("../../api/use-search-geocoding/use-search-geocoding", () => ({
 	useSearchGeocoding: (...args: unknown[]) => mockUseSearchGeocoding(...args),
+}));
+
+// next-intl の useLocale をモック
+vi.mock("next-intl", () => ({
+	useLocale: () => "ja",
 }));
 
 describe("AddressSearch", () => {
