@@ -1,23 +1,8 @@
-import type { Metadata } from "next";
+"use client";
+
+import { useParams } from "next/navigation";
 
 import { GalleryForm } from "@/features/gallery-management";
-
-/**
- * ページメタデータ
- */
-export const metadata: Metadata = {
-	title: "ギャラリー画像の編集",
-	description: "ギャラリー画像の情報を編集します",
-};
-
-/**
- * ギャラリー画像編集ページのプロパティ
- */
-interface GalleryEditPageProps {
-	params: {
-		id: string;
-	};
-}
 
 /**
  * ギャラリー画像編集ページ
@@ -30,8 +15,9 @@ interface GalleryEditPageProps {
  * - 画像ファイルの差し替え（オプション）
  * - 位置情報の設定（住所検索、座標入力、地図選択）
  */
-export default function GalleryEditPage({ params }: GalleryEditPageProps) {
-	const imageId = Number.parseInt(params.id, 10);
+export default function GalleryEditPage() {
+	const params = useParams();
+	const imageId = Number.parseInt(params.id as string, 10);
 
 	return (
 		<div className="space-y-6">
