@@ -228,31 +228,16 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 	const calculatePosition = () => {
 		if (!position) return undefined;
 
-		// textareaから実際のフォントサイズと行高を取得
-		const textarea = document.querySelector(
-			".w-md-editor-text-input"
-		) as HTMLTextAreaElement;
-
-		let actualLineHeight = 24; // デフォルト値
-		if (textarea) {
-			const computedStyle = window.getComputedStyle(textarea);
-			const fontSize = parseInt(computedStyle.fontSize, 10) || 16;
-			actualLineHeight =
-				parseInt(computedStyle.lineHeight, 10) || fontSize * 1.5;
-		}
-
 		const popoverHeight = 300; // 推定高さ
 		const popoverWidth = 400; // Popoverの幅
 		const minOffset = 5; // 最小オフセット（テキスト行との重複を避ける）
 		const windowHeight = window.innerHeight;
 		const windowWidth = window.innerWidth;
-		const scrollY = window.scrollY;
-		const scrollX = window.scrollX;
 
 		// Popoverを下に表示した場合のスペースを計算
-		const spaceBelow =
-			windowHeight - (position.top - scrollY) - actualLineHeight;
-		const spaceAbove = position.top - scrollY - minOffset;
+		// position.topはすでにviewport座標なので、scrollYを使わない
+		const spaceBelow = windowHeight - position.top;
+		const spaceAbove = position.top - minOffset;
 
 		// 下に十分なスペースがあるかチェック
 		const canShowBelow = spaceBelow >= popoverHeight + minOffset;
@@ -264,28 +249,28 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 
 		let top: number;
 		if (showBelow) {
-			// 下に表示（カーソル行のすぐ下）
-			top = position.top + actualLineHeight + minOffset;
+			// 下に表示（カーソル位置のすぐ下）
+			top = position.top + minOffset;
 		} else {
-			// 上に表示（カーソル行のすぐ上）
+			// 上に表示（カーソル位置のすぐ上）
 			top = position.top - popoverHeight - minOffset;
 		}
 
 		// 左右の位置調整（画面からはみ出さないように）
 		let left = position.left;
-		if (left + popoverWidth > windowWidth + scrollX) {
-			left = windowWidth + scrollX - popoverWidth - 10; // 右端から10px余白
+		if (left + popoverWidth > windowWidth) {
+			left = windowWidth - popoverWidth - 10; // 右端から10px余白
 		}
-		if (left < scrollX) {
-			left = scrollX + 10; // 左端から10px余白
+		if (left < 0) {
+			left = 10; // 左端から10px余白
 		}
 
 		// 上下の境界チェック
-		if (top < scrollY) {
-			top = scrollY + 10; // 画面上端から10px余白
+		if (top < 0) {
+			top = 10; // 画面上端から10px余白
 		}
-		if (top + popoverHeight > windowHeight + scrollY) {
-			top = windowHeight + scrollY - popoverHeight - 10; // 画面下端から10px余白
+		if (top + popoverHeight > windowHeight) {
+			top = windowHeight - popoverHeight - 10; // 画面下端から10px余白
 		}
 
 		return { top, left };

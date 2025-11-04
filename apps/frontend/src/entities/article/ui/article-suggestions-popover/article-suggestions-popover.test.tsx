@@ -375,7 +375,7 @@ describe("Unit Test", () => {
 			await waitFor(() => {
 				const popover = document.querySelector(".fixed.z-50");
 				expect(popover).toHaveStyle({
-					top: "129px", // position.top + actualLineHeight + minOffset (100 + 24 + 5)
+					top: "105px", // position.top + minOffset (100 + 5)
 					left: "200px",
 				});
 			});
