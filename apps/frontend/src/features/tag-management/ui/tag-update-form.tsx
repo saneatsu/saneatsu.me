@@ -169,7 +169,14 @@ export function TagUpdateForm({ tag }: TagUpdateFormProps) {
 			</div>
 
 			{/* 送信ボタン */}
-			<div className="flex gap-4">
+			<div className="flex justify-end space-x-4">
+				<Button
+					type="button"
+					variant="outline"
+					onClick={() => router.push("/admin/tags")}
+				>
+					キャンセル
+				</Button>
 				<Button type="submit" disabled={updateMutation.isPending}>
 					{updateMutation.isPending ? (
 						<>
@@ -177,15 +184,8 @@ export function TagUpdateForm({ tag }: TagUpdateFormProps) {
 							更新中...
 						</>
 					) : (
-						"タグを更新"
+						"更新"
 					)}
-				</Button>
-				<Button
-					type="button"
-					variant="outline"
-					onClick={() => router.push("/admin/tags")}
-				>
-					キャンセル
 				</Button>
 			</div>
 		</form>
