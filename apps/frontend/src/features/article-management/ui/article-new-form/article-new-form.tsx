@@ -440,7 +440,7 @@ export function ArticleNewForm() {
 							? "画像アップロード中..."
 							: createArticleMutation.isPending
 								? "作成中..."
-								: "記事を作成"}
+								: "作成"}
 					</Button>
 				</div>
 			</form>
