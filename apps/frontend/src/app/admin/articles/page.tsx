@@ -26,7 +26,7 @@ export default function ArticlesPage() {
 			<div className="flex justify-end">
 				<Link href="/admin/articles/new">
 					<Button className="w-fit">
-						<Plus className="mr-2 h-4 w-4" />
+						<Plus className="h-4 w-4" />
 						作成
 					</Button>
 				</Link>
