@@ -27,7 +27,7 @@ export default function ArticlesPage() {
 				<Link href="/admin/articles/new">
 					<Button className="w-fit">
 						<Plus className="mr-2 h-4 w-4" />
-						新しい記事を作成
+						作成
 					</Button>
 				</Link>
 			</div>
