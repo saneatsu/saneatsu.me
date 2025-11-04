@@ -520,7 +520,14 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 			</div>
 
 			{/* 送信ボタン */}
-			<div className="flex gap-4">
+			<div className="flex justify-end space-x-4">
+				<Button
+					type="button"
+					variant="outline"
+					onClick={() => window.history.back()}
+				>
+					キャンセル
+				</Button>
 				<Button type="submit" disabled={updateMutation.isPending}>
 					{updateMutation.isPending ? (
 						<>
@@ -528,15 +535,8 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 							更新中...
 						</>
 					) : (
-						"記事を更新"
+						"更新"
 					)}
-				</Button>
-				<Button
-					type="button"
-					variant="outline"
-					onClick={() => window.history.back()}
-				>
-					キャンセル
 				</Button>
 			</div>
 		</form>

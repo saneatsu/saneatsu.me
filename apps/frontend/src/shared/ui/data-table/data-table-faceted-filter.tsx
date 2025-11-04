@@ -151,7 +151,7 @@ export function DataTableFacetedFilter<TData, TValue>({
 							<XCircle className="h-4 w-4" />
 						</div>
 					) : (
-						<PlusCircle className="mr-2 h-4 w-4" />
+						<PlusCircle className="h-4 w-4" />
 					)}
 					{title}
 					{selectedValues?.size > 0 && (

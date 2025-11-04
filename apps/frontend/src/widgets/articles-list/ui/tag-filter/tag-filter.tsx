@@ -167,7 +167,7 @@ export function TagFilter() {
 							<XCircle className="h-4 w-4" />
 						</div>
 					) : (
-						<PlusCircle className="mr-2 h-4 w-4" />
+						<PlusCircle className="h-4 w-4" />
 					)}
 					{t("title")}
 					{selectedValues?.size > 0 && (
