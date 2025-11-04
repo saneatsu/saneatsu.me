@@ -14,6 +14,8 @@ import {
 	articleTags,
 	articleTranslations,
 	dailyArticleViews,
+	galleryImages,
+	galleryImageTranslations,
 	tags,
 	tagTranslations,
 	users,
@@ -34,6 +36,8 @@ async function clearAllTables() {
 
 	try {
 		// 外部キー制約を考慮して削除順序を設定
+		await db.delete(galleryImageTranslations);
+		await db.delete(galleryImages);
 		await db.delete(articleTags);
 		await db.delete(tagTranslations);
 		await db.delete(tags);
@@ -47,6 +51,501 @@ async function clearAllTables() {
 		console.error("❌ テーブルクリア中にエラーが発生しました:", error);
 		throw error;
 	}
+}
+
+/**
+ * ギャラリー画像用の都市データ
+ * 各都市の中心座標と件数を定義
+ */
+const GALLERY_CITIES = [
+	// 東京 (20件)
+	{ name: "tokyo", lat: 35.6762, lon: 139.6503, count: 20 },
+	// 大阪 (2件)
+	{ name: "osaka", lat: 34.6937, lon: 135.5023, count: 2 },
+	// 福岡 (2件)
+	{ name: "fukuoka", lat: 33.5904, lon: 130.4017, count: 2 },
+	// 名古屋 (2件)
+	{ name: "nagoya", lat: 35.1815, lon: 136.9066, count: 2 },
+	// 札幌 (2件)
+	{ name: "sapporo", lat: 43.0642, lon: 141.3469, count: 2 },
+	// 千葉 (2件)
+	{ name: "chiba", lat: 35.6074, lon: 140.1065, count: 2 },
+	// アメリカ (2件)
+	{ name: "usa", lat: 40.7128, lon: -74.006, count: 2 },
+	// イギリス (2件)
+	{ name: "uk", lat: 51.5074, lon: -0.1278, count: 2 },
+	// カナダ (2件)
+	{ name: "canada", lat: 43.6532, lon: -79.3832, count: 2 },
+	// オーストラリア (2件)
+	{ name: "australia", lat: -33.8688, lon: 151.2093, count: 2 },
+	// インド (2件)
+	{ name: "india", lat: 28.6139, lon: 77.209, count: 2 },
+	// タイ (2件)
+	{ name: "thailand", lat: 13.7563, lon: 100.5018, count: 2 },
+	// 中国 (2件)
+	{ name: "china", lat: 39.9042, lon: 116.4074, count: 2 },
+	// エジプト (2件)
+	{ name: "egypt", lat: 30.0444, lon: 31.2357, count: 2 },
+	// ロシア (2件)
+	{ name: "russia", lat: 55.7558, lon: 37.6173, count: 2 },
+	// ブラジル (2件)
+	{ name: "brazil", lat: -23.5505, lon: -46.6333, count: 2 },
+];
+
+/**
+ * 都市ごとの観光スポット・タイトルデータ
+ */
+const GALLERY_CONTENT: Record<
+	string,
+	Array<{ ja: string; en: string; descJa: string; descEn: string }>
+> = {
+	tokyo: [
+		{
+			ja: "東京タワーの夜景",
+			en: "Tokyo Tower at Night",
+			descJa: "東京のシンボル、東京タワーがライトアップされた美しい夜景",
+			descEn: "The iconic Tokyo Tower illuminated beautifully at night",
+		},
+		{
+			ja: "浅草寺と雷門",
+			en: "Senso-ji Temple and Kaminarimon Gate",
+			descJa: "東京最古の寺院、浅草寺の荘厳な雷門",
+			descEn:
+				"The majestic Kaminarimon Gate of Tokyo's oldest temple, Senso-ji",
+		},
+		{
+			ja: "スカイツリーからの眺望",
+			en: "View from Tokyo Skytree",
+			descJa: "東京スカイツリー展望台からの息をのむような景色",
+			descEn: "Breathtaking view from the Tokyo Skytree observation deck",
+		},
+		{
+			ja: "渋谷スクランブル交差点",
+			en: "Shibuya Scramble Crossing",
+			descJa: "世界で最も有名な交差点の一つ、渋谷スクランブル交差点",
+			descEn:
+				"One of the world's most famous intersections, Shibuya Scramble Crossing",
+		},
+		{
+			ja: "新宿御苑の桜",
+			en: "Cherry Blossoms at Shinjuku Gyoen",
+			descJa: "春の新宿御苑に咲き誇る美しい桜",
+			descEn:
+				"Beautiful cherry blossoms in full bloom at Shinjuku Gyoen in spring",
+		},
+		{
+			ja: "明治神宮の鳥居",
+			en: "Meiji Shrine Torii Gate",
+			descJa: "都会の中の静寂な空間、明治神宮の荘厳な鳥居",
+			descEn:
+				"The majestic torii gate of Meiji Shrine, a serene space in the city",
+		},
+		{
+			ja: "お台場レインボーブリッジ",
+			en: "Odaiba Rainbow Bridge",
+			descJa: "東京湾に架かる美しいレインボーブリッジの夜景",
+			descEn: "Beautiful night view of Rainbow Bridge spanning Tokyo Bay",
+		},
+		{
+			ja: "上野動物園のパンダ",
+			en: "Pandas at Ueno Zoo",
+			descJa: "上野動物園の人気者、愛らしいパンダ",
+			descEn: "Adorable pandas, the popular attractions at Ueno Zoo",
+		},
+		{
+			ja: "築地市場の朝",
+			en: "Morning at Tsukiji Market",
+			descJa: "活気あふれる築地市場の早朝の風景",
+			descEn: "Vibrant early morning scene at Tsukiji Market",
+		},
+		{
+			ja: "六本木ヒルズからの夜景",
+			en: "Night View from Roppongi Hills",
+			descJa: "六本木ヒルズ展望台から見る東京の煌めく夜景",
+			descEn: "Glittering Tokyo night view from Roppongi Hills observatory",
+		},
+		{
+			ja: "皇居外苑の緑",
+			en: "Greenery at Imperial Palace Outer Garden",
+			descJa: "都心のオアシス、皇居外苑の美しい緑",
+			descEn:
+				"Beautiful greenery at the Imperial Palace Outer Garden, an oasis in the city center",
+		},
+		{
+			ja: "秋葉原の電気街",
+			en: "Electric Town in Akihabara",
+			descJa: "日本のポップカルチャーの中心地、秋葉原",
+			descEn: "Akihabara, the center of Japanese pop culture",
+		},
+		{
+			ja: "東京駅丸の内駅舎",
+			en: "Tokyo Station Marunouchi Building",
+			descJa: "重要文化財に指定された美しい東京駅の赤レンガ駅舎",
+			descEn:
+				"The beautiful red brick station building of Tokyo Station, designated as an Important Cultural Property",
+		},
+		{
+			ja: "表参道のイルミネーション",
+			en: "Illumination at Omotesando",
+			descJa: "冬の表参道を彩る幻想的なイルミネーション",
+			descEn: "Fantastic illumination decorating Omotesando in winter",
+		},
+		{
+			ja: "隅田川の桜並木",
+			en: "Cherry Blossom Trees along Sumida River",
+			descJa: "隅田川沿いに咲く満開の桜並木",
+			descEn: "Cherry blossom trees in full bloom along the Sumida River",
+		},
+		{
+			ja: "代々木公園の紅葉",
+			en: "Autumn Leaves at Yoyogi Park",
+			descJa: "秋の代々木公園を彩る美しい紅葉",
+			descEn: "Beautiful autumn leaves coloring Yoyogi Park in fall",
+		},
+		{
+			ja: "銀座の夜のショッピング街",
+			en: "Ginza Shopping District at Night",
+			descJa: "高級ブランド店が立ち並ぶ銀座の華やかな夜景",
+			descEn: "Glamorous night view of Ginza lined with luxury brand stores",
+		},
+		{
+			ja: "東京国立博物館",
+			en: "Tokyo National Museum",
+			descJa: "日本最古の博物館、東京国立博物館の本館",
+			descEn:
+				"The main building of Tokyo National Museum, Japan's oldest museum",
+		},
+		{
+			ja: "竹下通りのストリート",
+			en: "Takeshita Street",
+			descJa: "原宿の若者文化の中心地、賑やかな竹下通り",
+			descEn:
+				"Bustling Takeshita Street, the center of youth culture in Harajuku",
+		},
+		{
+			ja: "東京湾の夕焼け",
+			en: "Sunset over Tokyo Bay",
+			descJa: "東京湾に沈む美しい夕日",
+			descEn: "Beautiful sunset over Tokyo Bay",
+		},
+	],
+	osaka: [
+		{
+			ja: "大阪城の桜",
+			en: "Osaka Castle with Cherry Blossoms",
+			descJa: "春の大阪城を彩る満開の桜",
+			descEn:
+				"Osaka Castle adorned with cherry blossoms in full bloom in spring",
+		},
+		{
+			ja: "道頓堀の夜景",
+			en: "Dotonbori at Night",
+			descJa: "大阪の繁華街、道頓堀の賑やかな夜の風景",
+			descEn:
+				"Bustling night scene of Dotonbori, Osaka's entertainment district",
+		},
+	],
+	fukuoka: [
+		{
+			ja: "福岡タワーの夜景",
+			en: "Fukuoka Tower at Night",
+			descJa: "海辺に佇む福岡タワーの美しいライトアップ",
+			descEn: "Beautiful illumination of Fukuoka Tower standing by the sea",
+		},
+		{
+			ja: "太宰府天満宮",
+			en: "Dazaifu Tenmangu Shrine",
+			descJa: "学問の神様を祀る太宰府天満宮の本殿",
+			descEn:
+				"Main hall of Dazaifu Tenmangu Shrine dedicated to the god of learning",
+		},
+	],
+	nagoya: [
+		{
+			ja: "名古屋城の金のしゃちほこ",
+			en: "Golden Shachihoko of Nagoya Castle",
+			descJa: "名古屋のシンボル、名古屋城の金のしゃちほこ",
+			descEn: "The golden shachihoko of Nagoya Castle, a symbol of Nagoya",
+		},
+		{
+			ja: "熱田神宮の森",
+			en: "Forest at Atsuta Shrine",
+			descJa: "都会の中の静寂な空間、熱田神宮の鎮守の森",
+			descEn: "Sacred forest of Atsuta Shrine, a serene space in the city",
+		},
+	],
+	sapporo: [
+		{
+			ja: "札幌時計台",
+			en: "Sapporo Clock Tower",
+			descJa: "札幌のシンボル、歴史的建造物の時計台",
+			descEn: "The Clock Tower, a symbol and historical building of Sapporo",
+		},
+		{
+			ja: "大通公園の雪まつり",
+			en: "Snow Festival at Odori Park",
+			descJa: "冬の札幌を彩る雪まつりの氷像",
+			descEn:
+				"Ice sculptures of the Snow Festival decorating Sapporo in winter",
+		},
+	],
+	chiba: [
+		{
+			ja: "東京ディズニーランド",
+			en: "Tokyo Disneyland",
+			descJa: "夢と魔法の王国、東京ディズニーランドのシンデレラ城",
+			descEn:
+				"Cinderella Castle at Tokyo Disneyland, the kingdom of dreams and magic",
+		},
+		{
+			ja: "幕張メッセ",
+			en: "Makuhari Messe",
+			descJa: "国際会議やイベントが開催される幕張メッセ",
+			descEn:
+				"Makuhari Messe where international conferences and events are held",
+		},
+	],
+	usa: [
+		{
+			ja: "自由の女神像",
+			en: "Statue of Liberty",
+			descJa: "ニューヨークのシンボル、自由の女神像",
+			descEn: "The Statue of Liberty, a symbol of New York",
+		},
+		{
+			ja: "タイムズスクエアの夜",
+			en: "Times Square at Night",
+			descJa: "眠らない街ニューヨーク、タイムズスクエアの夜景",
+			descEn:
+				"Night view of Times Square in New York, the city that never sleeps",
+		},
+	],
+	uk: [
+		{
+			ja: "ビッグベンと国会議事堂",
+			en: "Big Ben and Houses of Parliament",
+			descJa: "ロンドンのランドマーク、ビッグベンと国会議事堂",
+			descEn: "Big Ben and the Houses of Parliament, landmarks of London",
+		},
+		{
+			ja: "タワーブリッジ",
+			en: "Tower Bridge",
+			descJa: "テムズ川に架かる美しいタワーブリッジ",
+			descEn: "Beautiful Tower Bridge spanning the River Thames",
+		},
+	],
+	canada: [
+		{
+			ja: "CNタワー",
+			en: "CN Tower",
+			descJa: "トロントのシンボル、CNタワーからの眺望",
+			descEn: "View from CN Tower, a symbol of Toronto",
+		},
+		{
+			ja: "ナイアガラの滝",
+			en: "Niagara Falls",
+			descJa: "壮大な自然の驚異、ナイアガラの滝",
+			descEn: "Niagara Falls, a magnificent natural wonder",
+		},
+	],
+	australia: [
+		{
+			ja: "シドニーオペラハウス",
+			en: "Sydney Opera House",
+			descJa: "世界遺産、シドニーオペラハウスの美しい外観",
+			descEn: "Beautiful exterior of Sydney Opera House, a World Heritage Site",
+		},
+		{
+			ja: "ハーバーブリッジ",
+			en: "Sydney Harbour Bridge",
+			descJa: "シドニー湾に架かる象徴的なハーバーブリッジ",
+			descEn: "Iconic Harbour Bridge spanning Sydney Harbour",
+		},
+	],
+	india: [
+		{
+			ja: "タージマハル",
+			en: "Taj Mahal",
+			descJa: "世界遺産、白亜の霊廟タージマハル",
+			descEn: "The Taj Mahal, a white marble mausoleum and World Heritage Site",
+		},
+		{
+			ja: "ガンジス川の朝",
+			en: "Morning at Ganges River",
+			descJa: "聖なる川ガンジスの神秘的な朝の風景",
+			descEn: "Mystical morning scene at the sacred Ganges River",
+		},
+	],
+	thailand: [
+		{
+			ja: "ワット・アルン（暁の寺）",
+			en: "Wat Arun (Temple of Dawn)",
+			descJa: "バンコクのシンボル、美しいワット・アルン",
+			descEn: "Beautiful Wat Arun, a symbol of Bangkok",
+		},
+		{
+			ja: "水上マーケット",
+			en: "Floating Market",
+			descJa: "タイの伝統的な水上マーケットの風景",
+			descEn: "Traditional Thai floating market scene",
+		},
+	],
+	china: [
+		{
+			ja: "万里の長城",
+			en: "Great Wall of China",
+			descJa: "世界遺産、雄大な万里の長城",
+			descEn: "The magnificent Great Wall of China, a World Heritage Site",
+		},
+		{
+			ja: "紫禁城",
+			en: "Forbidden City",
+			descJa: "北京の歴史的建造物、紫禁城",
+			descEn: "The Forbidden City, a historical building in Beijing",
+		},
+	],
+	egypt: [
+		{
+			ja: "ギザの大ピラミッド",
+			en: "Great Pyramid of Giza",
+			descJa: "古代エジプトの驚異、ギザの大ピラミッド",
+			descEn: "The Great Pyramid of Giza, a wonder of ancient Egypt",
+		},
+		{
+			ja: "スフィンクス",
+			en: "Sphinx",
+			descJa: "謎に包まれた古代遺跡、スフィンクス",
+			descEn: "The mysterious ancient monument, the Sphinx",
+		},
+	],
+	russia: [
+		{
+			ja: "赤の広場",
+			en: "Red Square",
+			descJa: "モスクワの中心、歴史的な赤の広場",
+			descEn: "The historical Red Square in the center of Moscow",
+		},
+		{
+			ja: "聖ワシリイ大聖堂",
+			en: "Saint Basil's Cathedral",
+			descJa: "色とりどりの玉ねぎ型ドームが美しい聖ワシリイ大聖堂",
+			descEn: "Saint Basil's Cathedral with its beautiful colorful onion domes",
+		},
+	],
+	brazil: [
+		{
+			ja: "コルコバードのキリスト像",
+			en: "Christ the Redeemer",
+			descJa: "リオデジャネイロのシンボル、コルコバードのキリスト像",
+			descEn: "Christ the Redeemer, a symbol of Rio de Janeiro",
+		},
+		{
+			ja: "コパカバーナビーチ",
+			en: "Copacabana Beach",
+			descJa: "リオデジャネイロの美しいコパカバーナビーチ",
+			descEn: "Beautiful Copacabana Beach in Rio de Janeiro",
+		},
+	],
+};
+
+/**
+ * ギャラリー画像のシードデータを生成
+ *
+ * @description
+ * 1. 都市ごとの指定件数の画像データを生成（東京20件、その他各2件）
+ * 2. 共通のCloudflare Images IDを使用
+ * 3. 各都市の中心座標の近くにランダムな座標を生成（±0.1度）
+ * 4. 過去365日以内のランダムなtakenAt日時を生成
+ * 5. 日本語と英語の翻訳データを生成
+ */
+async function seedGalleryImages() {
+	console.log("🖼️  ギャラリー画像を生成中...");
+
+	const cfImageId =
+		"saneatsu-me_development_content_7bb0eb42-4d0c-45ed-87b8-5b10ecf1ca3a";
+	const now = new Date();
+	const oneYearAgo = new Date(now);
+	oneYearAgo.setFullYear(now.getFullYear() - 1);
+
+	let totalImageCount = 0;
+
+	// 1. 各都市ごとにループ
+	for (const city of GALLERY_CITIES) {
+		const cityContent = GALLERY_CONTENT[city.name];
+		if (!cityContent || cityContent.length < city.count) {
+			console.warn(
+				`⚠️  ${city.name}のコンテンツが不足しています（必要: ${city.count}件、実際: ${cityContent?.length || 0}件）`
+			);
+			continue;
+		}
+
+		const galleryImageData = [];
+
+		// 2. 各都市の指定件数分の画像データを生成
+		for (let i = 0; i < city.count; i++) {
+			// 2.1. 座標にランダムな変動を加える（±0.1度）
+			const latVariation = (Math.random() - 0.5) * 0.2; // -0.1 ~ +0.1
+			const lonVariation = (Math.random() - 0.5) * 0.2; // -0.1 ~ +0.1
+			const latitude = city.lat + latVariation;
+			const longitude = city.lon + lonVariation;
+
+			// 2.2. 過去365日以内のランダムな日時を生成
+			const randomTime =
+				oneYearAgo.getTime() +
+				Math.random() * (now.getTime() - oneYearAgo.getTime());
+			const takenAt = new Date(randomTime).toISOString();
+
+			galleryImageData.push({
+				cfImageId,
+				latitude,
+				longitude,
+				takenAt,
+			});
+		}
+
+		// 3. gallery_imagesテーブルに挿入
+		const insertedImages = await db
+			.insert(galleryImages)
+			.values(galleryImageData)
+			.returning();
+
+		totalImageCount += insertedImages.length;
+
+		// 4. 翻訳データを生成
+		const translationData = [];
+
+		for (let i = 0; i < insertedImages.length; i++) {
+			const image = insertedImages[i];
+			const content = cityContent[i];
+
+			// 4.1. 日本語の翻訳
+			translationData.push({
+				galleryImageId: image.id,
+				title: content.ja,
+				description: content.descJa,
+				language: "ja" as const,
+			});
+
+			// 4.2. 英語の翻訳
+			translationData.push({
+				galleryImageId: image.id,
+				title: content.en,
+				description: content.descEn,
+				language: "en" as const,
+			});
+		}
+
+		// 5. gallery_image_translationsテーブルに挿入
+		await db.insert(galleryImageTranslations).values(translationData);
+
+		console.log(
+			`  ✅ ${city.name}: ${insertedImages.length}件の画像と${translationData.length}件の翻訳を作成`
+		);
+	}
+
+	console.log(`✅ 合計${totalImageCount}件のギャラリー画像を作成しました`);
+
+	return totalImageCount;
 }
 
 /**
@@ -696,6 +1195,9 @@ async function seed() {
 		await db.insert(dailyArticleViews).values(dailyViewsData);
 		console.log(`✅ ${dailyViewsData.length}件の日別閲覧数を作成しました`);
 
+		// ギャラリー画像を生成
+		const galleryImageCount = await seedGalleryImages();
+
 		console.log("🎉 200件シードデータの作成が完了しました！");
 
 		// 閲覧数の統計を計算
@@ -715,6 +1217,8 @@ async function seed() {
 - タグ翻訳: ${tagTranslationData.length}件（日本語・英語）
 - 記事-タグ関連付け: ${articleTagsData.length}件
 - 日別閲覧数: ${dailyViewsData.length}件（過去90日間の日別データ）
+- ギャラリー画像: ${galleryImageCount}件（撮影日: 過去1年間に分散、16都市）
+- ギャラリー画像翻訳: ${galleryImageCount * 2}件（日本語・英語）
 
 📈 閲覧数統計:
 - 合計閲覧数: ${totalViewCount.toLocaleString()}回（記事全体）
@@ -722,6 +1226,11 @@ async function seed() {
 - 人気記事数: ${popularCount}件（全体の5%）
 - 閲覧数は記事全体でカウントされ、公開日からの経過日数を考慮して生成
 - 日別閲覧数は過去90日間の現実的なパターン（公開直後ピーク、週末効果）で分散
+
+🖼️  ギャラリー統計:
+- 東京: 20件、その他15都市: 各2件
+- 全画像で共通のCloudflare Images ID使用
+- 座標は各都市の中心から±0.1度の範囲でランダム配置
 		`);
 	} catch (error) {
 		console.error("❌ エラーが発生しました:", error);
