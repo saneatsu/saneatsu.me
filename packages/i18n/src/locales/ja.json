@@ -160,7 +160,7 @@
 		"tableOfContents": "目次"
 	},
 	"gallery": {
-		"title": "ギャラリー",
+		"title": "Gallery",
 		"form": {
 			"file": "画像ファイル",
 			"fileSelect": "ファイルを選択",
