@@ -30,7 +30,14 @@ const mockExistingImage = {
 };
 
 // モック関数の定義（vi.hoistedを使用してホイスト）
-const { mockDeleteImage, mockSelect, mockFrom, mockWhere, mockLimit, mockDelete } = vi.hoisted(() => ({
+const {
+	mockDeleteImage,
+	mockSelect,
+	mockFrom,
+	mockWhere,
+	mockLimit,
+	mockDelete,
+} = vi.hoisted(() => ({
 	mockDeleteImage: vi.fn(),
 	mockSelect: vi.fn(),
 	mockFrom: vi.fn(),

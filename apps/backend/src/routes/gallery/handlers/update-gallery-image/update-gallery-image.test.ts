@@ -49,7 +49,16 @@ const mockTranslations = [
 ];
 
 // モック関数の定義（vi.hoistedを使用してホイスト）
-const { mockSelect, mockFrom, mockWhere, mockLimit, mockUpdate, mockSet, mockInsert, mockValues } = vi.hoisted(() => ({
+const {
+	mockSelect,
+	mockFrom,
+	mockWhere,
+	mockLimit,
+	mockUpdate,
+	mockSet,
+	mockInsert,
+	mockValues,
+} = vi.hoisted(() => ({
 	mockSelect: vi.fn(),
 	mockFrom: vi.fn(),
 	mockWhere: vi.fn(),
@@ -118,30 +127,30 @@ describe("Unit Test", () => {
 		mockValues.mockResolvedValue(undefined);
 
 		test("Should update gallery image location successfully", async () => {
-		// 1. 画像存在確認クエリ
-		mockSelect.mockReturnValueOnce({
-			from: vi.fn().mockReturnValue({
-				where: vi.fn().mockReturnValue({
-					limit: vi.fn().mockResolvedValue([mockExistingImage]),
+			// 1. 画像存在確認クエリ
+			mockSelect.mockReturnValueOnce({
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([mockExistingImage]),
+					}),
 				}),
-			}),
-		});
+			});
 
-		// 2. 更新後の画像取得クエリ
-		mockSelect.mockReturnValueOnce({
-			from: vi.fn().mockReturnValue({
-				where: vi.fn().mockReturnValue({
-					limit: vi.fn().mockResolvedValue([mockUpdatedImage]),
+			// 2. 更新後の画像取得クエリ
+			mockSelect.mockReturnValueOnce({
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([mockUpdatedImage]),
+					}),
 				}),
-			}),
-		});
+			});
 
-		// 3. 翻訳取得クエリ
-		mockSelect.mockReturnValueOnce({
-			from: vi.fn().mockReturnValue({
-				where: vi.fn().mockResolvedValue(mockTranslations),
-			}),
-		});
+			// 3. 翻訳取得クエリ
+			mockSelect.mockReturnValueOnce({
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue(mockTranslations),
+				}),
+			});
 
 			const req = new Request("http://localhost/1", {
 				method: "PATCH",
@@ -166,39 +175,39 @@ describe("Unit Test", () => {
 		});
 
 		test("Should update gallery image translations successfully", async () => {
-		// 1. 画像存在確認クエリ
-		mockSelect.mockReturnValueOnce({
-			from: vi.fn().mockReturnValue({
-				where: vi.fn().mockReturnValue({
-					limit: vi.fn().mockResolvedValue([mockExistingImage]),
+			// 1. 画像存在確認クエリ
+			mockSelect.mockReturnValueOnce({
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([mockExistingImage]),
+					}),
 				}),
-			}),
-		});
+			});
 
-		// 2. 翻訳存在確認クエリ
-		mockSelect.mockReturnValueOnce({
-			from: vi.fn().mockReturnValue({
-				where: vi.fn().mockReturnValue({
-					limit: vi.fn().mockResolvedValue([mockTranslations[0]]),
+			// 2. 翻訳存在確認クエリ
+			mockSelect.mockReturnValueOnce({
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([mockTranslations[0]]),
+					}),
 				}),
-			}),
-		});
+			});
 
-		// 3. 更新後の画像取得クエリ
-		mockSelect.mockReturnValueOnce({
-			from: vi.fn().mockReturnValue({
-				where: vi.fn().mockReturnValue({
-					limit: vi.fn().mockResolvedValue([mockUpdatedImage]),
+			// 3. 更新後の画像取得クエリ
+			mockSelect.mockReturnValueOnce({
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([mockUpdatedImage]),
+					}),
 				}),
-			}),
-		});
+			});
 
-		// 4. 翻訳取得クエリ
-		mockSelect.mockReturnValueOnce({
-			from: vi.fn().mockReturnValue({
-				where: vi.fn().mockResolvedValue(mockTranslations),
-			}),
-		});
+			// 4. 翻訳取得クエリ
+			mockSelect.mockReturnValueOnce({
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue(mockTranslations),
+				}),
+			});
 
 			const req = new Request("http://localhost/1", {
 				method: "PATCH",
@@ -226,39 +235,39 @@ describe("Unit Test", () => {
 		});
 
 		test("Should add new translation successfully", async () => {
-		// 1. 画像存在確認クエリ
-		mockSelect.mockReturnValueOnce({
-			from: vi.fn().mockReturnValue({
-				where: vi.fn().mockReturnValue({
-					limit: vi.fn().mockResolvedValue([mockExistingImage]),
+			// 1. 画像存在確認クエリ
+			mockSelect.mockReturnValueOnce({
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([mockExistingImage]),
+					}),
 				}),
-			}),
-		});
+			});
 
-		// 2. 翻訳存在確認クエリ（存在しない）
-		mockSelect.mockReturnValueOnce({
-			from: vi.fn().mockReturnValue({
-				where: vi.fn().mockReturnValue({
-					limit: vi.fn().mockResolvedValue([]),
+			// 2. 翻訳存在確認クエリ（存在しない）
+			mockSelect.mockReturnValueOnce({
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([]),
+					}),
 				}),
-			}),
-		});
+			});
 
-		// 3. 更新後の画像取得クエリ
-		mockSelect.mockReturnValueOnce({
-			from: vi.fn().mockReturnValue({
-				where: vi.fn().mockReturnValue({
-					limit: vi.fn().mockResolvedValue([mockUpdatedImage]),
+			// 3. 更新後の画像取得クエリ
+			mockSelect.mockReturnValueOnce({
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([mockUpdatedImage]),
+					}),
 				}),
-			}),
-		});
+			});
 
-		// 4. 翻訳取得クエリ
-		mockSelect.mockReturnValueOnce({
-			from: vi.fn().mockReturnValue({
-				where: vi.fn().mockResolvedValue(mockTranslations),
-			}),
-		});
+			// 4. 翻訳取得クエリ
+			mockSelect.mockReturnValueOnce({
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue(mockTranslations),
+				}),
+			});
 
 			const req = new Request("http://localhost/1", {
 				method: "PATCH",
@@ -303,14 +312,14 @@ describe("Unit Test", () => {
 		});
 
 		test("Should return 404 error when gallery image is not found", async () => {
-		// 1. 画像存在確認クエリ（存在しない）
-		mockSelect.mockReturnValueOnce({
-			from: vi.fn().mockReturnValue({
-				where: vi.fn().mockReturnValue({
-					limit: vi.fn().mockResolvedValue([]),
+			// 1. 画像存在確認クエリ（存在しない）
+			mockSelect.mockReturnValueOnce({
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([]),
+					}),
 				}),
-			}),
-		});
+			});
 
 			const req = new Request("http://localhost/999", {
 				method: "PATCH",
