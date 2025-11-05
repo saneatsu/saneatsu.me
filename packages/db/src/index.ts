@@ -9,10 +9,12 @@
 
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
+
 import * as schema from "./schema";
 
 // スキーマのエクスポート（Cloudflare Workersでも安全）
 export {
+	articleGalleryImages,
 	articles,
 	articleTags,
 	articleTranslations,
