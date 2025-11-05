@@ -62,13 +62,8 @@ const mockTranslations = [
 ];
 
 // モック関数の定義（vi.hoistedを使用してホイスト）
-const { mockSelect, mockFrom, mockWhere, mockOrderBy, mockLimit, mockOffset } = vi.hoisted(() => ({
+const { mockSelect } = vi.hoisted(() => ({
 	mockSelect: vi.fn(),
-	mockFrom: vi.fn(),
-	mockWhere: vi.fn(),
-	mockOrderBy: vi.fn(),
-	mockLimit: vi.fn(),
-	mockOffset: vi.fn(),
 }));
 
 // モジュールのモック
@@ -90,48 +85,48 @@ describe("Unit Test", () => {
 	describe("getGalleryImagesHandler", () => {
 		let app: OpenAPIHono<{ Bindings: Env }>;
 
-	beforeEach(() => {
-		vi.clearAllMocks();
+		beforeEach(() => {
+			vi.clearAllMocks();
 
-		app = new OpenAPIHono<{ Bindings: Env }>().openapi(
-			getGalleryImagesRoute,
-			getGalleryImagesHandler
-		);
+			app = new OpenAPIHono<{ Bindings: Env }>().openapi(
+				getGalleryImagesRoute,
+				getGalleryImagesHandler
+			);
 
-		// 1. メインクエリ: 画像一覧取得
-		mockSelect.mockReturnValueOnce({
-			from: vi.fn().mockReturnValue({
-				where: vi.fn().mockReturnValue({
-					orderBy: vi.fn().mockReturnValue({
-						limit: vi.fn().mockReturnValue({
-							offset: vi.fn().mockResolvedValue(mockGalleryImages),
+			// 1. メインクエリ: 画像一覧取得
+			mockSelect.mockReturnValueOnce({
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						orderBy: vi.fn().mockReturnValue({
+							limit: vi.fn().mockReturnValue({
+								offset: vi.fn().mockResolvedValue(mockGalleryImages),
+							}),
 						}),
 					}),
 				}),
-			}),
-		});
+			});
 
-		// 2. 翻訳クエリ (画像1つ目)
-		mockSelect.mockReturnValueOnce({
-			from: vi.fn().mockReturnValue({
-				where: vi.fn().mockResolvedValue(mockTranslations),
-			}),
-		});
+			// 2. 翻訳クエリ (画像1つ目)
+			mockSelect.mockReturnValueOnce({
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue(mockTranslations),
+				}),
+			});
 
-		// 3. 翻訳クエリ (画像2つ目)
-		mockSelect.mockReturnValueOnce({
-			from: vi.fn().mockReturnValue({
-				where: vi.fn().mockResolvedValue([]),
-			}),
-		});
+			// 3. 翻訳クエリ (画像2つ目)
+			mockSelect.mockReturnValueOnce({
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue([]),
+				}),
+			});
 
-		// 4. カウントクエリ: 総数取得
-		mockSelect.mockReturnValueOnce({
-			from: vi.fn().mockReturnValue({
-				where: vi.fn().mockResolvedValue([{ count: 2 }]),
-			}),
+			// 4. カウントクエリ: 総数取得
+			mockSelect.mockReturnValueOnce({
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue([{ count: 2 }]),
+				}),
+			});
 		});
-	});
 
 		test("Should get gallery images with default parameters", async () => {
 			// デフォルトパラメータでの取得
@@ -192,9 +187,7 @@ describe("Unit Test", () => {
 
 		test("Should sort gallery images by takenAt asc", async () => {
 			// ソート（takenAt asc）
-			const req = new Request(
-				"http://localhost/?sortBy=takenAt&sortOrder=asc"
-			);
+			const req = new Request("http://localhost/?sortBy=takenAt&sortOrder=asc");
 
 			const res = await app.fetch(req, mockEnv);
 
