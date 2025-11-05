@@ -29,6 +29,13 @@
 			"when": 1762247470949,
 			"tag": "0003_create_gallery_with_translations",
 			"breakpoints": true
+		},
+		{
+			"idx": 4,
+			"version": "6",
+			"when": 1762269799662,
+			"tag": "0004_add_article_gallery_images_table",
+			"breakpoints": true
 		}
 	]
 }
