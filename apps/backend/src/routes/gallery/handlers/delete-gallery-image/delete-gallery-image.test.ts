@@ -28,13 +28,15 @@ const mockExistingImage = {
 	updatedAt: "2024-01-02T00:00:00Z",
 };
 
-// モック関数の定義
-const mockDeleteImage = vi.fn();
-const mockSelect = vi.fn();
-const mockFrom = vi.fn();
-const mockWhere = vi.fn();
-const mockLimit = vi.fn();
-const mockDelete = vi.fn();
+// モック関数の定義（vi.hoistedを使用してホイスト）
+const { mockDeleteImage, mockSelect, mockFrom, mockWhere, mockLimit, mockDelete } = vi.hoisted(() => ({
+	mockDeleteImage: vi.fn(),
+	mockSelect: vi.fn(),
+	mockFrom: vi.fn(),
+	mockWhere: vi.fn(),
+	mockLimit: vi.fn(),
+	mockDelete: vi.fn(),
+}));
 
 // モジュールのモック
 vi.mock("@/lib", async () => {
