@@ -10,6 +10,7 @@ import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
 import * as schema from "./schema";
 import {
+	articleGalleryImages,
 	articles,
 	articleTags,
 	articleTranslations,
@@ -37,6 +38,7 @@ async function clearAllTables() {
 	try {
 		// 外部キー制約を考慮して削除順序を設定
 		await db.delete(galleryImageTranslations);
+		await db.delete(articleGalleryImages); // 記事とギャラリー画像の紐付け（外部キーあり）
 		await db.delete(galleryImages);
 		await db.delete(articleTags);
 		await db.delete(tagTranslations);
@@ -1198,6 +1200,51 @@ async function seed() {
 		// ギャラリー画像を生成
 		const galleryImageCount = await seedGalleryImages();
 
+		// 記事とギャラリー画像を紐付け
+		console.log("🔗 記事とギャラリー画像を紐付け中...");
+
+		// データベースから実際のギャラリー画像IDを取得
+		const allGalleryImages = await db
+			.select({ id: galleryImages.id })
+			.from(galleryImages);
+		const galleryImageIds = allGalleryImages.map((img) => img.id);
+
+		const articleGalleryImagesData = [];
+
+		// 最初の20件の記事にギャラリー画像を紐付ける
+		// 各記事に1〜5枚のギャラリー画像をランダムに割り当て
+		for (let i = 0; i < Math.min(20, articleData.length); i++) {
+			const article = articleData[i];
+
+			// この記事に紐付けるギャラリー画像の数をランダムに決定（1〜5枚）
+			const imageCount = Math.min(
+				Math.floor(Math.random() * 5) + 1,
+				galleryImageIds.length
+			);
+
+			// ランダムにギャラリー画像を選択（重複なし）
+			const selectedImageIds = new Set<number>();
+			const availableIds = [...galleryImageIds];
+			while (selectedImageIds.size < imageCount) {
+				const randomIndex = Math.floor(Math.random() * availableIds.length);
+				selectedImageIds.add(availableIds[randomIndex]);
+				availableIds.splice(randomIndex, 1);
+			}
+
+			// article_gallery_imagesレコードを作成
+			for (const galleryImageId of selectedImageIds) {
+				articleGalleryImagesData.push({
+					articleId: article.id,
+					galleryImageId,
+				});
+			}
+		}
+
+		await db.insert(articleGalleryImages).values(articleGalleryImagesData);
+		console.log(
+			`✅ ${articleGalleryImagesData.length}件の記事-ギャラリー画像の紐付けを作成しました`
+		);
+
 		console.log("🎉 200件シードデータの作成が完了しました！");
 
 		// 閲覧数の統計を計算
@@ -1219,6 +1266,7 @@ async function seed() {
 - 日別閲覧数: ${dailyViewsData.length}件（過去90日間の日別データ）
 - ギャラリー画像: ${galleryImageCount}件（撮影日: 過去1年間に分散、16都市）
 - ギャラリー画像翻訳: ${galleryImageCount * 2}件（日本語・英語）
+- 記事-ギャラリー画像関連付け: ${articleGalleryImagesData.length}件（最初の20記事に1〜5枚ずつ）
 
 📈 閲覧数統計:
 - 合計閲覧数: ${totalViewCount.toLocaleString()}回（記事全体）
