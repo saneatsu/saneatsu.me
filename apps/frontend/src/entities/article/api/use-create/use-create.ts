@@ -40,6 +40,7 @@ export function useCreate() {
 					publishedAt: data.publishedAt,
 					tagIds: data.tagIds || [], // 空配列をデフォルトとする
 					cfImageId: data.cfImageId, // サムネイル画像ID
+					galleryImageIds: data.galleryImageIds || [], // ギャラリー画像ID配列
 				},
 			});
 
