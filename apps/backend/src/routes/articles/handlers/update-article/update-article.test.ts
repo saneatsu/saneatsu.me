@@ -16,6 +16,7 @@ vi.mock("@saneatsu/db/worker", () => ({
 	articles: {},
 	articleTranslations: {},
 	articleTags: {},
+	articleGalleryImages: {},
 	tags: {},
 	tagTranslations: {},
 	users: {},
@@ -26,6 +27,7 @@ vi.mock("@saneatsu/db", () => ({
 	articles: {},
 	articleTranslations: {},
 	articleTags: {},
+	articleGalleryImages: {},
 	tags: {},
 	tagTranslations: {},
 	users: {},
@@ -153,7 +155,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 		});
 
 		expect(mockDb.update).toHaveBeenCalledTimes(1); // 記事の更新
-		expect(mockDb.delete).toHaveBeenCalledTimes(1); // タグ削除
+		expect(mockDb.delete).toHaveBeenCalledTimes(2); // タグ削除 + ギャラリー画像削除
 		expect(mockDb.insert).toHaveBeenCalledTimes(3); // 日本語翻訳のUpsert + 英語翻訳のUpsert + タグ追加
 	});
 
@@ -1005,7 +1007,9 @@ describe("PUT /articles/:id - 記事更新", () => {
 				.mockReturnValueOnce(selectFinalMock);
 			mockDb.update.mockReturnValueOnce(updateMock);
 			mockDb.insert.mockReturnValueOnce(upsertMock);
-			mockDb.delete.mockReturnValueOnce(deleteMock);
+			mockDb.delete
+				.mockReturnValueOnce(deleteMock) // タグ削除
+				.mockReturnValueOnce(deleteMock); // ギャラリー画像削除
 
 			// Act
 			const client = testClient(articlesRoute, {
@@ -1108,7 +1112,9 @@ describe("PUT /articles/:id - 記事更新", () => {
 			mockDb.insert
 				.mockReturnValueOnce(upsertJaMock)
 				.mockReturnValueOnce(upsertEnMock);
-			mockDb.delete.mockReturnValueOnce(deleteMock);
+			mockDb.delete
+				.mockReturnValueOnce(deleteMock) // タグ削除
+				.mockReturnValueOnce(deleteMock); // ギャラリー画像削除
 
 			// Act
 			const client = testClient(articlesRoute, {
