@@ -54,6 +54,7 @@ export const useUpdate = () => {
 				status: "draft" | "published" | "archived";
 				publishedAt?: string;
 				tagIds?: number[];
+				galleryImageIds?: number[];
 			};
 		}
 	>({
