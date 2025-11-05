@@ -131,7 +131,7 @@ export type GalleryImageDeleteResponse = {
 };
 
 /**
- * ギャラリー画像一覧取得のクエリパラメータ
+ * ギャラリー画像一覧取得のクエリパラメータ（管理画面用）
  */
 export type GalleryImagesQueryParams = {
 	/** ページ番号 */
@@ -144,6 +144,22 @@ export type GalleryImagesQueryParams = {
 	sortOrder?: "asc" | "desc";
 	/** 位置情報の有無でフィルタリング */
 	hasLocation?: boolean;
+};
+
+/**
+ * ギャラリー画像一覧取得のクエリパラメータ（公開ギャラリー用）
+ */
+export type GalleryImagesQuery = {
+	/** ページ番号 */
+	page?: string;
+	/** 1ページあたりの画像数 */
+	limit?: string;
+	/** ソート基準 */
+	sortBy?: "createdAt" | "takenAt" | "updatedAt";
+	/** ソート順序 */
+	sortOrder?: "asc" | "desc";
+	/** 位置情報の有無でフィルタリング */
+	hasLocation?: "true" | "false";
 };
 
 /**
