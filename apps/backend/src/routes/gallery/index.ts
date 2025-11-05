@@ -6,6 +6,8 @@ import type { Env } from "@/env";
 import { deleteGalleryImageHandler } from "./handlers/delete-gallery-image/delete-gallery-image";
 // ルート定義をimport
 import { deleteGalleryImageRoute } from "./handlers/delete-gallery-image/delete-gallery-image.openapi";
+import { getArticlesByGalleryImageHandler } from "./handlers/get-articles-by-gallery-image/get-articles-by-gallery-image";
+import { getArticlesByGalleryImageRoute } from "./handlers/get-articles-by-gallery-image/get-articles-by-gallery-image.openapi";
 import { getGalleryImageByIdHandler } from "./handlers/get-gallery-image-by-id/get-gallery-image-by-id";
 import { getGalleryImageByIdRoute } from "./handlers/get-gallery-image-by-id/get-gallery-image-by-id.openapi";
 import { getGalleryImagesHandler } from "./handlers/get-gallery-images/get-gallery-images";
@@ -23,6 +25,8 @@ export const galleryRoute = new OpenAPIHono<{ Bindings: Env }>()
 	.openapi(getGalleryImagesRoute, getGalleryImagesHandler)
 	// ギャラリー画像詳細取得
 	.openapi(getGalleryImageByIdRoute, getGalleryImageByIdHandler)
+	// ギャラリー画像を使用している記事一覧取得
+	.openapi(getArticlesByGalleryImageRoute, getArticlesByGalleryImageHandler)
 	// ギャラリー画像アップロード
 	.openapi(uploadGalleryImageRoute, uploadGalleryImageHandler)
 	// ギャラリー画像更新
