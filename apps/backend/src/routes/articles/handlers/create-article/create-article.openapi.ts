@@ -57,6 +57,15 @@ const ArticleCreateSchema = z.object({
 		description:
 			"記事のサムネイル画像のCloudflare Image ID（オプション、事前に /api/images でアップロード済みのもの）",
 	}),
+	galleryImageIds: z
+		.array(z.number().int())
+		.max(50, "ギャラリー画像IDは最大50個まで")
+		.optional()
+		.openapi({
+			example: [1, 2, 3],
+			description:
+				"記事内で使用するギャラリー画像のID配列（最大50個、省略可能）",
+		}),
 });
 
 /**

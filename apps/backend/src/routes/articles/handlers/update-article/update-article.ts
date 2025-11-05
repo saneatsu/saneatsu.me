@@ -21,20 +21,33 @@ type Handler = RouteHandler<typeof updateArticleRoute, { Bindings: Env }>;
  * 6. 翻訳データを更新（日本語）
  * 7. 英語への自動翻訳を実行
  * 8. タグとの関連付けを更新
+ * 8.1. ギャラリー画像との紐付けを更新
  * 9. レスポンス用のデータを取得
  * 10. レスポンスを返す
  */
 export const updateArticle: Handler = async (c) => {
 	try {
 		// 1. DBクライアントを作成
-		const { createDatabaseClient, articles, articleTags, articleTranslations } =
-			await getDatabase();
+		const {
+			createDatabaseClient,
+			articles,
+			articleGalleryImages,
+			articleTags,
+			articleTranslations,
+		} = await getDatabase();
 		const db = createDatabaseClient(c.env);
 
 		// 2. パラメータとリクエストボディを取得
 		const { id } = c.req.valid("param");
-		const { title, slug, content, status, publishedAt, tagIds } =
-			c.req.valid("json");
+		const {
+			title,
+			slug,
+			content,
+			status,
+			publishedAt,
+			tagIds,
+			galleryImageIds,
+		} = c.req.valid("json");
 
 		const articleId = parseInt(id, 10);
 		if (Number.isNaN(articleId)) {
@@ -190,6 +203,22 @@ export const updateArticle: Handler = async (c) => {
 				tagIds.map((tagId) => ({
 					articleId,
 					tagId,
+				}))
+			);
+		}
+
+		// 8.1. ギャラリー画像との紐付けを更新
+		// 既存のギャラリー画像の紐付けを削除
+		await db
+			.delete(articleGalleryImages)
+			.where(eq(articleGalleryImages.articleId, articleId));
+
+		// 新しいギャラリー画像の紐付けを作成
+		if (galleryImageIds && galleryImageIds.length > 0) {
+			await db.insert(articleGalleryImages).values(
+				galleryImageIds.map((galleryImageId) => ({
+					articleId,
+					galleryImageId,
 				}))
 			);
 		}
