@@ -75,6 +75,23 @@ export const AboutLink: Story = {
 };
 
 /**
+ * Galleryリンクが正しいhrefを持つ
+ */
+export const GalleryLink: Story = {
+	name: "Galleryリンクが正しいhrefを持つ",
+	tags: ["validation"],
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+
+		// Galleryリンクを取得
+		const galleryLink = canvas.getByText("Gallery");
+
+		// href が "/ja/gallery" であることを確認（next-intlが自動的にロケールを追加）
+		expect(galleryLink).toHaveAttribute("href", "/ja/gallery");
+	},
+};
+
+/**
  * すべてのリンクが正しいhrefを持つことを統合的に確認
  */
 export const AllLinks: Story = {
@@ -96,6 +113,11 @@ export const AllLinks: Story = {
 		await step("Aboutリンクのhrefを確認", async () => {
 			const aboutLink = canvas.getByText("About");
 			expect(aboutLink).toHaveAttribute("href", "/ja/about");
+		});
+
+		await step("Galleryリンクのhrefを確認", async () => {
+			const galleryLink = canvas.getByText("Gallery");
+			expect(galleryLink).toHaveAttribute("href", "/ja/gallery");
 		});
 	},
 };

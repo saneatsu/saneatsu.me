@@ -58,6 +58,9 @@ export function Header() {
 							<Link href="/about" className={getNavLinkClassName("/about")}>
 								{t("about")}
 							</Link>
+							<Link href="/gallery" className={getNavLinkClassName("/gallery")}>
+								{t("gallery")}
+							</Link>
 						</nav>
 					</div>
 					<div className="flex flex-1 items-center justify-end space-x-2">
