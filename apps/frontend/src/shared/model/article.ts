@@ -192,6 +192,8 @@ export interface ArticleCreateRequest {
 	tagIds?: number[];
 	/** Cloudflare Image ID（オプショナル） */
 	cfImageId?: string;
+	/** 記事内で使用するギャラリー画像のID配列（オプショナル） */
+	galleryImageIds?: number[];
 }
 
 /**

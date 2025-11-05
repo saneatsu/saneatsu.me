@@ -1,0 +1,61 @@
+"use client";
+
+import Image from "next/image";
+import { useLocale } from "next-intl";
+
+import { Card, CardContent } from "@/shared/ui";
+
+import type { GalleryImage } from "../../model/types";
+
+/**
+ * ギャラリー画像カードのプロパティ
+ */
+interface GalleryImageCardProps {
+	/** ギャラリー画像データ */
+	image: GalleryImage;
+	/** クリック時のコールバック */
+	onClick?: (image: GalleryImage) => void;
+}
+
+/**
+ * ギャラリー画像カードコンポーネント
+ *
+ * @description
+ * ギャラリー画像を表示するカードコンポーネント。
+ * Cloudflare Images の medium バリアント（800px）を使用。
+ * クリックすると拡大モーダルを表示。
+ */
+export function GalleryImageCard({ image, onClick }: GalleryImageCardProps) {
+	const locale = useLocale();
+
+	// 現在のロケールに対応する翻訳を取得
+	const translation = image.translations.find((t) => t.language === locale);
+	const title = translation?.title || `Image ${image.id}`;
+
+	// Cloudflare Images の URL を構築（medium バリアント）
+	const imageUrl = `https://imagedelivery.net/${process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH}/${image.cfImageId}/medium`;
+
+	return (
+		<Card
+			className="overflow-hidden cursor-pointer transition-transform hover:scale-105"
+			onClick={() => onClick?.(image)}
+		>
+			<CardContent className="p-0">
+				<div className="relative aspect-square">
+					<Image
+						src={imageUrl}
+						alt={title}
+						fill
+						sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+						className="object-cover"
+					/>
+				</div>
+				{title && (
+					<div className="p-4">
+						<h3 className="text-sm font-medium line-clamp-2">{title}</h3>
+					</div>
+				)}
+			</CardContent>
+		</Card>
+	);
+}
