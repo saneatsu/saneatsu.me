@@ -49,10 +49,12 @@ const mockTranslations = [
 	},
 ];
 
-// モック関数の定義
-const mockSelect = vi.fn();
-const mockFrom = vi.fn();
-const mockWhere = vi.fn();
+// モック関数の定義（vi.hoistedを使用してホイスト）
+const { mockSelect, mockFrom, mockWhere } = vi.hoisted(() => ({
+	mockSelect: vi.fn(),
+	mockFrom: vi.fn(),
+	mockWhere: vi.fn(),
+}));
 
 // モジュールのモック
 vi.mock("@/lib", async () => {

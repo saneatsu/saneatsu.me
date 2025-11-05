@@ -84,7 +84,7 @@ describe("Unit Test", () => {
 			// fetchが正しいURLで呼ばれたことを確認
 			expect(mockFetch).toHaveBeenCalledWith(
 				expect.stringContaining(
-					"https://api.mapbox.com/search/geocode/v6/forward"
+					"https://api.mapbox.com/search/searchbox/v1/forward"
 				)
 			);
 			expect(mockFetch).toHaveBeenCalledWith(
