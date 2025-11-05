@@ -1,9 +1,10 @@
-import { Hono } from "hono";
+import { OpenAPIHono } from "@hono/zod-openapi";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import type { Env } from "@/env";
 
 import { updateGalleryImageHandler } from "./update-gallery-image";
+import { updateGalleryImageRoute } from "./update-gallery-image.openapi";
 
 // テスト用のモックEnv
 const mockEnv: Env = {
@@ -78,41 +79,43 @@ vi.mock("@/lib", async () => {
 
 describe("Unit Test", () => {
 	describe("updateGalleryImageHandler", () => {
-		let app: Hono<{ Bindings: Env }>;
+		let app: OpenAPIHono<{ Bindings: Env }>;
 
 		beforeEach(() => {
 			vi.clearAllMocks();
 
-			app = new Hono<{ Bindings: Env }>();
-			app.patch("/api/gallery/:id", updateGalleryImageHandler as never);
-
-			// デフォルトのモック実装
-			mockSelect.mockReturnValue({
-				from: mockFrom,
-			});
-
-			mockFrom.mockReturnValue({
-				where: mockWhere,
-			});
-
-			mockWhere.mockReturnValue({
-				limit: mockLimit,
-			});
-
-			mockUpdate.mockReturnValue({
-				set: mockSet,
-			});
-
-			mockSet.mockReturnValue({
-				where: vi.fn().mockResolvedValue(undefined),
-			});
-
-			mockInsert.mockReturnValue({
-				values: mockValues,
-			});
-
-			mockValues.mockResolvedValue(undefined);
+			app = new OpenAPIHono<{ Bindings: Env }>().openapi(
+				updateGalleryImageRoute,
+				updateGalleryImageHandler
+			);
 		});
+
+		// デフォルトのモック実装（チェーンのみ、データは各テストで設定）
+		mockSelect.mockReturnValue({
+			from: mockFrom,
+		});
+
+		mockFrom.mockReturnValue({
+			where: mockWhere,
+		});
+
+		mockWhere.mockReturnValue({
+			limit: mockLimit,
+		});
+
+		mockUpdate.mockReturnValue({
+			set: mockSet,
+		});
+
+		mockSet.mockReturnValue({
+			where: vi.fn().mockResolvedValue(undefined),
+		});
+
+		mockInsert.mockReturnValue({
+			values: mockValues,
+		});
+
+		mockValues.mockResolvedValue(undefined);
 
 		test("Should update gallery image location successfully", async () => {
 			// 位置情報の更新
@@ -121,7 +124,7 @@ describe("Unit Test", () => {
 			mockLimit.mockResolvedValueOnce([mockUpdatedImage]);
 			mockWhere.mockResolvedValueOnce(mockTranslations);
 
-			const req = new Request("http://localhost/api/gallery/1", {
+			const req = new Request("http://localhost/1", {
 				method: "PATCH",
 				headers: {
 					"Content-Type": "application/json",
@@ -150,7 +153,7 @@ describe("Unit Test", () => {
 			mockLimit.mockResolvedValueOnce([mockUpdatedImage]);
 			mockWhere.mockResolvedValueOnce(mockTranslations);
 
-			const req = new Request("http://localhost/api/gallery/1", {
+			const req = new Request("http://localhost/1", {
 				method: "PATCH",
 				headers: {
 					"Content-Type": "application/json",
@@ -182,7 +185,7 @@ describe("Unit Test", () => {
 			mockLimit.mockResolvedValueOnce([mockUpdatedImage]);
 			mockWhere.mockResolvedValueOnce(mockTranslations);
 
-			const req = new Request("http://localhost/api/gallery/1", {
+			const req = new Request("http://localhost/1", {
 				method: "PATCH",
 				headers: {
 					"Content-Type": "application/json",
@@ -205,7 +208,7 @@ describe("Unit Test", () => {
 
 		test("Should return 400 error when id is invalid", async () => {
 			// IDが無効
-			const req = new Request("http://localhost/api/gallery/invalid", {
+			const req = new Request("http://localhost/invalid", {
 				method: "PATCH",
 				headers: {
 					"Content-Type": "application/json",
@@ -228,7 +231,7 @@ describe("Unit Test", () => {
 			// 画像が存在しない
 			mockLimit.mockResolvedValueOnce([]);
 
-			const req = new Request("http://localhost/api/gallery/999", {
+			const req = new Request("http://localhost/999", {
 				method: "PATCH",
 				headers: {
 					"Content-Type": "application/json",

@@ -1,9 +1,10 @@
-import { Hono } from "hono";
+import { OpenAPIHono } from "@hono/zod-openapi";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import type { Env } from "@/env";
 
 import { getGalleryImageByIdHandler } from "./get-gallery-image-by-id";
+import { getGalleryImageByIdRoute } from "./get-gallery-image-by-id.openapi";
 
 // テスト用のモックEnv
 const mockEnv: Env = {
@@ -73,13 +74,15 @@ vi.mock("@/lib", async () => {
 
 describe("Unit Test", () => {
 	describe("getGalleryImageByIdHandler", () => {
-		let app: Hono<{ Bindings: Env }>;
+		let app: OpenAPIHono<{ Bindings: Env }>;
 
 		beforeEach(() => {
 			vi.clearAllMocks();
 
-			app = new Hono<{ Bindings: Env }>();
-			app.get("/api/gallery/:id", getGalleryImageByIdHandler as never);
+			app = new OpenAPIHono<{ Bindings: Env }>().openapi(
+				getGalleryImageByIdRoute,
+				getGalleryImageByIdHandler
+			);
 
 			// デフォルトのモック実装
 			mockSelect.mockReturnValue({
@@ -96,7 +99,7 @@ describe("Unit Test", () => {
 			mockWhere.mockResolvedValueOnce([mockGalleryImage]);
 			mockWhere.mockResolvedValueOnce(mockTranslations);
 
-			const req = new Request("http://localhost/api/gallery/1");
+			const req = new Request("http://localhost/1");
 
 			const res = await app.fetch(req, mockEnv);
 
@@ -114,7 +117,7 @@ describe("Unit Test", () => {
 			mockWhere.mockResolvedValueOnce([mockGalleryImage]);
 			mockWhere.mockResolvedValueOnce([mockTranslations[0]]);
 
-			const req = new Request("http://localhost/api/gallery/1?language=ja");
+			const req = new Request("http://localhost/1?language=ja");
 
 			const res = await app.fetch(req, mockEnv);
 
@@ -127,7 +130,7 @@ describe("Unit Test", () => {
 
 		test("Should return 400 error when id is invalid", async () => {
 			// IDが無効
-			const req = new Request("http://localhost/api/gallery/invalid");
+			const req = new Request("http://localhost/invalid");
 
 			const res = await app.fetch(req, mockEnv);
 
@@ -140,7 +143,7 @@ describe("Unit Test", () => {
 
 		test("Should return 400 error when id is less than 1", async () => {
 			// IDが1未満
-			const req = new Request("http://localhost/api/gallery/0");
+			const req = new Request("http://localhost/0");
 
 			const res = await app.fetch(req, mockEnv);
 
@@ -154,7 +157,7 @@ describe("Unit Test", () => {
 			// 画像が存在しない
 			mockWhere.mockResolvedValueOnce([]);
 
-			const req = new Request("http://localhost/api/gallery/999");
+			const req = new Request("http://localhost/999");
 
 			const res = await app.fetch(req, mockEnv);
 
