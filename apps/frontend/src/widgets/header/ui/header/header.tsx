@@ -1,14 +1,14 @@
 "use client";
 
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
 import { siGithub, siX } from "simple-icons";
 
 import { LanguageSwitcher } from "@/features/lang";
+import { navigationItems } from "@/shared/config";
 import { cn, Link, usePathname } from "@/shared/lib";
 import { ThemeSelector } from "@/shared/ui";
 
 export function Header() {
-	const t = useTranslations("navigation");
 	const locale = useLocale();
 	const pathname = usePathname();
 
@@ -52,15 +52,17 @@ export function Header() {
 							<span className="font-bold">saneatsu.me</span>
 						</Link>
 						<nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
-							<Link href="/blog" className={getNavLinkClassName("/blog")}>
-								Blog
-							</Link>
-							<Link href="/about" className={getNavLinkClassName("/about")}>
-								{t("about")}
-							</Link>
-							<Link href="/gallery" className={getNavLinkClassName("/gallery")}>
-								{t("gallery")}
-							</Link>
+							{navigationItems
+								.filter((item) => item.path !== "/")
+								.map((item) => (
+									<Link
+										key={item.path}
+										href={item.path}
+										className={getNavLinkClassName(item.path)}
+									>
+										{item.label}
+									</Link>
+								))}
 						</nav>
 					</div>
 					<div className="flex flex-1 items-center justify-end space-x-2">
