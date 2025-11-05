@@ -118,11 +118,30 @@ describe("Unit Test", () => {
 		mockValues.mockResolvedValue(undefined);
 
 		test("Should update gallery image location successfully", async () => {
-			// 位置情報の更新
-			mockLimit.mockResolvedValueOnce([mockExistingImage]);
-			mockLimit.mockResolvedValueOnce([]);
-			mockLimit.mockResolvedValueOnce([mockUpdatedImage]);
-			mockWhere.mockResolvedValueOnce(mockTranslations);
+		// 1. 画像存在確認クエリ
+		mockSelect.mockReturnValueOnce({
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockReturnValue({
+					limit: vi.fn().mockResolvedValue([mockExistingImage]),
+				}),
+			}),
+		});
+
+		// 2. 更新後の画像取得クエリ
+		mockSelect.mockReturnValueOnce({
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockReturnValue({
+					limit: vi.fn().mockResolvedValue([mockUpdatedImage]),
+				}),
+			}),
+		});
+
+		// 3. 翻訳取得クエリ
+		mockSelect.mockReturnValueOnce({
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockResolvedValue(mockTranslations),
+			}),
+		});
 
 			const req = new Request("http://localhost/1", {
 				method: "PATCH",
@@ -147,11 +166,39 @@ describe("Unit Test", () => {
 		});
 
 		test("Should update gallery image translations successfully", async () => {
-			// 翻訳データの更新
-			mockLimit.mockResolvedValueOnce([mockExistingImage]);
-			mockLimit.mockResolvedValueOnce([mockTranslations[0]]);
-			mockLimit.mockResolvedValueOnce([mockUpdatedImage]);
-			mockWhere.mockResolvedValueOnce(mockTranslations);
+		// 1. 画像存在確認クエリ
+		mockSelect.mockReturnValueOnce({
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockReturnValue({
+					limit: vi.fn().mockResolvedValue([mockExistingImage]),
+				}),
+			}),
+		});
+
+		// 2. 翻訳存在確認クエリ
+		mockSelect.mockReturnValueOnce({
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockReturnValue({
+					limit: vi.fn().mockResolvedValue([mockTranslations[0]]),
+				}),
+			}),
+		});
+
+		// 3. 更新後の画像取得クエリ
+		mockSelect.mockReturnValueOnce({
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockReturnValue({
+					limit: vi.fn().mockResolvedValue([mockUpdatedImage]),
+				}),
+			}),
+		});
+
+		// 4. 翻訳取得クエリ
+		mockSelect.mockReturnValueOnce({
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockResolvedValue(mockTranslations),
+			}),
+		});
 
 			const req = new Request("http://localhost/1", {
 				method: "PATCH",
@@ -179,11 +226,39 @@ describe("Unit Test", () => {
 		});
 
 		test("Should add new translation successfully", async () => {
-			// 翻訳データの追加（新しい言語）
-			mockLimit.mockResolvedValueOnce([mockExistingImage]);
-			mockLimit.mockResolvedValueOnce([]);
-			mockLimit.mockResolvedValueOnce([mockUpdatedImage]);
-			mockWhere.mockResolvedValueOnce(mockTranslations);
+		// 1. 画像存在確認クエリ
+		mockSelect.mockReturnValueOnce({
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockReturnValue({
+					limit: vi.fn().mockResolvedValue([mockExistingImage]),
+				}),
+			}),
+		});
+
+		// 2. 翻訳存在確認クエリ（存在しない）
+		mockSelect.mockReturnValueOnce({
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockReturnValue({
+					limit: vi.fn().mockResolvedValue([]),
+				}),
+			}),
+		});
+
+		// 3. 更新後の画像取得クエリ
+		mockSelect.mockReturnValueOnce({
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockReturnValue({
+					limit: vi.fn().mockResolvedValue([mockUpdatedImage]),
+				}),
+			}),
+		});
+
+		// 4. 翻訳取得クエリ
+		mockSelect.mockReturnValueOnce({
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockResolvedValue(mockTranslations),
+			}),
+		});
 
 			const req = new Request("http://localhost/1", {
 				method: "PATCH",
@@ -228,8 +303,14 @@ describe("Unit Test", () => {
 		});
 
 		test("Should return 404 error when gallery image is not found", async () => {
-			// 画像が存在しない
-			mockLimit.mockResolvedValueOnce([]);
+		// 1. 画像存在確認クエリ（存在しない）
+		mockSelect.mockReturnValueOnce({
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockReturnValue({
+					limit: vi.fn().mockResolvedValue([]),
+				}),
+			}),
+		});
 
 			const req = new Request("http://localhost/999", {
 				method: "PATCH",
