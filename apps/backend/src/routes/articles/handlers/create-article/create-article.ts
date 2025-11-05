@@ -20,19 +20,33 @@ type Handler = RouteHandler<typeof createArticleRoute, { Bindings: Env }>;
  * 5. 翻訳データを作成（日本語）
  * 6. 英語への自動翻訳を実行（非同期）
  * 7. タグとの関連付けを実装
+ * 7.1. ギャラリー画像との紐付けを実装
  * 8. レスポンス用のデータを取得
  * 9. レスポンスを返す
  */
 export const createArticle: Handler = async (c) => {
 	try {
 		// 1. DBクライアントを作成
-		const { createDatabaseClient, articles, articleTags, articleTranslations } =
-			await getDatabase();
+		const {
+			createDatabaseClient,
+			articles,
+			articleGalleryImages,
+			articleTags,
+			articleTranslations,
+		} = await getDatabase();
 		const db = createDatabaseClient(c.env);
 
 		// 2. リクエストボディを取得
-		const { title, slug, content, status, publishedAt, tagIds, cfImageId } =
-			c.req.valid("json");
+		const {
+			title,
+			slug,
+			content,
+			status,
+			publishedAt,
+			tagIds,
+			cfImageId,
+			galleryImageIds,
+		} = c.req.valid("json");
 
 		// 3. スラッグの重複チェック
 		const existingArticle = await db
@@ -131,6 +145,28 @@ export const createArticle: Handler = async (c) => {
 					error
 				);
 				// タグの関連付けに失敗しても記事作成は成功とする
+			}
+		}
+
+		// 7.1. ギャラリー画像との紐付けを実装（galleryImageIdsが提供された場合）
+		if (galleryImageIds && galleryImageIds.length > 0) {
+			try {
+				const galleryImageAssociations = galleryImageIds.map(
+					(galleryImageId) => ({
+						articleId: newArticle.id,
+						galleryImageId: galleryImageId,
+					})
+				);
+				await db.insert(articleGalleryImages).values(galleryImageAssociations);
+				console.log(
+					`Associated ${galleryImageIds.length} gallery images with article ${newArticle.id}`
+				);
+			} catch (error) {
+				console.error(
+					`Failed to associate gallery images with article ${newArticle.id}:`,
+					error
+				);
+				// ギャラリー画像の紐付けに失敗しても記事作成は成功とする
 			}
 		}
 
