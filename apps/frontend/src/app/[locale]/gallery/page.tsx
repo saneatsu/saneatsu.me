@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import {
@@ -22,6 +23,7 @@ import { Button, Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui";
  * 4. ページネーションで次ページ・前ページに移動
  */
 export default function GalleryPage() {
+	const t = useTranslations();
 	const [page, setPage] = useState(1);
 	const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -74,7 +76,7 @@ export default function GalleryPage() {
 
 	return (
 		<div className="container mx-auto px-4 py-8">
-			<h1 className="text-3xl font-bold mb-8">ギャラリー</h1>
+			<h1 className="text-3xl font-bold mb-8">{t("gallery.title")}</h1>
 
 			{isLoading ? (
 				<>
