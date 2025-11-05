@@ -1,9 +1,10 @@
-import { Hono } from "hono";
+import { OpenAPIHono } from "@hono/zod-openapi";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import type { Env } from "@/env";
 
 import { getGalleryImagesHandler } from "./get-gallery-images";
+import { getGalleryImagesRoute } from "./get-gallery-images.openapi";
 
 // テスト用のモックEnv
 const mockEnv: Env = {
@@ -87,56 +88,54 @@ vi.mock("@/lib", async () => {
 
 describe("Unit Test", () => {
 	describe("getGalleryImagesHandler", () => {
-		let app: Hono<{ Bindings: Env }>;
+		let app: OpenAPIHono<{ Bindings: Env }>;
 
-		beforeEach(() => {
-			vi.clearAllMocks();
+	beforeEach(() => {
+		vi.clearAllMocks();
 
-			app = new Hono<{ Bindings: Env }>();
-			app.get("/api/gallery", getGalleryImagesHandler as never);
+		app = new OpenAPIHono<{ Bindings: Env }>().openapi(
+			getGalleryImagesRoute,
+			getGalleryImagesHandler
+		);
 
-			// デフォルトのモック実装
-			mockSelect.mockReturnValue({
-				from: mockFrom,
-			});
-
-			mockFrom.mockReturnValue({
-				where: mockWhere,
-			});
-
-			mockWhere.mockReturnValue({
-				orderBy: mockOrderBy,
-			});
-
-			mockOrderBy.mockReturnValue({
-				limit: mockLimit,
-			});
-
-			mockLimit.mockReturnValue({
-				offset: mockOffset,
-			});
-
-			// 画像一覧の取得
-			mockOffset.mockResolvedValueOnce(mockGalleryImages);
-
-			// 各画像の翻訳データ取得
-			mockFrom.mockReturnValueOnce({
-				where: vi.fn().mockResolvedValue(mockTranslations),
-			});
-
-			mockFrom.mockReturnValueOnce({
-				where: vi.fn().mockResolvedValue([]),
-			});
-
-			// 総数取得
-			mockFrom.mockReturnValueOnce({
-				where: vi.fn().mockResolvedValue([{ count: 2 }]),
-			});
+		// 1. メインクエリ: 画像一覧取得
+		mockSelect.mockReturnValueOnce({
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockReturnValue({
+					orderBy: vi.fn().mockReturnValue({
+						limit: vi.fn().mockReturnValue({
+							offset: vi.fn().mockResolvedValue(mockGalleryImages),
+						}),
+					}),
+				}),
+			}),
 		});
+
+		// 2. 翻訳クエリ (画像1つ目)
+		mockSelect.mockReturnValueOnce({
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockResolvedValue(mockTranslations),
+			}),
+		});
+
+		// 3. 翻訳クエリ (画像2つ目)
+		mockSelect.mockReturnValueOnce({
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockResolvedValue([]),
+			}),
+		});
+
+		// 4. カウントクエリ: 総数取得
+		mockSelect.mockReturnValueOnce({
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockResolvedValue([{ count: 2 }]),
+			}),
+		});
+	});
 
 		test("Should get gallery images with default parameters", async () => {
 			// デフォルトパラメータでの取得
-			const req = new Request("http://localhost/api/gallery");
+			const req = new Request("http://localhost/");
 
 			const res = await app.fetch(req, mockEnv);
 
@@ -151,7 +150,7 @@ describe("Unit Test", () => {
 
 		test("Should get gallery images with pagination", async () => {
 			// ページネーション
-			const req = new Request("http://localhost/api/gallery?page=2&limit=10");
+			const req = new Request("http://localhost/?page=2&limit=10");
 
 			const res = await app.fetch(req, mockEnv);
 
@@ -164,7 +163,7 @@ describe("Unit Test", () => {
 
 		test("Should filter gallery images by location", async () => {
 			// 位置情報フィルター（あり）
-			const req = new Request("http://localhost/api/gallery?hasLocation=true");
+			const req = new Request("http://localhost/?hasLocation=true");
 
 			const res = await app.fetch(req, mockEnv);
 
@@ -173,7 +172,7 @@ describe("Unit Test", () => {
 
 		test("Should filter gallery images without location", async () => {
 			// 位置情報フィルター（なし）
-			const req = new Request("http://localhost/api/gallery?hasLocation=false");
+			const req = new Request("http://localhost/?hasLocation=false");
 
 			const res = await app.fetch(req, mockEnv);
 
@@ -183,7 +182,7 @@ describe("Unit Test", () => {
 		test("Should sort gallery images by updatedAt desc", async () => {
 			// ソート（updatedAt desc）
 			const req = new Request(
-				"http://localhost/api/gallery?sortBy=updatedAt&sortOrder=desc"
+				"http://localhost/?sortBy=updatedAt&sortOrder=desc"
 			);
 
 			const res = await app.fetch(req, mockEnv);
@@ -194,7 +193,7 @@ describe("Unit Test", () => {
 		test("Should sort gallery images by takenAt asc", async () => {
 			// ソート（takenAt asc）
 			const req = new Request(
-				"http://localhost/api/gallery?sortBy=takenAt&sortOrder=asc"
+				"http://localhost/?sortBy=takenAt&sortOrder=asc"
 			);
 
 			const res = await app.fetch(req, mockEnv);
@@ -204,7 +203,7 @@ describe("Unit Test", () => {
 
 		test("Should return 400 error when page is less than 1", async () => {
 			// ページ番号が1未満
-			const req = new Request("http://localhost/api/gallery?page=0");
+			const req = new Request("http://localhost/?page=0");
 
 			const res = await app.fetch(req, mockEnv);
 
@@ -217,7 +216,7 @@ describe("Unit Test", () => {
 
 		test("Should return 400 error when limit is out of range", async () => {
 			// リミットが範囲外（1〜100）
-			const req = new Request("http://localhost/api/gallery?limit=101");
+			const req = new Request("http://localhost/?limit=101");
 
 			const res = await app.fetch(req, mockEnv);
 

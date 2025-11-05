@@ -1,9 +1,10 @@
-import { Hono } from "hono";
+import { OpenAPIHono } from "@hono/zod-openapi";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import type { Env } from "@/env";
 
 import { deleteGalleryImageHandler } from "./delete-gallery-image";
+import { deleteGalleryImageRoute } from "./delete-gallery-image.openapi";
 
 // テスト用のモックEnv
 const mockEnv: Env = {
@@ -56,13 +57,15 @@ vi.mock("@/lib", async () => {
 
 describe("Unit Test", () => {
 	describe("deleteGalleryImageHandler", () => {
-		let app: Hono<{ Bindings: Env }>;
+		let app: OpenAPIHono<{ Bindings: Env }>;
 
 		beforeEach(() => {
 			vi.clearAllMocks();
 
-			app = new Hono<{ Bindings: Env }>();
-			app.delete("/api/gallery/:id", deleteGalleryImageHandler as never);
+			app = new OpenAPIHono<{ Bindings: Env }>().openapi(
+				deleteGalleryImageRoute,
+				deleteGalleryImageHandler
+			);
 
 			// デフォルトのモック実装
 			mockSelect.mockReturnValue({
@@ -88,7 +91,7 @@ describe("Unit Test", () => {
 			// 存在する画像の削除
 			mockLimit.mockResolvedValueOnce([mockExistingImage]);
 
-			const req = new Request("http://localhost/api/gallery/1", {
+			const req = new Request("http://localhost/1", {
 				method: "DELETE",
 			});
 
@@ -109,7 +112,7 @@ describe("Unit Test", () => {
 			mockLimit.mockResolvedValueOnce([mockExistingImage]);
 			mockDeleteImage.mockRejectedValueOnce(new Error("Cloudflare API error"));
 
-			const req = new Request("http://localhost/api/gallery/1", {
+			const req = new Request("http://localhost/1", {
 				method: "DELETE",
 			});
 
@@ -123,7 +126,7 @@ describe("Unit Test", () => {
 
 		test("Should return 400 error when id is invalid", async () => {
 			// IDが無効
-			const req = new Request("http://localhost/api/gallery/invalid", {
+			const req = new Request("http://localhost/invalid", {
 				method: "DELETE",
 			});
 
@@ -140,7 +143,7 @@ describe("Unit Test", () => {
 			// 画像が存在しない
 			mockLimit.mockResolvedValueOnce([]);
 
-			const req = new Request("http://localhost/api/gallery/999", {
+			const req = new Request("http://localhost/999", {
 				method: "DELETE",
 			});
 
