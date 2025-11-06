@@ -10,7 +10,12 @@ import { z } from "zod";
 import { useCheckSlug, useUpdate } from "@/entities/article";
 import { useGetAllTags } from "@/entities/tag";
 import { CustomMarkdownEditor } from "@/features/article-editor";
-import { formatRelativeDate, getImageUrl, useDebounce } from "@/shared/lib";
+import {
+	extractGalleryImageIds,
+	formatRelativeDate,
+	getImageUrl,
+	useDebounce,
+} from "@/shared/lib";
 import type { Option } from "@/shared/ui";
 import {
 	Alert,
@@ -251,6 +256,9 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 			// タグIDを抽出
 			const tagIds = selectedTags.map((tag) => Number.parseInt(tag.value, 10));
 
+			// ギャラリー画像IDを抽出
+			const galleryImageIds = extractGalleryImageIds(data.content);
+
 			await toast.promise(
 				updateMutation.mutateAsync({
 					id: article.id,
@@ -259,6 +267,13 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 						publishedAt: publishedAtISO,
 						// 常にtagIdsを送信（空配列でも送信）
 						tagIds,
+						// ギャラリー画像IDを送信
+						galleryImageIds:
+							galleryImageIds.length > 0
+								? galleryImageIds.map((id) =>
+										Number.parseInt(id.replace("gallery-", ""), 10)
+									)
+								: undefined,
 					},
 				}),
 				{
