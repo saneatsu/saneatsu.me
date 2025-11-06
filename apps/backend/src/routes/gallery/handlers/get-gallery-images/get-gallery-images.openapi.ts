@@ -23,6 +23,7 @@ const GalleryImageSchema = z.object({
 	latitude: z.number().nullable(),
 	longitude: z.number().nullable(),
 	takenAt: z.string().nullable(),
+	status: z.enum(["published", "draft"]),
 	createdAt: z.string(),
 	updatedAt: z.string(),
 });

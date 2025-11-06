@@ -38,6 +38,11 @@ const GalleryImageUpdateSchema = z.object({
 		example: "2024-12-01T15:30:00Z",
 		description: "撮影日時（ISO 8601形式、オプショナル）",
 	}),
+	status: z.enum(["published", "draft"]).optional().openapi({
+		example: "published",
+		description:
+			"画像の公開ステータス（published: 公開済み, draft: 下書き、オプショナル）",
+	}),
 });
 
 /**
@@ -60,6 +65,7 @@ const GalleryImageSchema = z.object({
 	latitude: z.number().nullable(),
 	longitude: z.number().nullable(),
 	takenAt: z.string().nullable(),
+	status: z.enum(["published", "draft"]),
 	createdAt: z.string(),
 	updatedAt: z.string(),
 });
