@@ -1,11 +1,12 @@
 "use client";
 
-import { Trash2 } from "lucide-react";
+import { Copy, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import type { GalleryImage } from "@/entities/gallery";
 import { useDeleteGalleryImage } from "@/entities/gallery";
+import { getImageUrl } from "@/shared/lib";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -62,6 +63,23 @@ export function GalleryActions({ image, onAction }: GalleryActionsProps) {
 	};
 
 	/**
+	 * Markdown形式の画像URLをクリップボードにコピー
+	 */
+	const handleCopyMarkdownUrl = async () => {
+		try {
+			const jaTranslation = image.translations.find((t) => t.language === "ja");
+			const title = jaTranslation?.title || "画像";
+			const imageUrl = getImageUrl(image.cfImageId, "original");
+			const markdownUrl = `![${title}](${imageUrl})`;
+
+			await navigator.clipboard.writeText(markdownUrl);
+			toast.success("Markdown形式の画像URLをコピーしました");
+		} catch (_error) {
+			toast.error("コピーに失敗しました");
+		}
+	};
+
+	/**
 	 * 画像削除の実行
 	 */
 	const executeDelete = async () => {
@@ -89,22 +107,40 @@ export function GalleryActions({ image, onAction }: GalleryActionsProps) {
 	return (
 		<>
 			<TooltipProvider>
-				{/* 削除ボタン */}
-				<Tooltip>
-					<TooltipTrigger asChild>
-						<Button
-							variant="ghost"
-							size="icon"
-							className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
-							onClick={handleDeleteClick}
-							disabled={loading}
-						>
-							<Trash2 className="h-4 w-4" />
-							<span className="sr-only">削除</span>
-						</Button>
-					</TooltipTrigger>
-					<TooltipContent>削除</TooltipContent>
-				</Tooltip>
+				<div className="flex items-center gap-1">
+					{/* コピーボタン */}
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<Button
+								variant="ghost"
+								size="icon"
+								className="h-8 w-8"
+								onClick={handleCopyMarkdownUrl}
+							>
+								<Copy className="h-4 w-4" />
+								<span className="sr-only">Markdown URLをコピー</span>
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent>Markdown URLをコピー</TooltipContent>
+					</Tooltip>
+
+					{/* 削除ボタン */}
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<Button
+								variant="ghost"
+								size="icon"
+								className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
+								onClick={handleDeleteClick}
+								disabled={loading}
+							>
+								<Trash2 className="h-4 w-4" />
+								<span className="sr-only">削除</span>
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent>削除</TooltipContent>
+					</Tooltip>
+				</div>
 			</TooltipProvider>
 
 			{/* 削除確認ダイアログ */}
