@@ -8,6 +8,8 @@ import type { Env } from "@/env";
 import { articlesRoute } from "./routes/articles";
 import { authRoute } from "./routes/auth/worker/worker";
 import { dashboardRoute } from "./routes/dashboard";
+import { galleryRoute } from "./routes/gallery";
+import { geocodingRoute } from "./routes/geocoding";
 import { imagesRoute } from "./routes/images";
 import { ogpRoute } from "./routes/ogp";
 import { tagsRoute } from "./routes/tags";
@@ -86,6 +88,8 @@ export function createApp(options?: { isDevelopment?: boolean }) {
 		.route("/api/articles", articlesRoute)
 		.route("/api/auth", authRoute)
 		.route("/api/dashboard", dashboardRoute)
+		.route("/api/gallery", galleryRoute)
+		.route("/api", geocodingRoute)
 		.route("/api/images", imagesRoute)
 		.route("/api/ogp", ogpRoute)
 		.route("/api/tags", tagsRoute)

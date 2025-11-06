@@ -1,5 +1,6 @@
 import { createClient } from "@libsql/client/web";
 import { drizzle } from "drizzle-orm/libsql";
+
 import * as schema from "./schema";
 
 /**
@@ -36,10 +37,13 @@ export function createDatabaseClient(env: DatabaseEnv) {
 
 // スキーマのエクスポート（既存のindex.tsと同じ）
 export {
+	articleGalleryImages,
 	articles,
 	articleTags,
 	articleTranslations,
 	dailyArticleViews,
+	galleryImages,
+	galleryImageTranslations,
 	tags,
 	tagTranslations,
 	users,
@@ -48,3 +52,4 @@ export {
 // 型定義のエクスポート
 export type Database = ReturnType<typeof createDatabaseClient>;
 export type { DatabaseEnv };
+export type { GalleryImageStatus } from "./schema/gallery-images";

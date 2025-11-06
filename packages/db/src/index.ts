@@ -9,19 +9,23 @@
 
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
+
 import * as schema from "./schema";
 
 // スキーマのエクスポート（Cloudflare Workersでも安全）
 export {
+	articleGalleryImages,
 	articles,
 	articleTags,
 	articleTranslations,
 	dailyArticleViews,
+	galleryImages,
+	galleryImageTranslations,
 	tags,
 	tagTranslations,
 	users,
 } from "./schema";
-
+export type { GalleryImageStatus } from "./schema/gallery-images";
 // 型定義のエクスポート（Cloudflare Workersでも安全）
 export type { DrizzleClient } from "./types";
 

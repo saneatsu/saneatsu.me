@@ -70,6 +70,17 @@ export const envSchema = z.object({
 		),
 
 	/**
+	 * Mapbox Access Token
+	 *
+	 * @description
+	 * Mapbox Geocoding API v6で使用する。
+	 * 住所から座標への変換（forward geocoding）に必要。
+	 *
+	 * トークンの取得方法: https://account.mapbox.com/access-tokens/
+	 */
+	MAPBOX_ACCESS_TOKEN: z.string().min(1),
+
+	/**
 	 * CORS許可オリジン（オプショナル）
 	 */
 	CORS_ORIGIN: z.string().optional(),

@@ -118,6 +118,7 @@ describe("useCreate", () => {
 					publishedAt: undefined,
 					tagIds: [],
 					cfImageId: undefined,
+					galleryImageIds: [],
 				},
 			});
 
@@ -179,6 +180,7 @@ describe("useCreate", () => {
 					publishedAt: undefined,
 					tagIds: [],
 					cfImageId: "test-image-id-123",
+					galleryImageIds: [],
 				},
 			});
 

@@ -1,0 +1,27 @@
+"use client";
+
+import { useParams } from "next/navigation";
+
+import { GalleryForm } from "@/features/gallery-management";
+
+/**
+ * ギャラリー画像編集ページ
+ *
+ * @description
+ * ギャラリー画像を編集するためのフォームページ。
+ *
+ * 機能:
+ * - 画像情報の編集（タイトル、説明、撮影日時、位置情報）
+ * - 画像ファイルの差し替え（オプション）
+ * - 位置情報の設定（住所検索、座標入力、地図選択）
+ */
+export default function GalleryEditPage() {
+	const params = useParams();
+	const imageId = Number.parseInt(params.id as string, 10);
+
+	return (
+		<div className="space-y-6">
+			<GalleryForm mode="edit" imageId={imageId} />
+		</div>
+	);
+}

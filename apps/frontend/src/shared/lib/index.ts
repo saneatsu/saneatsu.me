@@ -22,6 +22,8 @@ export {
 export { getCloudflareImageUrl, getOgImageUrl } from "./cloudflare-images";
 // Extract Error Message
 export { extractErrorMessage } from "./extract-error-message";
+// Extract Gallery Image IDs
+export { extractGalleryImageIds } from "./extract-gallery-image-ids";
 // Extract Headings
 export {
 	createNestedHeadings,

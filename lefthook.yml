@@ -27,8 +27,8 @@ pre-commit:
 
     # apps/frontendのStorybook テストを実行
     storybook-test:
-      run: cd apps/frontend && pnpm test-storybook
-      # Storybookサーバー（http://127.0.0.1:6016）が起動していることが前提
+      run: cd apps/frontend && pnpm test-storybook:smart
+      # test-storybook:smartは既存サーバーがあれば使用、なければCI modeで起動
 
 # commit-msg フック設定
 commit-msg:

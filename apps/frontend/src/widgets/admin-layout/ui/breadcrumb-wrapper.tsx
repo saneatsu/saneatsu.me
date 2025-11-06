@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import React from "react";
 
 import { useGetById } from "@/entities/article";
+import { useGetGalleryImageById } from "@/entities/gallery";
 import { useGetAllTags } from "@/entities/tag";
 import {
 	Breadcrumb,
@@ -24,6 +25,8 @@ const breadcrumbMap: Record<string, string> = {
 	"/admin/articles/new": "記事作成",
 	"/admin/tags": "タグ",
 	"/admin/tags/new": "タグ作成",
+	"/admin/gallery": "ギャラリー",
+	"/admin/gallery/new": "新規作成",
 };
 
 /**
@@ -43,20 +46,30 @@ function extractTagId(pathname: string): number | null {
 }
 
 /**
+ * パスからギャラリー画像IDを抽出する
+ */
+function extractGalleryImageId(pathname: string): number | null {
+	const match = pathname.match(/^\/admin\/gallery\/(\d+)\/edit$/);
+	return match ? Number.parseInt(match[1], 10) : null;
+}
+
+/**
  * パスからパンくずリストのデータを生成する
  */
 function generateBreadcrumbs(
 	pathname: string,
 	articleTitle?: string | null,
-	tagSlug?: string | null
+	tagSlug?: string | null,
+	galleryImageTitle?: string | null
 ) {
 	const paths = pathname.split("/").filter(Boolean);
 	const breadcrumbs = [];
 
-	// /admin/articles/* と /admin/tags/* の場合はダッシュボードを表示しない
+	// /admin/articles/*, /admin/tags/*, /admin/gallery/* の場合はダッシュボードを表示しない
 	const shouldShowDashboard =
 		!pathname.startsWith("/admin/articles") &&
-		!pathname.startsWith("/admin/tags");
+		!pathname.startsWith("/admin/tags") &&
+		!pathname.startsWith("/admin/gallery");
 
 	// ルートパス（ダッシュボード）
 	if (shouldShowDashboard) {
@@ -107,6 +120,26 @@ function generateBreadcrumbs(
 		return breadcrumbs;
 	}
 
+	// /admin/gallery/{id}/edit の場合は特別処理
+	const galleryImageId = extractGalleryImageId(pathname);
+	if (galleryImageId) {
+		// 「ギャラリー」を追加
+		breadcrumbs.push({
+			title: "ギャラリー",
+			href: "/admin/gallery",
+			isCurrentPage: false,
+		});
+
+		// 画像タイトルを追加
+		breadcrumbs.push({
+			title: galleryImageTitle || "読み込み中...",
+			href: pathname,
+			isCurrentPage: true,
+		});
+
+		return breadcrumbs;
+	}
+
 	// パスを段階的に構築してパンくずリストを生成
 	let currentPath = "";
 	for (let i = 0; i < paths.length; i++) {
@@ -135,6 +168,7 @@ export function BreadcrumbWrapper() {
 	const pathname = usePathname();
 	const articleId = extractArticleId(pathname);
 	const tagId = extractTagId(pathname);
+	const galleryImageId = extractGalleryImageId(pathname);
 
 	// 記事編集ページの場合、記事データを取得
 	const { data: articleData } = useGetById(articleId || 0, {
@@ -149,12 +183,25 @@ export function BreadcrumbWrapper() {
 		},
 	});
 
+	// ギャラリー画像編集ページの場合、画像データを取得
+	const { data: galleryImageData } = useGetGalleryImageById({
+		id: galleryImageId || 0,
+		language: "ja",
+		queryConfig: {
+			enabled: !!galleryImageId,
+		},
+	});
+
 	const tag = tagsData?.data.find((t) => t.id === tagId);
+	const galleryImageTitle = galleryImageData?.translations.find(
+		(t) => t.language === "ja"
+	)?.title;
 
 	const breadcrumbs = generateBreadcrumbs(
 		pathname,
 		articleData?.title,
-		tag?.slug
+		tag?.slug,
+		galleryImageTitle
 	);
 
 	return (

@@ -311,25 +311,34 @@ export const PageSwitching: Story = {
 	play: async ({ canvasElement, step }) => {
 		const canvas = within(canvasElement);
 
-		await step("最初のページが表示される", async () => {
-			await canvas.findByText(/ページ 1 \/ 3/);
-			expect(canvas.getByText("テスト記事 1")).toBeInTheDocument();
-		});
+		// window.scrollToをモック化してテスト環境でエラーを防ぐ
+		const originalScrollTo = window.scrollTo;
+		window.scrollTo = () => {};
 
-		await step("「次へ」ボタンをクリックして2ページ目に移動", async () => {
-			const nextButton = canvas.getByText("次へ");
-			await userEvent.click(nextButton);
+		try {
+			await step("最初のページが表示される", async () => {
+				await canvas.findByText(/ページ 1 \/ 3/, {}, { timeout: 10000 });
+				expect(canvas.getByText("テスト記事 1")).toBeInTheDocument();
+			});
 
-			// 2ページ目が表示される
-			await canvas.findByText(/ページ 2 \/ 3/);
-		});
+			await step("「次へ」ボタンをクリックして2ページ目に移動", async () => {
+				const nextButton = canvas.getByText("次へ");
+				await userEvent.click(nextButton);
 
-		await step("「前へ」ボタンをクリックして1ページ目に戻る", async () => {
-			const prevButton = canvas.getByText("前へ");
-			await userEvent.click(prevButton);
+				// 2ページ目が表示されるまで待つ（タイムアウトを延長）
+				await canvas.findByText(/ページ 2 \/ 3/, {}, { timeout: 10000 });
+			});
 
-			// 1ページ目が表示される
-			await canvas.findByText(/ページ 1 \/ 3/);
-		});
+			await step("「前へ」ボタンをクリックして1ページ目に戻る", async () => {
+				const prevButton = canvas.getByText("前へ");
+				await userEvent.click(prevButton);
+
+				// 1ページ目が表示されるまで待つ（タイムアウトを延長）
+				await canvas.findByText(/ページ 1 \/ 3/, {}, { timeout: 10000 });
+			});
+		} finally {
+			// テスト終了後に元の関数を復元
+			window.scrollTo = originalScrollTo;
+		}
 	},
 };

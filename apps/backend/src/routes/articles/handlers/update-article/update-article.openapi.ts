@@ -52,6 +52,15 @@ const ArticleUpdateSchema = z.object({
 			example: [1, 2, 3],
 			description: "記事に関連付けるタグのID配列（最大10個、省略可能）",
 		}),
+	galleryImageIds: z
+		.array(z.number().int())
+		.max(50, "ギャラリー画像IDは最大50個まで")
+		.optional()
+		.openapi({
+			example: [1, 2, 3],
+			description:
+				"記事内で使用するギャラリー画像のID配列（最大50個、省略可能）",
+		}),
 });
 
 /**

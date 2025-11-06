@@ -21,6 +21,8 @@ const config: StorybookConfig = {
 		NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH:
 			process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH ||
 			"mock-hash-for-storybook",
+		NEXT_PUBLIC_MAPBOX_TOKEN:
+			process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "mock-mapbox-token-for-storybook",
 	}),
 };
 export default config;

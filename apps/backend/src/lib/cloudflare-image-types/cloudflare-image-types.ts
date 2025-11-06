@@ -16,8 +16,26 @@ export type UUID = string & { readonly __brand: "UUID" };
  *
  * - thumbnail: 記事のサムネイル画像
  * - content: 記事本文内の画像
+ * - gallery: ギャラリー画像
+ *
+ * @remarks
+ * **設計方針 - ギャラリー画像のプレフィックスについて:**
+ *
+ * gallery_imagesテーブルのcfImageIdには、"gallery-xxx"だけでなく
+ * "content-xxx"も保存可能な設計としている。
+ *
+ * これにより、以下の柔軟性を実現：
+ * - 記事内で使用した画像を、後からギャラリーにも追加できる
+ * - 画像を重複アップロードせず、同一画像を複数の用途で利用できる
+ * - 画像の最初のアップロード用途でprefixが決まるが、
+ *   異なるprefixの画像もgallery_imagesテーブルで参照できる
+ *
+ * 例：
+ * - 記事作成時に"content-xxx"でアップロード
+ * - 後日、その画像をギャラリーにも表示したい場合、
+ *   gallery_imagesテーブルに"content-xxx"のIDで新規レコード作成
  */
-export type ImageIdPrefix = "thumbnail" | "content";
+export type ImageIdPrefix = "thumbnail" | "content" | "gallery";
 
 /**
  * 環境名
@@ -142,10 +160,10 @@ export function generateUUID(): UUID {
  * }
  */
 export function isCustomImageId(value: string): value is CustomImageId {
-	// 本番環境: saneatsu-me_(thumbnail|content)_<uuid>
-	// 開発/プレビュー環境: saneatsu-me_(development|preview)_(thumbnail|content)_<uuid>
+	// 本番環境: saneatsu-me_(thumbnail|content|gallery)_<uuid>
+	// 開発/プレビュー環境: saneatsu-me_(development|preview)_(thumbnail|content|gallery)_<uuid>
 	const regex =
-		/^saneatsu-me_(?:(development|preview)_)?(thumbnail|content)_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+		/^saneatsu-me_(?:(development|preview)_)?(thumbnail|content|gallery)_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 	return regex.test(value);
 }
 
@@ -252,7 +270,10 @@ export function extractPrefixFromCustomId(
 	const prefix =
 		parts[1] === "development" || parts[1] === "preview" ? parts[2] : parts[1];
 
-	if (!prefix || (prefix !== "thumbnail" && prefix !== "content")) {
+	if (
+		!prefix ||
+		(prefix !== "thumbnail" && prefix !== "content" && prefix !== "gallery")
+	) {
 		throw new Error(`Invalid CustomImageId prefix: ${prefix}`);
 	}
 

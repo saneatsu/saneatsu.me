@@ -112,6 +112,12 @@ export {
 	ContextMenuTrigger,
 } from "./context-menu/context-menu";
 
+// Coordinates Input
+export {
+	CoordinatesInput,
+	type CoordinatesInputProps,
+} from "./coordinates-input/coordinates-input";
+
 // Data Table
 export type {
 	DataTableColumn,
@@ -183,6 +189,8 @@ export { Input } from "./input/input";
 export { Label } from "./label/label";
 // Locale Switcher
 export { LocaleSwitcher } from "./locale-switcher/locale-switcher";
+// Mapbox
+export { type Coordinates, Mapbox, type MapboxProps } from "./mapbox/mapbox";
 // Markdown Preview
 export {
 	createDefaultMarkdownComponents,
