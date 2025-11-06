@@ -1,5 +1,5 @@
 import type { RouteHandler } from "@hono/zod-openapi";
-import { asc, desc, isNotNull, sql } from "drizzle-orm";
+import { and, asc, desc, eq, isNotNull, sql, type SQL } from "drizzle-orm";
 
 import type { Env } from "@/env";
 import { getDatabase } from "@/lib";
@@ -19,8 +19,9 @@ type Handler = RouteHandler<typeof getGalleryImagesRoute, { Bindings: Env }>;
  * 4. クエリ条件を構築（位置情報の有無でフィルタリング）
  * 5. ソート条件を設定（createdAt、takenAt、updatedAt）
  * 6. ギャラリー画像一覧を取得
+ *    - statusが"published"の画像のみを表示
  * 7. 各画像の翻訳データを取得
- * 8. 総画像数を取得
+ * 8. 総画像数を取得（公開済みのみ）
  * 9. レスポンスを返す
  *
  * @remarks
@@ -72,7 +73,10 @@ export const getGalleryImagesHandler: Handler = async (c) => {
 		const offset = (page - 1) * limit;
 
 		// 4. クエリ条件を構築
-		const conditions = [];
+		const conditions: SQL[] = [];
+
+		// 公開済みの画像のみを取得
+		conditions.push(eq(galleryImages.status, "published"));
 
 		// 位置情報の有無でフィルタリング
 		if (hasLocation === "true") {
@@ -100,15 +104,20 @@ export const getGalleryImagesHandler: Handler = async (c) => {
 						? asc(galleryImages.createdAt)
 						: desc(galleryImages.createdAt);
 
-		// 6. ギャラリー画像一覧を取得
+		// 6. ギャラリー画像一覧を取得（公開済みのみ）
 		const images = await db
-			.select()
+			.select({
+				id: galleryImages.id,
+				cfImageId: galleryImages.cfImageId,
+				latitude: galleryImages.latitude,
+				longitude: galleryImages.longitude,
+				takenAt: galleryImages.takenAt,
+				status: galleryImages.status,
+				createdAt: galleryImages.createdAt,
+				updatedAt: galleryImages.updatedAt,
+			})
 			.from(galleryImages)
-			.where(
-				conditions.length > 0
-					? sql`${sql.join(conditions, sql` AND `)}`
-					: undefined
-			)
+			.where(conditions.length === 1 ? conditions[0] : and(...conditions))
 			.orderBy(orderByClause)
 			.limit(limit)
 			.offset(offset);
@@ -128,15 +137,11 @@ export const getGalleryImagesHandler: Handler = async (c) => {
 			})
 		);
 
-		// 8. 総画像数を取得
+		// 8. 総画像数を取得（公開済みのみ）
 		const [{ count }] = await db
 			.select({ count: sql<number>`count(*)` })
 			.from(galleryImages)
-			.where(
-				conditions.length > 0
-					? sql`${sql.join(conditions, sql` AND `)}`
-					: undefined
-			);
+			.where(conditions.length === 1 ? conditions[0] : and(...conditions));
 
 		// 9. レスポンスを返す
 		return c.json(
