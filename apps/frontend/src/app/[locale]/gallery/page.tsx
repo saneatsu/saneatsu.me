@@ -34,7 +34,7 @@ export default function GalleryPage() {
 
 	const { data, isLoading, error } = useGalleryImages({
 		page: String(page),
-		limit: "20",
+		limit: "18",
 		sortOrder: "desc",
 	});
 
@@ -99,7 +99,7 @@ export default function GalleryPage() {
 	}
 
 	// スケルトンローダー用のプレースホルダー配列
-	const skeletonItems = Array.from({ length: 20 }, (_, i) => ({
+	const skeletonItems = Array.from({ length: 18 }, (_, i) => ({
 		id: `skeleton-${i}`,
 	}));
 
