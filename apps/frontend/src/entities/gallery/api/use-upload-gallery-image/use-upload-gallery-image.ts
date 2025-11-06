@@ -44,7 +44,9 @@ export function useUploadGalleryImage() {
 				titleJa: data.titleJa,
 				...(data.descriptionJa && { descriptionJa: data.descriptionJa }),
 				...(data.latitude !== undefined &&
-					!Number.isNaN(data.latitude) && { latitude: data.latitude.toString() }),
+					!Number.isNaN(data.latitude) && {
+						latitude: data.latitude.toString(),
+					}),
 				...(data.longitude !== undefined &&
 					!Number.isNaN(data.longitude) && {
 						longitude: data.longitude.toString(),
