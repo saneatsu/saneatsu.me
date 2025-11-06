@@ -44,8 +44,8 @@ import { GalleryImageStatusSelector } from "../gallery-image-status-selector/gal
  */
 const createGalleryFormSchema = (mode: "create" | "edit") => {
 	const baseSchema = {
-		/** 日本語タイトル */
-		titleJa: z.string().optional(),
+		/** 日本語タイトル（必須） */
+		titleJa: z.string().min(1, { message: "タイトルを入力してください" }),
 		/** 日本語説明 */
 		descriptionJa: z.string().optional(),
 		/** 撮影日時 */
@@ -200,12 +200,6 @@ export function GalleryForm({ mode = "create", imageId }: GalleryFormProps) {
 	 */
 	const onSubmit = async (data: GalleryFormValues) => {
 		try {
-			// タイトルまたは説明が必須
-			if (!data.titleJa && !data.descriptionJa) {
-				toast.error("タイトルまたは説明のいずれかを入力してください");
-				return;
-			}
-
 			if (mode === "edit") {
 				// 編集モード
 				if (!imageId) {
@@ -213,15 +207,14 @@ export function GalleryForm({ mode = "create", imageId }: GalleryFormProps) {
 					return;
 				}
 
-				// 翻訳データの構築
-				const translations = [];
-				if (data.titleJa || data.descriptionJa) {
-					translations.push({
+				// 翻訳データの構築（titleJaは必須）
+				const translations = [
+					{
 						language: "ja" as const,
 						title: data.titleJa,
 						description: data.descriptionJa,
-					});
-				}
+					},
+				];
 
 				await updateImage.mutateAsync({
 					id: imageId,
@@ -321,7 +314,7 @@ export function GalleryForm({ mode = "create", imageId }: GalleryFormProps) {
 						name="titleJa"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>タイトル</FormLabel>
+								<FormLabel className="required">タイトル</FormLabel>
 								<FormControl>
 									<Input {...field} placeholder="例: 東京タワーの夕景" />
 								</FormControl>
