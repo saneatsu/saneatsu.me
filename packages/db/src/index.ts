@@ -25,7 +25,7 @@ export {
 	tagTranslations,
 	users,
 } from "./schema";
-
+export type { GalleryImageStatus } from "./schema/gallery-images";
 // 型定義のエクスポート（Cloudflare Workersでも安全）
 export type { DrizzleClient } from "./types";
 
