@@ -104,7 +104,7 @@ export default function GalleryPage() {
 					</div>
 
 					{/* デスクトップ: 2カラム表示 */}
-					<div className="hidden lg:grid lg:grid-cols-2 lg:gap-8">
+					<div className="hidden lg:grid lg:grid-cols-[60%_40%] lg:gap-8">
 						{/* 左側: 画像グリッドスケルトン */}
 						<div>
 							<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -157,7 +157,7 @@ export default function GalleryPage() {
 					</div>
 
 					{/* デスクトップ: 2カラム表示 */}
-					<div className="hidden lg:grid lg:grid-cols-2 lg:gap-8">
+					<div className="hidden lg:grid lg:grid-cols-[60%_40%] lg:gap-8">
 						{/* 左側: 画像グリッド */}
 						<div>
 							<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
