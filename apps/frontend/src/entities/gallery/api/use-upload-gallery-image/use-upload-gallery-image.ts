@@ -37,15 +37,23 @@ export function useUploadGalleryImage() {
 		mutationFn: async (
 			data: GalleryImageUploadRequest
 		): Promise<GalleryImageUploadResponse> => {
+			// 有効な値のみを含むFormDataを動的に構築
+			// undefinedの値はFormDataに含めない（文字列"undefined"として送信されるのを防ぐ）
+			const formData = {
+				file: data.file,
+				titleJa: data.titleJa,
+				...(data.descriptionJa && { descriptionJa: data.descriptionJa }),
+				...(data.latitude !== undefined &&
+					!Number.isNaN(data.latitude) && { latitude: data.latitude.toString() }),
+				...(data.longitude !== undefined &&
+					!Number.isNaN(data.longitude) && {
+						longitude: data.longitude.toString(),
+					}),
+				...(data.takenAt && { takenAt: data.takenAt }),
+			};
+
 			const response = await client.api.gallery.$post({
-				form: {
-					file: data.file,
-					titleJa: data.titleJa,
-					descriptionJa: data.descriptionJa,
-					latitude: data.latitude?.toString(),
-					longitude: data.longitude?.toString(),
-					takenAt: data.takenAt,
-				},
+				form: formData,
 			});
 
 			if (!response.ok) {
