@@ -1,7 +1,8 @@
 "use client";
 
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
 	type GalleryImage,
@@ -24,6 +25,9 @@ import { Button, Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui";
  */
 export default function GalleryPage() {
 	const t = useTranslations();
+	const router = useRouter();
+	const pathname = usePathname();
+	const searchParams = useSearchParams();
 	const [page, setPage] = useState(1);
 	const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -34,14 +38,39 @@ export default function GalleryPage() {
 		sortOrder: "desc",
 	});
 
+	/**
+	 * 初期表示時にURLクエリパラメータから画像IDを取得してモーダルを開く
+	 */
+	useEffect(() => {
+		const imageId = searchParams.get("image");
+		if (imageId && data?.images) {
+			const image = data.images.find((img) => img.id === Number(imageId));
+			if (image) {
+				setSelectedImage(image);
+				setIsModalOpen(true);
+			}
+		}
+	}, [searchParams, data]);
+
 	const handleImageClick = (image: GalleryImage) => {
 		setSelectedImage(image);
 		setIsModalOpen(true);
+		// URLにクエリパラメータを追加
+		const params = new URLSearchParams(searchParams.toString());
+		params.set("image", String(image.id));
+		router.push(`?${params.toString()}`, { scroll: false });
 	};
 
 	const handleModalClose = () => {
 		setIsModalOpen(false);
 		setSelectedImage(null);
+		// URLからクエリパラメータを削除
+		const params = new URLSearchParams(searchParams.toString());
+		params.delete("image");
+		const queryString = params.toString();
+		router.push(queryString ? `?${queryString}` : pathname, {
+			scroll: false,
+		});
 	};
 
 	const handlePreviousPage = () => {
