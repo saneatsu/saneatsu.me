@@ -209,3 +209,33 @@ export type GeocodingSearchResponse = {
 	/** 検索結果の配列 */
 	features: GeocodingFeature[];
 };
+
+/**
+ * ギャラリー画像を使用している記事
+ */
+export type ArticleByGalleryImage = {
+	/** 記事ID */
+	id: number;
+	/** 記事スラッグ */
+	slug: string;
+	/** 記事タイトル（日本語） */
+	title: string | null;
+	/** 記事のステータス */
+	status: "draft" | "published" | "archived";
+	/** 公開日時 */
+	publishedAt: string | null;
+	/** サムネイル画像のCloudflare Images ID */
+	cfImageId: string | null;
+	/** 作成日時 */
+	createdAt: string;
+};
+
+/**
+ * ギャラリー画像を使用している記事一覧のレスポンス
+ */
+export type ArticlesByGalleryImageResponse = {
+	/** 記事一覧 */
+	articles: ArticleByGalleryImage[];
+	/** 総記事数 */
+	total: number;
+};

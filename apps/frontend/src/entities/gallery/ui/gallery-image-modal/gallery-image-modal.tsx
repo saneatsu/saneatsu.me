@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useLocale } from "next-intl";
 
 import {
@@ -11,6 +12,7 @@ import {
 	DialogTitle,
 } from "@/shared/ui";
 
+import { useGetArticlesByGalleryImage } from "../../api/use-get-articles-by-gallery-image/use-get-articles-by-gallery-image";
 import type { GalleryImage } from "../../model/types";
 
 /**
@@ -39,6 +41,11 @@ export function GalleryImageModal({
 }: GalleryImageModalProps) {
 	const locale = useLocale();
 
+	// ギャラリー画像を使用している記事一覧を取得
+	const { data: articlesData } = useGetArticlesByGalleryImage(
+		image?.id ?? null
+	);
+
 	if (!image) {
 		return null;
 	}
@@ -51,13 +58,46 @@ export function GalleryImageModal({
 	// Cloudflare Images の URL を構築（xlarge バリアント）
 	const imageUrl = `https://imagedelivery.net/${process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH}/${image.cfImageId}/xlarge`;
 
+	// 公開済み記事のみフィルタリング
+	const publishedArticles =
+		articlesData?.articles.filter(
+			(article) => article.status === "published"
+		) ?? [];
+
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto data-[state=open]:!slide-in-from-left-0 data-[state=open]:!slide-in-from-top-0 data-[state=closed]:!slide-out-to-left-0 data-[state=closed]:!slide-out-to-top-0">
 				<DialogHeader>
 					<DialogTitle>{title}</DialogTitle>
 					{description && <DialogDescription>{description}</DialogDescription>}
+					{image.takenAt && (
+						<div className="text-sm text-muted-foreground">
+							撮影日時: {new Date(image.takenAt).toLocaleDateString(locale)}
+						</div>
+					)}
 				</DialogHeader>
+
+				{/* 記事リンクセクション */}
+				{publishedArticles.length > 0 && (
+					<div className="border-t pt-4 mt-4">
+						<h3 className="text-sm font-medium mb-3">
+							この画像を使用している記事
+						</h3>
+						<ul className="space-y-2">
+							{publishedArticles.map((article) => (
+								<li key={article.id}>
+									<Link
+										href={`/${locale}/blog/${article.slug}`}
+										className="text-sm text-primary hover:underline block"
+									>
+										{article.title}
+									</Link>
+								</li>
+							))}
+						</ul>
+					</div>
+				)}
+
 				<div className="relative w-full aspect-square">
 					<Image
 						src={imageUrl}
@@ -68,11 +108,6 @@ export function GalleryImageModal({
 						priority
 					/>
 				</div>
-				{image.takenAt && (
-					<div className="text-sm text-muted-foreground">
-						撮影日時: {new Date(image.takenAt).toLocaleDateString(locale)}
-					</div>
-				)}
 			</DialogContent>
 		</Dialog>
 	);
