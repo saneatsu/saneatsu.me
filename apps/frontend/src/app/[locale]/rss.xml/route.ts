@@ -45,7 +45,10 @@ function wrapCdata(value: string): string {
 	return `<![CDATA[${safeValue}]]>`;
 }
 
-export async function GET(request: Request, context: { params: { locale: string } }) {
+export async function GET(
+	request: Request,
+	context: { params: { locale: string } }
+) {
 	const { locale } = context.params;
 
 	if (!isValidLocale(locale)) {
@@ -78,7 +81,8 @@ export async function GET(request: Request, context: { params: { locale: string 
 			const description = article.content
 				? extractDescription(article.content, 280)
 				: "";
-			const publishedAt = article.publishedAt || article.updatedAt || new Date().toISOString();
+			const publishedAt =
+				article.publishedAt || article.updatedAt || new Date().toISOString();
 
 			return {
 				title,
@@ -91,14 +95,16 @@ export async function GET(request: Request, context: { params: { locale: string 
 	const lastBuildDate = items[0]?.pubDate || new Date().toUTCString();
 
 	const rssItems = items
-		.map((item) => `
+		.map(
+			(item) => `
 		<item>
 			<title>${wrapCdata(item.title)}</title>
 			<link>${escapeXml(item.link)}</link>
 			<guid isPermaLink="false">${escapeXml(item.link)}</guid>
 			<pubDate>${escapeXml(item.pubDate)}</pubDate>
 			<description>${wrapCdata(item.description)}</description>
-		</item>`)
+		</item>`
+		)
 		.join("\n");
 
 	const feed = `<?xml version="1.0" encoding="UTF-8"?>
