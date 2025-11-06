@@ -28,6 +28,7 @@ import { useTagDetection } from "../../lib/use-tag-detection/use-tag-detection";
 import { useUnixKeybindings } from "../../lib/use-unix-keybindings/use-unix-keybindings";
 import { useWikiLinkDetection } from "../../model/use-wiki-link-detection";
 import type { CursorPosition } from "../article-markdown-editor/types";
+import { GalleryImageUploadDialog } from "../gallery-image-upload-dialog/gallery-image-upload-dialog";
 
 /**
  * CustomMarkdownEditorのプロパティ
@@ -214,6 +215,56 @@ export function CustomMarkdownEditor({
 	};
 
 	/**
+	 * ギャラリー画像アップロード成功ハンドラー
+	 *
+	 * @description
+	 * ギャラリー画像アップロード成功時にMarkdownをtextareaに挿入する。
+	 *
+	 * @param markdown - Markdown形式の画像挿入テキスト
+	 * @param _imageId - Cloudflare Images ID（未使用）
+	 *
+	 * 処理の流れ：
+	 * 1. textareaの現在のカーソル位置を取得
+	 * 2. カーソル位置にMarkdownを挿入
+	 * 3. カーソル位置を挿入したMarkdownの後ろに移動
+	 */
+	const handleGalleryImageUploadSuccess = (
+		markdown: string,
+		_imageId: string
+	) => {
+		const textarea = textareaRef.current;
+		if (!textarea) return;
+
+		const currentValue = textarea.value;
+		const cursorPos = textarea.selectionStart;
+
+		// カーソル位置にMarkdownを挿入
+		const beforeCursor = currentValue.substring(0, cursorPos);
+		const afterCursor = currentValue.substring(cursorPos);
+
+		// 改行を追加（カーソルが行の途中にある場合）
+		const needsNewlineBefore =
+			beforeCursor.length > 0 && !beforeCursor.endsWith("\n");
+		const needsNewlineAfter =
+			afterCursor.length > 0 && !afterCursor.startsWith("\n");
+
+		const newValue = `${beforeCursor}${needsNewlineBefore ? "\n" : ""}${markdown}${needsNewlineAfter ? "\n" : ""}${afterCursor}`;
+
+		// 新しい値を設定
+		onChange(newValue);
+
+		// カーソル位置を挿入したMarkdownの後ろに移動
+		const newCursorPos =
+			cursorPos + (needsNewlineBefore ? 1 : 0) + markdown.length;
+
+		// 次のフレームでカーソル位置を設定（textarea.valueが更新された後）
+		setTimeout(() => {
+			textarea.setSelectionRange(newCursorPos, newCursorPos);
+			textarea.focus();
+		}, 0);
+	};
+
+	/**
 	 * サジェスト選択ハンドラ
 	 *
 	 * @description
@@ -305,8 +356,16 @@ export function CustomMarkdownEditor({
 							</ContextMenuTrigger>
 							<ContextMenuContent>
 								<ContextMenuItem onSelect={openFileDialog}>
-									画像をアップロード
+									画像をアップロード（コンテンツ）
 								</ContextMenuItem>
+								<GalleryImageUploadDialog
+									trigger={
+										<ContextMenuItem onSelect={(e) => e.preventDefault()}>
+											画像をアップロード（ギャラリー）
+										</ContextMenuItem>
+									}
+									onSuccess={handleGalleryImageUploadSuccess}
+								/>
 							</ContextMenuContent>
 						</ContextMenu>
 					</div>

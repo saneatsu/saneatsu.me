@@ -1,8 +1,9 @@
 import type { RouteHandler } from "@hono/zod-openapi";
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 
 import type { Env } from "@/env";
 import { getDatabase } from "@/lib";
+import { extractGalleryCfImageIds } from "@/lib/extract-gallery-cf-image-ids";
 import { createTranslationService } from "@/services/gemini-translation/gemini-translation";
 
 import type { createArticleRoute } from "./create-article.openapi";
@@ -20,19 +21,34 @@ type Handler = RouteHandler<typeof createArticleRoute, { Bindings: Env }>;
  * 5. 翻訳データを作成（日本語）
  * 6. 英語への自動翻訳を実行（非同期）
  * 7. タグとの関連付けを実装
+ * 7.1. ギャラリー画像との紐付けを実装
  * 8. レスポンス用のデータを取得
  * 9. レスポンスを返す
  */
 export const createArticle: Handler = async (c) => {
 	try {
 		// 1. DBクライアントを作成
-		const { createDatabaseClient, articles, articleTags, articleTranslations } =
-			await getDatabase();
+		const {
+			createDatabaseClient,
+			articles,
+			articleGalleryImages,
+			articleTags,
+			articleTranslations,
+			galleryImages,
+		} = await getDatabase();
 		const db = createDatabaseClient(c.env);
 
 		// 2. リクエストボディを取得
-		const { title, slug, content, status, publishedAt, tagIds, cfImageId } =
-			c.req.valid("json");
+		const {
+			title,
+			slug,
+			content,
+			status,
+			publishedAt,
+			tagIds,
+			cfImageId,
+			galleryImageIds,
+		} = c.req.valid("json");
 
 		// 3. スラッグの重複チェック
 		const existingArticle = await db
@@ -131,6 +147,48 @@ export const createArticle: Handler = async (c) => {
 					error
 				);
 				// タグの関連付けに失敗しても記事作成は成功とする
+			}
+		}
+
+		// 7.1. ギャラリー画像との紐付けを実装
+		// 7.1.1. コンテンツからギャラリー画像を自動抽出
+		const extractedCfImageIds = extractGalleryCfImageIds(content);
+
+		// 7.1.2. cfImageIdからgallery_images.idを取得
+		const extractedGalleryImageIds: number[] = [];
+		if (extractedCfImageIds.length > 0) {
+			const galleryRecords = await db
+				.select({ id: galleryImages.id })
+				.from(galleryImages)
+				.where(inArray(galleryImages.cfImageId, extractedCfImageIds));
+
+			extractedGalleryImageIds.push(...galleryRecords.map((r) => r.id));
+		}
+
+		// 7.1.3. 手動指定のIDと自動抽出のIDをマージ（重複除去）
+		const allGalleryImageIds = Array.from(
+			new Set([...(galleryImageIds || []), ...extractedGalleryImageIds])
+		);
+
+		// 7.1.4. ギャラリー画像の紐付けを作成
+		if (allGalleryImageIds.length > 0) {
+			try {
+				const galleryImageAssociations = allGalleryImageIds.map(
+					(galleryImageId) => ({
+						articleId: newArticle.id,
+						galleryImageId: galleryImageId,
+					})
+				);
+				await db.insert(articleGalleryImages).values(galleryImageAssociations);
+				console.log(
+					`Associated ${allGalleryImageIds.length} gallery images with article ${newArticle.id}`
+				);
+			} catch (error) {
+				console.error(
+					`Failed to associate gallery images with article ${newArticle.id}:`,
+					error
+				);
+				// ギャラリー画像の紐付けに失敗しても記事作成は成功とする
 			}
 		}
 

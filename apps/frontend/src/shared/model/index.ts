@@ -32,6 +32,15 @@ export type {
 	PopularArticle,
 	RecentActivityItem,
 } from "./dashboard";
+// Gallery
+export type {
+	GalleryImage,
+	GalleryImageStatus,
+	GalleryImagesQuery,
+	GalleryImagesResponse,
+	GalleryImageTranslation,
+} from "./gallery";
+export { GALLERY_IMAGE_STATUS_CONFIG } from "./gallery";
 // Tag
 export type {
 	Tag,

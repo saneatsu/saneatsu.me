@@ -3,6 +3,7 @@
 		"home": "ホーム",
 		"blog": "ブログ",
 		"about": "About",
+		"gallery": "Gallery",
 		"top": "トップ"
 	},
 	"theme": {
@@ -109,6 +110,24 @@
 				"title": "記事の新規作成 - 管理画面",
 				"description": "新しい記事を作成する"
 			}
+		},
+		"gallery": {
+			"title": "ギャラリー管理",
+			"description": "画像の管理とアップロード",
+			"list": {
+				"title": "ギャラリー一覧 - 管理画面",
+				"description": "ギャラリー画像の一覧",
+				"empty": "画像がありません",
+				"newImage": "新規画像を追加"
+			},
+			"new": {
+				"title": "画像のアップロード - 管理画面",
+				"description": "新しい画像をアップロードする"
+			},
+			"edit": {
+				"title": "画像の編集 - 管理画面",
+				"description": "画像情報を編集する"
+			}
 		}
 	},
 	"loading": "読み込み中...",
@@ -139,6 +158,67 @@
 			"error": "関連記事の取得に失敗しました"
 		},
 		"tableOfContents": "目次"
+	},
+	"gallery": {
+		"title": "Gallery",
+		"form": {
+			"file": "画像ファイル",
+			"fileSelect": "ファイルを選択",
+			"fileHelp": "JPEG、PNG、GIF、WebP形式の画像をアップロードできます（最大10MB）",
+			"address": "住所",
+			"addressPlaceholder": "東京都渋谷区...",
+			"addressHelp": "住所から座標を検索できます",
+			"searchAddress": "住所を検索",
+			"coordinates": "座標",
+			"latitude": "緯度",
+			"longitude": "経度",
+			"latitudePlaceholder": "35.6762",
+			"longitudePlaceholder": "139.6503",
+			"coordinatesHelp": "地図上でクリックして座標を設定できます",
+			"takenAt": "撮影日時",
+			"takenAtPlaceholder": "撮影日時を選択...",
+			"titleJa": "タイトル（日本語）",
+			"titleJaPlaceholder": "東京タワーの夜景",
+			"titleEn": "タイトル（英語）",
+			"titleEnPlaceholder": "Tokyo Tower at Night",
+			"descriptionJa": "説明（日本語）",
+			"descriptionJaPlaceholder": "東京のシンボル、東京タワーがライトアップされた美しい夜景",
+			"descriptionEn": "説明（英語）",
+			"descriptionEnPlaceholder": "The iconic Tokyo Tower illuminated beautifully at night",
+			"submit": "アップロード",
+			"update": "更新",
+			"cancel": "キャンセル",
+			"delete": "削除",
+			"deleteConfirm": "この画像を削除してもよろしいですか？",
+			"uploading": "アップロード中...",
+			"updating": "更新中...",
+			"deleting": "削除中..."
+		},
+		"message": {
+			"uploadSuccess": "画像をアップロードしました",
+			"uploadError": "画像のアップロードに失敗しました",
+			"updateSuccess": "画像を更新しました",
+			"updateError": "画像の更新に失敗しました",
+			"deleteSuccess": "画像を削除しました",
+			"deleteError": "画像の削除に失敗しました",
+			"geocodingSuccess": "住所から座標を取得しました",
+			"geocodingError": "住所から座標を取得できませんでした",
+			"geocodingNoResults": "該当する住所が見つかりませんでした"
+		},
+		"table": {
+			"image": "画像",
+			"title": "タイトル",
+			"location": "場所",
+			"takenAt": "撮影日時",
+			"createdAt": "作成日時",
+			"actions": "操作",
+			"noLocation": "位置情報なし",
+			"noDate": "日時不明"
+		},
+		"notFound": {
+			"title": "画像が見つかりません",
+			"message": "お探しの画像は存在しないか、削除された可能性があります。"
+		}
 	},
 	"share": {
 		"copyLink": "リンクをコピーしました",
@@ -236,6 +316,21 @@
 				"slugInvalid": "スラッグは半角英数字とハイフンのみ使用できます",
 				"atLeastOneTranslation": "少なくとも1つの言語で記事を作成してください",
 				"maxTranslations": "最大2言語まで対応しています"
+			},
+			"gallery": {
+				"fileRequired": "画像ファイルを選択してください",
+				"fileInvalidType": "JPEG、PNG、GIF、WebP形式の画像を選択してください",
+				"fileTooLarge": "ファイルサイズは10MB以下にしてください",
+				"titleJaRequired": "日本語のタイトルを入力してください",
+				"titleJaTooLong": "日本語のタイトルは200文字以内で入力してください",
+				"titleEnRequired": "英語のタイトルを入力してください",
+				"titleEnTooLong": "英語のタイトルは200文字以内で入力してください",
+				"descriptionJaTooLong": "日本語の説明は1000文字以内で入力してください",
+				"descriptionEnTooLong": "英語の説明は1000文字以内で入力してください",
+				"latitudeInvalid": "緯度は-90から90の範囲で入力してください",
+				"longitudeInvalid": "経度は-180から180の範囲で入力してください",
+				"coordinatesRequired": "座標を入力してください",
+				"takenAtInvalid": "正しい日時を選択してください"
 			},
 			"pagination": {
 				"pagePositive": "ページ番号は正の整数である必要があります",

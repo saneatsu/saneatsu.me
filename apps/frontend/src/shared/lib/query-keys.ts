@@ -67,9 +67,37 @@ export const queryKeys = {
 		stats: (lang?: string, timeRange?: string) =>
 			["dashboard", "stats", { lang, timeRange }] as const,
 	},
+
+	/**
+	 * ギャラリー関連のクエリキー
+	 */
+	gallery: {
+		// すべてのギャラリー画像（フィルタリング可能）
+		all: (filters?: {
+			page?: number;
+			limit?: number;
+			hasLocation?: boolean;
+			sortBy?: "takenAt" | "createdAt" | "updatedAt";
+			sortOrder?: "asc" | "desc";
+		}) => ["gallery", "images", filters] as const,
+		// 個別のギャラリー画像
+		byId: (id: number, language?: string) =>
+			["gallery", "images", id, { language }] as const,
+	},
+
+	/**
+	 * ジオコーディング関連のクエリキー
+	 */
+	geocoding: {
+		// 住所検索
+		search: (params: { q: string; language?: string; limit?: number }) =>
+			["geocoding", "search", params] as const,
+	},
 } as const;
 
 // エクスポートエイリアス
 export const ARTICLE_QUERY_KEYS = queryKeys.article;
 export const TAG_QUERY_KEYS = queryKeys.tag;
 export const DASHBOARD_QUERY_KEYS = queryKeys.dashboard;
+export const GALLERY_QUERY_KEYS = queryKeys.gallery;
+export const GEOCODING_QUERY_KEYS = queryKeys.geocoding;

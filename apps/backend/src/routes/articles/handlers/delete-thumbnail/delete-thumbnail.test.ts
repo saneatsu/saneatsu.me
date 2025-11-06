@@ -41,6 +41,7 @@ const mockEnv: Env = {
 	CLOUDFLARE_API_TOKEN: "test-token",
 	CLOUDFLARE_ACCOUNT_HASH: "test-hash",
 	GEMINI_API_KEY: "AItest-gemini-api-key-for-testing-purposes-only",
+	MAPBOX_ACCESS_TOKEN: "test-mapbox-token",
 	NODE_ENV: "development",
 };
 

@@ -1,14 +1,15 @@
 "use client";
 
-import { useLocale, useTranslations } from "next-intl";
+import { Rss } from "lucide-react";
+import { useLocale } from "next-intl";
 import { siGithub, siX } from "simple-icons";
 
 import { LanguageSwitcher } from "@/features/lang";
+import { navigationItems } from "@/shared/config";
 import { cn, Link, usePathname } from "@/shared/lib";
 import { ThemeSelector } from "@/shared/ui";
 
 export function Header() {
-	const t = useTranslations("navigation");
 	const locale = useLocale();
 	const pathname = usePathname();
 
@@ -52,26 +53,40 @@ export function Header() {
 							<span className="font-bold">saneatsu.me</span>
 						</Link>
 						<nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
-							<Link href="/blog" className={getNavLinkClassName("/blog")}>
-								Blog
-							</Link>
-							<Link href="/about" className={getNavLinkClassName("/about")}>
-								{t("about")}
-							</Link>
+							{navigationItems
+								.filter((item) => item.path !== "/")
+								.map((item) => (
+									<Link
+										key={item.path}
+										href={item.path}
+										className={getNavLinkClassName(item.path)}
+									>
+										{item.label}
+									</Link>
+								))}
 						</nav>
 					</div>
-					<div className="flex flex-1 items-center justify-end space-x-2">
+					<div className="flex flex-1 items-center justify-end gap-2">
+						<Link
+							href="/rss.xml"
+							target="_blank"
+							rel="noopener noreferrer"
+							className="inline-flex h-9 w-9 items-center justify-center rounded-md text-foreground transition-colors hover:text-foreground/80"
+							aria-label="RSS"
+						>
+							<Rss className="h-5 w-5" strokeWidth={1.8} />
+						</Link>
 						<Link
 							href="https://github.com/saneatsu/saneatsu.me"
 							target="_blank"
 							rel="noopener noreferrer"
-							className="text-foreground transition-colors hover:text-foreground/80"
+							className="inline-flex h-9 w-9 items-center justify-center rounded-md text-foreground transition-colors hover:text-foreground/80"
 							aria-label="GitHub"
 						>
 							<svg
 								role="img"
 								viewBox="0 0 24 24"
-								className="h-5 w-5 mx-2"
+								className="h-5 w-5"
 								fill="currentColor"
 							>
 								<title>GitHub</title>
@@ -82,13 +97,13 @@ export function Header() {
 							href="https://x.com/saneatsu_wakana"
 							target="_blank"
 							rel="noopener noreferrer"
-							className="text-foreground transition-colors hover:text-foreground/80"
+							className="inline-flex h-9 w-9 items-center justify-center rounded-md text-foreground transition-colors hover:text-foreground/80"
 							aria-label="X"
 						>
 							<svg
 								role="img"
 								viewBox="0 0 24 24"
-								className="h-4 w-4 mx-2"
+								className="h-4 w-4"
 								fill="currentColor"
 							>
 								<title>X</title>

@@ -3,6 +3,7 @@
 		"home": "Home",
 		"blog": "Blog",
 		"about": "About",
+		"gallery": "Gallery",
 		"top": "Top"
 	},
 	"theme": {
@@ -109,6 +110,24 @@
 				"title": "Create New Article - Admin",
 				"description": "Create a new article"
 			}
+		},
+		"gallery": {
+			"title": "Gallery Management",
+			"description": "Manage and upload images",
+			"list": {
+				"title": "Gallery List - Admin",
+				"description": "List of gallery images",
+				"empty": "No images found",
+				"newImage": "Add New Image"
+			},
+			"new": {
+				"title": "Upload Image - Admin",
+				"description": "Upload a new image"
+			},
+			"edit": {
+				"title": "Edit Image - Admin",
+				"description": "Edit image information"
+			}
 		}
 	},
 	"loading": "Loading...",
@@ -139,6 +158,67 @@
 			"error": "Failed to load related articles"
 		},
 		"tableOfContents": "Table of Contents"
+	},
+	"gallery": {
+		"title": "Gallery",
+		"form": {
+			"file": "Image File",
+			"fileSelect": "Select File",
+			"fileHelp": "You can upload JPEG, PNG, GIF, or WebP images (max 10MB)",
+			"address": "Address",
+			"addressPlaceholder": "Shibuya, Tokyo...",
+			"addressHelp": "Search coordinates from address",
+			"searchAddress": "Search Address",
+			"coordinates": "Coordinates",
+			"latitude": "Latitude",
+			"longitude": "Longitude",
+			"latitudePlaceholder": "35.6762",
+			"longitudePlaceholder": "139.6503",
+			"coordinatesHelp": "Click on the map to set coordinates",
+			"takenAt": "Taken Date",
+			"takenAtPlaceholder": "Select taken date...",
+			"titleJa": "Title (Japanese)",
+			"titleJaPlaceholder": "東京タワーの夜景",
+			"titleEn": "Title (English)",
+			"titleEnPlaceholder": "Tokyo Tower at Night",
+			"descriptionJa": "Description (Japanese)",
+			"descriptionJaPlaceholder": "東京のシンボル、東京タワーがライトアップされた美しい夜景",
+			"descriptionEn": "Description (English)",
+			"descriptionEnPlaceholder": "The iconic Tokyo Tower illuminated beautifully at night",
+			"submit": "Upload",
+			"update": "Update",
+			"cancel": "Cancel",
+			"delete": "Delete",
+			"deleteConfirm": "Are you sure you want to delete this image?",
+			"uploading": "Uploading...",
+			"updating": "Updating...",
+			"deleting": "Deleting..."
+		},
+		"message": {
+			"uploadSuccess": "Image uploaded successfully",
+			"uploadError": "Failed to upload image",
+			"updateSuccess": "Image updated successfully",
+			"updateError": "Failed to update image",
+			"deleteSuccess": "Image deleted successfully",
+			"deleteError": "Failed to delete image",
+			"geocodingSuccess": "Coordinates retrieved from address",
+			"geocodingError": "Failed to retrieve coordinates from address",
+			"geocodingNoResults": "No matching address found"
+		},
+		"table": {
+			"image": "Image",
+			"title": "Title",
+			"location": "Location",
+			"takenAt": "Taken Date",
+			"createdAt": "Created Date",
+			"actions": "Actions",
+			"noLocation": "No location",
+			"noDate": "Unknown date"
+		},
+		"notFound": {
+			"title": "Image not found",
+			"message": "The image you're looking for doesn't exist or may have been deleted."
+		}
 	},
 	"share": {
 		"copyLink": "Link copied",
@@ -236,6 +316,21 @@
 				"slugInvalid": "Slug can only contain alphanumeric characters and hyphens",
 				"atLeastOneTranslation": "Please create an article in at least one language",
 				"maxTranslations": "Supports up to 2 languages"
+			},
+			"gallery": {
+				"fileRequired": "Please select an image file",
+				"fileInvalidType": "Please select a JPEG, PNG, GIF, or WebP image",
+				"fileTooLarge": "File size must be 10MB or less",
+				"titleJaRequired": "Please enter a Japanese title",
+				"titleJaTooLong": "Japanese title must be 200 characters or less",
+				"titleEnRequired": "Please enter an English title",
+				"titleEnTooLong": "English title must be 200 characters or less",
+				"descriptionJaTooLong": "Japanese description must be 1000 characters or less",
+				"descriptionEnTooLong": "English description must be 1000 characters or less",
+				"latitudeInvalid": "Latitude must be between -90 and 90",
+				"longitudeInvalid": "Longitude must be between -180 and 180",
+				"coordinatesRequired": "Please enter coordinates",
+				"takenAtInvalid": "Please select a valid date and time"
 			},
 			"pagination": {
 				"pagePositive": "Page number must be a positive integer",

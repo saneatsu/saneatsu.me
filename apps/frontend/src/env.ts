@@ -47,6 +47,13 @@ export const env = createEnv({
 		 * 本番環境のみ設定し、開発環境では空文字列でもOK
 		 */
 		NEXT_PUBLIC_GA_ID: z.string().optional(),
+
+		/**
+		 * Mapbox Access Token
+		 * Mapbox GL JS や react-map-gl で地図を表示するために必要
+		 * Mapbox管理画面から取得可能
+		 */
+		NEXT_PUBLIC_MAPBOX_TOKEN: z.string().min(1),
 	},
 
 	/**
@@ -59,6 +66,7 @@ export const env = createEnv({
 		NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH:
 			process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH,
 		NEXT_PUBLIC_GA_ID: process.env.NEXT_PUBLIC_GA_ID,
+		NEXT_PUBLIC_MAPBOX_TOKEN: process.env.NEXT_PUBLIC_MAPBOX_TOKEN,
 	},
 
 	/**

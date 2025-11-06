@@ -16,7 +16,7 @@ import {
 } from "@/entities/article";
 import { useGetAllTags } from "@/entities/tag";
 import { CustomMarkdownEditor } from "@/features/article-editor";
-import { useDebounce } from "@/shared/lib";
+import { extractGalleryImageIds, useDebounce } from "@/shared/lib";
 import {
 	Alert,
 	AlertDescription,
@@ -188,6 +188,9 @@ export function ArticleNewForm() {
 			// 3. タグIDを抽出
 			const tagIds = selectedTags.map((tag) => Number.parseInt(tag.value, 10));
 
+			// 3.1. ギャラリー画像IDを抽出
+			const galleryImageIds = extractGalleryImageIds(data.content);
+
 			// 4. 記事を作成（cfImageIdを含む）
 			await toast.promise(
 				createArticleMutation.mutateAsync({
@@ -197,6 +200,12 @@ export function ArticleNewForm() {
 					status: data.status,
 					publishedAt,
 					tagIds: tagIds.length > 0 ? tagIds : undefined,
+					galleryImageIds:
+						galleryImageIds.length > 0
+							? galleryImageIds.map((id) =>
+									Number.parseInt(id.replace("gallery-", ""), 10)
+								)
+							: undefined,
 					cfImageId: uploadedImageId,
 				}),
 				{

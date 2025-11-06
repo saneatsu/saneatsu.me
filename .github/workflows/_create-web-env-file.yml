@@ -14,6 +14,9 @@ on:
       # Cloudflare Images
       CLOUDFLARE_ACCOUNT_HASH:
         required: true
+      # Mapbox
+      NEXT_PUBLIC_MAPBOX_TOKEN:
+        required: false
       # NextAuth.js関連
       NEXTAUTH_URL:
         required: true
@@ -44,6 +47,7 @@ jobs:
         env:
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
           CLOUDFLARE_ACCOUNT_HASH: ${{ secrets.CLOUDFLARE_ACCOUNT_HASH }}
+          NEXT_PUBLIC_MAPBOX_TOKEN: ${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN }}
           NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
           AUTH_TRUST_HOST: "true"
@@ -61,6 +65,9 @@ jobs:
 
           # Cloudflare Images
           echo "NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH=$CLOUDFLARE_ACCOUNT_HASH" >> $ENV_FILE
+
+          # Mapbox
+          echo "NEXT_PUBLIC_MAPBOX_TOKEN=$NEXT_PUBLIC_MAPBOX_TOKEN" >> $ENV_FILE
 
           # NextAuth.js関連
           echo "NEXTAUTH_URL=$NEXTAUTH_URL" >> $ENV_FILE
