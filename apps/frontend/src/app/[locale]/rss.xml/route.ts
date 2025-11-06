@@ -47,9 +47,9 @@ function wrapCdata(value: string): string {
 
 export async function GET(
 	request: Request,
-	context: { params: { locale: string } }
+	context: { params: Promise<{ locale: string }> }
 ) {
-	const { locale } = context.params;
+	const { locale } = await context.params;
 
 	if (!isValidLocale(locale)) {
 		return new NextResponse("Invalid locale", { status: 404 });
