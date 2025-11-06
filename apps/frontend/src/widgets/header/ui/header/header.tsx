@@ -1,5 +1,6 @@
 "use client";
 
+import { Rss } from "lucide-react";
 import { useLocale } from "next-intl";
 import { siGithub, siX } from "simple-icons";
 
@@ -65,18 +66,27 @@ export function Header() {
 								))}
 						</nav>
 					</div>
-					<div className="flex flex-1 items-center justify-end space-x-2">
+					<div className="flex flex-1 items-center justify-end gap-2">
+						<Link
+							href="/rss.xml"
+							target="_blank"
+							rel="noopener noreferrer"
+							className="inline-flex h-9 w-9 items-center justify-center rounded-md text-foreground transition-colors hover:text-foreground/80"
+							aria-label="RSS"
+						>
+							<Rss className="h-5 w-5" strokeWidth={1.8} />
+						</Link>
 						<Link
 							href="https://github.com/saneatsu/saneatsu.me"
 							target="_blank"
 							rel="noopener noreferrer"
-							className="text-foreground transition-colors hover:text-foreground/80"
+							className="inline-flex h-9 w-9 items-center justify-center rounded-md text-foreground transition-colors hover:text-foreground/80"
 							aria-label="GitHub"
 						>
 							<svg
 								role="img"
 								viewBox="0 0 24 24"
-								className="h-5 w-5 mx-2"
+								className="h-5 w-5"
 								fill="currentColor"
 							>
 								<title>GitHub</title>
@@ -87,13 +97,13 @@ export function Header() {
 							href="https://x.com/saneatsu_wakana"
 							target="_blank"
 							rel="noopener noreferrer"
-							className="text-foreground transition-colors hover:text-foreground/80"
+							className="inline-flex h-9 w-9 items-center justify-center rounded-md text-foreground transition-colors hover:text-foreground/80"
 							aria-label="X"
 						>
 							<svg
 								role="img"
 								viewBox="0 0 24 24"
-								className="h-4 w-4 mx-2"
+								className="h-4 w-4"
 								fill="currentColor"
 							>
 								<title>X</title>

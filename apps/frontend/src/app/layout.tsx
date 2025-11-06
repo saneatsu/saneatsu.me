@@ -20,6 +20,14 @@ export const metadata: Metadata = {
 		default: "saneatsu.me",
 		template: "%s - saneatsu.me",
 	},
+	alternates: {
+		types: {
+			"application/rss+xml": [
+				{ url: "/ja/rss.xml", title: "saneatsu.me RSS (ja)" },
+				{ url: "/en/rss.xml", title: "saneatsu.me RSS (en)" },
+			],
+		},
+	},
 	openGraph: {
 		type: "website",
 		locale: "ja_JP",
