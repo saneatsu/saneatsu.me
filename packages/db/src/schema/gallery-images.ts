@@ -31,8 +31,21 @@ export const galleryImages = sqliteTable("gallery_images", {
 	longitude: real("longitude"),
 	/** 撮影日時 */
 	takenAt: text("taken_at"),
+	/** ステータス（published: 公開済み, draft: 下書き） */
+	status: text("status", { enum: ["published", "draft"] })
+		.notNull()
+		.default("draft"),
 	/** 作成日時 */
 	createdAt: text("created_at").notNull().default(sql`(datetime('now'))`),
 	/** 更新日時 */
 	updatedAt: text("updated_at").notNull().default(sql`(datetime('now'))`),
 });
+
+/**
+ * ギャラリー画像のステータス型
+ *
+ * @remarks
+ * スキーマから抽出された型で、単一の情報源として機能するのだ。
+ * "published": 公開済み、"draft": 下書き
+ */
+export type GalleryImageStatus = typeof galleryImages.$inferSelect.status;
