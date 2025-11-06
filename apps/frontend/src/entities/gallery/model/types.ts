@@ -1,3 +1,5 @@
+import type { GalleryImageStatus } from "@saneatsu/db";
+
 /**
  * ギャラリー画像の翻訳データ
  */
@@ -34,6 +36,8 @@ export type GalleryImage = {
 	longitude: number | null;
 	/** 撮影日時 */
 	takenAt: string | null;
+	/** ステータス */
+	status: GalleryImageStatus;
 	/** 作成日時 */
 	createdAt: string;
 	/** 更新日時 */
@@ -110,6 +114,8 @@ export type GalleryImageUpdateRequest = {
 	longitude?: number;
 	/** 撮影日時（オプショナル） */
 	takenAt?: string;
+	/** ステータス（オプショナル） */
+	status?: GalleryImageStatus;
 };
 
 /**
