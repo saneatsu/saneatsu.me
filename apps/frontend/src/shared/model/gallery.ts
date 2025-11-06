@@ -1,7 +1,17 @@
+import type { GalleryImageStatus } from "@saneatsu/db";
+
 /**
  * 言語コード
  */
 export type LanguageCode = "ja" | "en";
+
+/**
+ * ギャラリー画像のステータス（再エクスポート）
+ *
+ * @remarks
+ * スキーマから抽出された型をここで再エクスポートしているのだ。
+ */
+export type { GalleryImageStatus };
 
 /**
  * ギャラリー画像翻訳データ
@@ -39,6 +49,8 @@ export interface GalleryImage {
 	longitude: number | null;
 	/** 撮影日時 */
 	takenAt: string | null;
+	/** ステータス */
+	status: GalleryImageStatus;
 	/** 作成日時 */
 	createdAt: string;
 	/** 更新日時 */
@@ -74,3 +86,17 @@ export interface GalleryImagesQuery {
 	/** 位置情報の有無でフィルタリング */
 	hasLocation?: "true" | "false";
 }
+
+/**
+ * ギャラリー画像ステータスの表示設定
+ */
+export const GALLERY_IMAGE_STATUS_CONFIG: Record<
+	GalleryImageStatus,
+	{
+		label: string;
+		variant: "default" | "secondary" | "destructive" | "outline" | "success";
+	}
+> = {
+	published: { label: "公開済み", variant: "success" },
+	draft: { label: "下書き", variant: "secondary" },
+};
