@@ -497,11 +497,16 @@ async function seedGalleryImages() {
 				Math.random() * (now.getTime() - oneYearAgo.getTime());
 			const takenAt = new Date(randomTime).toISOString();
 
+			// 2.3. ステータスをランダムに設定（60%が公開済み、40%が下書き）
+			const status: "published" | "draft" =
+				Math.random() < 0.6 ? "published" : "draft";
+
 			galleryImageData.push({
 				cfImageId,
 				latitude,
 				longitude,
 				takenAt,
+				status,
 			});
 		}
 
