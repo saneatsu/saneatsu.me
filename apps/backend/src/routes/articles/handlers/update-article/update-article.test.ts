@@ -17,6 +17,7 @@ vi.mock("@saneatsu/db/worker", () => ({
 	articleTranslations: {},
 	articleTags: {},
 	articleGalleryImages: {},
+	galleryImages: {},
 	tags: {},
 	tagTranslations: {},
 	users: {},
@@ -28,6 +29,7 @@ vi.mock("@saneatsu/db", () => ({
 	articleTranslations: {},
 	articleTags: {},
 	articleGalleryImages: {},
+	galleryImages: {},
 	tags: {},
 	tagTranslations: {},
 	users: {},
@@ -1138,6 +1140,762 @@ describe("PUT /articles/:id - 記事更新", () => {
 				"公開記事",
 				"公開コンテンツ"
 			);
+		});
+	});
+
+	describe("Integration Test - Gallery Image Auto-Extraction", () => {
+		it("should auto-extract gallery images from content and associate them", async () => {
+			// Arrange
+			const { mockDb } = setupDbMocks();
+			const { createDatabaseClient } = await import("@saneatsu/db");
+			(createDatabaseClient as any).mockReturnValue(mockDb);
+
+			// 翻訳サービスのモック設定
+			mockTranslateArticle.mockResolvedValue({
+				title: "Test Article",
+				content: "Test content",
+			});
+
+			// 既存記事チェックのモック
+			const existingArticleMock = {
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([{ id: 1, slug: "test-article" }]),
+					}),
+				}),
+			};
+
+			// スラッグ重複チェックのモック（重複なし）
+			const _duplicateSlugMock = {
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([]),
+					}),
+				}),
+			};
+
+			// ギャラリー画像のcfImageIdからID取得のモック
+			const galleryImagesMock = {
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue([
+						{ id: 101 }, // gallery-image-1
+						{ id: 102 }, // gallery-image-2
+					]),
+				}),
+			};
+
+			// 更新後の記事取得のモック
+			const updatedArticleMock = {
+				from: vi.fn().mockReturnValue({
+					leftJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockReturnValue({
+							limit: vi.fn().mockResolvedValue([
+								{
+									id: 1,
+									slug: "test-article",
+									cfImageId: null,
+									status: "published",
+									publishedAt: "2024-01-01T00:00:00.000Z",
+									updatedAt: "2024-01-02T00:00:00.000Z",
+									title: "テスト記事",
+									content:
+										"![Image 1](https://imagedelivery.net/xxx/gallery-image-1/original)\n![Image 2](https://imagedelivery.net/xxx/gallery-image-2/large)",
+									viewCount: 0,
+								},
+							]),
+						}),
+					}),
+				}),
+			};
+
+			mockDb.select
+				.mockReturnValueOnce(existingArticleMock) // 既存記事チェック
+				.mockReturnValueOnce(galleryImagesMock) // ギャラリー画像取得
+				.mockReturnValueOnce(updatedArticleMock); // 更新後の記事取得
+
+			const updateMock = {
+				set: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue(undefined),
+				}),
+			};
+
+			const upsertJaMock = {
+				values: vi.fn().mockReturnValue({
+					onConflictDoUpdate: vi.fn().mockResolvedValue(undefined),
+				}),
+			};
+
+			const upsertEnMock = {
+				values: vi.fn().mockReturnValue({
+					onConflictDoUpdate: vi.fn().mockResolvedValue(undefined),
+				}),
+			};
+
+			const deleteMock = {
+				where: vi.fn().mockResolvedValue(undefined),
+			};
+
+			const insertMock = {
+				values: vi.fn().mockResolvedValue(undefined),
+			};
+
+			mockDb.update.mockReturnValue(updateMock);
+			mockDb.insert
+				.mockReturnValueOnce(upsertJaMock) // 日本語翻訳Upsert
+				.mockReturnValueOnce(upsertEnMock) // 英語翻訳Upsert
+				.mockReturnValueOnce(insertMock); // ギャラリー画像挿入
+
+			mockDb.delete
+				.mockReturnValueOnce(deleteMock) // タグ削除
+				.mockReturnValueOnce(deleteMock); // ギャラリー画像削除
+
+			// Act
+			const client = testClient(articlesRoute, {
+				TURSO_DATABASE_URL: "test://test.db",
+				TURSO_AUTH_TOKEN: "test-token",
+				GEMINI_API_KEY: "test-gemini-key",
+			}) as any;
+			const res = await client[":id"].$put({
+				param: { id: "1" },
+				json: {
+					title: "テスト記事",
+					slug: "test-article",
+					content:
+						"![Image 1](https://imagedelivery.net/xxx/gallery-image-1/original)\n![Image 2](https://imagedelivery.net/xxx/gallery-image-2/large)",
+					status: "published",
+					// galleryImageIds は指定しない（自動抽出のみ）
+				},
+			});
+
+			// Assert
+			expect(res.status).toBe(200);
+
+			// ギャラリー画像の挿入が呼ばれたことを確認
+			expect(mockDb.insert).toHaveBeenCalledTimes(3); // 日本語翻訳 + 英語翻訳 + ギャラリー画像
+			// 最後の insert 呼び出しがギャラリー画像の挿入
+			const galleryImageInsertCall = mockDb.insert.mock.calls[2];
+			expect(galleryImageInsertCall[0]).toEqual({}); // articleGalleryImages テーブル
+
+			// values が正しく呼ばれたことを確認
+			const valuesCall = insertMock.values.mock.calls[0];
+			expect(valuesCall[0]).toEqual([
+				{ articleId: 1, galleryImageId: 101 },
+				{ articleId: 1, galleryImageId: 102 },
+			]);
+		});
+
+		it("should handle both manual galleryImageIds and auto-extracted images", async () => {
+			// Arrange
+			const { mockDb } = setupDbMocks();
+			const { createDatabaseClient } = await import("@saneatsu/db");
+			(createDatabaseClient as any).mockReturnValue(mockDb);
+
+			mockTranslateArticle.mockResolvedValue({
+				title: "Test Article",
+				content: "Test content",
+			});
+
+			const existingArticleMock = {
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([{ id: 1, slug: "test-article" }]),
+					}),
+				}),
+			};
+
+			const _duplicateSlugMock = {
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([]),
+					}),
+				}),
+			};
+
+			const galleryImagesMock = {
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue([
+						{ id: 103 }, // gallery-image-3
+						{ id: 104 }, // gallery-image-4
+					]),
+				}),
+			};
+
+			const updatedArticleMock = {
+				from: vi.fn().mockReturnValue({
+					leftJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockReturnValue({
+							limit: vi.fn().mockResolvedValue([
+								{
+									id: 1,
+									slug: "test-article",
+									cfImageId: null,
+									status: "published",
+									publishedAt: "2024-01-01T00:00:00.000Z",
+									updatedAt: "2024-01-02T00:00:00.000Z",
+									title: "テスト記事",
+									content:
+										"![Image 3](https://imagedelivery.net/xxx/gallery-image-3/original)\n![Image 4](https://imagedelivery.net/xxx/gallery-image-4/large)",
+									viewCount: 0,
+								},
+							]),
+						}),
+					}),
+				}),
+			};
+
+			mockDb.select
+				.mockReturnValueOnce(existingArticleMock)
+				.mockReturnValueOnce(galleryImagesMock)
+				.mockReturnValueOnce(updatedArticleMock);
+
+			const updateMock = {
+				set: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue(undefined),
+				}),
+			};
+
+			const upsertJaMock = {
+				values: vi.fn().mockReturnValue({
+					onConflictDoUpdate: vi.fn().mockResolvedValue(undefined),
+				}),
+			};
+
+			const upsertEnMock = {
+				values: vi.fn().mockReturnValue({
+					onConflictDoUpdate: vi.fn().mockResolvedValue(undefined),
+				}),
+			};
+
+			const deleteMock = {
+				where: vi.fn().mockResolvedValue(undefined),
+			};
+
+			const insertMock = {
+				values: vi.fn().mockResolvedValue(undefined),
+			};
+
+			mockDb.update.mockReturnValue(updateMock);
+			mockDb.insert
+				.mockReturnValueOnce(upsertJaMock)
+				.mockReturnValueOnce(upsertEnMock)
+				.mockReturnValueOnce(insertMock);
+
+			mockDb.delete
+				.mockReturnValueOnce(deleteMock)
+				.mockReturnValueOnce(deleteMock);
+
+			// Act
+			const client = testClient(articlesRoute, {
+				TURSO_DATABASE_URL: "test://test.db",
+				TURSO_AUTH_TOKEN: "test-token",
+				GEMINI_API_KEY: "test-gemini-key",
+			}) as any;
+			const res = await client[":id"].$put({
+				param: { id: "1" },
+				json: {
+					title: "テスト記事",
+					slug: "test-article",
+					content:
+						"![Image 3](https://imagedelivery.net/xxx/gallery-image-3/original)\n![Image 4](https://imagedelivery.net/xxx/gallery-image-4/large)",
+					status: "published",
+					galleryImageIds: [1, 2], // 手動指定
+				},
+			});
+
+			// Assert
+			expect(res.status).toBe(200);
+
+			// values が手動指定(1,2) + 自動抽出(103,104) の4つを含むことを確認
+			const valuesCall = insertMock.values.mock.calls[0];
+			expect(valuesCall[0]).toHaveLength(4);
+			expect(valuesCall[0]).toContainEqual({ articleId: 1, galleryImageId: 1 });
+			expect(valuesCall[0]).toContainEqual({ articleId: 1, galleryImageId: 2 });
+			expect(valuesCall[0]).toContainEqual({
+				articleId: 1,
+				galleryImageId: 103,
+			});
+			expect(valuesCall[0]).toContainEqual({
+				articleId: 1,
+				galleryImageId: 104,
+			});
+		});
+
+		it("should remove duplicate gallery image IDs", async () => {
+			// Arrange
+			const { mockDb } = setupDbMocks();
+			const { createDatabaseClient } = await import("@saneatsu/db");
+			(createDatabaseClient as any).mockReturnValue(mockDb);
+
+			mockTranslateArticle.mockResolvedValue({
+				title: "Test Article",
+				content: "Test content",
+			});
+
+			const existingArticleMock = {
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([{ id: 1, slug: "test-article" }]),
+					}),
+				}),
+			};
+
+			const _duplicateSlugMock = {
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([]),
+					}),
+				}),
+			};
+
+			// コンテンツには gallery-image-1 が含まれている
+			const galleryImagesMock = {
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue([
+						{ id: 1 }, // gallery-image-1 (手動指定と同じ)
+					]),
+				}),
+			};
+
+			const updatedArticleMock = {
+				from: vi.fn().mockReturnValue({
+					leftJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockReturnValue({
+							limit: vi.fn().mockResolvedValue([
+								{
+									id: 1,
+									slug: "test-article",
+									cfImageId: null,
+									status: "published",
+									publishedAt: "2024-01-01T00:00:00.000Z",
+									updatedAt: "2024-01-02T00:00:00.000Z",
+									title: "テスト記事",
+									content:
+										"![Image 1](https://imagedelivery.net/xxx/gallery-image-1/original)",
+									viewCount: 0,
+								},
+							]),
+						}),
+					}),
+				}),
+			};
+
+			mockDb.select
+				.mockReturnValueOnce(existingArticleMock)
+				.mockReturnValueOnce(galleryImagesMock)
+				.mockReturnValueOnce(updatedArticleMock);
+
+			const updateMock = {
+				set: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue(undefined),
+				}),
+			};
+
+			const upsertJaMock = {
+				values: vi.fn().mockReturnValue({
+					onConflictDoUpdate: vi.fn().mockResolvedValue(undefined),
+				}),
+			};
+
+			const upsertEnMock = {
+				values: vi.fn().mockReturnValue({
+					onConflictDoUpdate: vi.fn().mockResolvedValue(undefined),
+				}),
+			};
+
+			const deleteMock = {
+				where: vi.fn().mockResolvedValue(undefined),
+			};
+
+			const insertMock = {
+				values: vi.fn().mockResolvedValue(undefined),
+			};
+
+			mockDb.update.mockReturnValue(updateMock);
+			mockDb.insert
+				.mockReturnValueOnce(upsertJaMock)
+				.mockReturnValueOnce(upsertEnMock)
+				.mockReturnValueOnce(insertMock);
+
+			mockDb.delete
+				.mockReturnValueOnce(deleteMock)
+				.mockReturnValueOnce(deleteMock);
+
+			// Act
+			const client = testClient(articlesRoute, {
+				TURSO_DATABASE_URL: "test://test.db",
+				TURSO_AUTH_TOKEN: "test-token",
+				GEMINI_API_KEY: "test-gemini-key",
+			}) as any;
+			const res = await client[":id"].$put({
+				param: { id: "1" },
+				json: {
+					title: "テスト記事",
+					slug: "test-article",
+					content:
+						"![Image 1](https://imagedelivery.net/xxx/gallery-image-1/original)",
+					status: "published",
+					galleryImageIds: [1], // 手動指定（コンテンツと重複）
+				},
+			});
+
+			// Assert
+			expect(res.status).toBe(200);
+
+			// 重複が除去されて、1つだけ挿入されることを確認
+			const valuesCall = insertMock.values.mock.calls[0];
+			expect(valuesCall[0]).toHaveLength(1);
+			expect(valuesCall[0]).toEqual([{ articleId: 1, galleryImageId: 1 }]);
+		});
+
+		it("should ignore content- prefixed images", async () => {
+			// Arrange
+			const { mockDb } = setupDbMocks();
+			const { createDatabaseClient } = await import("@saneatsu/db");
+			(createDatabaseClient as any).mockReturnValue(mockDb);
+
+			mockTranslateArticle.mockResolvedValue({
+				title: "Test Article",
+				content: "Test content",
+			});
+
+			const existingArticleMock = {
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([{ id: 1, slug: "test-article" }]),
+					}),
+				}),
+			};
+
+			const _duplicateSlugMock = {
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([]),
+					}),
+				}),
+			};
+
+			// gallery-image-1 のみ取得（content-image-1 は除外）
+			const galleryImagesMock = {
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue([
+						{ id: 1 }, // gallery-image-1
+					]),
+				}),
+			};
+
+			const updatedArticleMock = {
+				from: vi.fn().mockReturnValue({
+					leftJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockReturnValue({
+							limit: vi.fn().mockResolvedValue([
+								{
+									id: 1,
+									slug: "test-article",
+									cfImageId: null,
+									status: "published",
+									publishedAt: "2024-01-01T00:00:00.000Z",
+									updatedAt: "2024-01-02T00:00:00.000Z",
+									title: "テスト記事",
+									content:
+										"![Content](https://imagedelivery.net/xxx/content-image-1/original)\n![Gallery](https://imagedelivery.net/xxx/gallery-image-1/large)",
+									viewCount: 0,
+								},
+							]),
+						}),
+					}),
+				}),
+			};
+
+			mockDb.select
+				.mockReturnValueOnce(existingArticleMock)
+				.mockReturnValueOnce(galleryImagesMock)
+				.mockReturnValueOnce(updatedArticleMock);
+
+			const updateMock = {
+				set: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue(undefined),
+				}),
+			};
+
+			const upsertJaMock = {
+				values: vi.fn().mockReturnValue({
+					onConflictDoUpdate: vi.fn().mockResolvedValue(undefined),
+				}),
+			};
+
+			const upsertEnMock = {
+				values: vi.fn().mockReturnValue({
+					onConflictDoUpdate: vi.fn().mockResolvedValue(undefined),
+				}),
+			};
+
+			const deleteMock = {
+				where: vi.fn().mockResolvedValue(undefined),
+			};
+
+			const insertMock = {
+				values: vi.fn().mockResolvedValue(undefined),
+			};
+
+			mockDb.update.mockReturnValue(updateMock);
+			mockDb.insert
+				.mockReturnValueOnce(upsertJaMock)
+				.mockReturnValueOnce(upsertEnMock)
+				.mockReturnValueOnce(insertMock);
+
+			mockDb.delete
+				.mockReturnValueOnce(deleteMock)
+				.mockReturnValueOnce(deleteMock);
+
+			// Act
+			const client = testClient(articlesRoute, {
+				TURSO_DATABASE_URL: "test://test.db",
+				TURSO_AUTH_TOKEN: "test-token",
+				GEMINI_API_KEY: "test-gemini-key",
+			}) as any;
+			const res = await client[":id"].$put({
+				param: { id: "1" },
+				json: {
+					title: "テスト記事",
+					slug: "test-article",
+					content:
+						"![Content](https://imagedelivery.net/xxx/content-image-1/original)\n![Gallery](https://imagedelivery.net/xxx/gallery-image-1/large)",
+					status: "published",
+				},
+			});
+
+			// Assert
+			expect(res.status).toBe(200);
+
+			// gallery-image-1 のみ挿入されることを確認
+			const valuesCall = insertMock.values.mock.calls[0];
+			expect(valuesCall[0]).toEqual([{ articleId: 1, galleryImageId: 1 }]);
+		});
+
+		it("should handle non-existent cfImageIds gracefully", async () => {
+			// Arrange
+			const { mockDb } = setupDbMocks();
+			const { createDatabaseClient } = await import("@saneatsu/db");
+			(createDatabaseClient as any).mockReturnValue(mockDb);
+
+			mockTranslateArticle.mockResolvedValue({
+				title: "Test Article",
+				content: "Test content",
+			});
+
+			const existingArticleMock = {
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([{ id: 1, slug: "test-article" }]),
+					}),
+				}),
+			};
+
+			const _duplicateSlugMock = {
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([]),
+					}),
+				}),
+			};
+
+			// 存在しない cfImageId なので空配列を返す
+			const galleryImagesMock = {
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue([]),
+				}),
+			};
+
+			const updatedArticleMock = {
+				from: vi.fn().mockReturnValue({
+					leftJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockReturnValue({
+							limit: vi.fn().mockResolvedValue([
+								{
+									id: 1,
+									slug: "test-article",
+									cfImageId: null,
+									status: "published",
+									publishedAt: "2024-01-01T00:00:00.000Z",
+									updatedAt: "2024-01-02T00:00:00.000Z",
+									title: "テスト記事",
+									content:
+										"![Nonexistent](https://imagedelivery.net/xxx/gallery-nonexistent/original)",
+									viewCount: 0,
+								},
+							]),
+						}),
+					}),
+				}),
+			};
+
+			mockDb.select
+				.mockReturnValueOnce(existingArticleMock)
+				.mockReturnValueOnce(galleryImagesMock)
+				.mockReturnValueOnce(updatedArticleMock);
+
+			const updateMock = {
+				set: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue(undefined),
+				}),
+			};
+
+			const upsertJaMock = {
+				values: vi.fn().mockReturnValue({
+					onConflictDoUpdate: vi.fn().mockResolvedValue(undefined),
+				}),
+			};
+
+			const upsertEnMock = {
+				values: vi.fn().mockReturnValue({
+					onConflictDoUpdate: vi.fn().mockResolvedValue(undefined),
+				}),
+			};
+
+			const deleteMock = {
+				where: vi.fn().mockResolvedValue(undefined),
+			};
+
+			mockDb.update.mockReturnValue(updateMock);
+			mockDb.insert
+				.mockReturnValueOnce(upsertJaMock)
+				.mockReturnValueOnce(upsertEnMock);
+			// ギャラリー画像挿入は呼ばれない（空配列のため）
+
+			mockDb.delete
+				.mockReturnValueOnce(deleteMock)
+				.mockReturnValueOnce(deleteMock);
+
+			// Act
+			const client = testClient(articlesRoute, {
+				TURSO_DATABASE_URL: "test://test.db",
+				TURSO_AUTH_TOKEN: "test-token",
+				GEMINI_API_KEY: "test-gemini-key",
+			}) as any;
+			const res = await client[":id"].$put({
+				param: { id: "1" },
+				json: {
+					title: "テスト記事",
+					slug: "test-article",
+					content:
+						"![Nonexistent](https://imagedelivery.net/xxx/gallery-nonexistent/original)",
+					status: "published",
+				},
+			});
+
+			// Assert
+			expect(res.status).toBe(200);
+
+			// ギャラリー画像挿入は呼ばれない
+			expect(mockDb.insert).toHaveBeenCalledTimes(2); // 日本語翻訳 + 英語翻訳のみ
+		});
+
+		it("should work when content has no image URLs", async () => {
+			// Arrange
+			const { mockDb } = setupDbMocks();
+			const { createDatabaseClient } = await import("@saneatsu/db");
+			(createDatabaseClient as any).mockReturnValue(mockDb);
+
+			mockTranslateArticle.mockResolvedValue({
+				title: "Test Article",
+				content: "Test content",
+			});
+
+			const existingArticleMock = {
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([{ id: 1, slug: "test-article" }]),
+					}),
+				}),
+			};
+
+			const _duplicateSlugMock = {
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([]),
+					}),
+				}),
+			};
+
+			const updatedArticleMock = {
+				from: vi.fn().mockReturnValue({
+					leftJoin: vi.fn().mockReturnValue({
+						where: vi.fn().mockReturnValue({
+							limit: vi.fn().mockResolvedValue([
+								{
+									id: 1,
+									slug: "test-article",
+									cfImageId: null,
+									status: "published",
+									publishedAt: "2024-01-01T00:00:00.000Z",
+									updatedAt: "2024-01-02T00:00:00.000Z",
+									title: "テスト記事",
+									content: "これはテキストだけの記事です。",
+									viewCount: 0,
+								},
+							]),
+						}),
+					}),
+				}),
+			};
+
+			mockDb.select
+				.mockReturnValueOnce(existingArticleMock)
+				.mockReturnValueOnce(updatedArticleMock);
+
+			const updateMock = {
+				set: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue(undefined),
+				}),
+			};
+
+			const upsertJaMock = {
+				values: vi.fn().mockReturnValue({
+					onConflictDoUpdate: vi.fn().mockResolvedValue(undefined),
+				}),
+			};
+
+			const upsertEnMock = {
+				values: vi.fn().mockReturnValue({
+					onConflictDoUpdate: vi.fn().mockResolvedValue(undefined),
+				}),
+			};
+
+			const deleteMock = {
+				where: vi.fn().mockResolvedValue(undefined),
+			};
+
+			mockDb.update.mockReturnValue(updateMock);
+			mockDb.insert
+				.mockReturnValueOnce(upsertJaMock)
+				.mockReturnValueOnce(upsertEnMock);
+			// ギャラリー画像挿入は呼ばれない（画像URLがないため）
+
+			mockDb.delete
+				.mockReturnValueOnce(deleteMock)
+				.mockReturnValueOnce(deleteMock);
+
+			// Act
+			const client = testClient(articlesRoute, {
+				TURSO_DATABASE_URL: "test://test.db",
+				TURSO_AUTH_TOKEN: "test-token",
+				GEMINI_API_KEY: "test-gemini-key",
+			}) as any;
+			const res = await client[":id"].$put({
+				param: { id: "1" },
+				json: {
+					title: "テスト記事",
+					slug: "test-article",
+					content: "これはテキストだけの記事です。",
+					status: "published",
+				},
+			});
+
+			// Assert
+			expect(res.status).toBe(200);
+
+			// ギャラリー画像挿入は呼ばれない
+			expect(mockDb.insert).toHaveBeenCalledTimes(2); // 日本語翻訳 + 英語翻訳のみ
 		});
 	});
 });

@@ -1,8 +1,9 @@
 import type { RouteHandler } from "@hono/zod-openapi";
-import { and, eq, not } from "drizzle-orm";
+import { and, eq, inArray, not } from "drizzle-orm";
 
 import type { Env } from "@/env";
 import { getDatabase } from "@/lib";
+import { extractGalleryCfImageIds } from "@/lib/extract-gallery-cf-image-ids";
 import { createTranslationService } from "@/services/gemini-translation/gemini-translation";
 
 import type { updateArticleRoute } from "./update-article.openapi";
@@ -34,6 +35,7 @@ export const updateArticle: Handler = async (c) => {
 			articleGalleryImages,
 			articleTags,
 			articleTranslations,
+			galleryImages,
 		} = await getDatabase();
 		const db = createDatabaseClient(c.env);
 
@@ -208,15 +210,34 @@ export const updateArticle: Handler = async (c) => {
 		}
 
 		// 8.1. ギャラリー画像との紐付けを更新
-		// 既存のギャラリー画像の紐付けを削除
+		// 8.1.1. コンテンツからギャラリー画像を自動抽出
+		const extractedCfImageIds = extractGalleryCfImageIds(content);
+
+		// 8.1.2. cfImageIdからgallery_images.idを取得
+		const extractedGalleryImageIds: number[] = [];
+		if (extractedCfImageIds.length > 0) {
+			const galleryRecords = await db
+				.select({ id: galleryImages.id })
+				.from(galleryImages)
+				.where(inArray(galleryImages.cfImageId, extractedCfImageIds));
+
+			extractedGalleryImageIds.push(...galleryRecords.map((r) => r.id));
+		}
+
+		// 8.1.3. 手動指定のIDと自動抽出のIDをマージ（重複除去）
+		const allGalleryImageIds = Array.from(
+			new Set([...(galleryImageIds || []), ...extractedGalleryImageIds])
+		);
+
+		// 8.1.4. 既存のギャラリー画像の紐付けを削除
 		await db
 			.delete(articleGalleryImages)
 			.where(eq(articleGalleryImages.articleId, articleId));
 
-		// 新しいギャラリー画像の紐付けを作成
-		if (galleryImageIds && galleryImageIds.length > 0) {
+		// 8.1.5. 新しいギャラリー画像の紐付けを作成
+		if (allGalleryImageIds.length > 0) {
 			await db.insert(articleGalleryImages).values(
-				galleryImageIds.map((galleryImageId) => ({
+				allGalleryImageIds.map((galleryImageId) => ({
 					articleId,
 					galleryImageId,
 				}))
