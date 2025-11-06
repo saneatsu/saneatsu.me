@@ -66,7 +66,7 @@ export function GalleryImageModal({
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto data-[state=open]:!slide-in-from-left-0 data-[state=open]:!slide-in-from-top-0 data-[state=closed]:!slide-out-to-left-0 data-[state=closed]:!slide-out-to-top-0">
+			<DialogContent className="max-w-4xl data-[state=open]:!slide-in-from-left-0 data-[state=open]:!slide-in-from-top-0 data-[state=closed]:!slide-out-to-left-0 data-[state=closed]:!slide-out-to-top-0">
 				<DialogHeader>
 					<DialogTitle>{title}</DialogTitle>
 					{description && <DialogDescription>{description}</DialogDescription>}
@@ -76,6 +76,19 @@ export function GalleryImageModal({
 						</div>
 					)}
 				</DialogHeader>
+
+				{/* 画像表示 - スクロールなしで表示 */}
+				<div className="relative w-full max-h-[70vh]">
+					<Image
+						src={imageUrl}
+						alt={title}
+						width={1600}
+						height={1600}
+						sizes="(max-width: 1200px) 100vw, 1200px"
+						className="object-contain w-full h-auto max-h-[70vh]"
+						priority
+					/>
+				</div>
 
 				{/* 記事リンクセクション */}
 				{publishedArticles.length > 0 && (
@@ -97,17 +110,6 @@ export function GalleryImageModal({
 						</ul>
 					</div>
 				)}
-
-				<div className="relative w-full aspect-square">
-					<Image
-						src={imageUrl}
-						alt={title}
-						fill
-						sizes="(max-width: 1200px) 100vw, 1200px"
-						className="object-contain"
-						priority
-					/>
-				</div>
 			</DialogContent>
 		</Dialog>
 	);
