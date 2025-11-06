@@ -30,6 +30,8 @@ import {
 	Textarea,
 } from "@/shared/ui";
 
+import { GalleryImageStatusSelector } from "../gallery-image-status-selector/gallery-image-status-selector";
+
 /**
  * ギャラリーフォームのスキーマを生成する関数
  *
@@ -56,6 +58,10 @@ const createGalleryFormSchema = (mode: "create" | "edit") => {
 			})
 			.nullable()
 			.optional(),
+		/** ステータス */
+		status: z.enum(["published", "draft"], {
+			message: "ステータスを選択してください",
+		}),
 	};
 
 	if (mode === "create") {
@@ -135,6 +141,7 @@ export function GalleryForm({ mode = "create", imageId }: GalleryFormProps) {
 			titleJa: "",
 			descriptionJa: "",
 			coordinates: null,
+			status: "draft",
 		},
 	});
 
@@ -162,6 +169,7 @@ export function GalleryForm({ mode = "create", imageId }: GalleryFormProps) {
 								longitude: existingImage.longitude,
 							}
 						: null,
+				status: existingImage.status,
 			});
 		}
 	}, [mode, existingImage, form]);
@@ -222,6 +230,7 @@ export function GalleryForm({ mode = "create", imageId }: GalleryFormProps) {
 						latitude: data.coordinates?.latitude,
 						longitude: data.coordinates?.longitude,
 						takenAt: data.takenAt?.toISOString(),
+						status: data.status,
 					},
 				});
 
@@ -358,6 +367,24 @@ export function GalleryForm({ mode = "create", imageId }: GalleryFormProps) {
 								写真が撮影された日時を設定できます
 							</FormDescription>
 							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				{/* ステータス */}
+				<FormField
+					control={form.control}
+					name="status"
+					render={({ field }) => (
+						<FormItem>
+							<GalleryImageStatusSelector
+								value={field.value}
+								onValueChange={field.onChange}
+								statuses={["draft", "published"]}
+								label="ステータス"
+								required
+								error={form.formState.errors.status?.message}
+							/>
 						</FormItem>
 					)}
 				/>

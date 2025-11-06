@@ -26,6 +26,7 @@ const mockImages: GalleryImage[] = [
 		latitude: 35.6812,
 		longitude: 139.7671,
 		takenAt: "2024-01-01T00:00:00Z",
+		status: "published",
 		createdAt: "2024-01-01T00:00:00Z",
 		updatedAt: "2024-01-01T00:00:00Z",
 		translations: [
@@ -46,6 +47,7 @@ const mockImages: GalleryImage[] = [
 		latitude: 35.6586,
 		longitude: 139.7454,
 		takenAt: "2024-01-02T00:00:00Z",
+		status: "published",
 		createdAt: "2024-01-02T00:00:00Z",
 		updatedAt: "2024-01-02T00:00:00Z",
 		translations: [
@@ -66,6 +68,7 @@ const mockImages: GalleryImage[] = [
 		latitude: 35.7101,
 		longitude: 139.8107,
 		takenAt: "2024-01-03T00:00:00Z",
+		status: "published",
 		createdAt: "2024-01-03T00:00:00Z",
 		updatedAt: "2024-01-03T00:00:00Z",
 		translations: [
@@ -89,6 +92,7 @@ const mockImagesWithoutLocation: GalleryImage[] = [
 		latitude: null,
 		longitude: null,
 		takenAt: "2024-01-04T00:00:00Z",
+		status: "published",
 		createdAt: "2024-01-04T00:00:00Z",
 		updatedAt: "2024-01-04T00:00:00Z",
 		translations: [

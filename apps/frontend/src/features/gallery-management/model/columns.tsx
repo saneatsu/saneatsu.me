@@ -8,6 +8,7 @@ import { useLocale } from "next-intl";
 
 import type { GalleryImage } from "@/entities/gallery";
 import { formatRelativeDate, getImageUrl } from "@/shared/lib";
+import { GALLERY_IMAGE_STATUS_CONFIG } from "@/shared/model";
 import { Badge, Button } from "@/shared/ui";
 
 import { GalleryActions } from "../ui/gallery-actions/gallery-actions";
@@ -58,6 +59,7 @@ function DateCell({ dateString }: { dateString: string | null }) {
  * - 画像: サムネイル画像（Cloudflare Images small variant）
  * - タイトル: 画像タイトル（日本語）
  * - 位置情報: 緯度・経度の有無
+ * - ステータス: 公開ステータス（公開済み/下書き）
  * - 撮影日時: 撮影日時（未設定の場合は「未設定」を表示）
  * - 更新日時: 更新日時
  * - アクション: 編集・削除ボタン
@@ -146,6 +148,16 @@ export const columns: ColumnDef<GalleryImage>[] = [
 		},
 		filterFn: (row, id, value) => {
 			return value.includes(row.getValue(id));
+		},
+	},
+	{
+		accessorKey: "status",
+		id: "status",
+		header: "ステータス",
+		cell: ({ row }) => {
+			const status = row.original.status;
+			const config = GALLERY_IMAGE_STATUS_CONFIG[status];
+			return <Badge variant={config.variant}>{config.label}</Badge>;
 		},
 	},
 	{
