@@ -3,14 +3,15 @@
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 
-import { Alert, AlertDescription } from "@/shared/ui/alert/alert";
-import { Button } from "@/shared/ui/button/button";
 import {
+	Alert,
+	AlertDescription,
+	Button,
 	Card,
 	CardContent,
 	CardHeader,
 	CardTitle,
-} from "@/shared/ui/card/card";
+} from "@/shared/ui";
 
 export default function LoginPage() {
 	const searchParams = useSearchParams();
