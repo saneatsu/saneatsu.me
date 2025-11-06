@@ -35,27 +35,32 @@ export function GalleryImageCard({ image, onClick }: GalleryImageCardProps) {
 	// Cloudflare Images の URL を構築（medium バリアント）
 	const imageUrl = `https://imagedelivery.net/${process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH}/${image.cfImageId}/medium`;
 
+	const handleClick = () => onClick?.(image);
+
 	return (
-		<Card
-			className="overflow-hidden cursor-pointer transition-transform hover:scale-105"
-			onClick={() => onClick?.(image)}
+		<button
+			type="button"
+			className="cursor-pointer transition-transform hover:scale-105 border-0 p-0 bg-transparent text-left w-full"
+			onClick={handleClick}
 		>
-			<CardContent className="p-0">
-				<div className="relative aspect-square">
-					<Image
-						src={imageUrl}
-						alt={title}
-						fill
-						sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-						className="object-cover"
-					/>
-				</div>
-				{title && (
-					<div className="p-4">
-						<h3 className="text-sm font-medium line-clamp-2">{title}</h3>
+			<Card className="shadow-xs aspect-square p-0">
+				<CardContent className="p-0 h-full">
+					<div className="relative h-full overflow-hidden rounded-lg">
+						<Image
+							src={imageUrl}
+							alt={title}
+							fill
+							sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+							className="object-cover"
+						/>
 					</div>
-				)}
-			</CardContent>
-		</Card>
+				</CardContent>
+			</Card>
+			{title && (
+				<div className="p-4">
+					<h3 className="text-sm font-medium line-clamp-2">{title}</h3>
+				</div>
+			)}
+		</button>
 	);
 }
