@@ -17,7 +17,7 @@ type Handler = RouteHandler<typeof updateGalleryImageRoute, { Bindings: Env }>;
  * 2. パスパラメータから画像IDを取得
  * 3. リクエストボディを取得
  * 4. 画像の存在確認
- * 5. 更新データを構築（latitude, longitude, takenAt）
+ * 5. 更新データを構築（latitude, longitude, takenAt, status）
  * 6. 画像情報を更新（gallery_images）
  * 7. 翻訳データの更新（gallery_image_translations、指定されている場合）
  *    - 既存の翻訳は上書き、新しい言語は追加
@@ -76,6 +76,7 @@ export const updateGalleryImageHandler: Handler = async (c) => {
 			latitude?: number | null;
 			longitude?: number | null;
 			takenAt?: string | null;
+			status?: "published" | "draft";
 			updatedAt: string;
 		} = {
 			updatedAt: now,
@@ -89,6 +90,9 @@ export const updateGalleryImageHandler: Handler = async (c) => {
 		}
 		if (body.takenAt !== undefined) {
 			updateData.takenAt = body.takenAt;
+		}
+		if (body.status !== undefined) {
+			updateData.status = body.status;
 		}
 
 		// 6. 画像情報を更新
