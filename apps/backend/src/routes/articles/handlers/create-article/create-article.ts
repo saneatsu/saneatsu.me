@@ -1,8 +1,9 @@
 import type { RouteHandler } from "@hono/zod-openapi";
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 
 import type { Env } from "@/env";
 import { getDatabase } from "@/lib";
+import { extractGalleryCfImageIds } from "@/lib/extract-gallery-cf-image-ids";
 import { createTranslationService } from "@/services/gemini-translation/gemini-translation";
 
 import type { createArticleRoute } from "./create-article.openapi";
@@ -33,6 +34,7 @@ export const createArticle: Handler = async (c) => {
 			articleGalleryImages,
 			articleTags,
 			articleTranslations,
+			galleryImages,
 		} = await getDatabase();
 		const db = createDatabaseClient(c.env);
 
@@ -148,10 +150,30 @@ export const createArticle: Handler = async (c) => {
 			}
 		}
 
-		// 7.1. ギャラリー画像との紐付けを実装（galleryImageIdsが提供された場合）
-		if (galleryImageIds && galleryImageIds.length > 0) {
+		// 7.1. ギャラリー画像との紐付けを実装
+		// 7.1.1. コンテンツからギャラリー画像を自動抽出
+		const extractedCfImageIds = extractGalleryCfImageIds(content);
+
+		// 7.1.2. cfImageIdからgallery_images.idを取得
+		const extractedGalleryImageIds: number[] = [];
+		if (extractedCfImageIds.length > 0) {
+			const galleryRecords = await db
+				.select({ id: galleryImages.id })
+				.from(galleryImages)
+				.where(inArray(galleryImages.cfImageId, extractedCfImageIds));
+
+			extractedGalleryImageIds.push(...galleryRecords.map((r) => r.id));
+		}
+
+		// 7.1.3. 手動指定のIDと自動抽出のIDをマージ（重複除去）
+		const allGalleryImageIds = Array.from(
+			new Set([...(galleryImageIds || []), ...extractedGalleryImageIds])
+		);
+
+		// 7.1.4. ギャラリー画像の紐付けを作成
+		if (allGalleryImageIds.length > 0) {
 			try {
-				const galleryImageAssociations = galleryImageIds.map(
+				const galleryImageAssociations = allGalleryImageIds.map(
 					(galleryImageId) => ({
 						articleId: newArticle.id,
 						galleryImageId: galleryImageId,
@@ -159,7 +181,7 @@ export const createArticle: Handler = async (c) => {
 				);
 				await db.insert(articleGalleryImages).values(galleryImageAssociations);
 				console.log(
-					`Associated ${galleryImageIds.length} gallery images with article ${newArticle.id}`
+					`Associated ${allGalleryImageIds.length} gallery images with article ${newArticle.id}`
 				);
 			} catch (error) {
 				console.error(
