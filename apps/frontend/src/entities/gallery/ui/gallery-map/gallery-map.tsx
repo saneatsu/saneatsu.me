@@ -181,7 +181,10 @@ export function GalleryMap({
 	}
 
 	return (
-		<div className={className} style={{ height }}>
+		<div
+			className={`${className} rounded-lg overflow-hidden`}
+			style={{ height }}
+		>
 			<MapboxMap
 				{...viewState}
 				onMove={(evt: ViewStateChangeEvent) => setViewState(evt.viewState)}
