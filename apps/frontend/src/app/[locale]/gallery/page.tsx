@@ -118,7 +118,7 @@ export default function GalleryPage() {
 						</div>
 
 						{/* 右側: 地図スケルトン */}
-						<div className="sticky top-8 h-fit">
+						<div className="sticky top-20 h-fit">
 							<div
 								className="bg-muted animate-pulse rounded-lg"
 								style={{ height: "calc(100vh - 12rem)" }}
@@ -172,7 +172,7 @@ export default function GalleryPage() {
 						</div>
 
 						{/* 右側: 地図（固定位置） */}
-						<div className="sticky top-8 h-fit">
+						<div className="sticky top-20 h-fit">
 							<GalleryMap
 								images={data.images}
 								onImageClick={handleImageClick}
