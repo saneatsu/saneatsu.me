@@ -19,7 +19,7 @@ import {
 } from "nuqs";
 import { useMemo, useState } from "react";
 
-import { useGetGalleryImages } from "@/entities/gallery";
+import { useGetAdminGalleryImages } from "@/entities/gallery";
 import { usePersistentQueryStates } from "@/shared/lib";
 import {
 	DataTable,
@@ -176,7 +176,7 @@ export function GalleryTable({ onRefresh }: GalleryTableProps) {
 	/**
 	 * ギャラリー画像一覧を取得（サーバーサイドページネーション）
 	 */
-	const { data, isLoading, error, refetch } = useGetGalleryImages({
+	const { data, isLoading, error, refetch } = useGetAdminGalleryImages({
 		page: params.page,
 		limit: params.pageSize,
 		hasLocation:
