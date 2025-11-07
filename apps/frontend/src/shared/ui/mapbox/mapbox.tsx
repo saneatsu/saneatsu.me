@@ -1,7 +1,5 @@
 "use client";
 
-import "mapbox-gl/dist/mapbox-gl.css";
-
 import type { Map as MapboxGLMap } from "mapbox-gl";
 import { useEffect, useState } from "react";
 import type {
