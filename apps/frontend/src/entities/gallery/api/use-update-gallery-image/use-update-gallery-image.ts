@@ -40,9 +40,12 @@ export function useUpdateGalleryImage() {
 			id: number;
 			data: GalleryImageUpdateRequest;
 		}): Promise<GalleryImageUpdateResponse> => {
-			const response = await client.api.gallery[":id"].$patch({
+			// JSONの場合（既存の処理）
+			// Hono client の $patch は json パラメータの型定義がないが、実行時には動作する
+			// biome-ignore lint/suspicious/noExplicitAny: 型定義の制限を回避するため
+			const response = await (client.api.gallery[":id"].$patch as any)({
 				param: { id: id.toString() },
-				json: data,
+				json: data as GalleryImageUpdateRequest,
 			});
 
 			if (!response.ok) {
