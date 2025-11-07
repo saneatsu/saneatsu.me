@@ -19,7 +19,7 @@ const TranslationSchema = z.object({
 });
 
 /**
- * ギャラリー画像更新リクエストスキーマ
+ * ギャラリー画像更新リクエストスキーマ（JSON）
  */
 const GalleryImageUpdateSchema = z.object({
 	translations: z.array(TranslationSchema).optional().openapi({
@@ -39,6 +39,40 @@ const GalleryImageUpdateSchema = z.object({
 		description: "撮影日時（ISO 8601形式、オプショナル）",
 	}),
 	status: z.enum(["published", "draft"]).optional().openapi({
+		example: "published",
+		description:
+			"画像の公開ステータス（published: 公開済み, draft: 下書き、オプショナル）",
+	}),
+});
+
+/**
+ * ギャラリー画像更新リクエストスキーマ（FormData）
+ */
+const GalleryImageUpdateFormDataSchema = z.object({
+	file: z.any().optional().openapi({
+		type: "string",
+		format: "binary",
+		description:
+			"置き換える画像ファイル（JPEG/PNG/GIF/WebP、最大10MB、オプショナル）",
+	}),
+	translations: z.string().optional().openapi({
+		example: '[{"language":"ja","title":"東京タワーの夕景"}]',
+		description:
+			"画像の翻訳データ（JSON文字列、オプショナル）。指定された言語の翻訳を上書きまたは追加します。",
+	}),
+	latitude: z.string().optional().openapi({
+		example: "35.6585805",
+		description: "撮影場所の緯度（-90から90、オプショナル）",
+	}),
+	longitude: z.string().optional().openapi({
+		example: "139.7454329",
+		description: "撮影場所の経度（-180から180、オプショナル）",
+	}),
+	takenAt: z.string().optional().openapi({
+		example: "2024-12-01T15:30:00Z",
+		description: "撮影日時（ISO 8601形式、オプショナル）",
+	}),
+	status: z.string().optional().openapi({
 		example: "published",
 		description:
 			"画像の公開ステータス（published: 公開済み, draft: 下書き、オプショナル）",
@@ -100,10 +134,11 @@ const ErrorSchema = z.object({
  * 処理フロー:
  * 1. DBクライアントを作成
  * 2. パスパラメータから画像IDを取得
- * 3. リクエストボディを取得
+ * 3. リクエストボディを取得（FormDataまたはJSON）
  * 4. 画像の存在確認
- * 5. 画像情報を更新
- * 6. レスポンスを返す
+ * 5. ファイルが提供されている場合、画像を置き換える
+ * 6. 画像情報を更新
+ * 7. レスポンスを返す
  */
 export const updateGalleryImageRoute = createRoute({
 	method: "patch",
@@ -124,6 +159,9 @@ export const updateGalleryImageRoute = createRoute({
 				"application/json": {
 					schema: GalleryImageUpdateSchema,
 				},
+				"multipart/form-data": {
+					schema: GalleryImageUpdateFormDataSchema,
+				},
 			},
 		},
 	},
@@ -142,7 +180,8 @@ export const updateGalleryImageRoute = createRoute({
 					schema: ErrorSchema,
 				},
 			},
-			description: "不正なリクエスト（IDが不正など）",
+			description:
+				"不正なリクエスト（IDが不正、ファイルサイズ超過、ファイル形式が不正など）",
 		},
 		404: {
 			content: {
@@ -164,5 +203,5 @@ export const updateGalleryImageRoute = createRoute({
 	tags: ["Gallery"],
 	summary: "ギャラリー画像更新",
 	description:
-		"既存のギャラリー画像のメタデータ（タイトル、説明、位置情報、撮影日時）を更新します。",
+		"既存のギャラリー画像のメタデータ（タイトル、説明、位置情報、撮影日時）を更新します。multipart/form-dataでファイルを送信すると、画像ファイル自体も置き換えることができます（最大10MB、JPEG/PNG/GIF/WebP形式）。",
 });
