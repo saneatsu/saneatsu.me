@@ -11,15 +11,18 @@ saneatsu.meプロジェクトでは、すべての環境変数をGitHub Secrets/
 ### GitHub Secrets中心の環境変数管理
 
 **管理方針:**
-- **すべての環境変数をGitHub Secrets/Variablesで管理**
-- **Cloudflare Worker Secretsは使用しない**
+- **基本的にすべての環境変数をGitHub Secrets/Variablesで管理**
 - **CI/CDパイプラインで自動的に.envファイルを生成・注入**
+- **例外: ランタイム環境変数はCloudflare Worker Secretsで設定が必要**
 
 **利点:**
 - 一元管理による運用コストの削減
 - GitHubのアクセス制御を活用したセキュリティ向上
 - バージョン管理と変更履歴の追跡
-- 手動設定作業の排除
+- 手動設定作業の削減
+
+**例外ケース:**
+- バックエンドで実行時に必要な環境変数（例: `MAPBOX_ACCESS_TOKEN`）はCloudflare Worker Secretsの設定が必要です
 
 ## 環境変数の分類
 
@@ -40,6 +43,8 @@ saneatsu.meプロジェクトでは、すべての環境変数をGitHub Secrets/
 | `NEXTAUTH_SECRET` | NextAuth.js暗号化キー | Web | JWT暗号化・署名用（32文字以上） |
 | `GOOGLE_CLIENT_ID` | Google OAuth クライアントID | Web | Google認証設定 |
 | `GOOGLE_CLIENT_SECRET` | Google OAuth シークレット | Web | Google認証設定 |
+| `NEXT_PUBLIC_MAPBOX_TOKEN` | Mapboxアクセストークン（フロントエンド） | Web | 地図表示用（ビルド時にバンドル） |
+| `MAPBOX_ACCESS_TOKEN` | Mapboxアクセストークン（バックエンド） | Backend | 住所検索API用（**Worker Secret設定が必要**） |
 | `CLOUDFLARE_ACCOUNT_ID` | CloudflareアカウントID | CI/CD | デプロイ用 |
 | `CLOUDFLARE_API_TOKEN` | Cloudflare APIトークン | CI/CD | デプロイ用 |
 
@@ -68,11 +73,62 @@ user1@gmail.com,user2@example.com,admin@company.com
 - Google認証時の管理者権限チェック
 - Auth APIでのユーザー作成・更新権限チェック
 
+### 3. ランタイム環境変数（Cloudflare Worker Secrets）
+
+一部の環境変数は、バックエンドの**実行時（ランタイム）**に必要なため、Cloudflare Worker Secretsでの設定が必要です。
+
+#### Mapbox環境変数の使い分け
+
+Mapboxの環境変数は、フロントエンドとバックエンドで**異なる設定方法**が必要です：
+
+| 環境変数 | 使用場所 | 設定方法 | タイミング |
+|---------|----------|----------|-----------|
+| `NEXT_PUBLIC_MAPBOX_TOKEN` | Frontend | GitHub Secrets | **ビルド時**にJSファイルに埋め込まれる |
+| `MAPBOX_ACCESS_TOKEN` | Backend | **Cloudflare Worker Secrets** | **実行時**にランタイムで読み取り |
+
+**なぜ違うのか：**
+
+- **Frontend（`NEXT_PUBLIC_MAPBOX_TOKEN`）**
+  - ブラウザで地図を表示するために使用（`react-map-gl`）
+  - ビルド時にJavaScriptファイルに埋め込まれる（静的）
+  - GitHub Secretsから自動注入される
+
+- **Backend（`MAPBOX_ACCESS_TOKEN`）**
+  - サーバーサイドで住所検索API（Geocoding）を呼び出すために使用
+  - **実行時**に `c.env.MAPBOX_ACCESS_TOKEN` で環境変数を読み取る
+  - Cloudflare Worker Secretsの手動設定が**必要**
+
+#### Cloudflare Worker Secretsの設定手順
+
+**Production環境:**
+```bash
+cd apps/backend
+wrangler secret put MAPBOX_ACCESS_TOKEN --env production
+# プロンプトでMapboxアクセストークンを入力
+```
+
+**Preview環境:**
+```bash
+wrangler secret put MAPBOX_ACCESS_TOKEN --env preview
+# プロンプトでMapboxアクセストークンを入力
+```
+
+**確認方法:**
+```bash
+# 設定済みのSecretsを確認（値は表示されない）
+wrangler secret list --env production
+wrangler secret list --env preview
+```
+
+**注意:**
+- 同じMapboxトークンを両方の環境変数に使用できます
+- Cloudflare Dashboardからも設定可能: Workers & Pages → saneatsu-backend → Settings → Variables
+
 ## 設定方法
 
 ### GitHub Secrets/Variablesの設定
 
-すべての環境変数はGitHubで一元管理します。Cloudflare Worker Secretsの設定は**不要**です。
+基本的にすべての環境変数はGitHubで一元管理します。ランタイム環境変数（`MAPBOX_ACCESS_TOKEN`など）は追加でCloudflare Worker Secretsの設定が必要です（前述の「ランタイム環境変数」セクションを参照）。
 
 #### Repository Secretsの設定
 
@@ -92,6 +148,8 @@ CORS_ORIGIN_PREVIEW=https://saneatsu-web-preview.w-saneatsu-e8c.workers.dev
 NEXTAUTH_SECRET=32文字以上のランダムな文字列
 GOOGLE_CLIENT_ID=123456789012-abcdefghijklmnop.apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=GOCSPX-abcdefghijklmnopqrstuvwx
+NEXT_PUBLIC_MAPBOX_TOKEN=pk.eyJ1IjoieW91ci11c2VyIiwiYSI6InlvdXItdG9rZW4ifQ...
+MAPBOX_ACCESS_TOKEN=pk.eyJ1IjoieW91ci11c2VyIiwiYSI6InlvdXItdG9rZW4ifQ...
 CLOUDFLARE_ACCOUNT_ID=your-cloudflare-account-id
 CLOUDFLARE_API_TOKEN=your-cloudflare-api-token
 ```
@@ -115,7 +173,11 @@ GitHub Secrets/Variablesを設定すると、CI/CDパイプラインが自動的
 2. **ビルド時注入**: Next.js/Honoビルド時に環境変数を注入
 3. **Cloudflareデプロイ**: 環境変数が埋め込まれたWorkerをデプロイ
 
-**手動でのCloudflare Worker Secrets設定は不要**です。
+**基本的にCloudflare Worker Secretsの設定は不要**ですが、以下の例外があります：
+
+**例外: ランタイム環境変数**
+- `MAPBOX_ACCESS_TOKEN` などバックエンドで実行時に必要な環境変数は、Cloudflare Worker Secretsの手動設定が必要です
+- 設定方法は後述の「ランタイム環境変数の設定」セクションを参照してください
 
 ### wrangler.tomlの設定
 
@@ -170,6 +232,7 @@ TURSO_DATABASE_URL=libsql://your-dev-db.turso.io
 TURSO_AUTH_TOKEN=your-dev-token
 CORS_ORIGIN=http://localhost:3210
 ADMIN_EMAILS=your-email@gmail.com
+MAPBOX_ACCESS_TOKEN=pk.eyJ1IjoieW91ci11c2VyIiwiYSI6InlvdXItdG9rZW4ifQ...
 
 # apps/frontend/.env
 NEXT_PUBLIC_API_URL=http://localhost:3333
@@ -178,6 +241,7 @@ NEXTAUTH_SECRET=your-dev-secret-32-chars-or-more
 GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_CLIENT_SECRET=your-google-client-secret
 ADMIN_EMAILS=your-email@gmail.com
+NEXT_PUBLIC_MAPBOX_TOKEN=pk.eyJ1IjoieW91ci11c2VyIiwiYSI6InlvdXItdG9rZW4ifQ...
 AUTH_TRUST_HOST=true
 ```
 
@@ -185,8 +249,8 @@ AUTH_TRUST_HOST=true
 
 ### 1. GitHub中心の管理
 
-- **すべての環境変数をGitHub Secrets/Variablesで管理**
-- **Cloudflare Worker Secretsは使用しない**
+- **基本的にすべての環境変数をGitHub Secrets/Variablesで管理**
+- **ランタイム環境変数のみCloudflare Worker Secretsで設定**
 - **機密情報はSecrets、公開可能情報はVariables**
 
 ### 2. 環境の分離
