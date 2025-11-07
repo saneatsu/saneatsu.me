@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { extractDescription, fetchArticles } from "@/shared/lib";
+import type { ArticlesResponse } from "@/shared/model";
 
 const SUPPORTED_LOCALES = ["ja", "en"] as const;
 type Locale = (typeof SUPPORTED_LOCALES)[number];
@@ -64,14 +65,28 @@ export async function GET(
 	const channelLink = `${baseUrl}/${locale}`;
 	const selfUrl = `${channelLink}/rss.xml`;
 
-	const articlesResponse = await fetchArticles({
-		page: "1",
-		limit: "20",
-		lang: locale,
-		status: "published",
-		sortBy: "publishedAt",
-		sortOrder: "desc",
-	});
+	let articlesResponse: ArticlesResponse;
+	try {
+		articlesResponse = await fetchArticles({
+			page: "1",
+			limit: "20",
+			lang: locale,
+			status: "published",
+			sortBy: "publishedAt",
+			sortOrder: "desc",
+		});
+	} catch (error) {
+		console.error("RSS Feed Error:", error);
+		return new NextResponse(
+			"記事の取得に失敗しました。しばらくしてから再度お試しください。",
+			{
+				status: 500,
+				headers: {
+					"Content-Type": "text/plain; charset=utf-8",
+				},
+			}
+		);
+	}
 
 	const items = (articlesResponse.data || [])
 		.filter((article) => article.publishedAt)
