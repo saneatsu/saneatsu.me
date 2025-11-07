@@ -15,6 +15,10 @@ interface GalleryImageCardProps {
 	image: GalleryImage;
 	/** クリック時のコールバック */
 	onClick?: (image: GalleryImage) => void;
+	/** 現在ホバー中の画像ID */
+	hoveredImageId?: number | null;
+	/** ホバー時のコールバック */
+	onHover?: (imageId: number | null) => void;
 }
 
 /**
@@ -25,7 +29,12 @@ interface GalleryImageCardProps {
  * Cloudflare Images の medium バリアント（800px）を使用。
  * クリックすると拡大モーダルを表示。
  */
-export function GalleryImageCard({ image, onClick }: GalleryImageCardProps) {
+export function GalleryImageCard({
+	image,
+	onClick,
+	hoveredImageId,
+	onHover,
+}: GalleryImageCardProps) {
 	const locale = useLocale();
 
 	// 現在のロケールに対応する翻訳を取得
@@ -35,13 +44,20 @@ export function GalleryImageCard({ image, onClick }: GalleryImageCardProps) {
 	// Cloudflare Images の URL を構築（large バリアント）
 	const imageUrl = `https://imagedelivery.net/${process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH}/${image.cfImageId}/large`;
 
+	// ホバー状態を判定
+	const isHovered = hoveredImageId === image.id;
+
 	const handleClick = () => onClick?.(image);
 
 	return (
 		<button
 			type="button"
-			className="cursor-pointer transition-transform hover:scale-105 border-0 p-0 bg-transparent text-left w-full"
+			className={`cursor-pointer transition-transform border-0 p-0 bg-transparent text-left w-full ${
+				isHovered ? "scale-105" : ""
+			}`}
 			onClick={handleClick}
+			onMouseEnter={() => onHover?.(image.id)}
+			onMouseLeave={() => onHover?.(null)}
 		>
 			<Card className="shadow-xs aspect-square p-0">
 				<CardContent className="p-0 h-full">
