@@ -2,10 +2,10 @@ import { OpenAPIHono } from "@hono/zod-openapi";
 
 import type { Env } from "@/env";
 
-// ハンドラーをimport
 import { deleteGalleryImageHandler } from "./handlers/delete-gallery-image/delete-gallery-image";
-// ルート定義をimport
 import { deleteGalleryImageRoute } from "./handlers/delete-gallery-image/delete-gallery-image.openapi";
+import { getAdminGalleryImagesHandler } from "./handlers/get-admin-gallery-images/get-admin-gallery-images";
+import { getAdminGalleryImagesRoute } from "./handlers/get-admin-gallery-images/get-admin-gallery-images.openapi";
 import { getArticlesByGalleryImageHandler } from "./handlers/get-articles-by-gallery-image/get-articles-by-gallery-image";
 import { getArticlesByGalleryImageRoute } from "./handlers/get-articles-by-gallery-image/get-articles-by-gallery-image.openapi";
 import { getGalleryImageByIdHandler } from "./handlers/get-gallery-image-by-id/get-gallery-image-by-id";
@@ -21,8 +21,10 @@ import { uploadGalleryImageRoute } from "./handlers/upload-gallery-image/upload-
  * ギャラリー関連のAPIルート
  */
 export const galleryRoute = new OpenAPIHono<{ Bindings: Env }>()
-	// ギャラリー画像一覧取得
+	// ギャラリー画像一覧取得（Public用）
 	.openapi(getGalleryImagesRoute, getGalleryImagesHandler)
+	// ギャラリー画像一覧取得（Admin用）
+	.openapi(getAdminGalleryImagesRoute, getAdminGalleryImagesHandler)
 	// ギャラリー画像詳細取得
 	.openapi(getGalleryImageByIdRoute, getGalleryImageByIdHandler)
 	// ギャラリー画像を使用している記事一覧取得
