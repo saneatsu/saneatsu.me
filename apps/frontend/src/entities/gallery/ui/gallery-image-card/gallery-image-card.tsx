@@ -58,11 +58,11 @@ export function GalleryImageCard({ image, onClick }: GalleryImageCardProps) {
 			</Card>
 			{title && (
 				<div className="py-4 pl-1 pr-4">
-					{image.takenAt && (
-						<p className="text-xs text-muted-foreground mb-1">
-							{new Date(image.takenAt).toLocaleDateString(locale)}
-						</p>
-					)}
+					<p className="text-xs text-muted-foreground mb-1 min-h-[1.25rem]">
+						{image.takenAt
+							? new Date(image.takenAt).toLocaleDateString(locale)
+							: "\u00A0"}
+					</p>
 					<h3 className="text-sm font-medium line-clamp-2">{title}</h3>
 				</div>
 			)}
