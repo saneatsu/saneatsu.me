@@ -4,6 +4,7 @@ import { GoogleAnalytics, PageViewTracker } from "@/shared/lib";
 
 import { Providers } from "./providers";
 import "./globals.css";
+import "mapbox-gl/dist/mapbox-gl.css";
 
 /**
  * サイト全体のメタデータ
