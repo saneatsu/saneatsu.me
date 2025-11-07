@@ -205,7 +205,7 @@ export function GalleryMap({
 					>
 						<div className="relative cursor-pointer hover:scale-110 transition-transform group">
 							{/* 写真サムネイル */}
-							<div className="w-16 h-16 rounded-lg overflow-hidden border-4 border-white shadow-xl relative">
+							<div className="w-16 h-16 rounded-lg overflow-hidden border-2 border-black shadow-xl relative">
 								<Image
 									src={`https://imagedelivery.net/${process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH}/${image.cfImageId}/small`}
 									alt={
@@ -218,7 +218,7 @@ export function GalleryMap({
 								/>
 							</div>
 							{/* 下向き三角形の吹き出し */}
-							<div className="absolute left-1/2 -translate-x-1/2 -bottom-2 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px] border-t-white" />
+							<div className="absolute left-1/2 -translate-x-1/2 -bottom-2 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px] border-t-black" />
 						</div>
 					</Marker>
 				))}
