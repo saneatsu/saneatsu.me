@@ -4,6 +4,7 @@
 export { useDeleteGalleryImage } from "./api/use-delete-gallery-image/use-delete-gallery-image";
 // 公開ギャラリー用API
 export { useGalleryImages } from "./api/use-gallery-images";
+export { useGetAdminGalleryImages } from "./api/use-get-admin-gallery-images/use-get-admin-gallery-images";
 export { useGetArticlesByGalleryImage } from "./api/use-get-articles-by-gallery-image/use-get-articles-by-gallery-image";
 export { useGetGalleryImageById } from "./api/use-get-gallery-image-by-id/use-get-gallery-image-by-id";
 export { useGetGalleryImages } from "./api/use-get-gallery-images/use-get-gallery-images";
@@ -13,6 +14,7 @@ export { useUploadGalleryImage } from "./api/use-upload-gallery-image/use-upload
 
 // 型定義
 export type {
+	AdminGalleryImagesQueryParams,
 	ArticleByGalleryImage,
 	ArticlesByGalleryImageResponse,
 	GalleryImage,

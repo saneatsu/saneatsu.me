@@ -153,6 +153,14 @@ export type GalleryImagesQueryParams = {
 };
 
 /**
+ * Admin用ギャラリー画像一覧取得のクエリパラメータ
+ */
+export type AdminGalleryImagesQueryParams = GalleryImagesQueryParams & {
+	/** ステータスでフィルタリング（カンマ区切りで複数指定可能） */
+	status?: string;
+};
+
+/**
  * ギャラリー画像一覧取得のクエリパラメータ（公開ギャラリー用）
  */
 export type GalleryImagesQuery = {
