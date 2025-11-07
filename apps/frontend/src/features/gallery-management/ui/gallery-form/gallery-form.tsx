@@ -464,6 +464,7 @@ export function GalleryForm({ mode = "create", imageId }: GalleryFormProps) {
 									form.setValue("coordinates", coords, { shouldValidate: true })
 								}
 								height="300px"
+								minWidth="800px"
 							/>
 						</div>
 					</div>
