@@ -478,7 +478,7 @@ export function ImageUploader({
 					open={showCropper && !!cropperUrl}
 					onOpenChange={setShowCropper}
 				>
-					<DialogContent className="max-w-4xl h-[80vh] p-0 flex flex-col">
+					<DialogContent className="max-w-4xl h-[80vh] p-0 flex flex-col overflow-hidden">
 						<DialogHeader className="px-6 pt-6">
 							<DialogTitle>画像をクロップ</DialogTitle>
 						</DialogHeader>
