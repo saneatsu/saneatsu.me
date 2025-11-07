@@ -32,8 +32,8 @@ export function GalleryImageCard({ image, onClick }: GalleryImageCardProps) {
 	const translation = image.translations.find((t) => t.language === locale);
 	const title = translation?.title || `Image ${image.id}`;
 
-	// Cloudflare Images の URL を構築（medium バリアント）
-	const imageUrl = `https://imagedelivery.net/${process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH}/${image.cfImageId}/medium`;
+	// Cloudflare Images の URL を構築（large バリアント）
+	const imageUrl = `https://imagedelivery.net/${process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH}/${image.cfImageId}/large`;
 
 	const handleClick = () => onClick?.(image);
 
@@ -51,7 +51,7 @@ export function GalleryImageCard({ image, onClick }: GalleryImageCardProps) {
 							alt={title}
 							fill
 							sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-							className="object-cover"
+							className="object-contain"
 						/>
 					</div>
 				</CardContent>
