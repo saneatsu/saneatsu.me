@@ -34,8 +34,6 @@ export interface MapboxProps {
 	zoom?: number;
 	/** 地図の高さ（デフォルト: 400px）*/
 	height?: string | number;
-	/** 地図の最小幅 */
-	minWidth?: string | number;
 	/** 地図のクリック時のコールバック */
 	onMapClick?: (coordinates: Coordinates) => void;
 	/** マーカーのドラッグ時のコールバック */
@@ -74,7 +72,6 @@ export function Mapbox({
 	marker,
 	zoom = 14,
 	height = "400px",
-	minWidth,
 	onMapClick,
 	onMarkerDrag,
 	draggableMarker = true,
@@ -164,7 +161,7 @@ export function Mapbox({
 	};
 
 	return (
-		<div className={className} style={{ height, minWidth }}>
+		<div className={className} style={{ height }}>
 			<MapboxMap
 				{...viewState}
 				onMove={(evt: ViewStateChangeEvent) => setViewState(evt.viewState)}
