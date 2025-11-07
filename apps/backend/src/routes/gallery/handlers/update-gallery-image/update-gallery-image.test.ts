@@ -58,6 +58,8 @@ const {
 	mockSet,
 	mockInsert,
 	mockValues,
+	mockUploadImage,
+	mockDeleteImage,
 } = vi.hoisted(() => ({
 	mockSelect: vi.fn(),
 	mockFrom: vi.fn(),
@@ -67,6 +69,8 @@ const {
 	mockSet: vi.fn(),
 	mockInsert: vi.fn(),
 	mockValues: vi.fn(),
+	mockUploadImage: vi.fn(),
+	mockDeleteImage: vi.fn(),
 }));
 
 // モジュールのモック
@@ -83,6 +87,8 @@ vi.mock("@/lib", async () => {
 			galleryImages: {},
 			galleryImageTranslations: {},
 		}),
+		uploadImage: mockUploadImage,
+		deleteImage: mockDeleteImage,
 	};
 });
 
@@ -337,6 +343,213 @@ describe("Unit Test", () => {
 
 			const json = (await res.json()) as any;
 			expect(json.error.code).toBe("NOT_FOUND");
+		});
+
+		test("Should replace gallery image with FormData successfully", async () => {
+			// 1. 画像存在確認クエリ
+			mockSelect.mockReturnValueOnce({
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([mockExistingImage]),
+					}),
+				}),
+			});
+
+			// 2. uploadImageのモック
+			mockUploadImage.mockResolvedValue({
+				imageId: "new-test-image-id",
+			});
+
+			// 3. deleteImageのモック
+			mockDeleteImage.mockResolvedValue({
+				success: true,
+			});
+
+			// 4. 更新後の画像取得クエリ
+			mockSelect.mockReturnValueOnce({
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([
+							{
+								...mockUpdatedImage,
+								cfImageId: "new-test-image-id",
+							},
+						]),
+					}),
+				}),
+			});
+
+			// 5. 翻訳取得クエリ
+			mockSelect.mockReturnValueOnce({
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue(mockTranslations),
+				}),
+			});
+
+			// FormDataの作成
+			const formData = new FormData();
+			const file = new File(["test"], "test.jpg", { type: "image/jpeg" });
+			formData.append("file", file);
+			formData.append("latitude", "35.5");
+			formData.append("longitude", "140.5");
+
+			const req = new Request("http://localhost/1", {
+				method: "PATCH",
+				body: formData,
+			});
+
+			const res = await app.fetch(req, mockEnv);
+
+			expect(res.status).toBe(200);
+
+			const json = (await res.json()) as any;
+			expect(json.data.cfImageId).toBe("new-test-image-id");
+			expect(mockUploadImage).toHaveBeenCalledTimes(1);
+			expect(mockDeleteImage).toHaveBeenCalledTimes(1);
+		});
+
+		test("Should return 400 error when file size is too large", async () => {
+			// 1. 画像存在確認クエリ
+			mockSelect.mockReturnValueOnce({
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([mockExistingImage]),
+					}),
+				}),
+			});
+
+			// 11MBのファイルを作成（制限は10MB）
+			const formData = new FormData();
+			const largeFile = new File(
+				[new Uint8Array(11 * 1024 * 1024)],
+				"large.jpg",
+				{
+					type: "image/jpeg",
+				}
+			);
+			formData.append("file", largeFile);
+
+			const req = new Request("http://localhost/1", {
+				method: "PATCH",
+				body: formData,
+			});
+
+			const res = await app.fetch(req, mockEnv);
+
+			expect(res.status).toBe(400);
+
+			const json = (await res.json()) as any;
+			expect(json.error.code).toBe("FILE_TOO_LARGE");
+		});
+
+		test("Should return 400 error when file type is invalid", async () => {
+			// 1. 画像存在確認クエリ
+			mockSelect.mockReturnValueOnce({
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([mockExistingImage]),
+					}),
+				}),
+			});
+
+			// 不正なファイル形式
+			const formData = new FormData();
+			const invalidFile = new File(["test"], "test.pdf", {
+				type: "application/pdf",
+			});
+			formData.append("file", invalidFile);
+
+			const req = new Request("http://localhost/1", {
+				method: "PATCH",
+				body: formData,
+			});
+
+			const res = await app.fetch(req, mockEnv);
+
+			expect(res.status).toBe(400);
+
+			const json = (await res.json()) as any;
+			expect(json.error.code).toBe("INVALID_FILE_TYPE");
+		});
+
+		test("Should update image with FormData and translations", async () => {
+			// 1. 画像存在確認クエリ
+			mockSelect.mockReturnValueOnce({
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([mockExistingImage]),
+					}),
+				}),
+			});
+
+			// 2. uploadImageのモック
+			mockUploadImage.mockResolvedValue({
+				imageId: "new-test-image-id-2",
+			});
+
+			// 3. deleteImageのモック
+			mockDeleteImage.mockResolvedValue({
+				success: true,
+			});
+
+			// 4. 翻訳存在確認クエリ（存在する）
+			mockSelect.mockReturnValueOnce({
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([mockTranslations[0]]),
+					}),
+				}),
+			});
+
+			// 5. 更新後の画像取得クエリ
+			mockSelect.mockReturnValueOnce({
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockReturnValue({
+						limit: vi.fn().mockResolvedValue([
+							{
+								...mockUpdatedImage,
+								cfImageId: "new-test-image-id-2",
+							},
+						]),
+					}),
+				}),
+			});
+
+			// 6. 翻訳取得クエリ
+			mockSelect.mockReturnValueOnce({
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue(mockTranslations),
+				}),
+			});
+
+			// FormDataの作成
+			const formData = new FormData();
+			const file = new File(["test"], "test.png", { type: "image/png" });
+			formData.append("file", file);
+			formData.append(
+				"translations",
+				JSON.stringify([
+					{
+						language: "ja",
+						title: "FormDataタイトル",
+						description: "FormData説明",
+					},
+				])
+			);
+
+			const req = new Request("http://localhost/1", {
+				method: "PATCH",
+				body: formData,
+			});
+
+			const res = await app.fetch(req, mockEnv);
+
+			expect(res.status).toBe(200);
+
+			const json = (await res.json()) as any;
+			expect(json.data.cfImageId).toBe("new-test-image-id-2");
+			expect(mockUploadImage).toHaveBeenCalledTimes(1);
+			expect(mockDeleteImage).toHaveBeenCalledTimes(1);
 		});
 	});
 });
