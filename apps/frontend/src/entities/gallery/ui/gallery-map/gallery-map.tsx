@@ -219,10 +219,6 @@ export function GalleryMap({
 							</div>
 							{/* 下向き三角形の吹き出し */}
 							<div className="absolute left-1/2 -translate-x-1/2 -bottom-2 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px] border-t-white" />
-							{/* 画像ID表示 */}
-							<div className="absolute bottom-1 right-1 bg-white/90 text-xs font-semibold text-gray-800 px-1.5 py-0.5 rounded-full shadow">
-								{image.id}
-							</div>
 						</div>
 					</Marker>
 				))}
