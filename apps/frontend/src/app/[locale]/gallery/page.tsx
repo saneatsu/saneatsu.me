@@ -122,7 +122,7 @@ export default function GalleryPage() {
 								<TabsTrigger value="map">地図</TabsTrigger>
 							</TabsList>
 							<TabsContent value="list" className="mt-4">
-								<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+								<div className="grid grid-cols-2 gap-4">
 									{skeletonItems.map((item) => (
 										<div
 											key={item.id}
@@ -170,7 +170,7 @@ export default function GalleryPage() {
 								<TabsTrigger value="map">地図</TabsTrigger>
 							</TabsList>
 							<TabsContent value="list" className="mt-4">
-								<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+								<div className="grid grid-cols-2 gap-4">
 									{data.images.map((image) => (
 										<GalleryImageCard
 											key={image.id}
