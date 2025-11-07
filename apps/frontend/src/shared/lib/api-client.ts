@@ -98,6 +98,41 @@ async function handleApiResponse<T>(response: Response): Promise<T> {
 export async function fetchArticles(
 	query: ArticlesQuery = {}
 ): Promise<ArticlesResponse> {
+	// Service Bindingが利用可能かチェック
+	const serviceBinding = getServiceBinding();
+
+	// Service Bindingが利用可能な場合は使用
+	if (serviceBinding) {
+		// クエリパラメータを構築
+		const params = new URLSearchParams();
+		if (query.page) params.set("page", query.page);
+		if (query.limit) params.set("limit", query.limit);
+		if (query.lang) params.set("language", query.lang);
+		if (query.status) params.set("status", query.status);
+		if (query.search) params.set("search", query.search);
+		if (query.sortBy) params.set("sortBy", query.sortBy);
+		if (query.sortOrder) params.set("sortOrder", query.sortOrder);
+
+		// Service Bindingを使用したリクエスト
+		const url = `https://backend/api/articles?${params.toString()}`;
+
+		const request = new Request(url, {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+
+		try {
+			const response = await serviceBinding.fetch(request);
+			return handleApiResponse<ArticlesResponse>(response);
+		} catch (error) {
+			console.error("Service Binding Error:", error);
+			throw error;
+		}
+	}
+
+	// Service Bindingが利用できない場合は通常のHTTP経由
 	const response = await client.api.articles.$get({
 		query: {
 			page: query.page,
