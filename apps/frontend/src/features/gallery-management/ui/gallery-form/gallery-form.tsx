@@ -327,96 +327,96 @@ export function GalleryForm({ mode = "create", imageId }: GalleryFormProps) {
 					</div>
 				)}
 
-				{/* 画像情報 */}
-				<div className="space-y-4">
-					<div className="space-y-2">
-						<h3 className="font-semibold">画像情報</h3>
-						<p className="text-sm text-muted-foreground">
-							日本語で入力してください。自動的に英語に翻訳されます。
-						</p>
-					</div>
-
-					<FormField
-						control={form.control}
-						name="titleJa"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel className="required">タイトル</FormLabel>
-								<FormControl>
-									<Input {...field} placeholder="例: 東京タワーの夕景" />
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-
-					<FormField
-						control={form.control}
-						name="descriptionJa"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>説明</FormLabel>
-								<FormControl>
-									<Textarea
-										{...field}
-										placeholder="例: 2024年12月に東京タワーを訪れた際に撮影した写真"
-										rows={3}
-									/>
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-				</div>
-
-				{/* 撮影日時 */}
-				<FormField
-					control={form.control}
-					name="takenAt"
-					render={({ field }) => (
-						<FormItem className="flex flex-col">
-							<FormLabel>撮影日時</FormLabel>
-							<FormControl>
-								<DateTimePicker
-									value={field.value}
-									onChange={field.onChange}
-									granularity="minute"
-								/>
-							</FormControl>
-							<FormDescription>
-								写真が撮影された日時を設定できます
-							</FormDescription>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-
-				{/* ステータス */}
-				<FormField
-					control={form.control}
-					name="status"
-					render={({ field }) => (
-						<FormItem>
-							<GalleryImageStatusSelector
-								value={field.value}
-								onValueChange={field.onChange}
-								statuses={["draft", "published"]}
-								label="ステータス"
-								required
-								error={form.formState.errors.status?.message}
-							/>
-						</FormItem>
-					)}
-				/>
-
-				{/* 位置情報 */}
-				<div className="space-y-4">
-					<h3 className="font-semibold">位置情報</h3>
-
-					{/* 2カラムグリッド: 住所検索+座標入力 | 地図 */}
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-						{/* 左カラム: 住所検索 + 座標入力 */}
+				{/* 2カラムグリッド: フォームフィールド | 地図 */}
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+					{/* 左カラム: 画像情報、撮影日時、ステータス、位置情報入力 */}
+					<div className="space-y-6">
+						{/* 画像情報 */}
 						<div className="space-y-4">
+							<div className="space-y-2">
+								<h3 className="font-semibold">画像情報</h3>
+								<p className="text-sm text-muted-foreground">
+									日本語で入力してください。自動的に英語に翻訳されます。
+								</p>
+							</div>
+
+							<FormField
+								control={form.control}
+								name="titleJa"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel className="required">タイトル</FormLabel>
+										<FormControl>
+											<Input {...field} placeholder="例: 東京タワーの夕景" />
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+
+							<FormField
+								control={form.control}
+								name="descriptionJa"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>説明</FormLabel>
+										<FormControl>
+											<Textarea
+												{...field}
+												placeholder="例: 2024年12月に東京タワーを訪れた際に撮影した写真"
+												rows={3}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+						</div>
+
+						{/* 撮影日時 */}
+						<FormField
+							control={form.control}
+							name="takenAt"
+							render={({ field }) => (
+								<FormItem className="flex flex-col">
+									<FormLabel>撮影日時</FormLabel>
+									<FormControl>
+										<DateTimePicker
+											value={field.value}
+											onChange={field.onChange}
+											granularity="minute"
+										/>
+									</FormControl>
+									<FormDescription>
+										写真が撮影された日時を設定できます
+									</FormDescription>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						{/* ステータス */}
+						<FormField
+							control={form.control}
+							name="status"
+							render={({ field }) => (
+								<FormItem>
+									<GalleryImageStatusSelector
+										value={field.value}
+										onValueChange={field.onChange}
+										statuses={["draft", "published"]}
+										label="ステータス"
+										required
+										error={form.formState.errors.status?.message}
+									/>
+								</FormItem>
+							)}
+						/>
+
+						{/* 位置情報入力 */}
+						<div className="space-y-4">
+							<h3 className="font-semibold">位置情報</h3>
+
 							{/* 住所検索 */}
 							<div className="space-y-2">
 								<Label>住所検索</Label>
@@ -451,21 +451,21 @@ export function GalleryForm({ mode = "create", imageId }: GalleryFormProps) {
 								)}
 							/>
 						</div>
+					</div>
 
-						{/* 右カラム: 地図 */}
-						<div className="space-y-2">
-							<Label>地図</Label>
-							<Mapbox
-								marker={form.watch("coordinates")}
-								onMapClick={(coords) =>
-									form.setValue("coordinates", coords, { shouldValidate: true })
-								}
-								onMarkerDrag={(coords) =>
-									form.setValue("coordinates", coords, { shouldValidate: true })
-								}
-								height="800px"
-							/>
-						</div>
+					{/* 右カラム: 地図 */}
+					<div className="space-y-2">
+						<Label>地図</Label>
+						<Mapbox
+							marker={form.watch("coordinates")}
+							onMapClick={(coords) =>
+								form.setValue("coordinates", coords, { shouldValidate: true })
+							}
+							onMarkerDrag={(coords) =>
+								form.setValue("coordinates", coords, { shouldValidate: true })
+							}
+							height="800px"
+						/>
 					</div>
 				</div>
 
