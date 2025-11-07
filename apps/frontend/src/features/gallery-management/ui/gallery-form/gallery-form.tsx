@@ -463,8 +463,7 @@ export function GalleryForm({ mode = "create", imageId }: GalleryFormProps) {
 								onMarkerDrag={(coords) =>
 									form.setValue("coordinates", coords, { shouldValidate: true })
 								}
-								height="300px"
-								minWidth="800px"
+								height="800px"
 							/>
 						</div>
 					</div>
