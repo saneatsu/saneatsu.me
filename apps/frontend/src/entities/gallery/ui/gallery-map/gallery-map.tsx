@@ -20,6 +20,10 @@ export interface GalleryMapProps {
 	images: GalleryImage[];
 	/** マーカークリック時のコールバック */
 	onImageClick?: (image: GalleryImage) => void;
+	/** 現在ホバー中の画像ID */
+	hoveredImageId?: number | null;
+	/** ホバー時のコールバック */
+	onHover?: (imageId: number | null) => void;
 	/** 地図の高さ（デフォルト: 500px）*/
 	height?: string | number;
 	/** クラス名 */
@@ -47,6 +51,8 @@ export interface GalleryMapProps {
 export function GalleryMap({
 	images,
 	onImageClick,
+	hoveredImageId,
+	onHover,
 	height = "500px",
 	className,
 }: GalleryMapProps) {
@@ -195,33 +201,44 @@ export function GalleryMap({
 				style={{ width: "100%", height: "100%" }}
 			>
 				{/* 各画像のマーカーを表示 */}
-				{imagesWithLocation.map((image) => (
-					<Marker
-						key={image.id}
-						latitude={image.latitude as number}
-						longitude={image.longitude as number}
-						onClick={() => onImageClick?.(image)}
-						anchor="bottom"
-					>
-						<div className="relative cursor-pointer hover:scale-110 transition-transform group">
-							{/* 写真サムネイル */}
-							<div className="w-16 h-16 rounded-lg overflow-hidden border-2 border-black shadow-xl relative">
-								<Image
-									src={`https://imagedelivery.net/${process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH}/${image.cfImageId}/small`}
-									alt={
-										image.translations.find((t) => t.language === "ja")
-											?.title || ""
-									}
-									fill
-									className="object-cover"
-									sizes="64px"
-								/>
+				{imagesWithLocation.map((image) => {
+					const isHovered = hoveredImageId === image.id;
+
+					return (
+						<Marker
+							key={image.id}
+							latitude={image.latitude as number}
+							longitude={image.longitude as number}
+							onClick={() => onImageClick?.(image)}
+							anchor="bottom"
+						>
+							{/* biome-ignore lint/a11y/noStaticElementInteractions: マーカーのホバー状態を親コンポーネントと連動させるため */}
+							<div
+								className={`relative cursor-pointer transition-transform group ${
+									isHovered ? "scale-110" : ""
+								}`}
+								onMouseEnter={() => onHover?.(image.id)}
+								onMouseLeave={() => onHover?.(null)}
+							>
+								{/* 写真サムネイル */}
+								<div className="w-16 h-16 rounded-lg overflow-hidden border-2 border-black shadow-xl relative">
+									<Image
+										src={`https://imagedelivery.net/${process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH}/${image.cfImageId}/small`}
+										alt={
+											image.translations.find((t) => t.language === "ja")
+												?.title || ""
+										}
+										fill
+										className="object-cover"
+										sizes="64px"
+									/>
+								</div>
+								{/* 下向き三角形の吹き出し */}
+								<div className="absolute left-1/2 -translate-x-1/2 -bottom-2 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px] border-t-black" />
 							</div>
-							{/* 下向き三角形の吹き出し */}
-							<div className="absolute left-1/2 -translate-x-1/2 -bottom-2 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px] border-t-black" />
-						</div>
-					</Marker>
-				))}
+						</Marker>
+					);
+				})}
 			</MapboxMap>
 		</div>
 	);
