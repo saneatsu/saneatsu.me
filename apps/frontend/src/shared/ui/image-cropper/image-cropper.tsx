@@ -89,7 +89,7 @@ export function ImageCropper({
 	return (
 		<div className="flex h-full flex-col">
 			{/* 1. クロッパーエリア */}
-			<div className="relative flex-1 bg-black">
+			<div className="relative flex-1 bg-black h-full touch-none">
 				<Cropper
 					image={imageSrc}
 					crop={crop}
