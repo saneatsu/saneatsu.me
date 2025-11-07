@@ -9,17 +9,24 @@ import type { getGalleryImagesRoute } from "./get-gallery-images.openapi";
 type Handler = RouteHandler<typeof getGalleryImagesRoute, { Bindings: Env }>;
 
 /**
- * GET /api/gallery/images - ギャラリー画像一覧取得
+ * GET /api/gallery - 公開ギャラリー画像一覧取得
  *
  * @description
+ * 公開ページ (/${locale}/gallery) からアクセスされるエンドポイント。
+ * ステータスが「公開済み (published)」の画像のみを返す。
+ * 認証は不要。
+ *
+ * 管理画面用エンドポイント（全ステータス取得可能）は `/api/gallery/admin` を使用すること。
+ *
  * 処理フロー:
  * 1. DBクライアントを作成
- * 2. クエリパラメータを取得
+ * 2. クエリパラメータを取得（page、limit、sortBy、sortOrder、hasLocation）
  * 3. ページネーションの計算
- * 4. クエリ条件を構築（位置情報の有無でフィルタリング）
+ * 4. クエリ条件を構築
+ *    4.1. 公開済みステータスでフィルタリング（status = 'published'）
+ *    4.2. 位置情報の有無でフィルタリング
  * 5. ソート条件を設定（createdAt、takenAt、updatedAt）
  * 6. ギャラリー画像一覧を取得
- *    - statusが"published"の画像のみを表示
  * 7. 各画像の翻訳データを取得
  * 8. 総画像数を取得（公開済みのみ）
  * 9. レスポンスを返す
@@ -104,7 +111,18 @@ export const getGalleryImagesHandler: Handler = async (c) => {
 						? asc(galleryImages.createdAt)
 						: desc(galleryImages.createdAt);
 
-		// 6. ギャラリー画像一覧を取得（公開済みのみ）
+		// 6. ギャラリー画像一覧を取得
+		// WHERE句を構築（条件の数に応じて最適化）
+		// - 条件なし: undefined（WHERE句なしで全件取得）
+		// - 条件1個: そのまま使用
+		// - 条件複数: and()で全条件をAND結合
+		const whereClause =
+			conditions.length === 0
+				? undefined
+				: conditions.length === 1
+					? conditions[0]
+					: and(...conditions);
+
 		const images = await db
 			.select({
 				id: galleryImages.id,
@@ -117,7 +135,7 @@ export const getGalleryImagesHandler: Handler = async (c) => {
 				updatedAt: galleryImages.updatedAt,
 			})
 			.from(galleryImages)
-			.where(conditions.length === 1 ? conditions[0] : and(...conditions))
+			.where(whereClause)
 			.orderBy(orderByClause)
 			.limit(limit)
 			.offset(offset);
@@ -137,11 +155,11 @@ export const getGalleryImagesHandler: Handler = async (c) => {
 			})
 		);
 
-		// 8. 総画像数を取得（公開済みのみ）
+		// 8. 総画像数を取得
 		const [{ count }] = await db
 			.select({ count: sql<number>`count(*)` })
 			.from(galleryImages)
-			.where(conditions.length === 1 ? conditions[0] : and(...conditions));
+			.where(whereClause);
 
 		// 9. レスポンスを返す
 		return c.json(
