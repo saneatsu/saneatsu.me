@@ -4,8 +4,8 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
+import type { GalleryImage } from "@/entities/gallery";
 import {
-	type GalleryImage,
 	GalleryImageCard,
 	GalleryImageModal,
 	GalleryMap,
@@ -31,6 +31,7 @@ export default function GalleryPage() {
 	const [page, setPage] = useState(1);
 	const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [hoveredImageId, setHoveredImageId] = useState<number | null>(null);
 
 	const { data, isLoading, error } = useGalleryImages({
 		page: String(page),
@@ -59,6 +60,10 @@ export default function GalleryPage() {
 		const params = new URLSearchParams(searchParams.toString());
 		params.set("image", String(image.id));
 		router.push(`?${params.toString()}`, { scroll: false });
+	};
+
+	const handleImageHover = (imageId: number | null) => {
+		setHoveredImageId(imageId);
 	};
 
 	const handleModalClose = () => {
@@ -117,7 +122,7 @@ export default function GalleryPage() {
 								<TabsTrigger value="map">地図</TabsTrigger>
 							</TabsList>
 							<TabsContent value="list" className="mt-4">
-								<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+								<div className="grid grid-cols-2 gap-4">
 									{skeletonItems.map((item) => (
 										<div
 											key={item.id}
@@ -165,12 +170,14 @@ export default function GalleryPage() {
 								<TabsTrigger value="map">地図</TabsTrigger>
 							</TabsList>
 							<TabsContent value="list" className="mt-4">
-								<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+								<div className="grid grid-cols-2 gap-4">
 									{data.images.map((image) => (
 										<GalleryImageCard
 											key={image.id}
 											image={image}
 											onClick={handleImageClick}
+											hoveredImageId={hoveredImageId}
+											onHover={handleImageHover}
 										/>
 									))}
 								</div>
@@ -179,6 +186,8 @@ export default function GalleryPage() {
 								<GalleryMap
 									images={data.images}
 									onImageClick={handleImageClick}
+									hoveredImageId={hoveredImageId}
+									onHover={handleImageHover}
 									height="600px"
 								/>
 							</TabsContent>
@@ -195,6 +204,8 @@ export default function GalleryPage() {
 										key={image.id}
 										image={image}
 										onClick={handleImageClick}
+										hoveredImageId={hoveredImageId}
+										onHover={handleImageHover}
 									/>
 								))}
 							</div>
@@ -205,6 +216,8 @@ export default function GalleryPage() {
 							<GalleryMap
 								images={data.images}
 								onImageClick={handleImageClick}
+								hoveredImageId={hoveredImageId}
+								onHover={handleImageHover}
 								height="calc(100vh - 12rem)"
 							/>
 						</div>

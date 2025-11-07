@@ -24,6 +24,7 @@ import {
 	FormItem,
 	FormLabel,
 	FormMessage,
+	ImageUploader,
 	Input,
 	Label,
 	Mapbox,
@@ -131,8 +132,8 @@ export function GalleryForm({ mode = "create", imageId }: GalleryFormProps) {
 			},
 		});
 
-	// プレビュー画像URL
-	const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+	// クロップ済みファイル（編集モードで画像を置き換える場合に使用）
+	const [croppedFile, setCroppedFile] = useState<File | null>(null);
 
 	// フォーム設定
 	const form = useForm<GalleryFormValues>({
@@ -175,23 +176,22 @@ export function GalleryForm({ mode = "create", imageId }: GalleryFormProps) {
 	}, [mode, existingImage, form]);
 
 	/**
-	 * ファイル選択ハンドラー（作成モードのみ使用）
+	 * ファイル選択ハンドラー
 	 */
-	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const file = e.target.files?.[0];
-		if (!file) {
-			setPreviewUrl(null);
-			return;
-		}
-
-		// プレビューURLを生成
-		const url = URL.createObjectURL(file);
-		setPreviewUrl(url);
-
-		// フォームに設定（作成モードでのみfileフィールドが存在）
-		if (mode === "create") {
-			// @ts-expect-error - 作成モードでのみfileフィールドが存在するため
-			form.setValue("file", file, { shouldValidate: true });
+	const handleFileSelect = (file: File | null) => {
+		if (file) {
+			setCroppedFile(file);
+			// 作成モードでのみfileフィールドが存在
+			if (mode === "create") {
+				// @ts-expect-error - 作成モードでのみfileフィールドが存在するため
+				form.setValue("file", file, { shouldValidate: true });
+			}
+		} else {
+			setCroppedFile(null);
+			if (mode === "create") {
+				// @ts-expect-error - 作成モードでのみfileフィールドが存在するため
+				form.setValue("file", undefined);
+			}
 		}
 	};
 
@@ -216,16 +216,41 @@ export function GalleryForm({ mode = "create", imageId }: GalleryFormProps) {
 					},
 				];
 
-				await updateImage.mutateAsync({
-					id: imageId,
-					data: {
-						translations,
-						latitude: data.coordinates?.latitude,
-						longitude: data.coordinates?.longitude,
-						takenAt: data.takenAt?.toISOString(),
+				// 画像が置き換えられている場合はformオブジェクトを使用
+				if (croppedFile) {
+					const formPayload: Record<string, string | File> = {
+						file: croppedFile,
+						translations: JSON.stringify(translations),
 						status: data.status,
-					},
-				});
+					};
+
+					if (data.coordinates?.latitude !== undefined) {
+						formPayload.latitude = data.coordinates.latitude.toString();
+					}
+					if (data.coordinates?.longitude !== undefined) {
+						formPayload.longitude = data.coordinates.longitude.toString();
+					}
+					if (data.takenAt) {
+						formPayload.takenAt = data.takenAt.toISOString();
+					}
+
+					await updateImage.mutateAsync({
+						id: imageId,
+						data: formPayload,
+					});
+				} else {
+					// 画像が置き換えられていない場合はJSONを使用（既存の処理）
+					await updateImage.mutateAsync({
+						id: imageId,
+						data: {
+							translations,
+							latitude: data.coordinates?.latitude,
+							longitude: data.coordinates?.longitude,
+							takenAt: data.takenAt?.toISOString(),
+							status: data.status,
+						},
+					});
+				}
 
 				toast.success("ギャラリー画像を更新しました");
 			} else {
@@ -263,7 +288,7 @@ export function GalleryForm({ mode = "create", imageId }: GalleryFormProps) {
 	return (
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-				{/* 画像ファイル（作成モードのみ表示） */}
+				{/* 画像ファイル */}
 				{mode === "create" && (
 					<FormField
 						control={form.control}
@@ -271,125 +296,127 @@ export function GalleryForm({ mode = "create", imageId }: GalleryFormProps) {
 						name="file"
 						render={() => (
 							<FormItem>
-								<FormLabel>画像ファイル *</FormLabel>
-								<FormControl>
-									<div className="space-y-4">
-										<Input
-											type="file"
-											accept="image/jpeg,image/png,image/gif,image/webp"
-											onChange={handleFileChange}
-										/>
-										{previewUrl && (
-											<div className="border rounded-lg p-4">
-												{/* biome-ignore lint/performance/noImgElement: blob URLを使用しているためNext.js Imageコンポーネントは使用不可 */}
-												<img
-													src={previewUrl}
-													alt="プレビュー"
-													className="max-w-full h-auto max-h-96 mx-auto"
-												/>
-											</div>
-										)}
-									</div>
-								</FormControl>
-								<FormDescription>
-									JPEG、PNG、GIF、WebP形式の画像（最大10MB）
-								</FormDescription>
+								<ImageUploader
+									mode="create"
+									enableCropping={true}
+									onFileSelect={handleFileSelect}
+									label="画像ファイル"
+									helpText="JPEG、PNG、GIF、WebP形式の画像（最大10MB）"
+								/>
 								<FormMessage />
 							</FormItem>
 						)}
 					/>
 				)}
 
-				{/* 画像情報 */}
-				<div className="space-y-4">
-					<div className="space-y-2">
-						<h3 className="font-semibold">画像情報</h3>
-						<p className="text-sm text-muted-foreground">
-							日本語で入力してください。自動的に英語に翻訳されます。
-						</p>
+				{/* 画像（編集モードのみ表示） */}
+				{mode === "edit" && (
+					<div className="space-y-4">
+						<ImageUploader
+							mode="create"
+							enableCropping={true}
+							onFileSelect={handleFileSelect}
+							imageUrl={
+								existingImage
+									? `https://imagedelivery.net/${process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH}/${existingImage.cfImageId}/large`
+									: null
+							}
+							label="画像"
+							helpText="JPEG、PNG、GIF、WebP形式の画像（最大10MB）。新しい画像を選択すると置き換わります。"
+						/>
 					</div>
+				)}
 
-					<FormField
-						control={form.control}
-						name="titleJa"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel className="required">タイトル</FormLabel>
-								<FormControl>
-									<Input {...field} placeholder="例: 東京タワーの夕景" />
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-
-					<FormField
-						control={form.control}
-						name="descriptionJa"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>説明</FormLabel>
-								<FormControl>
-									<Textarea
-										{...field}
-										placeholder="例: 2024年12月に東京タワーを訪れた際に撮影した写真"
-										rows={3}
-									/>
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-				</div>
-
-				{/* 撮影日時 */}
-				<FormField
-					control={form.control}
-					name="takenAt"
-					render={({ field }) => (
-						<FormItem className="flex flex-col">
-							<FormLabel>撮影日時</FormLabel>
-							<FormControl>
-								<DateTimePicker
-									value={field.value}
-									onChange={field.onChange}
-									granularity="minute"
-								/>
-							</FormControl>
-							<FormDescription>
-								写真が撮影された日時を設定できます
-							</FormDescription>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-
-				{/* ステータス */}
-				<FormField
-					control={form.control}
-					name="status"
-					render={({ field }) => (
-						<FormItem>
-							<GalleryImageStatusSelector
-								value={field.value}
-								onValueChange={field.onChange}
-								statuses={["draft", "published"]}
-								label="ステータス"
-								required
-								error={form.formState.errors.status?.message}
-							/>
-						</FormItem>
-					)}
-				/>
-
-				{/* 位置情報 */}
-				<div className="space-y-4">
-					<h3 className="font-semibold">位置情報</h3>
-
-					{/* 2カラムグリッド: 住所検索+座標入力 | 地図 */}
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-						{/* 左カラム: 住所検索 + 座標入力 */}
+				{/* 2カラムグリッド: フォームフィールド | 地図 */}
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+					{/* 左カラム: 画像情報、撮影日時、ステータス、位置情報入力 */}
+					<div className="space-y-6">
+						{/* 画像情報 */}
 						<div className="space-y-4">
+							<div className="space-y-2">
+								<h3 className="font-semibold">画像情報</h3>
+								<p className="text-sm text-muted-foreground">
+									日本語で入力してください。自動的に英語に翻訳されます。
+								</p>
+							</div>
+
+							<FormField
+								control={form.control}
+								name="titleJa"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel className="required">タイトル</FormLabel>
+										<FormControl>
+											<Input {...field} placeholder="例: 東京タワーの夕景" />
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+
+							<FormField
+								control={form.control}
+								name="descriptionJa"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>説明</FormLabel>
+										<FormControl>
+											<Textarea
+												{...field}
+												placeholder="例: 2024年12月に東京タワーを訪れた際に撮影した写真"
+												rows={3}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+						</div>
+
+						{/* 撮影日時 */}
+						<FormField
+							control={form.control}
+							name="takenAt"
+							render={({ field }) => (
+								<FormItem className="flex flex-col">
+									<FormLabel>撮影日時</FormLabel>
+									<FormControl>
+										<DateTimePicker
+											value={field.value}
+											onChange={field.onChange}
+											granularity="minute"
+										/>
+									</FormControl>
+									<FormDescription>
+										写真が撮影された日時を設定できます
+									</FormDescription>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						{/* ステータス */}
+						<FormField
+							control={form.control}
+							name="status"
+							render={({ field }) => (
+								<FormItem>
+									<GalleryImageStatusSelector
+										value={field.value}
+										onValueChange={field.onChange}
+										statuses={["draft", "published"]}
+										label="ステータス"
+										required
+										error={form.formState.errors.status?.message}
+									/>
+								</FormItem>
+							)}
+						/>
+
+						{/* 位置情報入力 */}
+						<div className="space-y-4">
+							<h3 className="font-semibold">位置情報</h3>
+
 							{/* 住所検索 */}
 							<div className="space-y-2">
 								<Label>住所検索</Label>
@@ -424,21 +451,21 @@ export function GalleryForm({ mode = "create", imageId }: GalleryFormProps) {
 								)}
 							/>
 						</div>
+					</div>
 
-						{/* 右カラム: 地図 */}
-						<div className="space-y-2">
-							<Label>地図</Label>
-							<Mapbox
-								marker={form.watch("coordinates")}
-								onMapClick={(coords) =>
-									form.setValue("coordinates", coords, { shouldValidate: true })
-								}
-								onMarkerDrag={(coords) =>
-									form.setValue("coordinates", coords, { shouldValidate: true })
-								}
-								height="300px"
-							/>
-						</div>
+					{/* 右カラム: 地図 */}
+					<div className="space-y-2">
+						<Label>地図</Label>
+						<Mapbox
+							marker={form.watch("coordinates")}
+							onMapClick={(coords) =>
+								form.setValue("coordinates", coords, { shouldValidate: true })
+							}
+							onMarkerDrag={(coords) =>
+								form.setValue("coordinates", coords, { shouldValidate: true })
+							}
+							height="800px"
+						/>
 					</div>
 				</div>
 

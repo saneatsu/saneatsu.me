@@ -183,6 +183,16 @@ export {
 	FormMessage,
 	useFormField,
 } from "./form/form";
+// Image Cropper
+export {
+	ImageCropper,
+	type ImageCropperProps,
+} from "./image-cropper/image-cropper";
+// Image Uploader
+export {
+	ImageUploader,
+	type ImageUploaderProps,
+} from "./image-uploader/image-uploader";
 // Input
 export { Input } from "./input/input";
 // Label
