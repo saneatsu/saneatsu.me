@@ -3,6 +3,7 @@
 import "mapbox-gl/dist/mapbox-gl.css";
 
 import type { Map as MapboxGLMap } from "mapbox-gl";
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import type { ViewState, ViewStateChangeEvent } from "react-map-gl/mapbox";
 import MapboxMap, { Marker } from "react-map-gl/mapbox";
@@ -200,23 +201,28 @@ export function GalleryMap({
 						latitude={image.latitude as number}
 						longitude={image.longitude as number}
 						onClick={() => onImageClick?.(image)}
+						anchor="bottom"
 					>
-						<div className="flex items-center justify-center w-8 h-8 bg-primary rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 24 24"
-								fill="currentColor"
-								className="w-5 h-5 text-primary-foreground"
-								role="img"
-								aria-label="画像の位置"
-							>
-								<title>画像の位置</title>
-								<path
-									fillRule="evenodd"
-									d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 00-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z"
-									clipRule="evenodd"
+						<div className="relative cursor-pointer hover:scale-110 transition-transform group">
+							{/* 写真サムネイル */}
+							<div className="w-16 h-16 rounded-lg overflow-hidden border-4 border-white shadow-xl relative">
+								<Image
+									src={`https://imagedelivery.net/${process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH}/${image.cfImageId}/small`}
+									alt={
+										image.translations.find((t) => t.language === "ja")
+											?.title || ""
+									}
+									fill
+									className="object-cover"
+									sizes="64px"
 								/>
-							</svg>
+							</div>
+							{/* 下向き三角形の吹き出し */}
+							<div className="absolute left-1/2 -translate-x-1/2 -bottom-2 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px] border-t-white" />
+							{/* 画像ID表示 */}
+							<div className="absolute bottom-1 right-1 bg-white/90 text-xs font-semibold text-gray-800 px-1.5 py-0.5 rounded-full shadow">
+								{image.id}
+							</div>
 						</div>
 					</Marker>
 				))}
