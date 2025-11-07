@@ -79,6 +79,7 @@ export const queryKeys = {
 			hasLocation?: boolean;
 			sortBy?: "takenAt" | "createdAt" | "updatedAt";
 			sortOrder?: "asc" | "desc";
+			status?: string;
 		}) => ["gallery", "images", filters] as const,
 		// 個別のギャラリー画像
 		byId: (id: number, language?: string) =>
