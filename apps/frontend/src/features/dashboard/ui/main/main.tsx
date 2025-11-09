@@ -89,7 +89,7 @@ export function DashboardMain() {
 								target="_blank"
 								rel="noopener noreferrer"
 							>
-								<div className="bg-[#FF9900] hover:bg-[#FF9900]/90 text-white px-3 py-1.5 rounded-md text-sm font-medium shrink-0 flex items-center gap-1.5 transition-colors">
+								<div className="bg-brand-amazon hover:bg-brand-amazon/90 text-white px-3 py-1.5 rounded-md text-sm font-medium shrink-0 flex items-center gap-1.5 transition-colors">
 									<AmazonLogo className="w-4 h-4" />
 									<span>Amazonアソシエイト</span>
 									<ExternalLink className="h-3.5 w-3.5" />
@@ -102,7 +102,7 @@ export function DashboardMain() {
 								target="_blank"
 								rel="noopener noreferrer"
 							>
-								<div className="bg-[#BF0000] hover:bg-[#BF0000]/90 text-white px-3 py-1.5 rounded-md text-sm font-medium shrink-0 flex items-center gap-1.5 transition-colors">
+								<div className="bg-brand-rakuten hover:bg-brand-rakuten/90 text-white px-3 py-1.5 rounded-md text-sm font-medium shrink-0 flex items-center gap-1.5 transition-colors">
 									<RakutenLogo className="w-4 h-4" />
 									<span>楽天アフィリエイトレポート</span>
 									<ExternalLink className="h-3.5 w-3.5" />

@@ -49,7 +49,7 @@ export function RakutenProductCard({
 	if (isLoading) {
 		return (
 			<div className="block not-prose my-4">
-				<div className="border border-[#BF0000]/20 rounded-lg overflow-hidden hover:shadow-md transition-shadow animate-pulse bg-gradient-to-br from-white to-red-50 dark:from-gray-900 dark:to-red-950/20">
+				<div className="border border-brand-rakuten/20 rounded-lg overflow-hidden hover:shadow-md transition-shadow animate-pulse bg-gradient-to-br from-white to-brand-rakuten-gradient dark:from-gray-900 dark:to-brand-rakuten-gradient/20">
 					<div className="flex flex-col sm:flex-row">
 						{/* スケルトン画像 */}
 						<div className="aspect-square w-40 sm:w-48 mx-auto sm:mx-0 bg-gray-200 dark:bg-gray-700 shrink-0" />
@@ -75,8 +75,8 @@ export function RakutenProductCard({
 				rel="noopener noreferrer sponsored"
 				className="block not-prose my-4 cursor-pointer"
 			>
-				<div className="border border-[#BF0000]/20 rounded-lg p-4 hover:shadow-md transition-shadow flex items-center gap-3 bg-gradient-to-br from-white to-red-50 dark:from-gray-900 dark:to-red-950/20">
-					<RakutenLogo className="w-5 h-5 text-[#BF0000] shrink-0" />
+				<div className="border border-brand-rakuten/20 rounded-lg p-4 hover:shadow-md transition-shadow flex items-center gap-3 bg-gradient-to-br from-white to-brand-rakuten-gradient dark:from-gray-900 dark:to-brand-rakuten-gradient/20">
+					<RakutenLogo className="w-5 h-5 text-brand-rakuten shrink-0" />
 					<div className="flex-1 min-w-0">
 						<div className="font-medium text-sm">楽天商品</div>
 						<div className="text-xs text-muted-foreground truncate">
@@ -97,7 +97,7 @@ export function RakutenProductCard({
 			rel="noopener noreferrer sponsored"
 			className="block not-prose my-4 group cursor-pointer"
 		>
-			<div className="border border-[#BF0000]/20 rounded-lg overflow-hidden hover:shadow-md transition-shadow bg-gradient-to-br from-white to-red-50 dark:from-gray-900 dark:to-red-950/20">
+			<div className="border border-brand-rakuten/20 rounded-lg overflow-hidden hover:shadow-md transition-shadow bg-gradient-to-br from-white to-brand-rakuten-gradient dark:from-gray-900 dark:to-brand-rakuten-gradient/20">
 				<div className="flex flex-col sm:flex-row">
 					{/* 商品画像 */}
 					{data.image && (
@@ -141,7 +141,7 @@ export function RakutenProductCard({
 								)}
 								<span className="truncate">{formattedDomain}</span>
 							</div>
-							<div className="bg-[#BF0000] hover:bg-[#BF0000]/90 text-white px-3 py-1.5 rounded-md text-sm font-medium shrink-0 flex items-center gap-1.5 pointer-events-none">
+							<div className="bg-brand-rakuten hover:bg-brand-rakuten/90 text-white px-3 py-1.5 rounded-md text-sm font-medium shrink-0 flex items-center gap-1.5 pointer-events-none">
 								<RakutenLogo className="w-4 h-4" />
 								楽天で見る
 							</div>
