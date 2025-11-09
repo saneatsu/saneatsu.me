@@ -9,7 +9,7 @@ import {
 	useDashboardOverview,
 	ViewsTrendChart,
 } from "@/features/dashboard";
-import { AmazonLogo } from "@/shared/image";
+import { AmazonLogo, RakutenLogo } from "@/shared/image";
 import { Alert, AlertDescription } from "@/shared/ui/alert/alert";
 import {
 	Card,
@@ -77,26 +77,52 @@ export function DashboardMain() {
 
 	return (
 		<div className="space-y-6">
-			{/* Amazonアソシエイトレポートと最終更新時刻 */}
+			{/* アフィリエイトレポートリンクと最終更新時刻 */}
 			{dashboardData && !isLoading && (
-				<div className="flex items-center justify-between text-sm text-muted-foreground">
-					{/* Amazonアソシエイトレポートリンク */}
-					<a
-						href="https://affiliate.amazon.co.jp/p/reporting/earnings"
-						target="_blank"
-						rel="noopener noreferrer"
-						className="flex items-center gap-2 hover:underline hover:decoration-dotted transition-colors"
-						aria-label="Amazonアソシエイトレポートを新しいタブで開く"
-					>
-						<div className="rounded-md bg-[#FF9900] p-1 flex items-center justify-center">
-							<AmazonLogo className="h-4 w-4 text-muted" />
-						</div>
-						<span>Amazonアソシエイトレポート</span>
-						<ExternalLink className="h-3.5 w-3.5" />
-					</a>
+				<div className="space-y-3">
+					{/* アフィリエイトレポートカード */}
+					<div className="flex flex-col sm:flex-row items-stretch gap-3">
+						{/* 楽天アフィリエイトレポート */}
+						<a
+							href="https://affiliate.rakuten.co.jp/report/summary"
+							target="_blank"
+							rel="noopener noreferrer"
+							className="flex-1 border border-border rounded-lg overflow-hidden hover:shadow-md transition-shadow bg-gradient-to-br from-white to-red-50 dark:from-gray-900 dark:to-red-950/20 p-4"
+						>
+							<div className="flex items-center justify-between gap-3">
+								<span className="text-sm font-medium">
+									楽天アフィリエイトレポート
+								</span>
+								<div className="bg-[#BF0000] hover:bg-[#BF0000]/90 text-white px-3 py-1.5 rounded-md text-sm font-medium shrink-0 flex items-center gap-1.5 transition-colors">
+									<RakutenLogo className="w-4 h-4" />
+									<span>開く</span>
+									<ExternalLink className="h-3.5 w-3.5" />
+								</div>
+							</div>
+						</a>
+
+						{/* Amazonアソシエイト */}
+						<a
+							href="https://affiliate.amazon.co.jp/p/reporting/earnings"
+							target="_blank"
+							rel="noopener noreferrer"
+							className="flex-1 border border-border rounded-lg overflow-hidden hover:shadow-md transition-shadow bg-gradient-to-br from-white to-orange-50 dark:from-gray-900 dark:to-orange-950/20 p-4"
+						>
+							<div className="flex items-center justify-between gap-3">
+								<span className="text-sm font-medium">Amazonアソシエイト</span>
+								<div className="bg-[#FF9900] hover:bg-[#FF9900]/90 text-white px-3 py-1.5 rounded-md text-sm font-medium shrink-0 flex items-center gap-1.5 transition-colors">
+									<AmazonLogo className="w-4 h-4" />
+									<span>開く</span>
+									<ExternalLink className="h-3.5 w-3.5" />
+								</div>
+							</div>
+						</a>
+					</div>
 
 					{/* 最終更新時刻 */}
-					<div>最終更新: {formatLastUpdated(dashboardData.lastUpdated)}</div>
+					<div className="text-sm text-muted-foreground text-right">
+						最終更新: {formatLastUpdated(dashboardData.lastUpdated)}
+					</div>
 				</div>
 			)}
 
