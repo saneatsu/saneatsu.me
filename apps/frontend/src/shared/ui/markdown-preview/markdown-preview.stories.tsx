@@ -851,3 +851,99 @@ https://amzn.asia/d/xyz789
 		expect(text).toContain("amzn.asia");
 	},
 };
+
+/**
+ * 通常URLカードの埋め込み（単独URL）
+ */
+export const UrlCardSingle: Story = {
+	name: "通常URLカード（単独URL）",
+	tags: ["validation"],
+	args: {
+		content: `# 通常URLの埋め込み
+
+以下は通常のURLです。
+
+https://ja.wikipedia.org/wiki/%E6%AD%A6%E8%80%85%E5%B0%8F%E8%B7%AF%E5%AE%9F%E7%AF%A4
+
+URLカードとして表示されます。`,
+		language: "ja",
+	},
+	parameters: {},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		// URLCardコンポーネントのレンダリングとOGP情報の取得を待つ
+		await waitFor(
+			() => {
+				// リンク要素の確認
+				const linkElement = canvasElement.querySelector(
+					'a[href="https://ja.wikipedia.org/wiki/%E6%AD%A6%E8%80%85%E5%B0%8F%E8%B7%AF%E5%AE%9F%E7%AF%A4"]'
+				) as HTMLAnchorElement;
+				expect(linkElement).toBeInTheDocument();
+				expect(linkElement).toHaveAttribute("target", "_blank");
+				expect(linkElement).toHaveAttribute("rel", "noopener noreferrer");
+
+				// URLCardが表示されていることを確認（not-proseクラスを持つ）
+				expect(linkElement).toHaveClass("not-prose");
+
+				// OGP情報が表示されていることを確認
+				// タイトル、説明、またはドメイン情報のいずれかが表示されている
+				const hasContent =
+					linkElement.textContent && linkElement.textContent.trim().length > 0;
+				expect(hasContent).toBe(true);
+			},
+			{ timeout: 10000 }
+		);
+	},
+};
+
+/**
+ * 通常URLカードの埋め込み（複数URL・改行1つ）
+ */
+export const UrlCardMultipleSingleNewline: Story = {
+	name: "通常URLカード（複数URL・改行1つ）",
+	tags: ["validation"],
+	args: {
+		content: `# 複数のURLの埋め込み（改行1つ）
+
+以下は改行1つで区切られた2つのURLです。
+
+https://ja.wikipedia.org/wiki/%E6%AD%A6%E8%80%85%E5%B0%8F%E8%B7%AF%E5%AE%9F%E7%AF%A4
+https://www.mushakoji.org/
+
+それぞれ独立したURLカードとして表示されます。`,
+		language: "ja",
+	},
+	parameters: {},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		// URLCardコンポーネントのレンダリングとOGP情報の取得を待つ
+		await waitFor(
+			() => {
+				// 1つ目のリンク要素の確認
+				const link1 = canvasElement.querySelector(
+					'a[href="https://ja.wikipedia.org/wiki/%E6%AD%A6%E8%80%85%E5%B0%8F%E8%B7%AF%E5%AE%9F%E7%AF%A4"]'
+				) as HTMLAnchorElement;
+				expect(link1).toBeInTheDocument();
+				expect(link1).toHaveAttribute("target", "_blank");
+				expect(link1).toHaveAttribute("rel", "noopener noreferrer");
+				expect(link1).toHaveClass("not-prose");
+
+				// 2つ目のリンク要素の確認
+				const link2 = canvasElement.querySelector(
+					'a[href="https://www.mushakoji.org/"]'
+				) as HTMLAnchorElement;
+				expect(link2).toBeInTheDocument();
+				expect(link2).toHaveAttribute("target", "_blank");
+				expect(link2).toHaveAttribute("rel", "noopener noreferrer");
+				expect(link2).toHaveClass("not-prose");
+
+				// 両方のURLCardにOGP情報またはドメイン情報が表示されていることを確認
+				const hasContent1 =
+					link1.textContent && link1.textContent.trim().length > 0;
+				const hasContent2 =
+					link2.textContent && link2.textContent.trim().length > 0;
+				expect(hasContent1).toBe(true);
+				expect(hasContent2).toBe(true);
+			},
+			{ timeout: 10000 }
+		);
+	},
+};
