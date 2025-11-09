@@ -69,6 +69,14 @@ export {
 	extractAmazonDomain,
 	remarkAmazon,
 } from "./remark-amazon/remark-amazon";
+// Remark Product Card
+export { remarkProductCard } from "./remark-product-card/remark-product-card";
+// Remark Rakuten
+export {
+	extractRakutenDomain,
+	isRakutenUrl,
+	remarkRakuten,
+} from "./remark-rakuten/remark-rakuten";
 // Remark Tag
 export { remarkTag } from "./remark-tag";
 // Remark Tweet
