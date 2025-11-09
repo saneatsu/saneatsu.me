@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
+import { HttpResponse, http } from "msw";
 import { expect, waitFor, within } from "storybook/test";
 
 import { MarkdownPreview } from "./markdown-preview";
@@ -786,6 +787,144 @@ https://www.amazon.co.jp/dp/B0CX23V2ZK
 };
 
 /**
+ * Amazon商品カード（通常URL・OGP表示）
+ */
+export const AmazonProductCardOgpDisplay: Story = {
+	name: "Amazon商品カード（通常URL・OGP表示）",
+	tags: ["validation"],
+	args: {
+		content: `# Amazon商品の紹介
+
+以下はAmazon商品のリンクです。
+
+<https://www.amazon.co.jp/GitLab%E3%81%AB%E5%AD%A6%E3%81%B6-%E4%B8%96%E7%95%8C%E6%9C%80%E5%85%88%E7%AB%AF%E3%81%AE%E3%83%AA%E3%83%A2%E3%83%BC%E3%83%88%E7%B5%84%E7%B9%94%E3%81%AE%E3%81%A4%E3%81%8F%E3%82%8A%E3%81%8B%E3%81%9F-%E3%83%89%E3%82%AD%E3%83%A5%E3%83%A1%E3%83%B3%E3%83%88%E3%81%AE%E6%B4%BB%E7%94%A8%E3%81%A7%E3%82%AA%E3%83%95%E3%82%A3%E3%82%B9%E3%81%AA%E3%81%97%E3%81%A7%E3%82%82%E6%9C%80%E5%A4%A7%E3%81%AE%E6%88%90%E6%9E%9C%E3%82%92%E5%87%BA%E3%81%99%E3%82%B0%E3%83%AD%E3%83%BC%E3%83%90%E3%83%AB%E4%BC%81%E6%A5%AD%E3%81%AE%E3%81%97%E3%81%8F%E3%81%BF-%E5%8D%83%E7%94%B0-%E5%92%8C%E5%A4%AE-ebook/dp/B0CBR9GYF6?dib=eyJ2IjoiMSJ9.wPvtjLDn6aoctleRNeYTpQ.5tI0XZqdzwUjx7NEyfSuWEffEQgSpriwCaTeF6nsIF0&dib_tag=se&keywords=9784798183916&qid=1761829153&s=digital-text&sr=1-1&linkCode=ll1&tag=173069-22&linkId=d492be75069a8cce22d78162985a2ded&language=ja_JP&ref_=as_li_ss_tl>
+
+OGP情報が取得されてカード形式で表示されます。`,
+		language: "ja",
+	},
+	parameters: {
+		msw: {
+			handlers: [
+				// NextAuthのセッションをモック（空のセッション）
+				http.get("/api/auth/session", () => {
+					return HttpResponse.json({});
+				}),
+				http.get("http://localhost:8888/api/ogp", ({ request }) => {
+					const url = new URL(request.url);
+					const targetUrl = url.searchParams.get("url");
+
+					// ASIN B0CBR9GYF6を含むAmazon URLにマッチ
+					if (targetUrl?.includes("B0CBR9GYF6")) {
+						return HttpResponse.json({
+							data: {
+								title: "GitLabに学ぶ 世界最先端のリモート組織のつくりかた",
+								description:
+									"ドキュメントの活用でオフィスなしでも最大の成果を出すグローバル企業のしくみ",
+								image: "https://m.media-amazon.com/images/I/sample-image.jpg",
+								favicon: "https://www.amazon.co.jp/favicon.ico",
+								siteName: "Amazon.co.jp",
+								url: targetUrl,
+							},
+						});
+					}
+
+					return HttpResponse.json({ error: "Not found" }, { status: 404 });
+				}),
+			],
+		},
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		// AmazonProductCardコンポーネントのレンダリングを待つ
+		await waitFor(
+			() => {
+				// リンク要素の確認
+				const linkElement = canvasElement.querySelector(
+					'a[href*="amazon.co.jp"][href*="/dp/B0CBR9GYF6"]'
+				) as HTMLAnchorElement;
+				expect(linkElement).toBeInTheDocument();
+				expect(linkElement).toHaveAttribute("target", "_blank");
+				expect(linkElement).toHaveAttribute(
+					"rel",
+					"noopener noreferrer sponsored"
+				);
+
+				// AmazonProductCardが表示されていることを確認（not-proseクラスを持つ）
+				expect(linkElement).toHaveClass("not-prose");
+			},
+			{ timeout: 10000 }
+		);
+	},
+};
+
+/**
+ * Amazon商品カード（短縮URL）
+ */
+export const AmazonProductCardShortUrlTest: Story = {
+	name: "Amazon商品カード（短縮URL）",
+	tags: ["validation"],
+	args: {
+		content: `# Amazon商品の紹介（短縮URL）
+
+以下はAmazonの短縮URLです。
+
+<https://amzn.to/43mMbSS>
+
+短縮URLでもカード形式で表示されます。`,
+		language: "ja",
+	},
+	parameters: {
+		msw: {
+			handlers: [
+				// NextAuthのセッションをモック（空のセッション）
+				http.get("/api/auth/session", () => {
+					return HttpResponse.json({});
+				}),
+				http.get("http://localhost:8888/api/ogp", ({ request }) => {
+					const url = new URL(request.url);
+					const targetUrl = url.searchParams.get("url");
+
+					if (targetUrl === "https://amzn.to/43mMbSS") {
+						return HttpResponse.json({
+							data: {
+								title: "Amazon商品",
+								description: "短縮URLから取得した商品情報",
+								image: "https://m.media-amazon.com/images/I/sample-short.jpg",
+								favicon: "https://www.amazon.co.jp/favicon.ico",
+								siteName: "Amazon.co.jp",
+								url: targetUrl,
+							},
+						});
+					}
+
+					return HttpResponse.json({ error: "Not found" }, { status: 404 });
+				}),
+			],
+		},
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		// AmazonProductCardコンポーネントのレンダリングを待つ
+		await waitFor(
+			() => {
+				// リンク要素の確認
+				const linkElement = canvasElement.querySelector(
+					'a[href="https://amzn.to/43mMbSS"]'
+				) as HTMLAnchorElement;
+				expect(linkElement).toBeInTheDocument();
+				expect(linkElement).toHaveAttribute("target", "_blank");
+				expect(linkElement).toHaveAttribute(
+					"rel",
+					"noopener noreferrer sponsored"
+				);
+
+				// AmazonProductCardが表示されていることを確認（not-proseクラスを持つ）
+				expect(linkElement).toHaveClass("not-prose");
+			},
+			{ timeout: 10000 }
+		);
+	},
+};
+
+/**
  * Amazon商品カードの埋め込み（テキストと混在）
  */
 export const AmazonProductCardWithText: Story = {
@@ -849,6 +988,146 @@ https://amzn.asia/d/xyz789
 		const text = canvasElement.textContent;
 		expect(text).toContain("amzn.to");
 		expect(text).toContain("amzn.asia");
+	},
+};
+
+/**
+ * 楽天商品カード（通常URL・OGP表示）
+ */
+export const RakutenProductCardOgpDisplay: Story = {
+	name: "楽天商品カード（通常URL・OGP表示）",
+	tags: ["validation"],
+	args: {
+		content: `# 楽天商品の紹介
+
+以下は楽天商品のリンクです。
+
+<https://hb.afl.rakuten.co.jp/ichiba/4e068e00.5f53c806.4e068e01.d8b0cd27/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F17569477%2F&link_type=hybrid_url&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJoeWJyaWRfdXJsIiwic2l6ZSI6IjEyOHgxMjgiLCJuYW0iOjEsIm5hbXAiOiJyaWdodCIsImNvbSI6MSwiY29tcCI6ImRvd24iLCJwcmljZSI6MSwiYm9yIjoxLCJjb2wiOjEsImJidG4iOjEsInByb2QiOjAsImFtcCI6ZmFsc2V9>
+
+OGP情報が取得されてカード形式で表示されます。`,
+		language: "ja",
+	},
+	parameters: {
+		msw: {
+			handlers: [
+				// NextAuthのセッションをモック（空のセッション）
+				http.get("/api/auth/session", () => {
+					return HttpResponse.json({});
+				}),
+				http.get("http://localhost:8888/api/ogp", ({ request }) => {
+					const url = new URL(request.url);
+					const targetUrl = url.searchParams.get("url");
+
+					// 楽天URLにマッチ
+					if (
+						targetUrl?.includes("hb.afl.rakuten.co.jp") ||
+						targetUrl?.includes("item.rakuten.co.jp")
+					) {
+						return HttpResponse.json({
+							data: {
+								title: "楽天商品のタイトル",
+								description: "楽天商品の説明文です。",
+								image: "https://via.placeholder.com/300",
+								favicon: "https://www.rakuten.co.jp/favicon.ico",
+								siteName: "楽天市場",
+								url: targetUrl,
+							},
+						});
+					}
+
+					return HttpResponse.json({ error: "Not found" }, { status: 404 });
+				}),
+			],
+		},
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		// RakutenProductCardコンポーネントのレンダリングを待つ
+		await waitFor(
+			() => {
+				// リンク要素の確認
+				const linkElement = canvasElement.querySelector(
+					'a[href*="rakuten.co.jp"]'
+				) as HTMLAnchorElement;
+				expect(linkElement).toBeInTheDocument();
+				expect(linkElement).toHaveAttribute("target", "_blank");
+				expect(linkElement).toHaveAttribute(
+					"rel",
+					"noopener noreferrer sponsored"
+				);
+
+				// RakutenProductCardが表示されていることを確認（not-proseクラスを持つ）
+				expect(linkElement).toHaveClass("not-prose");
+			},
+			{ timeout: 10000 }
+		);
+	},
+};
+
+/**
+ * 楽天商品カード（短縮URL）
+ */
+export const RakutenProductCardShortUrlTest: Story = {
+	name: "楽天商品カード（短縮URL）",
+	tags: ["validation"],
+	args: {
+		content: `# 楽天商品の紹介（短縮URL）
+
+以下は楽天の短縮URLです。
+
+<https://a.r10.to/hF6JlM>
+
+短縮URLでもカード形式で表示されます。`,
+		language: "ja",
+	},
+	parameters: {
+		msw: {
+			handlers: [
+				// NextAuthのセッションをモック（空のセッション）
+				http.get("/api/auth/session", () => {
+					return HttpResponse.json({});
+				}),
+				http.get("http://localhost:8888/api/ogp", ({ request }) => {
+					const url = new URL(request.url);
+					const targetUrl = url.searchParams.get("url");
+
+					if (targetUrl === "https://a.r10.to/hF6JlM") {
+						return HttpResponse.json({
+							data: {
+								title: "楽天商品",
+								description: "短縮URLから取得した商品情報",
+								image: "https://via.placeholder.com/300",
+								favicon: "https://www.rakuten.co.jp/favicon.ico",
+								siteName: "楽天市場",
+								url: targetUrl,
+							},
+						});
+					}
+
+					return HttpResponse.json({ error: "Not found" }, { status: 404 });
+				}),
+			],
+		},
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		// RakutenProductCardコンポーネントのレンダリングを待つ
+		await waitFor(
+			() => {
+				// リンク要素の確認
+				const linkElement = canvasElement.querySelector(
+					'a[href="https://a.r10.to/hF6JlM"]'
+				) as HTMLAnchorElement;
+				expect(linkElement).toBeInTheDocument();
+				expect(linkElement).toHaveAttribute("target", "_blank");
+				expect(linkElement).toHaveAttribute(
+					"rel",
+					"noopener noreferrer sponsored"
+				);
+
+				// RakutenProductCardが表示されていることを確認（not-proseクラスを持つ）
+				expect(linkElement).toHaveClass("not-prose");
+			},
+			{ timeout: 10000 }
+		);
 	},
 };
 
@@ -944,6 +1223,155 @@ https://www.mushakoji.org/
 				expect(hasContent2).toBe(true);
 			},
 			{ timeout: 10000 }
+		);
+	},
+};
+
+/**
+ * Alert機能のテスト（GitHub互換）
+ */
+export const AlertsBasic: Story = {
+	name: "Alert機能（基本）",
+	tags: ["validation"],
+	args: {
+		content: `# Alert機能の例
+
+## NOTE（デフォルト）
+
+> [!NOTE]
+> これは通常のメモなのだ。
+
+## INFO（青色）
+
+> [!INFO]
+> これは情報メッセージなのだ。
+
+## SUCCESS（緑色）
+
+> [!SUCCESS]
+> これは成功メッセージなのだ。
+
+## WARNING（黄色）
+
+> [!WARNING]
+> これは警告メッセージなのだ。
+
+## DANGER（赤色）
+
+> [!DANGER]
+> これは危険メッセージなのだ。`,
+		language: "ja",
+	},
+	parameters: {},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		// Alertコンポーネントが5つレンダリングされることを確認
+		await waitFor(
+			() => {
+				const alerts = canvasElement.querySelectorAll('[data-slot="alert"]');
+				expect(alerts.length).toBe(5);
+			},
+			{ timeout: 5000 }
+		);
+	},
+};
+
+/**
+ * Alert機能のテスト（タイトル付き）
+ */
+export const AlertsWithTitle: Story = {
+	name: "Alert機能（タイトル付き）",
+	tags: ["validation"],
+	args: {
+		content: `# タイトル付きAlertの例
+
+> [!NOTE] 重要なお知らせ
+> こちらは通常のメモですが、タイトルが付いているのだ。
+
+> [!INFO] 追加情報
+> こちらは情報メッセージで、タイトルも表示されるのだ。
+
+> [!WARNING] 注意が必要
+> こちらは警告メッセージなのだ。タイトルで内容を要約しているのだ。`,
+		language: "ja",
+	},
+	parameters: {},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+
+		// タイトルが表示されていることを確認
+		await waitFor(
+			() => {
+				const title1 = canvas.getByText("重要なお知らせ");
+				expect(title1).toBeInTheDocument();
+
+				const title2 = canvas.getByText("追加情報");
+				expect(title2).toBeInTheDocument();
+
+				const title3 = canvas.getByText("注意が必要");
+				expect(title3).toBeInTheDocument();
+			},
+			{ timeout: 5000 }
+		);
+	},
+};
+
+/**
+ * Alert機能のテスト（複数段落）
+ */
+export const AlertsMultipleParagraphs: Story = {
+	name: "Alert機能（複数段落）",
+	tags: ["code-only"],
+	args: {
+		content: `# 複数段落のAlert
+
+> [!INFO] 詳細な説明
+> 最初の段落なのだ。
+>
+> 2番目の段落なのだ。
+>
+> 3番目の段落も含めることができるのだ。`,
+		language: "ja",
+	},
+	parameters: {},
+};
+
+/**
+ * Alert機能のテスト（通常のblockquoteと混在）
+ */
+export const AlertsWithBlockquote: Story = {
+	name: "Alert機能（通常のblockquoteと混在）",
+	tags: ["validation"],
+	args: {
+		content: `# AlertとBlockquoteの混在
+
+## 通常のBlockquote
+
+> これは通常の引用なのだ。
+> [!TYPE] パターンがないため、Alertではなく通常のblockquoteとして扱われるのだ。
+
+## Alert
+
+> [!SUCCESS]
+> これはSuccessのAlertなのだ。
+
+## また通常のBlockquote
+
+> もう一つの引用なのだ。`,
+		language: "ja",
+	},
+	parameters: {},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		// Alertコンポーネントが1つのみレンダリングされることを確認
+		await waitFor(
+			() => {
+				const alerts = canvasElement.querySelectorAll('[data-slot="alert"]');
+				expect(alerts.length).toBe(1);
+
+				// blockquoteが2つあることを確認
+				const blockquotes = canvasElement.querySelectorAll("blockquote");
+				expect(blockquotes.length).toBe(2);
+			},
+			{ timeout: 5000 }
 		);
 	},
 };

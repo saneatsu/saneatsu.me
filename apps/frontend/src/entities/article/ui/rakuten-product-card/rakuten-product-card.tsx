@@ -48,7 +48,12 @@ export function RakutenProductCard({
 	// ローディング状態
 	if (isLoading) {
 		return (
-			<div className="block not-prose my-4">
+			<a
+				href={url}
+				target="_blank"
+				rel="noopener noreferrer sponsored"
+				className="block not-prose my-4"
+			>
 				<div className="border border-brand-rakuten/20 rounded-lg overflow-hidden hover:shadow-md transition-shadow animate-pulse bg-brand-rakuten-gradient dark:bg-brand-rakuten-gradient/20">
 					<div className="flex flex-col sm:flex-row">
 						{/* スケルトン画像 */}
@@ -62,7 +67,7 @@ export function RakutenProductCard({
 						</div>
 					</div>
 				</div>
-			</div>
+			</a>
 		);
 	}
 
