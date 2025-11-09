@@ -55,7 +55,7 @@ export function AmazonProductCard({
 	if (isLoading) {
 		return (
 			<div className="block not-prose my-4">
-				<div className="border border-brand-amazon/20 rounded-lg overflow-hidden hover:shadow-md transition-shadow animate-pulse bg-gradient-to-br from-white to-brand-amazon-gradient dark:from-gray-900 dark:to-brand-amazon-gradient/20">
+				<div className="border border-brand-amazon/20 rounded-lg overflow-hidden hover:shadow-md transition-shadow animate-pulse bg-brand-amazon-gradient dark:bg-brand-amazon-gradient/20">
 					<div className="flex flex-col sm:flex-row">
 						{/* スケルトン画像 */}
 						<div className="aspect-square w-40 sm:w-48 mx-auto sm:mx-0 bg-gray-200 dark:bg-gray-700 shrink-0" />
@@ -81,7 +81,7 @@ export function AmazonProductCard({
 				rel="noopener noreferrer sponsored"
 				className="block not-prose my-4 cursor-pointer"
 			>
-				<div className="border border-brand-amazon/20 rounded-lg p-4 hover:shadow-md transition-shadow flex items-center gap-3 bg-gradient-to-br from-white to-brand-amazon-gradient dark:from-gray-900 dark:to-brand-amazon-gradient/20">
+				<div className="border border-brand-amazon/20 rounded-lg p-4 hover:shadow-md transition-shadow flex items-center gap-3 bg-brand-amazon-gradient dark:bg-brand-amazon-gradient/20">
 					<AmazonLogo className="w-5 h-5 text-brand-amazon shrink-0" />
 					<div className="flex-1 min-w-0">
 						<div className="font-medium text-sm">
@@ -105,7 +105,7 @@ export function AmazonProductCard({
 			rel="noopener noreferrer sponsored"
 			className="block not-prose my-4 group cursor-pointer"
 		>
-			<div className="border border-brand-amazon/20 rounded-lg overflow-hidden hover:shadow-md transition-shadow bg-gradient-to-br from-white to-brand-amazon-gradient dark:from-gray-900 dark:to-brand-amazon-gradient/20">
+			<div className="border border-brand-amazon/20 rounded-lg overflow-hidden hover:shadow-md transition-shadow bg-brand-amazon-gradient dark:bg-brand-amazon-gradient/20">
 				<div className="flex flex-col sm:flex-row">
 					{/* 商品画像 */}
 					{data.image && (
