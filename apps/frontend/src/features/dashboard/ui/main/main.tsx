@@ -9,7 +9,7 @@ import {
 	useDashboardOverview,
 	ViewsTrendChart,
 } from "@/features/dashboard";
-import { AmazonLogo, RakutenLogo } from "@/shared/image";
+import { AmazonLogo, GoogleLogo, RakutenLogo } from "@/shared/image";
 import { Alert, AlertDescription } from "@/shared/ui/alert/alert";
 import {
 	Card,
@@ -83,13 +83,26 @@ export function DashboardMain() {
 					{/* アフィリエイトレポートカード */}
 					<div className="flex flex-1 justify-between items-center">
 						<div className="flex flex-col sm:flex-row items-stretch gap-3">
+							{/* Google Analytics */}
+							<a
+								href="https://analytics.google.com/analytics/web"
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								<div className="border border-brand-google text-brand-google hover:bg-brand-google/10 px-3 py-1.5 rounded-md text-sm font-medium shrink-0 flex items-center gap-1.5 transition-colors">
+									<GoogleLogo className="w-4 h-4" />
+									<span>Google Analytics</span>
+									<ExternalLink className="h-3.5 w-3.5" />
+								</div>
+							</a>
+
 							{/* Amazonアソシエイト */}
 							<a
 								href="https://affiliate.amazon.co.jp/p/reporting/earnings"
 								target="_blank"
 								rel="noopener noreferrer"
 							>
-								<div className="bg-brand-amazon hover:bg-brand-amazon/90 text-white px-3 py-1.5 rounded-md text-sm font-medium shrink-0 flex items-center gap-1.5 transition-colors">
+								<div className="border border-brand-amazon text-brand-amazon hover:bg-brand-amazon/10 px-3 py-1.5 rounded-md text-sm font-medium shrink-0 flex items-center gap-1.5 transition-colors">
 									<AmazonLogo className="w-4 h-4" />
 									<span>Amazonアソシエイト</span>
 									<ExternalLink className="h-3.5 w-3.5" />
@@ -102,7 +115,7 @@ export function DashboardMain() {
 								target="_blank"
 								rel="noopener noreferrer"
 							>
-								<div className="bg-brand-rakuten hover:bg-brand-rakuten/90 text-white px-3 py-1.5 rounded-md text-sm font-medium shrink-0 flex items-center gap-1.5 transition-colors">
+								<div className="border border-brand-rakuten text-brand-rakuten hover:bg-brand-rakuten/10 px-3 py-1.5 rounded-md text-sm font-medium shrink-0 flex items-center gap-1.5 transition-colors">
 									<RakutenLogo className="w-4 h-4" />
 									<span>楽天アフィリエイトレポート</span>
 									<ExternalLink className="h-3.5 w-3.5" />
