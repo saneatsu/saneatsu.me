@@ -120,8 +120,10 @@ export function ProductCard({
 			>
 				<div className="border border-border rounded-lg p-4 hover:shadow-md transition-shadow flex items-center gap-3 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-950/20">
 					<div className="flex gap-2 shrink-0">
-						{amazonUrl && <AmazonLogo className="w-5 h-5 text-[#FF9900]" />}
-						{rakutenUrl && <RakutenLogo className="w-5 h-5 text-[#BF0000]" />}
+						{amazonUrl && <AmazonLogo className="w-5 h-5 text-brand-amazon" />}
+						{rakutenUrl && (
+							<RakutenLogo className="w-5 h-5 text-brand-rakuten" />
+						)}
 					</div>
 					<div className="flex-1 min-w-0">
 						<div className="font-medium text-sm">
@@ -205,7 +207,7 @@ export function ProductCard({
 									<Button
 										variant="default"
 										size="sm"
-										className="bg-[#FF9900] hover:bg-[#FF9900]/90 text-white px-3 py-1.5 h-auto"
+										className="bg-brand-amazon hover:bg-brand-amazon/90 text-white px-3 py-1.5 h-auto"
 										onClick={(e) => handleButtonClick(e, amazonUrl)}
 									>
 										<AmazonLogo className="w-4 h-4 mr-1" />
@@ -216,7 +218,7 @@ export function ProductCard({
 									<Button
 										variant="default"
 										size="sm"
-										className="bg-[#BF0000] hover:bg-[#BF0000]/90 text-white px-3 py-1.5 h-auto"
+										className="bg-brand-rakuten hover:bg-brand-rakuten/90 text-white px-3 py-1.5 h-auto"
 										onClick={(e) => handleButtonClick(e, rakutenUrl)}
 									>
 										<RakutenLogo className="w-4 h-4 mr-1" />

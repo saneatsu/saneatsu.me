@@ -62,6 +62,12 @@
 	--chart-3: hsl(212 70% 65%);
 	--chart-4: hsl(145 60% 45%);
 	--chart-5: hsl(265 65% 62%);
+	--brand-amazon: hsl(36 100% 50%);
+	--brand-amazon-foreground: hsl(0 0% 100%);
+	--brand-amazon-gradient: hsl(33 100% 97%);
+	--brand-rakuten: hsl(0 100% 37%);
+	--brand-rakuten-foreground: hsl(0 0% 100%);
+	--brand-rakuten-gradient: hsl(0 86% 97%);
 	--radius: 0.6rem;
 	--sidebar: hsl(0 0% 98%);
 	--sidebar-foreground: hsl(240 5.3% 26.1%);
@@ -107,6 +113,12 @@
 	--chart-3: hsl(210 75% 65%);
 	--chart-4: hsl(150 65% 52%);
 	--chart-5: hsl(265 70% 63%);
+	--brand-amazon: hsl(36 100% 55%);
+	--brand-amazon-foreground: hsl(0 0% 100%);
+	--brand-amazon-gradient: hsl(33 70% 8%);
+	--brand-rakuten: hsl(0 100% 45%);
+	--brand-rakuten-foreground: hsl(0 0% 100%);
+	--brand-rakuten-gradient: hsl(0 70% 8%);
 	--sidebar: hsl(240 5.9% 10%);
 	--sidebar-foreground: hsl(240 4.8% 95.9%);
 	--sidebar-primary: hsl(224.3 76.3% 48%);
@@ -150,6 +162,12 @@
 	--color-chart-3: var(--chart-3);
 	--color-chart-4: var(--chart-4);
 	--color-chart-5: var(--chart-5);
+	--color-brand-amazon: var(--brand-amazon);
+	--color-brand-amazon-foreground: var(--brand-amazon-foreground);
+	--color-brand-amazon-gradient: var(--brand-amazon-gradient);
+	--color-brand-rakuten: var(--brand-rakuten);
+	--color-brand-rakuten-foreground: var(--brand-rakuten-foreground);
+	--color-brand-rakuten-gradient: var(--brand-rakuten-gradient);
 	--radius-sm: calc(var(--radius) - 4px);
 	--radius-md: calc(var(--radius) - 2px);
 	--radius-lg: var(--radius);

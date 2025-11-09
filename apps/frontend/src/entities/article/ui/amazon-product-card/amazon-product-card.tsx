@@ -55,7 +55,7 @@ export function AmazonProductCard({
 	if (isLoading) {
 		return (
 			<div className="block not-prose my-4">
-				<div className="border border-[#FF9900]/20 rounded-lg overflow-hidden hover:shadow-md transition-shadow animate-pulse bg-gradient-to-br from-white to-orange-50 dark:from-gray-900 dark:to-orange-950/20">
+				<div className="border border-brand-amazon/20 rounded-lg overflow-hidden hover:shadow-md transition-shadow animate-pulse bg-gradient-to-br from-white to-brand-amazon-gradient dark:from-gray-900 dark:to-brand-amazon-gradient/20">
 					<div className="flex flex-col sm:flex-row">
 						{/* スケルトン画像 */}
 						<div className="aspect-square w-40 sm:w-48 mx-auto sm:mx-0 bg-gray-200 dark:bg-gray-700 shrink-0" />
@@ -81,8 +81,8 @@ export function AmazonProductCard({
 				rel="noopener noreferrer sponsored"
 				className="block not-prose my-4 cursor-pointer"
 			>
-				<div className="border border-[#FF9900]/20 rounded-lg p-4 hover:shadow-md transition-shadow flex items-center gap-3 bg-gradient-to-br from-white to-orange-50 dark:from-gray-900 dark:to-orange-950/20">
-					<AmazonLogo className="w-5 h-5 text-[#FF9900] shrink-0" />
+				<div className="border border-brand-amazon/20 rounded-lg p-4 hover:shadow-md transition-shadow flex items-center gap-3 bg-gradient-to-br from-white to-brand-amazon-gradient dark:from-gray-900 dark:to-brand-amazon-gradient/20">
+					<AmazonLogo className="w-5 h-5 text-brand-amazon shrink-0" />
 					<div className="flex-1 min-w-0">
 						<div className="font-medium text-sm">
 							{asin ? `Amazon商品 (ASIN: ${asin})` : "Amazon商品（短縮URL）"}
@@ -105,7 +105,7 @@ export function AmazonProductCard({
 			rel="noopener noreferrer sponsored"
 			className="block not-prose my-4 group cursor-pointer"
 		>
-			<div className="border border-[#FF9900]/20 rounded-lg overflow-hidden hover:shadow-md transition-shadow bg-gradient-to-br from-white to-orange-50 dark:from-gray-900 dark:to-orange-950/20">
+			<div className="border border-brand-amazon/20 rounded-lg overflow-hidden hover:shadow-md transition-shadow bg-gradient-to-br from-white to-brand-amazon-gradient dark:from-gray-900 dark:to-brand-amazon-gradient/20">
 				<div className="flex flex-col sm:flex-row">
 					{/* 商品画像 */}
 					{data.image && (
@@ -149,7 +149,7 @@ export function AmazonProductCard({
 								)}
 								<span className="truncate">{formattedDomain}</span>
 							</div>
-							<div className="bg-[#FF9900] hover:bg-[#FF9900]/90 text-white px-3 py-1.5 rounded-md text-sm font-medium shrink-0 flex items-center gap-1.5 pointer-events-none">
+							<div className="bg-brand-amazon hover:bg-brand-amazon/90 text-white px-3 py-1.5 rounded-md text-sm font-medium shrink-0 flex items-center gap-1.5 pointer-events-none">
 								<AmazonLogo className="w-4 h-4" />
 								Amazonで見る
 							</div>
