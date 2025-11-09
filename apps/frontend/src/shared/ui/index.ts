@@ -201,6 +201,13 @@ export { Label } from "./label/label";
 export { LocaleSwitcher } from "./locale-switcher/locale-switcher";
 // Mapbox
 export { type Coordinates, Mapbox, type MapboxProps } from "./mapbox/mapbox";
+// Markdown Alert
+export {
+	MarkdownAlert,
+	MarkdownAlertDescription,
+	MarkdownAlertTitle,
+	markdownAlertVariants,
+} from "./markdown-alert/markdown-alert";
 // Markdown Preview
 export {
 	createDefaultMarkdownComponents,

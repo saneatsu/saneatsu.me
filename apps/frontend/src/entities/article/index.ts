@@ -25,4 +25,12 @@ export {
 	ArticleSuggestionsPopover,
 	type ArticleSuggestionsPopoverProps,
 } from "./ui/article-suggestions-popover/article-suggestions-popover";
+export {
+	ProductCard,
+	type ProductCardProps,
+} from "./ui/product-card/product-card";
+export {
+	RakutenProductCard,
+	type RakutenProductCardProps,
+} from "./ui/rakuten-product-card/rakuten-product-card";
 export { WikiLink } from "./ui/wiki-link/wiki-link";

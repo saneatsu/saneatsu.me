@@ -2,50 +2,44 @@
 
 import { ExternalLink } from "lucide-react";
 
-import { AmazonLogo } from "@/shared/image";
+import { RakutenLogo } from "@/shared/image";
 
 import { useOgp } from "../../api/use-ogp/use-ogp";
 
 /**
- * Amazon商品カードのプロパティ
+ * 楽天商品カードのプロパティ
  */
-export interface AmazonProductCardProps {
+export interface RakutenProductCardProps {
 	/** 商品URL */
 	url: string;
-	/** ASIN（Amazon Standard Identification Number）
-	 * 短縮URL（amzn.to）の場合は取得できないためオプショナル
-	 */
-	asin?: string;
-	/** Amazonドメイン（例: amazon.co.jp） */
+	/** 楽天ドメイン（例: a.r10.to） */
 	domain?: string;
 }
 
 /**
- * Amazon商品カードコンポーネント
+ * 楽天商品カードコンポーネント
  *
  * @description
- * Amazon商品のOGP情報を取得してカード形式で表示する。
+ * 楽天商品のOGP情報を取得してカード形式で表示する。
  *
  * 表示状態：
  * - ローディング: スケルトン表示
- * - 成功（OGP情報あり）: 商品画像、タイトル、説明、「Amazonで見る」ボタン
- * - 成功（OGP情報なし）: 簡易カード（ASIN表示）
- * - エラー: 簡易カード（ASIN表示）
+ * - 成功（OGP情報あり）: 商品画像、タイトル、説明、「楽天で見る」ボタン
+ * - 成功（OGP情報なし）: 簡易カード（URL表示）
+ * - エラー: 簡易カード（URL表示）
  *
  * @example
  * ```tsx
- * <AmazonProductCard
- *   url="https://www.amazon.co.jp/dp/B08N5WRWNW"
- *   asin="B08N5WRWNW"
- *   domain="amazon.co.jp"
+ * <RakutenProductCard
+ *   url="https://a.r10.to/hF6JlM"
+ *   domain="a.r10.to"
  * />
  * ```
  */
-export function AmazonProductCard({
+export function RakutenProductCard({
 	url,
-	asin,
-	domain = "amazon.co.jp",
-}: AmazonProductCardProps) {
+	domain = "rakuten.co.jp",
+}: RakutenProductCardProps) {
 	const { data, isLoading, isError } = useOgp(url);
 
 	// ドメイン名を整形
@@ -60,7 +54,7 @@ export function AmazonProductCard({
 				rel="noopener noreferrer sponsored"
 				className="block not-prose my-4"
 			>
-				<div className="border border-brand-amazon/20 rounded-lg overflow-hidden hover:shadow-md transition-shadow animate-pulse bg-brand-amazon-gradient dark:bg-brand-amazon-gradient/20">
+				<div className="border border-brand-rakuten/20 rounded-lg overflow-hidden hover:shadow-md transition-shadow animate-pulse bg-brand-rakuten-gradient dark:bg-brand-rakuten-gradient/20">
 					<div className="flex flex-col sm:flex-row">
 						{/* スケルトン画像 */}
 						<div className="aspect-square w-40 sm:w-48 mx-auto sm:mx-0 bg-gray-200 dark:bg-gray-700 shrink-0" />
@@ -86,12 +80,10 @@ export function AmazonProductCard({
 				rel="noopener noreferrer sponsored"
 				className="block not-prose my-4 cursor-pointer"
 			>
-				<div className="border border-brand-amazon/20 rounded-lg p-4 hover:shadow-md transition-shadow flex items-center gap-3 bg-brand-amazon-gradient dark:bg-brand-amazon-gradient/20">
-					<AmazonLogo className="w-5 h-5 text-brand-amazon shrink-0" />
+				<div className="border border-brand-rakuten/20 rounded-lg p-4 hover:shadow-md transition-shadow flex items-center gap-3 bg-brand-rakuten-gradient dark:bg-brand-rakuten-gradient/20">
+					<RakutenLogo className="w-5 h-5 text-brand-rakuten shrink-0" />
 					<div className="flex-1 min-w-0">
-						<div className="font-medium text-sm">
-							{asin ? `Amazon商品 (ASIN: ${asin})` : "Amazon商品（短縮URL）"}
-						</div>
+						<div className="font-medium text-sm">楽天商品</div>
 						<div className="text-xs text-muted-foreground truncate">
 							{formattedDomain}
 						</div>
@@ -110,7 +102,7 @@ export function AmazonProductCard({
 			rel="noopener noreferrer sponsored"
 			className="block not-prose my-4 group cursor-pointer"
 		>
-			<div className="border border-brand-amazon/20 rounded-lg overflow-hidden hover:shadow-md transition-shadow bg-brand-amazon-gradient dark:bg-brand-amazon-gradient/20">
+			<div className="border border-brand-rakuten/20 rounded-lg overflow-hidden hover:shadow-md transition-shadow bg-brand-rakuten-gradient dark:bg-brand-rakuten-gradient/20">
 				<div className="flex flex-col sm:flex-row">
 					{/* 商品画像 */}
 					{data.image && (
@@ -118,7 +110,7 @@ export function AmazonProductCard({
 							{/* biome-ignore lint/performance/noImgElement: OGP画像は外部URLなのでNext.js Imageは使用できない */}
 							<img
 								src={data.image}
-								alt={data.title || "Amazon商品"}
+								alt={data.title || "楽天商品"}
 								className="w-full h-full object-contain p-4"
 							/>
 						</div>
@@ -154,9 +146,9 @@ export function AmazonProductCard({
 								)}
 								<span className="truncate">{formattedDomain}</span>
 							</div>
-							<div className="bg-brand-amazon hover:bg-brand-amazon/90 text-white px-3 py-1.5 rounded-md text-sm font-medium shrink-0 flex items-center gap-1.5 pointer-events-none">
-								<AmazonLogo className="w-4 h-4" />
-								Amazonで見る
+							<div className="bg-brand-rakuten hover:bg-brand-rakuten/90 text-white px-3 py-1.5 rounded-md text-sm font-medium shrink-0 flex items-center gap-1.5 pointer-events-none">
+								<RakutenLogo className="w-4 h-4" />
+								楽天で見る
 							</div>
 						</div>
 					</div>
