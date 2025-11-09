@@ -195,6 +195,7 @@ export const remarkAlert: Plugin = () => {
 				// [!TYPE]パターンを含むテキストノードを見つけて、その後のコンテンツを取得
 				const firstParagraphContent: Node[] = [];
 				let foundAlertPattern = false;
+				let skippedFirstBreak = false; // [!TYPE]直後の最初のbreakノードをスキップしたかどうか
 
 				for (let i = 0; i < paragraphChildren.length; i++) {
 					const child = paragraphChildren[i];
@@ -231,13 +232,20 @@ export const remarkAlert: Plugin = () => {
 					}
 
 					// [!TYPE]パターンの後ろのノードを追加
-					// remarkBreaksプラグインとの互換性のため、breakノード（<br>）はスキップする
+					// remarkBreaksプラグインとの互換性のため、[!TYPE]直後の最初のbreakノード（<br>）だけスキップする
 					// 理由：
 					// 1. remarkBreaksは改行を <br> に変換するため、[!TYPE]の直後にbreakノードが挿入される
 					// 2. このbreakノードをそのまま追加すると、最初の段落の先頭に <br> が入り、余分な行が表示される
 					// 3. 結果として、最初の段落だけ高さが2倍（2行分）になってしまう
-					// このため、breakノードは明示的にスキップして、テキストノードのみを追加する
-					if (foundAlertPattern && child.type !== "break") {
+					// 4. ただし、それ以降のbreakノードは、テキスト間の改行を表すため保持する必要がある
+					// このため、最初のbreakノードだけを明示的にスキップして、それ以降は通常通り追加する
+					if (foundAlertPattern) {
+						// 最初のbreakノードだけスキップ
+						if (child.type === "break" && !skippedFirstBreak) {
+							skippedFirstBreak = true;
+							continue;
+						}
+						// それ以降のノード（breakノードを含む）は追加
 						firstParagraphContent.push(child);
 					}
 				}
