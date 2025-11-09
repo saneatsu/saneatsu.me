@@ -49,6 +49,123 @@ const toAbsoluteUrl = (
 };
 
 /**
+ * AmazonのURLかどうかを判定
+ *
+ * @param url - 判定対象のURL
+ * @returns AmazonのURLの場合true
+ */
+const isAmazonUrl = (url: string): boolean => {
+	try {
+		const urlObj = new URL(url);
+		const hostname = urlObj.hostname.toLowerCase();
+		return (
+			hostname.includes("amazon.co.jp") ||
+			hostname.includes("amazon.com") ||
+			hostname.includes("amzn.to")
+		);
+	} catch {
+		return false;
+	}
+};
+
+/**
+ * 楽天のURLかどうかを判定
+ *
+ * @param url - 判定対象のURL
+ * @returns 楽天のURLの場合true
+ */
+const isRakutenUrl = (url: string): boolean => {
+	try {
+		const urlObj = new URL(url);
+		const hostname = urlObj.hostname.toLowerCase();
+		return (
+			hostname.includes("rakuten.co.jp") ||
+			hostname.includes("r10.to") ||
+			hostname.includes("a.r10.to") ||
+			hostname.includes("hb.afl.rakuten.co.jp") ||
+			hostname.includes("pt.afl.rakuten.co.jp")
+		);
+	} catch {
+		return false;
+	}
+};
+
+/**
+ * バイナリデータから文字コードを判定
+ *
+ * @description
+ * 1. Content-Typeヘッダーから文字コードを取得
+ * 2. HTMLのmetaタグから文字コードを取得（正規表現でcharsetを検索）
+ * 3. どちらも見つからない場合はUTF-8をデフォルトとする
+ *
+ * @param buffer - HTMLのバイナリデータ
+ * @param contentType - Content-Typeヘッダーの値
+ * @returns 判定された文字コード（小文字）
+ */
+const detectCharsetFromBuffer = (
+	buffer: ArrayBuffer,
+	contentType: string | null
+): string => {
+	// 1. Content-Typeヘッダーから文字コードを取得
+	if (contentType) {
+		const charsetMatch = contentType.match(/charset=([^;\s]+)/i);
+		if (charsetMatch) {
+			return charsetMatch[1].toLowerCase();
+		}
+	}
+
+	// 2. HTMLのmetaタグから文字コードを取得
+	// バイナリデータの最初の1024バイトをASCII互換として読み込み
+	const headerBytes = new Uint8Array(buffer.slice(0, 1024));
+	const header = new TextDecoder("ascii").decode(headerBytes);
+
+	// <meta charset="..."> または <meta http-equiv="Content-Type" content="...; charset=...">
+	const charsetPatterns = [
+		/<meta\s+charset=["']?([^"'\s>]+)/i,
+		/<meta\s+http-equiv=["']?content-type["']?\s+content=["'][^"']*charset=([^"'\s;]+)/i,
+	];
+
+	for (const pattern of charsetPatterns) {
+		const match = header.match(pattern);
+		if (match) {
+			return match[1].toLowerCase();
+		}
+	}
+
+	// 3. デフォルトはUTF-8
+	return "utf-8";
+};
+
+/**
+ * HTMLのバイナリデータを適切な文字コードでデコード
+ *
+ * @description
+ * TextDecoder (Web標準API) を使用して文字コード変換を行う。
+ * Cloudflare Workers環境でも動作する。
+ *
+ * @param buffer - HTMLのバイナリデータ
+ * @param contentType - Content-Typeヘッダーの値
+ * @returns デコードされたHTML文字列
+ */
+const decodeHtmlBuffer = (
+	buffer: ArrayBuffer,
+	contentType: string | null
+): string => {
+	const charset = detectCharsetFromBuffer(buffer, contentType);
+
+	// TextDecoderでデコード（Web標準API）
+	try {
+		const decoder = new TextDecoder(charset);
+		return decoder.decode(buffer);
+	} catch (_err) {
+		// サポートされていない文字コードの場合はUTF-8にフォールバック
+		console.warn(`Unsupported charset: ${charset}, falling back to UTF-8`);
+		const decoder = new TextDecoder("utf-8");
+		return decoder.decode(buffer);
+	}
+};
+
+/**
  * HTMLからOGP情報を抽出
  *
  * @param html - パース対象のHTML
@@ -179,16 +296,29 @@ export const getOgp: Handler = async (c) => {
 		const { url } = c.req.valid("query");
 
 		// 2. fetchを使用してHTMLを取得
-		const response = await fetch(url, {
-			headers: {
-				"User-Agent":
-					"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-				Accept:
-					"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
-				"Accept-Language": "ja-JP,ja;q=0.9,en-US;q=0.8,en;q=0.7",
-				"Cache-Control": "no-cache",
-			},
-		});
+		// 基本的なブラウザヘッダーを設定
+		const headers: Record<string, string> = {
+			"User-Agent":
+				"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+			Accept:
+				"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+			"Accept-Language": "ja-JP,ja;q=0.9,en-US;q=0.8,en;q=0.7",
+			"Cache-Control": "no-cache",
+		};
+
+		// Amazon URLの場合、追加のヘッダーを送信（ボット検出を回避）
+		// Referer: リファラーを設定して、Amazon.co.jpからのアクセスに見せかける
+		// Sec-Fetch-*: ブラウザの通常のナビゲーションリクエストであることを示す
+		if (isAmazonUrl(url)) {
+			headers.Referer = "https://www.amazon.co.jp/";
+			headers["Accept-Encoding"] = "gzip, deflate, br";
+			headers["Sec-Fetch-Dest"] = "document";
+			headers["Sec-Fetch-Mode"] = "navigate";
+			headers["Sec-Fetch-Site"] = "none";
+			headers["Upgrade-Insecure-Requests"] = "1";
+		}
+
+		const response = await fetch(url, { headers });
 
 		if (!response.ok) {
 			return c.json(
@@ -202,7 +332,21 @@ export const getOgp: Handler = async (c) => {
 			);
 		}
 
-		const html = await response.text();
+		// URLに応じて適切な方法でHTMLを取得
+		let html: string;
+
+		if (isAmazonUrl(url)) {
+			// Amazonの場合：response.text()を使用（変更前の方法）
+			html = await response.text();
+		} else if (isRakutenUrl(url)) {
+			// 楽天の場合：arrayBuffer() + TextDecoderを使用（文字化け対策）
+			const buffer = await response.arrayBuffer();
+			const contentType = response.headers.get("content-type");
+			html = decodeHtmlBuffer(buffer, contentType);
+		} else {
+			// その他：デフォルトはresponse.text()
+			html = await response.text();
+		}
 
 		// 3. htmlparser2を使用してOGP情報をパース
 		const metaTags = parseOgpFromHtml(html);

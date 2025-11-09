@@ -1,5 +1,12 @@
 "use client";
 
+import {
+	AlertCircle,
+	AlertOctagon,
+	AlertTriangle,
+	CheckCircle2,
+	Info,
+} from "lucide-react";
 import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
 import { Children, isValidElement, useEffect } from "react";
@@ -11,7 +18,10 @@ import remarkGfm from "remark-gfm";
 import type { PluggableList } from "unified";
 
 import {
+	remarkAlert,
 	remarkAmazon,
+	remarkProductCard,
+	remarkRakuten,
 	remarkTag,
 	remarkTweet,
 	remarkUrlCard,
@@ -20,6 +30,11 @@ import {
 } from "../../lib/";
 import { removeMarkdownLinks } from "../../lib/extract-headings";
 import { ArticleImage } from "../article-image/article-image";
+import {
+	MarkdownAlert,
+	MarkdownAlertDescription,
+	MarkdownAlertTitle,
+} from "../markdown-alert";
 // ZoomableImageは通常のimportを使用
 // dynamic import (ssr: false) を使うと、画像クリック時に拡大されないバグが発生するため
 import { ZoomableImage } from "../zoomable-image/zoomable-image";
@@ -30,16 +45,23 @@ import { ZoomableImage } from "../zoomable-image/zoomable-image";
  * @description
  * MarkdownPreviewで使用するremarkプラグインのリスト。
  * CustomMarkdownEditorなど他のコンポーネントでも再利用可能。
+ *
+ * remarkAlertはblockquote構文を検出するため、remarkGfmとremarkBreaksの後に実行する必要がある。
+ * remarkProductCardは連続するAmazon URLと楽天URLを検出するため、
+ * remarkAmazonとremarkRakutenより前に実行する必要がある。
  */
 export const defaultRemarkPlugins = [
 	remarkGfm,
 	remarkBreaks,
+	remarkAlert, // GitHub互換のAlert構文（remarkGfmとremarkBreaksの後）
+	remarkProductCard, // Amazon + 楽天の統合カード（remarkAmazonとremarkRakutenより前）
 	remarkUrlCard,
 	remarkWikiLink,
 	remarkTag,
 	remarkTweet,
 	remarkYoutube,
 	remarkAmazon,
+	remarkRakuten,
 ] as const;
 
 // Wiki Linkコンポーネントを動的インポート（クライアントサイドのみ）
@@ -78,9 +100,27 @@ const YouTubeEmbed = dynamic(
 	}
 );
 
-// Amazon Product Cardコンポーネントを動的インポート（クライアントサイドのみ）
-const AmazonProductCard = dynamic(
-	() => import("@/entities/article").then((mod) => mod.AmazonProductCard),
+// Amazon Product Cardコンポーネントを動的インポート
+const AmazonProductCard = dynamic(() =>
+	import("@/entities/article/ui/amazon-product-card/amazon-product-card").then(
+		(mod) => mod.AmazonProductCard
+	)
+);
+
+// Product Cardコンポーネントを動的インポート（クライアントサイドのみ）
+const ProductCard = dynamic(
+	() =>
+		import("@/entities/article/ui/product-card/product-card").then(
+			(mod) => mod.ProductCard
+		),
+	{
+		ssr: false,
+	}
+);
+
+// Rakuten Product Cardコンポーネントを動的インポート（クライアントサイドのみ）
+const RakutenProductCard = dynamic(
+	() => import("@/entities/article").then((mod) => mod.RakutenProductCard),
 	{
 		ssr: false,
 	}
@@ -403,6 +443,62 @@ export function createDefaultMarkdownComponents(
 		amazon: ({ url, asin, domain }) => (
 			<AmazonProductCard url={url} asin={asin} domain={domain} />
 		),
+		// 楽天商品カードのカスタムレンダリング
+		// @ts-expect-error - カスタムノードのため型定義がない
+		rakuten: ({ url, domain }) => (
+			<RakutenProductCard url={url} domain={domain} />
+		),
+		// 統合商品カードのカスタムレンダリング（Amazon + 楽天）
+		productCard: ({
+			amazonUrl,
+			amazonAsin,
+			amazonDomain,
+			rakutenUrl,
+			rakutenDomain,
+		}: {
+			amazonUrl?: string;
+			amazonAsin?: string;
+			amazonDomain?: string;
+			rakutenUrl?: string;
+			rakutenDomain?: string;
+		}) => (
+			<ProductCard
+				amazonUrl={amazonUrl}
+				amazonAsin={amazonAsin}
+				amazonDomain={amazonDomain}
+				rakutenUrl={rakutenUrl}
+				rakutenDomain={rakutenDomain}
+			/>
+		),
+		// Alertのカスタムレンダリング（GitHub互換）
+		// @ts-expect-error - カスタムノードのため型定義がない
+		alert: ({ variant, title, children }) => {
+			// variantに応じたアイコンを選択
+			const Icon = (() => {
+				switch (variant) {
+					case "default":
+						return AlertCircle;
+					case "info":
+						return Info;
+					case "success":
+						return CheckCircle2;
+					case "warning":
+						return AlertTriangle;
+					case "destructive":
+						return AlertOctagon;
+					default:
+						return AlertCircle;
+				}
+			})();
+
+			return (
+				<MarkdownAlert variant={variant}>
+					<Icon />
+					{title && <MarkdownAlertTitle>{title}</MarkdownAlertTitle>}
+					<MarkdownAlertDescription>{children}</MarkdownAlertDescription>
+				</MarkdownAlert>
+			);
+		},
 	};
 }
 
