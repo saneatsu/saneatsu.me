@@ -6,7 +6,7 @@ import { useState } from "react";
 import { siFacebook, siX } from "simple-icons";
 import { toast } from "sonner";
 
-import { cn } from "@/shared/lib";
+import { cn } from "../../lib";
 import {
 	Tooltip,
 	TooltipContent,
@@ -33,7 +33,7 @@ const createShareUrls = (url: string, title: string) => ({
 	/**
 	 * X（旧Twitter）のシェアURLを生成
 	 */
-	x: `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`,
+	x: `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}&hashtags=saneatsu_me`,
 
 	/**
 	 * Facebookのシェアラ URLを生成

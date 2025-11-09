@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
+import { expect, within } from "storybook/test";
 
 import { ShareButtons } from "./share-buttons";
 
@@ -122,5 +123,43 @@ export const CopyLinkFeature: Story = {
 	args: {
 		url: "https://saneatsu.me/blog/copy-test-article",
 		title: "コピー機能テスト記事",
+	},
+};
+
+/**
+ * Xシェアリンクのハッシュタグ検証
+ *
+ * Xシェアボタンのリンクにハッシュタグパラメータ（hashtags=saneatsu_me）が
+ * 正しく含まれていることを検証する。
+ */
+export const HashtagValidation: Story = {
+	name: "Xシェアリンクのハッシュタグ検証",
+	args: {
+		url: "https://saneatsu.me/blog/hashtag-test",
+		title: "ハッシュタグテスト記事",
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+
+		// XシェアボタンのリンクをARIAラベルで取得
+		const xShareButton = canvas.getByLabelText("Share on X");
+
+		// href属性を取得
+		const href = xShareButton.getAttribute("href");
+
+		// href が null でないことを確認
+		expect(href).not.toBeNull();
+
+		// ハッシュタグパラメータが含まれていることを確認
+		expect(href).toContain("hashtags=saneatsu_me");
+
+		// URL全体の構造が正しいことを確認
+		expect(href).toContain("https://twitter.com/intent/tweet");
+		expect(href).toContain(
+			`text=${encodeURIComponent("ハッシュタグテスト記事")}`
+		);
+		expect(href).toContain(
+			`url=${encodeURIComponent("https://saneatsu.me/blog/hashtag-test")}`
+		);
 	},
 };
