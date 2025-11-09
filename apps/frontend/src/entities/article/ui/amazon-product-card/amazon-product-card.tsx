@@ -54,7 +54,12 @@ export function AmazonProductCard({
 	// ローディング状態
 	if (isLoading) {
 		return (
-			<div className="block not-prose my-4">
+			<a
+				href={url}
+				target="_blank"
+				rel="noopener noreferrer sponsored"
+				className="block not-prose my-4"
+			>
 				<div className="border border-brand-amazon/20 rounded-lg overflow-hidden hover:shadow-md transition-shadow animate-pulse bg-brand-amazon-gradient dark:bg-brand-amazon-gradient/20">
 					<div className="flex flex-col sm:flex-row">
 						{/* スケルトン画像 */}
@@ -68,7 +73,7 @@ export function AmazonProductCard({
 						</div>
 					</div>
 				</div>
-			</div>
+			</a>
 		);
 	}
 
