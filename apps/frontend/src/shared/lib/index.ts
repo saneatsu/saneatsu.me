@@ -63,6 +63,8 @@ export {
 	type QueryConfig,
 	queryConfig,
 } from "./react-query";
+// Remark Alert
+export { remarkAlert } from "./remark-alert/remark-alert";
 // Remark Amazon
 export {
 	extractAmazonAsin,
