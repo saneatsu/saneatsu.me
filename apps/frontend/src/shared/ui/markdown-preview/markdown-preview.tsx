@@ -12,6 +12,8 @@ import type { PluggableList } from "unified";
 
 import {
 	remarkAmazon,
+	remarkProductCard,
+	remarkRakuten,
 	remarkTag,
 	remarkTweet,
 	remarkUrlCard,
@@ -30,16 +32,21 @@ import { ZoomableImage } from "../zoomable-image/zoomable-image";
  * @description
  * MarkdownPreviewで使用するremarkプラグインのリスト。
  * CustomMarkdownEditorなど他のコンポーネントでも再利用可能。
+ *
+ * remarkProductCardは連続するAmazon URLと楽天URLを検出するため、
+ * remarkAmazonとremarkRakutenより前に実行する必要がある。
  */
 export const defaultRemarkPlugins = [
 	remarkGfm,
 	remarkBreaks,
+	remarkProductCard, // Amazon + 楽天の統合カード（remarkAmazonとremarkRakutenより前）
 	remarkUrlCard,
 	remarkWikiLink,
 	remarkTag,
 	remarkTweet,
 	remarkYoutube,
 	remarkAmazon,
+	remarkRakuten,
 ] as const;
 
 // Wiki Linkコンポーネントを動的インポート（クライアントサイドのみ）
@@ -81,6 +88,25 @@ const YouTubeEmbed = dynamic(
 // Amazon Product Cardコンポーネントを動的インポート（クライアントサイドのみ）
 const AmazonProductCard = dynamic(
 	() => import("@/entities/article").then((mod) => mod.AmazonProductCard),
+	{
+		ssr: false,
+	}
+);
+
+// Product Cardコンポーネントを動的インポート（クライアントサイドのみ）
+const ProductCard = dynamic(
+	() =>
+		import("@/entities/article/ui/product-card/product-card").then(
+			(mod) => mod.ProductCard
+		),
+	{
+		ssr: false,
+	}
+);
+
+// Rakuten Product Cardコンポーネントを動的インポート（クライアントサイドのみ）
+const RakutenProductCard = dynamic(
+	() => import("@/entities/article").then((mod) => mod.RakutenProductCard),
 	{
 		ssr: false,
 	}
@@ -402,6 +428,33 @@ export function createDefaultMarkdownComponents(
 		// @ts-expect-error - カスタムノードのため型定義がない
 		amazon: ({ url, asin, domain }) => (
 			<AmazonProductCard url={url} asin={asin} domain={domain} />
+		),
+		// 楽天商品カードのカスタムレンダリング
+		// @ts-expect-error - カスタムノードのため型定義がない
+		rakuten: ({ url, domain }) => (
+			<RakutenProductCard url={url} domain={domain} />
+		),
+		// 統合商品カードのカスタムレンダリング（Amazon + 楽天）
+		productCard: ({
+			amazonUrl,
+			amazonAsin,
+			amazonDomain,
+			rakutenUrl,
+			rakutenDomain,
+		}: {
+			amazonUrl?: string;
+			amazonAsin?: string;
+			amazonDomain?: string;
+			rakutenUrl?: string;
+			rakutenDomain?: string;
+		}) => (
+			<ProductCard
+				amazonUrl={amazonUrl}
+				amazonAsin={amazonAsin}
+				amazonDomain={amazonDomain}
+				rakutenUrl={rakutenUrl}
+				rakutenDomain={rakutenDomain}
+			/>
 		),
 	};
 }
