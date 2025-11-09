@@ -1,3 +1,4 @@
+import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import remarkParse from "remark-parse";
 import { unified } from "unified";
@@ -412,6 +413,60 @@ describe("Integration Test", () => {
 			// 元のparagraphノードのまま（変換されない）
 			expect(result.children).toHaveLength(1);
 			expect(result.children[0]?.type).toBe("paragraph");
+		});
+	});
+
+	describe("remarkBreaksとの併用（実際の環境に合わせたテスト）", () => {
+		it("remarkBreaks使用時も改行1つで区切られたAmazon URL → 楽天URLを変換できる", async () => {
+			const markdown = "https://amzn.to/43mMbSS\nhttps://a.r10.to/hF6JlM";
+
+			const processor = unified()
+				.use(remarkParse)
+				.use(remarkGfm)
+				.use(remarkBreaks) // remarkBreaksを追加（実際の環境と同じ）
+				.use(remarkProductCard);
+
+			const ast = processor.parse(markdown);
+			const result = (await processor.run(ast)) as ParentNode;
+
+			// productCardノード1つのみになることを確認
+			expect(result.children).toHaveLength(1);
+			expect(result.children[0]?.type).toBe("productCard");
+
+			// プロパティの検証
+			const productCard = result.children[0] as ProductCardNode;
+			expect(productCard.data.hProperties.amazonUrl).toBe(
+				"https://amzn.to/43mMbSS"
+			);
+			expect(productCard.data.hProperties.rakutenUrl).toBe(
+				"https://a.r10.to/hF6JlM"
+			);
+		});
+
+		it("remarkBreaks使用時も改行1つで区切られた楽天URL → Amazon URLを変換できる", async () => {
+			const markdown = "https://a.r10.to/hF6JlM\nhttps://amzn.to/43mMbSS";
+
+			const processor = unified()
+				.use(remarkParse)
+				.use(remarkGfm)
+				.use(remarkBreaks)
+				.use(remarkProductCard);
+
+			const ast = processor.parse(markdown);
+			const result = (await processor.run(ast)) as ParentNode;
+
+			// productCardノード1つのみになることを確認
+			expect(result.children).toHaveLength(1);
+			expect(result.children[0]?.type).toBe("productCard");
+
+			// プロパティの検証（順番が逆でも同じ結果）
+			const productCard = result.children[0] as ProductCardNode;
+			expect(productCard.data.hProperties.amazonUrl).toBe(
+				"https://amzn.to/43mMbSS"
+			);
+			expect(productCard.data.hProperties.rakutenUrl).toBe(
+				"https://a.r10.to/hF6JlM"
+			);
 		});
 	});
 });

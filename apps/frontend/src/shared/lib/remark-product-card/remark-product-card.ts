@@ -78,14 +78,18 @@ function getSingleLinkUrl(node: Node): string | null {
 }
 
 /**
- * 段落から2つのリンクURLを取得する（空白文字のみのテキストを許容）
+ * 段落から2つのリンクURLを取得する（空白文字のみのテキストとbreakノードを許容）
  *
  * @description
  * 半角スペースや改行1つで区切られた2つのURLを検出するために使用。
  * 以下の条件を満たす場合のみ、2つのURLを返す：
  * 1. 段落内にlinkノードが正確に2つ
- * 2. その他のノードはtextノードで、空白文字（スペース、タブ、改行）のみを含む
+ * 2. その他のノードはtextノード（空白文字のみ）またはbreakノード
  * 3. 上記以外のノードがある場合や、非空白テキストがある場合はnullを返す
+ *
+ * remarkBreaksプラグインとの互換性：
+ * - remarkBreaksは改行1つ（\n）を{type: 'break'}ノードに変換する
+ * - このbreakノードを許容することで、実際の環境（MarkdownPreview）でも動作する
  *
  * @param node - チェック対象の段落ノード
  * @returns [URL1, URL2] または null
@@ -96,7 +100,13 @@ function getSingleLinkUrl(node: Node): string | null {
  * // → ["https://amzn.to/xxx", "https://a.r10.to/yyy"]
  *
  * @example
- * // 改行1つ
+ * // 改行1つ（remarkBreaksなし）
+ * https://amzn.to/xxx
+ * https://a.r10.to/yyy
+ * // → ["https://amzn.to/xxx", "https://a.r10.to/yyy"]
+ *
+ * @example
+ * // 改行1つ（remarkBreaksあり）
  * https://amzn.to/xxx
  * https://a.r10.to/yyy
  * // → ["https://amzn.to/xxx", "https://a.r10.to/yyy"]
@@ -116,8 +126,12 @@ function getTwoLinksFromParagraph(node: Node): [string, string] | null {
 			if (textValue.trim() !== "") {
 				hasNonWhitespaceText = true;
 			}
+		} else if (child.type === "break") {
+			// breakノードは許容（remarkBreaksが改行を変換したもの）
+			// 改行1つ（\n）をremarkBreaksが{type: 'break'}ノードに変換する
+			// 空白文字と同等の扱いなので何もしない
 		} else {
-			// link, text以外のノードがある場合は処理しない
+			// link, text, break以外のノードがある場合は処理しない
 			return null;
 		}
 	}
