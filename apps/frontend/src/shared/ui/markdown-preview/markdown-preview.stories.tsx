@@ -1132,6 +1132,384 @@ export const RakutenProductCardShortUrlTest: Story = {
 };
 
 /**
+ * ProductCard（Amazon短縮URL → 楽天短縮URL・改行2つ）
+ */
+export const ProductCardTwoNewlinesAmazonRakuten: Story = {
+	name: "ProductCard（Amazon短縮URL → 楽天短縮URL・改行2つ）",
+	tags: ["validation"],
+	args: {
+		content: `<https://amzn.to/43mMbSS>
+
+<https://a.r10.to/hF6JlM>`,
+		language: "ja",
+	},
+	parameters: {
+		msw: {
+			handlers: [
+				http.get("/api/auth/session", () => HttpResponse.json({})),
+				http.get("http://localhost:8888/api/ogp", ({ request }) => {
+					const url = new URL(request.url);
+					const targetUrl = url.searchParams.get("url");
+
+					if (targetUrl?.includes("amzn.to")) {
+						return HttpResponse.json({
+							data: {
+								title: "Amazon商品のタイトル",
+								description: "これはAmazon商品の説明文なのだ。",
+								image: "https://via.placeholder.com/300",
+								favicon: "https://www.amazon.co.jp/favicon.ico",
+								siteName: "Amazon",
+								url: targetUrl,
+							},
+						});
+					}
+
+					if (targetUrl?.includes("a.r10.to")) {
+						return HttpResponse.json(
+							{ error: "短縮URLのため、OGP情報を取得できません" },
+							{ status: 404 }
+						);
+					}
+
+					return HttpResponse.json({ error: "Not found" }, { status: 404 });
+				}),
+			],
+		},
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		await waitFor(
+			() => {
+				const productCardLink = canvasElement.querySelector(
+					'a[href*="amzn.to"]'
+				) as HTMLAnchorElement;
+				expect(productCardLink).toBeInTheDocument();
+				expect(productCardLink).toHaveAttribute("target", "_blank");
+				expect(productCardLink).toHaveAttribute(
+					"rel",
+					"noopener noreferrer sponsored"
+				);
+				expect(productCardLink).toHaveClass("not-prose");
+			},
+			{ timeout: 10000 }
+		);
+	},
+};
+
+/**
+ * ProductCard（楽天短縮URL → Amazon短縮URL・改行2つ）
+ */
+export const ProductCardTwoNewlinesRakutenAmazon: Story = {
+	name: "ProductCard（楽天短縮URL → Amazon短縮URL・改行2つ）",
+	tags: ["validation"],
+	args: {
+		content: `<https://a.r10.to/hF6JlM>
+
+<https://amzn.to/43mMbSS>`,
+		language: "ja",
+	},
+	parameters: {
+		msw: {
+			handlers: [
+				http.get("/api/auth/session", () => HttpResponse.json({})),
+				http.get("http://localhost:8888/api/ogp", ({ request }) => {
+					const url = new URL(request.url);
+					const targetUrl = url.searchParams.get("url");
+
+					if (targetUrl?.includes("amzn.to")) {
+						return HttpResponse.json({
+							data: {
+								title: "Amazon商品のタイトル",
+								description: "これはAmazon商品の説明文なのだ。",
+								image: "https://via.placeholder.com/300",
+								favicon: "https://www.amazon.co.jp/favicon.ico",
+								siteName: "Amazon",
+								url: targetUrl,
+							},
+						});
+					}
+
+					if (targetUrl?.includes("a.r10.to")) {
+						return HttpResponse.json(
+							{ error: "短縮URLのため、OGP情報を取得できません" },
+							{ status: 404 }
+						);
+					}
+
+					return HttpResponse.json({ error: "Not found" }, { status: 404 });
+				}),
+			],
+		},
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		await waitFor(
+			() => {
+				const productCardLink = canvasElement.querySelector(
+					'a[href*="amzn.to"]'
+				) as HTMLAnchorElement;
+				expect(productCardLink).toBeInTheDocument();
+				expect(productCardLink).toHaveAttribute("target", "_blank");
+				expect(productCardLink).toHaveAttribute(
+					"rel",
+					"noopener noreferrer sponsored"
+				);
+				expect(productCardLink).toHaveClass("not-prose");
+			},
+			{ timeout: 10000 }
+		);
+	},
+};
+
+/**
+ * ProductCard（Amazon短縮URL → 楽天短縮URL・改行1つ）
+ */
+export const ProductCardSingleNewlineAmazonRakuten: Story = {
+	name: "ProductCard（Amazon短縮URL → 楽天短縮URL・改行1つ）",
+	tags: ["validation"],
+	args: {
+		content: `<https://amzn.to/43mMbSS>
+<https://a.r10.to/hF6JlM>`,
+		language: "ja",
+	},
+	parameters: {
+		msw: {
+			handlers: [
+				http.get("/api/auth/session", () => HttpResponse.json({})),
+				http.get("http://localhost:8888/api/ogp", ({ request }) => {
+					const url = new URL(request.url);
+					const targetUrl = url.searchParams.get("url");
+
+					if (targetUrl?.includes("amzn.to")) {
+						return HttpResponse.json({
+							data: {
+								title: "Amazon商品のタイトル",
+								description: "これはAmazon商品の説明文なのだ。",
+								image: "https://via.placeholder.com/300",
+								favicon: "https://www.amazon.co.jp/favicon.ico",
+								siteName: "Amazon",
+								url: targetUrl,
+							},
+						});
+					}
+
+					if (targetUrl?.includes("a.r10.to")) {
+						return HttpResponse.json(
+							{ error: "短縮URLのため、OGP情報を取得できません" },
+							{ status: 404 }
+						);
+					}
+
+					return HttpResponse.json({ error: "Not found" }, { status: 404 });
+				}),
+			],
+		},
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		await waitFor(
+			() => {
+				const productCardLink = canvasElement.querySelector(
+					'a[href*="amzn.to"]'
+				) as HTMLAnchorElement;
+				expect(productCardLink).toBeInTheDocument();
+				expect(productCardLink).toHaveAttribute("target", "_blank");
+				expect(productCardLink).toHaveAttribute(
+					"rel",
+					"noopener noreferrer sponsored"
+				);
+				expect(productCardLink).toHaveClass("not-prose");
+			},
+			{ timeout: 10000 }
+		);
+	},
+};
+
+/**
+ * ProductCard（楽天短縮URL → Amazon短縮URL・改行1つ）
+ */
+export const ProductCardSingleNewlineRakutenAmazon: Story = {
+	name: "ProductCard（楽天短縮URL → Amazon短縮URL・改行1つ）",
+	tags: ["validation"],
+	args: {
+		content: `<https://a.r10.to/hF6JlM>
+<https://amzn.to/43mMbSS>`,
+		language: "ja",
+	},
+	parameters: {
+		msw: {
+			handlers: [
+				http.get("/api/auth/session", () => HttpResponse.json({})),
+				http.get("http://localhost:8888/api/ogp", ({ request }) => {
+					const url = new URL(request.url);
+					const targetUrl = url.searchParams.get("url");
+
+					if (targetUrl?.includes("amzn.to")) {
+						return HttpResponse.json({
+							data: {
+								title: "Amazon商品のタイトル",
+								description: "これはAmazon商品の説明文なのだ。",
+								image: "https://via.placeholder.com/300",
+								favicon: "https://www.amazon.co.jp/favicon.ico",
+								siteName: "Amazon",
+								url: targetUrl,
+							},
+						});
+					}
+
+					if (targetUrl?.includes("a.r10.to")) {
+						return HttpResponse.json(
+							{ error: "短縮URLのため、OGP情報を取得できません" },
+							{ status: 404 }
+						);
+					}
+
+					return HttpResponse.json({ error: "Not found" }, { status: 404 });
+				}),
+			],
+		},
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		await waitFor(
+			() => {
+				const productCardLink = canvasElement.querySelector(
+					'a[href*="amzn.to"]'
+				) as HTMLAnchorElement;
+				expect(productCardLink).toBeInTheDocument();
+				expect(productCardLink).toHaveAttribute("target", "_blank");
+				expect(productCardLink).toHaveAttribute(
+					"rel",
+					"noopener noreferrer sponsored"
+				);
+				expect(productCardLink).toHaveClass("not-prose");
+			},
+			{ timeout: 10000 }
+		);
+	},
+};
+
+/**
+ * ProductCard（Amazon短縮URL → 楽天短縮URL・半角スペース）
+ */
+export const ProductCardSpaceAmazonRakuten: Story = {
+	name: "ProductCard（Amazon短縮URL → 楽天短縮URL・半角スペース）",
+	tags: ["validation"],
+	args: {
+		content: `<https://amzn.to/43mMbSS> <https://a.r10.to/hF6JlM>`,
+		language: "ja",
+	},
+	parameters: {
+		msw: {
+			handlers: [
+				http.get("/api/auth/session", () => HttpResponse.json({})),
+				http.get("http://localhost:8888/api/ogp", ({ request }) => {
+					const url = new URL(request.url);
+					const targetUrl = url.searchParams.get("url");
+
+					if (targetUrl?.includes("amzn.to")) {
+						return HttpResponse.json({
+							data: {
+								title: "Amazon商品のタイトル",
+								description: "これはAmazon商品の説明文なのだ。",
+								image: "https://via.placeholder.com/300",
+								favicon: "https://www.amazon.co.jp/favicon.ico",
+								siteName: "Amazon",
+								url: targetUrl,
+							},
+						});
+					}
+
+					if (targetUrl?.includes("a.r10.to")) {
+						return HttpResponse.json(
+							{ error: "短縮URLのため、OGP情報を取得できません" },
+							{ status: 404 }
+						);
+					}
+
+					return HttpResponse.json({ error: "Not found" }, { status: 404 });
+				}),
+			],
+		},
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		await waitFor(
+			() => {
+				const productCardLink = canvasElement.querySelector(
+					'a[href*="amzn.to"]'
+				) as HTMLAnchorElement;
+				expect(productCardLink).toBeInTheDocument();
+				expect(productCardLink).toHaveAttribute("target", "_blank");
+				expect(productCardLink).toHaveAttribute(
+					"rel",
+					"noopener noreferrer sponsored"
+				);
+				expect(productCardLink).toHaveClass("not-prose");
+			},
+			{ timeout: 10000 }
+		);
+	},
+};
+
+/**
+ * ProductCard（楽天短縮URL → Amazon短縮URL・半角スペース）
+ */
+export const ProductCardSpaceRakutenAmazon: Story = {
+	name: "ProductCard（楽天短縮URL → Amazon短縮URL・半角スペース）",
+	tags: ["validation"],
+	args: {
+		content: `<https://a.r10.to/hF6JlM> <https://amzn.to/43mMbSS>`,
+		language: "ja",
+	},
+	parameters: {
+		msw: {
+			handlers: [
+				http.get("/api/auth/session", () => HttpResponse.json({})),
+				http.get("http://localhost:8888/api/ogp", ({ request }) => {
+					const url = new URL(request.url);
+					const targetUrl = url.searchParams.get("url");
+
+					if (targetUrl?.includes("amzn.to")) {
+						return HttpResponse.json({
+							data: {
+								title: "Amazon商品のタイトル",
+								description: "これはAmazon商品の説明文なのだ。",
+								image: "https://via.placeholder.com/300",
+								favicon: "https://www.amazon.co.jp/favicon.ico",
+								siteName: "Amazon",
+								url: targetUrl,
+							},
+						});
+					}
+
+					if (targetUrl?.includes("a.r10.to")) {
+						return HttpResponse.json(
+							{ error: "短縮URLのため、OGP情報を取得できません" },
+							{ status: 404 }
+						);
+					}
+
+					return HttpResponse.json({ error: "Not found" }, { status: 404 });
+				}),
+			],
+		},
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		await waitFor(
+			() => {
+				const productCardLink = canvasElement.querySelector(
+					'a[href*="amzn.to"]'
+				) as HTMLAnchorElement;
+				expect(productCardLink).toBeInTheDocument();
+				expect(productCardLink).toHaveAttribute("target", "_blank");
+				expect(productCardLink).toHaveAttribute(
+					"rel",
+					"noopener noreferrer sponsored"
+				);
+				expect(productCardLink).toHaveClass("not-prose");
+			},
+			{ timeout: 10000 }
+		);
+	},
+};
+
+/**
  * 通常URLカードの埋め込み（単独URL）
  */
 export const UrlCardSingle: Story = {
@@ -1267,7 +1645,9 @@ export const AlertsBasic: Story = {
 		// Alertコンポーネントが5つレンダリングされることを確認
 		await waitFor(
 			() => {
-				const alerts = canvasElement.querySelectorAll('[data-slot="alert"]');
+				const alerts = canvasElement.querySelectorAll(
+					'[data-slot="markdown-alert"]'
+				);
 				expect(alerts.length).toBe(5);
 			},
 			{ timeout: 5000 }
@@ -1364,7 +1744,9 @@ export const AlertsWithBlockquote: Story = {
 		// Alertコンポーネントが1つのみレンダリングされることを確認
 		await waitFor(
 			() => {
-				const alerts = canvasElement.querySelectorAll('[data-slot="alert"]');
+				const alerts = canvasElement.querySelectorAll(
+					'[data-slot="markdown-alert"]'
+				);
 				expect(alerts.length).toBe(1);
 
 				// blockquoteが2つあることを確認
