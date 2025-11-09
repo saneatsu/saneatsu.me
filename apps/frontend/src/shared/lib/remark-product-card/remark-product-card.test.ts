@@ -247,4 +247,171 @@ describe("Integration Test", () => {
 			expect(productCard.data.hProperties.amazonAsin).toBeUndefined();
 		});
 	});
+
+	describe("同一段落内の2つのリンク検出（半角スペース/改行1つ）", () => {
+		it("半角スペース区切りのAmazon URL → 楽天URLをproductCardノードに変換する", async () => {
+			const markdown = "https://amzn.to/43mMbSS https://a.r10.to/hF6JlM";
+
+			const processor = unified()
+				.use(remarkParse)
+				.use(remarkGfm)
+				.use(remarkProductCard);
+
+			const ast = processor.parse(markdown);
+			const result = (await processor.run(ast)) as ParentNode;
+
+			// productCardノード1つのみになることを確認
+			expect(result.children).toHaveLength(1);
+			expect(result.children[0]?.type).toBe("productCard");
+
+			// プロパティの検証
+			const productCard = result.children[0] as ProductCardNode;
+			expect(productCard.data.hProperties.amazonUrl).toBe(
+				"https://amzn.to/43mMbSS"
+			);
+			expect(productCard.data.hProperties.rakutenUrl).toBe(
+				"https://a.r10.to/hF6JlM"
+			);
+		});
+
+		it("半角スペース区切りの楽天URL → Amazon URLをproductCardノードに変換する", async () => {
+			const markdown = "https://a.r10.to/hF6JlM https://amzn.to/43mMbSS";
+
+			const processor = unified()
+				.use(remarkParse)
+				.use(remarkGfm)
+				.use(remarkProductCard);
+
+			const ast = processor.parse(markdown);
+			const result = (await processor.run(ast)) as ParentNode;
+
+			// productCardノード1つのみになることを確認
+			expect(result.children).toHaveLength(1);
+			expect(result.children[0]?.type).toBe("productCard");
+
+			// プロパティの検証（順番が逆でも同じ結果）
+			const productCard = result.children[0] as ProductCardNode;
+			expect(productCard.data.hProperties.amazonUrl).toBe(
+				"https://amzn.to/43mMbSS"
+			);
+			expect(productCard.data.hProperties.rakutenUrl).toBe(
+				"https://a.r10.to/hF6JlM"
+			);
+		});
+
+		it("改行1つで区切られたAmazon URL → 楽天URLをproductCardノードに変換する", async () => {
+			const markdown = "https://amzn.to/43mMbSS\nhttps://a.r10.to/hF6JlM";
+
+			const processor = unified()
+				.use(remarkParse)
+				.use(remarkGfm)
+				.use(remarkProductCard);
+
+			const ast = processor.parse(markdown);
+			const result = (await processor.run(ast)) as ParentNode;
+
+			// productCardノード1つのみになることを確認
+			expect(result.children).toHaveLength(1);
+			expect(result.children[0]?.type).toBe("productCard");
+
+			// プロパティの検証
+			const productCard = result.children[0] as ProductCardNode;
+			expect(productCard.data.hProperties.amazonUrl).toBe(
+				"https://amzn.to/43mMbSS"
+			);
+			expect(productCard.data.hProperties.rakutenUrl).toBe(
+				"https://a.r10.to/hF6JlM"
+			);
+		});
+
+		it("改行1つで区切られた楽天URL → Amazon URLをproductCardノードに変換する", async () => {
+			const markdown = "https://a.r10.to/hF6JlM\nhttps://amzn.to/43mMbSS";
+
+			const processor = unified()
+				.use(remarkParse)
+				.use(remarkGfm)
+				.use(remarkProductCard);
+
+			const ast = processor.parse(markdown);
+			const result = (await processor.run(ast)) as ParentNode;
+
+			// productCardノード1つのみになることを確認
+			expect(result.children).toHaveLength(1);
+			expect(result.children[0]?.type).toBe("productCard");
+
+			// プロパティの検証（順番が逆でも同じ結果）
+			const productCard = result.children[0] as ProductCardNode;
+			expect(productCard.data.hProperties.amazonUrl).toBe(
+				"https://amzn.to/43mMbSS"
+			);
+			expect(productCard.data.hProperties.rakutenUrl).toBe(
+				"https://a.r10.to/hF6JlM"
+			);
+		});
+
+		it("3つ以上のリンクがある場合は変換しない（誤検出防止）", async () => {
+			const markdown =
+				"https://amzn.to/43mMbSS https://a.r10.to/hF6JlM https://example.com";
+
+			const processor = unified()
+				.use(remarkParse)
+				.use(remarkGfm)
+				.use(remarkProductCard);
+
+			const ast = processor.parse(markdown);
+			const result = (await processor.run(ast)) as ParentNode;
+
+			// 元のparagraphノードのまま（変換されない）
+			expect(result.children).toHaveLength(1);
+			expect(result.children[0]?.type).toBe("paragraph");
+		});
+
+		it("リンク + 通常テキスト + リンクは変換しない（誤検出防止）", async () => {
+			const markdown = "https://amzn.to/43mMbSS と https://a.r10.to/hF6JlM";
+
+			const processor = unified()
+				.use(remarkParse)
+				.use(remarkGfm)
+				.use(remarkProductCard);
+
+			const ast = processor.parse(markdown);
+			const result = (await processor.run(ast)) as ParentNode;
+
+			// 元のparagraphノードのまま（変換されない）
+			expect(result.children).toHaveLength(1);
+			expect(result.children[0]?.type).toBe("paragraph");
+		});
+
+		it("Amazon URL + Amazon URL（半角スペース）は変換しない", async () => {
+			const markdown = "https://amzn.to/43mMbSS https://amzn.to/43mMbST";
+
+			const processor = unified()
+				.use(remarkParse)
+				.use(remarkGfm)
+				.use(remarkProductCard);
+
+			const ast = processor.parse(markdown);
+			const result = (await processor.run(ast)) as ParentNode;
+
+			// 元のparagraphノードのまま（変換されない）
+			expect(result.children).toHaveLength(1);
+			expect(result.children[0]?.type).toBe("paragraph");
+		});
+
+		it("楽天URL + 楽天URL（半角スペース）は変換しない", async () => {
+			const markdown = "https://a.r10.to/hF6JlM https://a.r10.to/hF6JlN";
+
+			const processor = unified()
+				.use(remarkParse)
+				.use(remarkGfm)
+				.use(remarkProductCard);
+
+			const ast = processor.parse(markdown);
+			const result = (await processor.run(ast)) as ParentNode;
+
+			// 元のparagraphノードのまま（変換されない）
+			expect(result.children).toHaveLength(1);
+			expect(result.children[0]?.type).toBe("paragraph");
+		});
+	});
 });
