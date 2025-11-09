@@ -38,6 +38,11 @@ interface ParentNode extends Node {
 	children: Node[];
 }
 
+interface TextNode extends Node {
+	type: "text";
+	value: string;
+}
+
 /**
  * Amazon URLかどうかを判定する正規表現
  */
@@ -73,24 +78,88 @@ function getSingleLinkUrl(node: Node): string | null {
 }
 
 /**
+ * 段落から2つのリンクURLを取得する（空白文字のみのテキストを許容）
+ *
+ * @description
+ * 半角スペースや改行1つで区切られた2つのURLを検出するために使用。
+ * 以下の条件を満たす場合のみ、2つのURLを返す：
+ * 1. 段落内にlinkノードが正確に2つ
+ * 2. その他のノードはtextノードで、空白文字（スペース、タブ、改行）のみを含む
+ * 3. 上記以外のノードがある場合や、非空白テキストがある場合はnullを返す
+ *
+ * @param node - チェック対象の段落ノード
+ * @returns [URL1, URL2] または null
+ *
+ * @example
+ * // 半角スペース区切り
+ * https://amzn.to/xxx https://a.r10.to/yyy
+ * // → ["https://amzn.to/xxx", "https://a.r10.to/yyy"]
+ *
+ * @example
+ * // 改行1つ
+ * https://amzn.to/xxx
+ * https://a.r10.to/yyy
+ * // → ["https://amzn.to/xxx", "https://a.r10.to/yyy"]
+ */
+function getTwoLinksFromParagraph(node: Node): [string, string] | null {
+	const paragraphNode = node as ParentNode;
+
+	const links: string[] = [];
+	let hasNonWhitespaceText = false;
+
+	for (const child of paragraphNode.children) {
+		if (child.type === "link") {
+			links.push((child as LinkNode).url);
+		} else if (child.type === "text") {
+			// テキストノードが空白文字のみかチェック
+			const textValue = (child as TextNode).value || "";
+			if (textValue.trim() !== "") {
+				hasNonWhitespaceText = true;
+			}
+		} else {
+			// link, text以外のノードがある場合は処理しない
+			return null;
+		}
+	}
+
+	// リンクが正確に2つで、非空白テキストがない場合のみ処理
+	if (links.length === 2 && !hasNonWhitespaceText) {
+		return [links[0], links[1]];
+	}
+
+	return null;
+}
+
+/**
  * remark用の統合商品カード埋め込みプラグイン
  *
  * @description
- * 連続するAmazon URLと楽天URLを検出して、統合ProductCardノードに変換する。
+ * Amazon URLと楽天URLのペアを検出して、統合ProductCardノードに変換する。
  * remarkAmazonとremarkRakutenよりも前に実行される必要がある。
  *
  * @features
- * 1. 連続する2つの段落をチェック
- * 2. Amazon URL + 楽天URL（順不同）を検出
- * 3. 統合ProductCardノードに変換
- * 4. 単独URLの場合は何もせず、後続のプラグインに処理を任せる
+ * 1. 同一段落内の2つのリンクをチェック（半角スペースまたは改行1つで区切られたURL）
+ * 2. 連続する2つの段落をチェック（改行2つで区切られたURL）
+ * 3. Amazon URL + 楽天URL（順不同）を検出
+ * 4. 統合ProductCardノードに変換
+ * 5. 単独URLの場合は何もせず、後続のプラグインに処理を任せる
  *
  * @example
- * // マークダウン
+ * // パターン1: 改行2つ（既存）
+ * https://www.amazon.co.jp/dp/B08N5WRWNW
+ *
+ * https://a.r10.to/hF6JlM
+ *
+ * @example
+ * // パターン2: 半角スペース（新規）
+ * https://www.amazon.co.jp/dp/B08N5WRWNW https://a.r10.to/hF6JlM
+ *
+ * @example
+ * // パターン3: 改行1つ（新規）
  * https://www.amazon.co.jp/dp/B08N5WRWNW
  * https://a.r10.to/hF6JlM
  *
- * // 変換後
+ * // すべて以下に変換される
  * <productCard
  *   amazonUrl="https://www.amazon.co.jp/dp/B08N5WRWNW"
  *   amazonAsin="B08N5WRWNW"
@@ -111,6 +180,55 @@ export const remarkProductCard: Plugin = () => {
 				// indexがない、または既に削除対象の場合はスキップ
 				if (index === undefined || indicesToRemove.includes(index)) return;
 
+				// パターン1: 同一段落内に2つのリンク（半角スペースまたは改行1つで区切られたURL）
+				const twoLinks = getTwoLinksFromParagraph(node);
+				if (twoLinks) {
+					const [url1, url2] = twoLinks;
+
+					// Amazon + 楽天のペアを検出（順不同）
+					let amazonUrl: string | undefined;
+					let rakutenUrl: string | undefined;
+
+					if (isAmazonUrl(url1) && isRakutenUrl(url2)) {
+						amazonUrl = url1;
+						rakutenUrl = url2;
+					} else if (isRakutenUrl(url1) && isAmazonUrl(url2)) {
+						rakutenUrl = url1;
+						amazonUrl = url2;
+					}
+
+					if (amazonUrl && rakutenUrl) {
+						// Amazon情報を抽出
+						const amazonAsin = extractAmazonAsin(amazonUrl);
+						const amazonDomain = extractAmazonDomain(amazonUrl);
+
+						// 楽天情報を抽出
+						const rakutenDomain = extractRakutenDomain(rakutenUrl);
+
+						// ProductCardノードを作成
+						const productCardNode: ProductCardNode = {
+							type: "productCard",
+							data: {
+								hName: "productCard",
+								hProperties: {
+									amazonUrl,
+									...(amazonAsin && { amazonAsin }),
+									...(amazonDomain && { amazonDomain }),
+									rakutenUrl,
+									...(rakutenDomain && { rakutenDomain }),
+								},
+							},
+						};
+
+						// 現在のノードを置き換え
+						parent.children[index] = productCardNode;
+
+						// 早期リターン（次の段落チェックは不要）
+						return;
+					}
+				}
+
+				// パターン2: 連続する2つの段落（改行2つで区切られたURL）
 				const currentUrl = getSingleLinkUrl(node);
 				if (!currentUrl) return;
 
