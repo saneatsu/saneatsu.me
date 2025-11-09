@@ -24,7 +24,7 @@
 		"storybook": "storybook dev -p 6016",
 		"build-storybook": "storybook build",
 		"test-storybook": "test-storybook --url http://127.0.0.1:6016",
-		"test-storybook:ci": "test-storybook --ci --port 6016",
+		"test-storybook:ci": "concurrently -k -s first \"storybook dev -p 6016 --ci\" \"wait-on http://127.0.0.1:6016 && test-storybook --url http://127.0.0.1:6016\"",
 		"test-storybook:smart": "./test-storybook-smart.sh"
 	},
 	"dependencies": {
@@ -111,6 +111,7 @@
 		"@types/react-dom": "^19.1.6",
 		"@types/textarea-caret": "^3.0.4",
 		"@vitejs/plugin-react": "^4.3.3",
+		"concurrently": "^9.1.2",
 		"jsdom": "26.1.0",
 		"msw": "^2.10.4",
 		"msw-storybook-addon": "^2.0.5",
@@ -119,7 +120,8 @@
 		"storybook": "^10.0.0",
 		"tailwindcss-animate": "^1.0.7",
 		"typescript": "^5.8.3",
-		"vitest": "^3.2.4"
+		"vitest": "^3.2.4",
+		"wait-on": "^9.0.3"
 	},
 	"msw": {
 		"workerDirectory": [
