@@ -77,14 +77,16 @@ export function extractSpeakerDeckInfo(url: string): SpeakerDeckInfo | null {
 		? parsed.hash.match(/slide=(\d+)/)?.[1]
 		: undefined;
 	const slideString = querySlide ?? hashSlide;
-	const slide =
-		slideString !== undefined ? Number.parseInt(slideString, 10) : undefined;
+	const result: SpeakerDeckInfo = { deckPath };
 
-	if (slide !== undefined && Number.isNaN(slide)) {
-		return { deckPath };
+	if (slideString) {
+		const slideNumber = Number.parseInt(slideString, 10);
+		if (!Number.isNaN(slideNumber)) {
+			result.slide = slideNumber;
+		}
 	}
 
-	return slide !== undefined ? { deckPath, slide } : { deckPath };
+	return result;
 }
 
 /**
