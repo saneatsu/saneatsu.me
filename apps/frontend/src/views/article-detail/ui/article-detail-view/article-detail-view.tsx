@@ -190,12 +190,12 @@ export function ArticleDetailView({
 				{/* Related Articles Section */}
 				<section className="mt-16 pt-8 border-t">
 					<div className="max-w-5xl mx-auto">
-						<h2 className="text-xl font-bold mb-6">
-							{t("relatedArticles.title")}
-						</h2>
-						<RelatedArticles slug={article.slug} limit={6} />
-					</div>
-				</section>
+					<h2 className="text-xl font-bold mb-6">
+						{t("relatedArticles.title")}
+					</h2>
+					<RelatedArticles slug={article.slug} limit={10} />
+				</div>
+			</section>
 			</article>
 		</main>
 	);
