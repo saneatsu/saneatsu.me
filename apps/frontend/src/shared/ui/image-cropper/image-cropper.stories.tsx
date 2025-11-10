@@ -3,6 +3,10 @@ import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 import { ImageCropper } from "./image-cropper";
 
+// 小さな埋め込み画像（1x1 px PNG）。テスト環境でも確実に読み込めるようにする。
+const SAMPLE_IMAGE_SRC =
+	"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/8/AwAI/AL+UNShWQAAAABJRU5ErkJggg==";
+
 const meta = {
 	component: ImageCropper,
 	parameters: {
@@ -35,7 +39,7 @@ export const Default: Story = {
 	name: "デフォルト（自由な矩形選択）",
 	tags: ["code-only"],
 	args: {
-		imageSrc: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4",
+		imageSrc: SAMPLE_IMAGE_SRC,
 	},
 };
 
@@ -46,7 +50,7 @@ export const SquareMode: Story = {
 	name: "正方形モード",
 	tags: ["code-only"],
 	args: {
-		imageSrc: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4",
+		imageSrc: SAMPLE_IMAGE_SRC,
 	},
 };
 
@@ -57,8 +61,7 @@ export const LandscapeImage: Story = {
 	name: "横長の画像",
 	tags: ["code-only"],
 	args: {
-		imageSrc:
-			"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&h=1080",
+		imageSrc: SAMPLE_IMAGE_SRC,
 	},
 };
 
@@ -69,8 +72,7 @@ export const PortraitImage: Story = {
 	name: "縦長の画像",
 	tags: ["code-only"],
 	args: {
-		imageSrc:
-			"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1080&h=1920",
+		imageSrc: SAMPLE_IMAGE_SRC,
 	},
 };
 
@@ -81,7 +83,7 @@ export const SquareModeToggle: Story = {
 	name: "正方形モード切り替え",
 	tags: ["validation"],
 	args: {
-		imageSrc: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4",
+		imageSrc: SAMPLE_IMAGE_SRC,
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
@@ -107,7 +109,7 @@ export const CancelAction: Story = {
 	name: "キャンセル機能",
 	tags: ["validation"],
 	args: {
-		imageSrc: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4",
+		imageSrc: SAMPLE_IMAGE_SRC,
 	},
 	play: async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
@@ -128,7 +130,7 @@ export const CropAction: Story = {
 	name: "クロップ実行",
 	tags: ["validation"],
 	args: {
-		imageSrc: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4",
+		imageSrc: SAMPLE_IMAGE_SRC,
 	},
 	play: async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
