@@ -40,7 +40,6 @@ interface GoogleMapsNode extends Node {
 	};
 }
 
-
 interface ParsedGoogleMapsInfo {
 	coordinates?: { lat: number; lng: number };
 	query?: string;
@@ -59,10 +58,14 @@ const SUPPORTED_HOSTS = new Set([
 function isAutoLinkedUrl(linkNode: LinkNode): boolean {
 	if (linkNode.children.length !== 1) return false;
 	const child = linkNode.children[0];
-	return child.type === "text" && (child as TextNode).value.trim() === linkNode.url;
+	return (
+		child.type === "text" && (child as TextNode).value.trim() === linkNode.url
+	);
 }
 
-function parseLatLng(value?: string | null): { lat: number; lng: number } | undefined {
+function parseLatLng(
+	value?: string | null
+): { lat: number; lng: number } | undefined {
 	if (!value) return undefined;
 	const [latString, lngString] = value.split(",");
 	const lat = Number.parseFloat(latString);
@@ -74,7 +77,9 @@ function parseLatLng(value?: string | null): { lat: number; lng: number } | unde
 }
 
 function extractFromAtSegment(source: string): ParsedGoogleMapsInfo {
-	const match = source.match(/@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?),(\d+(?:\.\d+)?)z/);
+	const match = source.match(
+		/@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?),(\d+(?:\.\d+)?)z/
+	);
 	if (!match) return {};
 	const [, latString, lngString, zoomString] = match;
 	const lat = Number.parseFloat(latString);
@@ -124,7 +129,9 @@ function parseGoogleMapsUrl(url: URL): ParsedGoogleMapsInfo | null {
 		const pathSegments = url.pathname.split("/").filter(Boolean);
 		const placeIndex = pathSegments.indexOf("place");
 		if (placeIndex >= 0 && placeIndex + 1 < pathSegments.length) {
-			info.query = decodeURIComponent(pathSegments[placeIndex + 1].replace(/\+/g, " "));
+			info.query = decodeURIComponent(
+				pathSegments[placeIndex + 1].replace(/\+/g, " ")
+			);
 		}
 	}
 
@@ -152,7 +159,9 @@ function createGoogleMapsNode(info: ParsedGoogleMapsInfo): GoogleMapsNode {
 
 function extractEmbedSrcFromHtml(value: string): string | null {
 	const trimmed = value.trim();
-	const iframeMatch = trimmed.match(/^<iframe\b([\s\S]*?)>(?:[\s\S]*?)<\/iframe>$/i);
+	const iframeMatch = trimmed.match(
+		/^<iframe\b([\s\S]*?)>(?:[\s\S]*?)<\/iframe>$/i
+	);
 	if (!iframeMatch) return null;
 	const attributes = iframeMatch[1];
 	const srcMatch = attributes.match(/src=["']([^"']+)["']/i);
