@@ -79,6 +79,11 @@ export {
 	isRakutenUrl,
 	remarkRakuten,
 } from "./remark-rakuten/remark-rakuten";
+// Remark Speaker Deck
+export {
+	extractSpeakerDeckInfo,
+	remarkSpeakerdeck,
+} from "./remark-speakerdeck/remark-speakerdeck";
 // Remark Tag
 export { remarkTag } from "./remark-tag";
 // Remark Tweet
