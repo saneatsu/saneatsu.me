@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertCircle, BarChart3, ExternalLink } from "lucide-react";
-import { useState } from "react";
+import { createParser, useQueryState } from "nuqs";
 
 import {
 	PopularArticles,
@@ -26,15 +26,45 @@ import {
 	SelectValue,
 } from "@/shared/ui/select/select";
 
+const DASHBOARD_PERIODS = [30, 90, 180, 360] as const;
+type DashboardPeriod = (typeof DASHBOARD_PERIODS)[number];
+
+const isDashboardPeriod = (value: number): value is DashboardPeriod =>
+	DASHBOARD_PERIODS.includes(value as DashboardPeriod);
+
+const dashboardPeriodParser = createParser<DashboardPeriod>({
+	parse(value) {
+		const parsed = Number.parseInt(value, 10);
+		return isDashboardPeriod(parsed) ? parsed : null;
+	},
+	serialize(value) {
+		return value.toString();
+	},
+})
+	.withDefault(30)
+	.withOptions({
+		history: "replace",
+		clearOnDefault: true,
+	});
+
 /**
  * ダッシュボードのメインコンポーネント
  * 各種統計データを取得し、サブコンポーネントに渡して表示
  */
 export function DashboardMain() {
 	/**
-	 * 選択された日数の状態管理
+	 * 選択された日数の状態管理（URLクエリと同期）
 	 */
-	const [selectedDays, setSelectedDays] = useState<30 | 90 | 180 | 360>(30);
+	const [selectedDays, setSelectedDays] = useQueryState(
+		"days",
+		dashboardPeriodParser
+	);
+
+	const handlePeriodChange = (value: string) => {
+		const period = Number.parseInt(value, 10);
+		if (!isDashboardPeriod(period)) return;
+		void setSelectedDays(period);
+	};
 
 	/**
 	 * ダッシュボード概要データを取得
@@ -162,20 +192,17 @@ export function DashboardMain() {
 						</div>
 						<Select
 							value={selectedDays.toString()}
-							onValueChange={(value) =>
-								setSelectedDays(
-									Number.parseInt(value, 10) as 30 | 90 | 180 | 360
-								)
-							}
+							onValueChange={handlePeriodChange}
 						>
 							<SelectTrigger className="w-[120px]">
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value="30">30日</SelectItem>
-								<SelectItem value="90">90日</SelectItem>
-								<SelectItem value="180">180日</SelectItem>
-								<SelectItem value="360">360日</SelectItem>
+								{DASHBOARD_PERIODS.map((period) => (
+									<SelectItem key={period} value={period.toString()}>
+										{period}日
+									</SelectItem>
+								))}
 							</SelectContent>
 						</Select>
 					</div>

@@ -1,17 +1,21 @@
 import { describe, expect, it } from "vitest";
-import { unified } from "unified";
-import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
+import remarkParse from "remark-parse";
+import { unified } from "unified";
+
+interface MarkdownTree {
+	children?: any[];
+}
 
 import { remarkGoogleMaps } from "./remark-google-maps";
 
-function transform(markdown: string) {
+function transform(markdown: string): MarkdownTree {
 	const processor = unified()
 		.use(remarkParse)
 		.use(remarkGfm)
 		.use(remarkGoogleMaps);
 	const tree = processor.parse(markdown);
-	return processor.runSync(tree);
+	return processor.runSync(tree) as MarkdownTree;
 }
 
 describe("remarkGoogleMaps", () => {

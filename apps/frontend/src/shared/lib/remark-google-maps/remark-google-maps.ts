@@ -62,7 +62,7 @@ function isAutoLinkedUrl(linkNode: LinkNode): boolean {
 	return child.type === "text" && (child as TextNode).value.trim() === linkNode.url;
 }
 
-function parseLatLng(value?: string): { lat: number; lng: number } | undefined {
+function parseLatLng(value?: string | null): { lat: number; lng: number } | undefined {
 	if (!value) return undefined;
 	const [latString, lngString] = value.split(",");
 	const lat = Number.parseFloat(latString);
@@ -213,10 +213,10 @@ export const remarkGoogleMaps: Plugin = () => {
 			(node: Node, index: number | undefined, parent: Node | undefined) => {
 				if (!parent || index === undefined) return;
 				const htmlNode = node as HtmlNode;
-				const embedSrc = extractEmbedSrcFromHtml(htmlNode.value || "");
-				if (!embedSrc) return;
+				const parsedEmbedSrc = extractEmbedSrcFromHtml(htmlNode.value);
+				if (parsedEmbedSrc === null) return;
 				(parent as ParentNode).children[index] = createGoogleMapsNode({
-					embedSrc,
+					embedSrc: parsedEmbedSrc,
 				});
 			}
 		);
