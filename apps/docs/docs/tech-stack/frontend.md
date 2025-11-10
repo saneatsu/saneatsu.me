@@ -384,6 +384,11 @@ export function MarkdownRenderer({ content }: { content: string }) {
 }
 ```
 
+#### HTMLコメントの扱い
+- 記事本文内で `<!-- 非公開 -->` のように HTML コメント記法で囲んだブロックは、`remarkComment` プラグインによって MarkdownPreview から除外されます。
+- 「公開前の下書きメモを一時的に残しておく」といったケースでもプレビューや本番表示に影響が出ないため、安心してコメントアウトできます。
+
+
 ### **Lucide Icons**
 ```typescript
 import { Search, Menu, X, ChevronDown } from 'lucide-react';
