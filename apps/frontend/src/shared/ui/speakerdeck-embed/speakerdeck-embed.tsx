@@ -172,16 +172,22 @@ function SpeakerDeckSkeleton({ className }: { className?: string }) {
 }
 
 function extractIframeAttributes(html: string): SpeakerDeckIframeState | null {
-	const srcMatch = html.match(/src="([^"]+)"/);
-	if (!srcMatch) return null;
+	if (typeof window === "undefined" || typeof DOMParser === "undefined") {
+		return null;
+	}
 
-	const titleMatch = html.match(/title="([^"]+)"/);
-	const allowFullScreen = /allowfullscreen/i.test(html);
+	const doc = new DOMParser().parseFromString(html, "text/html");
+	const iframe = doc.querySelector("iframe");
+	const src = iframe?.getAttribute("src");
+
+	if (!iframe || !src) {
+		return null;
+	}
 
 	return {
-		src: srcMatch[1],
-		title: titleMatch?.[1] ?? "Speaker Deck presentation",
-		allowFullScreen,
+		src,
+		title: iframe.getAttribute("title") ?? "Speaker Deck presentation",
+		allowFullScreen: iframe.hasAttribute("allowfullscreen"),
 	};
 }
 
