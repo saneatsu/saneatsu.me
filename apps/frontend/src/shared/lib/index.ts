@@ -71,6 +71,8 @@ export {
 	extractAmazonDomain,
 	remarkAmazon,
 } from "./remark-amazon/remark-amazon";
+// Remark Comment
+export { remarkComment } from "./remark-comment/remark-comment";
 // Remark Product Card
 export { remarkProductCard } from "./remark-product-card/remark-product-card";
 // Remark Rakuten
