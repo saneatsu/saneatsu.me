@@ -20,6 +20,7 @@ import type { PluggableList } from "unified";
 import {
 	remarkAlert,
 	remarkAmazon,
+	remarkComment,
 	remarkProductCard,
 	remarkRakuten,
 	remarkSpeakerdeck,
@@ -54,6 +55,7 @@ import { ZoomableImage } from "../zoomable-image/zoomable-image";
 export const defaultRemarkPlugins = [
 	remarkGfm,
 	remarkBreaks,
+	remarkComment,
 	remarkAlert, // GitHub互換のAlert構文（remarkGfmとremarkBreaksの後）
 	remarkProductCard, // Amazon + 楽天の統合カード（remarkAmazonとremarkRakutenより前）
 	remarkSpeakerdeck,
