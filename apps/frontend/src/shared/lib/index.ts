@@ -71,6 +71,8 @@ export {
 	extractAmazonDomain,
 	remarkAmazon,
 } from "./remark-amazon/remark-amazon";
+// Remark Comment
+export { remarkComment } from "./remark-comment/remark-comment";
 // Remark Product Card
 export { remarkProductCard } from "./remark-product-card/remark-product-card";
 // Remark Rakuten
@@ -79,6 +81,11 @@ export {
 	isRakutenUrl,
 	remarkRakuten,
 } from "./remark-rakuten/remark-rakuten";
+// Remark Speaker Deck
+export {
+	extractSpeakerDeckInfo,
+	remarkSpeakerdeck,
+} from "./remark-speakerdeck/remark-speakerdeck";
 // Remark Tag
 export { remarkTag } from "./remark-tag";
 // Remark Tweet

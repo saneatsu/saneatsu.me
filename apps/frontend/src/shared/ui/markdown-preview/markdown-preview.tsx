@@ -20,8 +20,10 @@ import type { PluggableList } from "unified";
 import {
 	remarkAlert,
 	remarkAmazon,
+	remarkComment,
 	remarkProductCard,
 	remarkRakuten,
+	remarkSpeakerdeck,
 	remarkTag,
 	remarkTweet,
 	remarkUrlCard,
@@ -53,8 +55,10 @@ import { ZoomableImage } from "../zoomable-image/zoomable-image";
 export const defaultRemarkPlugins = [
 	remarkGfm,
 	remarkBreaks,
+	remarkComment,
 	remarkAlert, // GitHub互換のAlert構文（remarkGfmとremarkBreaksの後）
 	remarkProductCard, // Amazon + 楽天の統合カード（remarkAmazonとremarkRakutenより前）
+	remarkSpeakerdeck,
 	remarkUrlCard,
 	remarkWikiLink,
 	remarkTag,
@@ -95,6 +99,17 @@ const TweetEmbed = dynamic(
 const YouTubeEmbed = dynamic(
 	() =>
 		import("../youtube-embed/youtube-embed").then((mod) => mod.YouTubeEmbed),
+	{
+		ssr: false,
+	}
+);
+
+// Speaker Deck Embedコンポーネントを動的インポート（クライアントサイドのみ）
+const SpeakerDeckEmbed = dynamic(
+	() =>
+		import("../speakerdeck-embed/speakerdeck-embed").then(
+			(mod) => mod.SpeakerDeckEmbed
+		),
 	{
 		ssr: false,
 	}
@@ -437,6 +452,11 @@ export function createDefaultMarkdownComponents(
 		// @ts-expect-error - カスタムノードのため型定義がない
 		youtube: ({ videoId, startTime }) => (
 			<YouTubeEmbed videoId={videoId} startTime={startTime} />
+		),
+		// Speaker Deck埋め込みのカスタムレンダリング
+		// @ts-expect-error - カスタムノードのため型定義がない
+		speakerdeck: ({ slide, url }) => (
+			<SpeakerDeckEmbed slide={slide} url={url} />
 		),
 		// Amazon商品カードのカスタムレンダリング
 		// @ts-expect-error - カスタムノードのため型定義がない
