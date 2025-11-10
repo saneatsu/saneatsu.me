@@ -1,11 +1,29 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { expect } from "storybook/test";
+import { HttpResponse, http } from "msw";
+import { expect, waitFor } from "storybook/test";
 
 import { SpeakerDeckEmbed } from "./speakerdeck-embed";
+
+const speakerDeckHandler = http.get(
+	"/api/speakerdeck/oembed",
+	({ request }) => {
+		const url = new URL(request.url);
+		const slide = url.searchParams.get("slide");
+		return HttpResponse.json({
+			html: `<iframe src="//speakerdeck.com/player/mock" title="Speaker Deck presentation" allowfullscreen></iframe>`,
+			width: 710,
+			height: 399,
+			slide,
+		});
+	}
+);
 
 const meta = {
 	component: SpeakerDeckEmbed,
 	parameters: {
+		msw: {
+			handlers: [speakerDeckHandler],
+		},
 		viewport: {
 			defaultViewport: "reset",
 		},
@@ -38,8 +56,11 @@ export const IframeAttributes: Story = {
 		slide: 5,
 	},
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		await waitFor(() => {
+			const iframe = canvasElement.querySelector("iframe");
+			expect(iframe).toBeInTheDocument();
+		});
 		const iframe = canvasElement.querySelector("iframe");
-		await expect(iframe).toBeInTheDocument();
 		await expect(iframe).toHaveAttribute("src");
 		await expect(iframe).toHaveAttribute("title", "Speaker Deck presentation");
 		await expect(iframe).toHaveAttribute("allowFullScreen");
