@@ -183,6 +183,12 @@ export {
 	FormMessage,
 	useFormField,
 } from "./form/form";
+// Google Maps Embed
+export {
+	GoogleMapsEmbed,
+	type GoogleMapsEmbedProps,
+	type GoogleMapsMapType,
+} from "./google-maps-embed/google-maps-embed";
 // Image Cropper
 export {
 	ImageCropper,
@@ -193,12 +199,6 @@ export {
 	ImageUploader,
 	type ImageUploaderProps,
 } from "./image-uploader/image-uploader";
-// Google Maps Embed
-export {
-	GoogleMapsEmbed,
-	type GoogleMapsEmbedProps,
-	type GoogleMapsMapType,
-} from "./google-maps-embed/google-maps-embed";
 // Input
 export { Input } from "./input/input";
 // Label
