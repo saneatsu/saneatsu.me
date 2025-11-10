@@ -21,6 +21,7 @@ import {
 	remarkAlert,
 	remarkAmazon,
 	remarkComment,
+	remarkGoogleMaps,
 	remarkProductCard,
 	remarkRakuten,
 	remarkSpeakerdeck,
@@ -59,6 +60,7 @@ export const defaultRemarkPlugins = [
 	remarkAlert, // GitHub互換のAlert構文（remarkGfmとremarkBreaksの後）
 	remarkProductCard, // Amazon + 楽天の統合カード（remarkAmazonとremarkRakutenより前）
 	remarkSpeakerdeck,
+	remarkGoogleMaps,
 	remarkUrlCard,
 	remarkWikiLink,
 	remarkTag,
@@ -109,6 +111,17 @@ const SpeakerDeckEmbed = dynamic(
 	() =>
 		import("../speakerdeck-embed/speakerdeck-embed").then(
 			(mod) => mod.SpeakerDeckEmbed
+		),
+	{
+		ssr: false,
+	}
+);
+
+// Google Maps Embedコンポーネントを動的インポート（クライアントサイドのみ）
+const GoogleMapsEmbed = dynamic(
+	() =>
+		import("../google-maps-embed/google-maps-embed").then(
+			(mod) => mod.GoogleMapsEmbed
 		),
 	{
 		ssr: false,
@@ -452,6 +465,16 @@ export function createDefaultMarkdownComponents(
 		// @ts-expect-error - カスタムノードのため型定義がない
 		youtube: ({ videoId, startTime }) => (
 			<YouTubeEmbed videoId={videoId} startTime={startTime} />
+		),
+		// Google Maps埋め込みのカスタムレンダリング
+		// @ts-expect-error - カスタムノードのため型定義がない
+		googlemaps: ({ coordinates, query, zoom, embedSrc }) => (
+			<GoogleMapsEmbed
+				coordinates={coordinates}
+				query={query}
+				embedSrc={embedSrc}
+				zoom={zoom}
+			/>
 		),
 		// Speaker Deck埋め込みのカスタムレンダリング
 		// @ts-expect-error - カスタムノードのため型定義がない
