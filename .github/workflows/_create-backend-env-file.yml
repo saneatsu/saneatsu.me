@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       ENV:
-        description: 'Environment name (preview/production)'
+        description: "Environment name (preview/production)"
         type: string
         required: true
     secrets:
@@ -18,7 +18,7 @@ on:
       ADMIN_EMAILS:
         required: true
       GEMINI_API_KEY:
-        required: false  # オプショナル（翻訳機能を使わない場合もある）
+        required: false # オプショナル（翻訳機能を使わない場合もある）
 
 env:
   ENV: ${{ inputs.ENV }}
@@ -43,7 +43,7 @@ jobs:
           echo "TURSO_AUTH_TOKEN=$TURSO_AUTH_TOKEN" >> $ENV_FILE
           echo "CORS_ORIGIN=$CORS_ORIGIN" >> $ENV_FILE
           echo "ADMIN_EMAILS=$ADMIN_EMAILS" >> $ENV_FILE
-          
+
           # GEMINI_API_KEYが設定されている場合のみ追加
           if [ ! -z "$GEMINI_API_KEY" ]; then
             echo "GEMINI_API_KEY=$GEMINI_API_KEY" >> $ENV_FILE

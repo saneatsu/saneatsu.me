@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       ENV:
-        description: 'Environment name (preview/production)'
+        description: "Environment name (preview/production)"
         type: string
         required: true
     secrets:
@@ -67,10 +67,10 @@ jobs:
         id: cloudflare-wrangler
         run: |
           cd apps/backend
-          
+
           # .envファイルから環境変数を読み込む
           export $(cat .env | xargs)
-          
+
           # Cloudflare Workersにデプロイ（環境変数を渡す）
           if [ ! -z "$GEMINI_API_KEY" ]; then
             # GEMINI_API_KEYが設定されている場合
@@ -98,10 +98,10 @@ jobs:
           script: |
             const sha = context.payload.pull_request?.head.sha ?? context.sha;
             const environment = '${{ env.ENV }}';
-            const deploymentUrl = environment === 'production' 
-              ? 'https://api.saneatsu.me' 
+            const deploymentUrl = environment === 'production'
+              ? 'https://api.saneatsu.me'
               : 'https://saneatsu-backend-preview.w-saneatsu-e8c.workers.dev';
-            
+
             await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
