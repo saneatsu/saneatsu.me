@@ -107,7 +107,6 @@ export function AboutView() {
 		subtitle: aboutContributionT("description"),
 		rangeLabel: (days) => contributionsT("rangeLabel", { days }),
 		summaryTotalJaChars: contributionsT("summary.totalJaChars"),
-		summaryCurrentStreak: contributionsT("summary.currentStreak"),
 		legendLess: contributionsT("legend.less"),
 		legendMore: contributionsT("legend.more"),
 		error: contributionsT("error"),

@@ -109,8 +109,7 @@
 		"subtitle": "直近365日の日本語文字数",
 		"rangeLabel": "直近 {days} 日",
 		"summary": {
-			"totalJaChars": "文字数（日本語）",
-			"currentStreak": "連続日数"
+			"totalJaChars": "文字数（日本語）"
 		},
 		"legend": {
 			"less": "少ない",

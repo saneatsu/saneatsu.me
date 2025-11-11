@@ -109,8 +109,7 @@
 		"subtitle": "Japanese characters in the last 365 days",
 		"rangeLabel": "Last {days} days",
 		"summary": {
-			"totalJaChars": "Japanese characters",
-			"currentStreak": "Current streak"
+			"totalJaChars": "Japanese characters"
 		},
 		"legend": {
 			"less": "Less",
