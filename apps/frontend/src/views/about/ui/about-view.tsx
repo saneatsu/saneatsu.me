@@ -67,7 +67,6 @@ import {
 	ContributionActivityCard,
 	usePublicContributions,
 } from "@/features/contributions";
-import { Link } from "@/shared/lib";
 import type { TimelineItem } from "@/shared/types";
 import { BadgeWithIcon, BlogNotice, StepperTimeline } from "@/shared/ui";
 
@@ -262,14 +261,6 @@ export function AboutView() {
 						copy={contributionsCopy}
 						locale={locale === "ja" ? "ja-JP" : "en-US"}
 						rangeDays={publicContributions?.days.length ?? 365}
-						actions={
-							<Link
-								href="/blog"
-								className="text-sm font-medium text-primary hover:underline"
-							>
-								{aboutContributionT("cta")}
-							</Link>
-						}
 					/>
 				</section>
 
