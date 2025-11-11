@@ -224,27 +224,23 @@ export function ContributionHeatmap({
 
 	/** サマリーを描画する */
 	const renderSummary = () => (
-		<div className="grid gap-1 sm:grid-cols-2">
-			<div>
-				<p className="text-sm text-muted-foreground">
-					{copy.summaryTotalJaChars}
-				</p>
+		<div className="flex flex-nowrap items-start gap-6 text-sm">
+			<div className="flex flex-col">
+				<p className="text-muted-foreground">{copy.summaryTotalJaChars}</p>
 				{isLoading ? (
-					<Skeleton className="h-6 w-16" />
+					<Skeleton className="mt-1 h-6 w-16" />
 				) : (
-					<p className="text-md font-semibold">
+					<p className="text-lg font-semibold">
 						{formatNumber(summary?.totalJaChars ?? 0, locale)}
 					</p>
 				)}
 			</div>
-			<div>
-				<p className="text-sm text-muted-foreground">
-					{copy.summaryCurrentStreak}
-				</p>
+			<div className="flex flex-col">
+				<p className="text-muted-foreground">{copy.summaryCurrentStreak}</p>
 				{isLoading ? (
-					<Skeleton className="h-6 w-16" />
+					<Skeleton className="mt-1 h-6 w-16" />
 				) : (
-					<p className="text-md font-semibold">
+					<p className="text-lg font-semibold">
 						{formatNumber(streak, locale)}
 					</p>
 				)}
