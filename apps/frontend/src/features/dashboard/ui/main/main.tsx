@@ -41,7 +41,6 @@ const DASHBOARD_CONTRIBUTION_COPY: ContributionCopy = {
 	summaryCurrentStreak: "連続日数",
 	legendLess: "少ない",
 	legendMore: "多い",
-	empty: "まだ記録がありません",
 	error: "執筆データの取得に失敗しました",
 	retry: "再読み込み",
 	metricJaCharsUnit: "文字",

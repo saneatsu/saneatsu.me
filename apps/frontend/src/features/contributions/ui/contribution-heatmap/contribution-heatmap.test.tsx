@@ -49,7 +49,7 @@ describe("ContributionHeatmap", () => {
 		expect(screen.getByText("連続日数")).toBeInTheDocument();
 	});
 
-	it("データがない場合は空メッセージを表示する", () => {
+	it("データがない場合もグリッドを灰色で表示する", () => {
 		const emptySummary: ContributionSummary = {
 			...summary,
 			totalJaChars: 0,
@@ -61,7 +61,12 @@ describe("ContributionHeatmap", () => {
 			<ContributionHeatmap summary={emptySummary} copy={COPY} locale="ja-JP" />
 		);
 
-		expect(screen.getByText("まだ記録がありません")).toBeInTheDocument();
+		expect(screen.queryByText("まだ記録がありません")).not.toBeInTheDocument();
+		const cells = screen.getAllByRole("button");
+		expect(cells).toHaveLength(365);
+		expect(
+			cells.every((cell) => cell.getAttribute("aria-pressed") === "false")
+		).toBe(true);
 	});
 
 	it("エラー時にリトライボタンを表示する", async () => {

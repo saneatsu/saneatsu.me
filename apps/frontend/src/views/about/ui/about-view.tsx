@@ -110,7 +110,6 @@ export function AboutView() {
 		summaryCurrentStreak: contributionsT("summary.currentStreak"),
 		legendLess: contributionsT("legend.less"),
 		legendMore: contributionsT("legend.more"),
-		empty: contributionsT("empty"),
 		error: contributionsT("error"),
 		retry: contributionsT("retry"),
 		metricJaCharsUnit: contributionsT("units.jaChars"),
