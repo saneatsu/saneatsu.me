@@ -11,7 +11,6 @@ const COPY = {
 	subtitle: "直近365日",
 	rangeLabel: (days: number) => `直近${days}日`,
 	summaryTotalJaChars: "文字数（日本語）",
-	summaryCurrentStreak: "連続日数",
 	legendLess: "少ない",
 	legendMore: "多い",
 	empty: "まだ記録がありません",
@@ -46,7 +45,6 @@ describe("ContributionHeatmap", () => {
 
 		expect(screen.getByText("文字数（日本語）")).toBeInTheDocument();
 		expect(screen.getByText("54,000")).toBeInTheDocument();
-		expect(screen.getByText("連続日数")).toBeInTheDocument();
 	});
 
 	it("データがない場合もグリッドを灰色で表示する", () => {

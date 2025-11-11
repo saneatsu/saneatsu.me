@@ -45,7 +45,6 @@ const COPY: ContributionCopy = {
 	subtitle: "直近365日の日本語文字数",
 	rangeLabel: (days: number) => `直近${days}日`,
 	summaryTotalJaChars: "文字数（日本語）",
-	summaryCurrentStreak: "連続日数",
 	legendLess: "少ない",
 	legendMore: "多い",
 	error: "執筆データの取得に失敗しました",

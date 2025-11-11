@@ -49,7 +49,6 @@ export type ContributionCopy = {
 	subtitle?: string;
 	rangeLabel: (days: number) => string;
 	summaryTotalJaChars: string;
-	summaryCurrentStreak: string;
 	legendLess: string;
 	legendMore: string;
 	error: string;
@@ -138,20 +137,6 @@ const getIntensity = (value: number, max: number) => {
 	return 4;
 };
 
-/** 直近から連続している執筆日数を逆順に数える */
-const calculateCurrentStreak = (days: ContributionDay[]) => {
-	let streak = 0;
-	for (let i = days.length - 1; i >= 0; i -= 1) {
-		const day = days[i];
-		if (day.jaChars > 0) {
-			streak += 1;
-		} else {
-			break;
-		}
-	}
-	return streak;
-};
-
 /**
  * ダッシュボードや公開ページで再利用する執筆ヒートマップカード。
  *
@@ -196,9 +181,6 @@ export function ContributionHeatmap({
 	const isSupportedRange = dayCount === 365 || dayCount === 366;
 	const hasRenderableDays = dayCount > 0;
 	const computedRange = rangeDays ?? summary?.days.length ?? 365;
-	const streak = normalizedDays.length
-		? calculateCurrentStreak(normalizedDays)
-		: 0;
 	// 一度だけ週配列を計算し、再レンダーを抑制
 	const weeks = useMemo(() => {
 		if (normalizedDays.length === 0 || !summary) return [];
@@ -240,27 +222,15 @@ export function ContributionHeatmap({
 
 	/** サマリーを描画する */
 	const renderSummary = () => (
-		<div className="flex flex-nowrap items-start gap-6 text-sm">
-			<div className="flex flex-col">
-				<p className="text-muted-foreground">{copy.summaryTotalJaChars}</p>
-				{isLoading ? (
-					<Skeleton className="mt-1 h-6 w-16" />
-				) : (
-					<p className="text-lg font-semibold">
-						{formatNumber(summary?.totalJaChars ?? 0, locale)}
-					</p>
-				)}
-			</div>
-			<div className="flex flex-col">
-				<p className="text-muted-foreground">{copy.summaryCurrentStreak}</p>
-				{isLoading ? (
-					<Skeleton className="mt-1 h-6 w-16" />
-				) : (
-					<p className="text-lg font-semibold">
-						{formatNumber(streak, locale)}
-					</p>
-				)}
-			</div>
+		<div className="flex flex-col text-sm">
+			<p className="text-muted-foreground">{copy.summaryTotalJaChars}</p>
+			{isLoading ? (
+				<Skeleton className="mt-1 h-6 w-16" />
+			) : (
+				<p className="text-lg font-semibold">
+					{formatNumber(summary?.totalJaChars ?? 0, locale)}
+				</p>
+			)}
 		</div>
 	);
 
