@@ -52,7 +52,13 @@ describe("PUT /articles/:id - 記事更新", () => {
 		recordArticleContributionMock.mockReset();
 		buildContributionTextMock.mockReset();
 		buildContributionTextMock.mockImplementation(
-			({ title, content }: { title?: string | null; content?: string | null }) =>
+			({
+				title,
+				content,
+			}: {
+				title?: string | null;
+				content?: string | null;
+			}) =>
 				[title, content]
 					.filter((value) => typeof value === "string" && value.length > 0)
 					.join("\n")
