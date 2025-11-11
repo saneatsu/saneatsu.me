@@ -47,7 +47,7 @@ async function main() {
 			)
 		);
 
-	const bucket = new Map<string, { updates: number; jaChars: number }>();
+	const bucket = new Map<string, { jaChars: number }>();
 
 	for (const row of rows) {
 		if (!row.content) continue;
@@ -55,8 +55,7 @@ async function main() {
 		const dateKey = toJstDateKey(new Date(baseDate));
 		const charCount = countJapaneseCharactersFromMarkdown(row.content);
 
-		const stats = bucket.get(dateKey) ?? { updates: 0, jaChars: 0 };
-		stats.updates += 1;
+		const stats = bucket.get(dateKey) ?? { jaChars: 0 };
 		stats.jaChars += charCount;
 		bucket.set(dateKey, stats);
 	}
@@ -65,7 +64,6 @@ async function main() {
 	for (const [date, stats] of bucket) {
 		await db.insert(schema.dailyArticleContributions).values({
 			date,
-			updates: stats.updates,
 			jaCharCount: stats.jaChars,
 		});
 	}

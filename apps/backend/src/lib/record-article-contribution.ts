@@ -50,7 +50,6 @@ export async function recordArticleContribution({
 
 	const insertQuery = db.insert(dailyArticleContributions).values({
 		date: dateKey,
-		updates: 1,
 		jaCharCount: charDelta,
 	});
 
@@ -58,7 +57,6 @@ export async function recordArticleContribution({
 		await insertQuery.onConflictDoUpdate({
 			target: dailyArticleContributions.date,
 			set: {
-				updates: sql`${dailyArticleContributions.updates} + 1`,
 				jaCharCount: sql`${dailyArticleContributions.jaCharCount} + ${charDelta}`,
 				updatedAt: sql`(datetime('now'))`,
 			},

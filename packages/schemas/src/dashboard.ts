@@ -155,7 +155,6 @@ export const recentActivitiesSchema = z.object({
 /** 執筆データ1日分 */
 export const contributionDaySchema = z.object({
 	date: z.string().regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/),
-	updates: z.number().int().min(0),
 	jaChars: z.number().int().min(0),
 });
 
@@ -163,9 +162,7 @@ export const contributionDaySchema = z.object({
 export const contributionSummarySchema = z.object({
 	startDate: z.string().regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/),
 	endDate: z.string().regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/),
-	totalUpdates: z.number().int().min(0),
 	totalJaChars: z.number().int().min(0),
-	maxUpdates: z.number().int().min(0),
 	maxJaChars: z.number().int().min(0),
 	days: z.array(contributionDaySchema),
 	lastUpdated: dateTimeSchema,

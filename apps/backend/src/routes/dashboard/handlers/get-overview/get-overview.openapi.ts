@@ -88,15 +88,12 @@ const dashboardOverviewOpenApiResponseSchema = z.object({
 	contributions: z.object({
 		startDate: z.string().openapi({ example: "2025-01-01" }),
 		endDate: z.string().openapi({ example: "2025-12-31" }),
-		totalUpdates: z.number().int().openapi({ example: 120 }),
 		totalJaChars: z.number().int().openapi({ example: 54000 }),
-		maxUpdates: z.number().int().openapi({ example: 6 }),
 		maxJaChars: z.number().int().openapi({ example: 3200 }),
 		days: z
 			.array(
 				z.object({
 					date: z.string(),
-					updates: z.number().int(),
 					jaChars: z.number().int(),
 				})
 			)
