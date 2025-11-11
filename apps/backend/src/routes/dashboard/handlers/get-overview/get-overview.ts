@@ -1,8 +1,10 @@
 import type { RouteHandler } from "@hono/zod-openapi";
 import type { DashboardOverviewResponse } from "@saneatsu/schemas";
 import { and, count, desc, eq, gte, inArray, sql } from "drizzle-orm";
+
 import type { Env } from "@/env";
 import { getDatabase } from "@/lib/database";
+import { getContributionSummary } from "@/lib/get-contribution-summary";
 
 import type { getDashboardOverviewRoute } from "./get-overview.openapi";
 
@@ -190,6 +192,11 @@ export const getDashboardOverview: Handler = async (c) => {
 			.limit(20);
 
 		// 7. レスポンスデータの構築
+		const contributions = await getContributionSummary(db, {
+			rangeDays: 365,
+			now,
+		});
+
 		const response: DashboardOverviewResponse = {
 			articleStats: {
 				totalArticles: totalArticlesResult[0]?.count || 0,
@@ -225,6 +232,7 @@ export const getDashboardOverview: Handler = async (c) => {
 					createdAt: activity.createdAt,
 				})),
 			},
+			contributions,
 			lastUpdated: now.toISOString(),
 		};
 

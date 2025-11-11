@@ -52,4 +52,32 @@ const nextConfig = {
 	},
 };
 
-module.exports = withNextIntl(nextConfig);
+/**
+ * next-intlのプラグイン (<= v3.26) は Turbo の alias を依然として
+ * `experimental.turbo` に書き込みますが、Next.js 16 以降ではこのプロパティが
+ * 無効扱いとなるためビルド時に警告・エラーが発生します。ここでは生成された
+ * alias を正式にサポートされる `turbopack.resolveAlias` へ昇格させ、同時に
+ * 古い `experimental.turbo` を取り除くことで設定エラーを回避します。
+ */
+function hoistTurboResolveAlias(config) {
+	const turboAlias = config?.experimental?.turbo?.resolveAlias;
+	if (!turboAlias) {
+		return config;
+	}
+
+	config.turbopack = {
+		...(config.turbopack ?? {}),
+		resolveAlias: {
+			...(config.turbopack?.resolveAlias ?? {}),
+			...turboAlias,
+		},
+	};
+
+	const { ...restExperimental } = config.experimental ?? {};
+	config.experimental =
+		Object.keys(restExperimental).length > 0 ? restExperimental : undefined;
+
+	return config;
+}
+
+module.exports = hoistTurboResolveAlias(withNextIntl(nextConfig));

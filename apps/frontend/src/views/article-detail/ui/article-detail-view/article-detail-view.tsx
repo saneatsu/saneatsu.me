@@ -193,7 +193,7 @@ export function ArticleDetailView({
 						<h2 className="text-xl font-bold mb-6">
 							{t("relatedArticles.title")}
 						</h2>
-						<RelatedArticles slug={article.slug} limit={6} />
+						<RelatedArticles slug={article.slug} limit={10} />
 					</div>
 				</section>
 			</article>

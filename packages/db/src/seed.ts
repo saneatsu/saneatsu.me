@@ -8,12 +8,15 @@ dotenv.config();
 
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
+
+import { toJstDateKey } from "./lib/contributions/contribution-aggregator";
 import * as schema from "./schema";
 import {
 	articleGalleryImages,
 	articles,
 	articleTags,
 	articleTranslations,
+	dailyArticleContributions,
 	dailyArticleViews,
 	galleryImages,
 	galleryImageTranslations,
@@ -44,6 +47,7 @@ async function clearAllTables() {
 		await db.delete(tagTranslations);
 		await db.delete(tags);
 		await db.delete(articleTranslations);
+		await db.delete(dailyArticleContributions);
 		await db.delete(dailyArticleViews);
 		await db.delete(articles);
 		await db.delete(users);
@@ -699,6 +703,56 @@ function getEnglishTitleTemplates() {
 	return templates;
 }
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+const createSeededRandom = (seed: number) => {
+	let randomSeed = seed;
+	return () => {
+		randomSeed = (randomSeed * 1664525 + 1013904223) % 4294967296;
+		return randomSeed / 4294967296;
+	};
+};
+
+function generateContributionSeries(days = 365) {
+	const seededRandom = createSeededRandom(123456);
+	const now = Date.now();
+	const contributions: Array<{
+		date: string;
+		jaCharCount: number;
+		updatedAt: string;
+	}> = [];
+
+	for (let offset = days - 1; offset >= 0; offset -= 1) {
+		const baseDate = new Date(now - offset * DAY_MS);
+		const dateKey = toJstDateKey(baseDate);
+		const jstDay = new Date(
+			baseDate.getTime() + 9 * 60 * 60 * 1000
+		).getUTCDay();
+		const seasonalFactor = Math.sin(((days - offset) / days) * Math.PI * 2);
+		let activityScore = 1.2 + seasonalFactor * 1.5 + seededRandom() * 2.5;
+
+		if (jstDay === 0 || jstDay === 6) {
+			activityScore *= 0.7;
+		}
+
+		if (seededRandom() > 0.94) {
+			activityScore += 2 + seededRandom() * 3;
+		}
+
+		const bursts = Math.max(0, Math.round(activityScore));
+		const avgCharsPerBurst = 350 + seededRandom() * 900;
+		const jaCharCount = bursts > 0 ? Math.round(bursts * avgCharsPerBurst) : 0;
+
+		contributions.push({
+			date: dateKey,
+			jaCharCount,
+			updatedAt: new Date().toISOString(),
+		});
+	}
+
+	return contributions;
+}
+
 /**
  * ランダムなコンテンツを生成
  * 階層的な見出し構造（h2-h5）を含む
@@ -1202,6 +1256,12 @@ async function seed() {
 		await db.insert(dailyArticleViews).values(dailyViewsData);
 		console.log(`✅ ${dailyViewsData.length}件の日別閲覧数を作成しました`);
 
+		const contributionData = generateContributionSeries();
+		await db.insert(dailyArticleContributions).values(contributionData);
+		console.log(
+			`✅ ${contributionData.length}件の執筆データ（直近1年分）を作成しました`
+		);
+
 		// ギャラリー画像を生成
 		const galleryImageCount = await seedGalleryImages();
 
@@ -1269,6 +1329,7 @@ async function seed() {
 - タグ翻訳: ${tagTranslationData.length}件（日本語・英語）
 - 記事-タグ関連付け: ${articleTagsData.length}件
 - 日別閲覧数: ${dailyViewsData.length}件（過去90日間の日別データ）
+- 執筆データ: ${contributionData.length}件（直近365日）
 - ギャラリー画像: ${galleryImageCount}件（撮影日: 過去1年間に分散、16都市）
 - ギャラリー画像翻訳: ${galleryImageCount * 2}件（日本語・英語）
 - 記事-ギャラリー画像関連付け: ${articleGalleryImagesData.length}件（最初の20記事に1〜5枚ずつ）

@@ -18,9 +18,9 @@ export interface RelatedArticlesProps {
  * 同じタグを持つ記事を優先的に表示し、不足する場合は最新記事で補完する。
  *
  * @param props.slug - 現在の記事のスラッグ
- * @param props.limit - 取得する記事数（デフォルト: 6）
+ * @param props.limit - 取得する記事数（デフォルト: 10）
  */
-export function RelatedArticles({ slug, limit = 6 }: RelatedArticlesProps) {
+export function RelatedArticles({ slug, limit = 10 }: RelatedArticlesProps) {
 	const locale = useLocale();
 	const t = useTranslations("article");
 
@@ -34,7 +34,7 @@ export function RelatedArticles({ slug, limit = 6 }: RelatedArticlesProps) {
 	if (isLoading) {
 		return (
 			<div className="grid gap-8 md:grid-cols-2">
-				{Array.from({ length: 6 }).map((_, i) => (
+				{Array.from({ length: limit }).map((_, i) => (
 					<div
 						key={`skeleton-${
 							// biome-ignore lint/suspicious/noArrayIndexKey: スケルトンなのでインデックスキーで問題ない

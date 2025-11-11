@@ -69,6 +69,14 @@ export const queryKeys = {
 	},
 
 	/**
+	 * 執筆データ関連
+	 */
+	contributions: {
+		public: (range?: number, locale?: string) =>
+			["contributions", "public", { range, locale }] as const,
+	},
+
+	/**
 	 * ギャラリー関連のクエリキー
 	 */
 	gallery: {
@@ -100,5 +108,6 @@ export const queryKeys = {
 export const ARTICLE_QUERY_KEYS = queryKeys.article;
 export const TAG_QUERY_KEYS = queryKeys.tag;
 export const DASHBOARD_QUERY_KEYS = queryKeys.dashboard;
+export const CONTRIBUTION_QUERY_KEYS = queryKeys.contributions;
 export const GALLERY_QUERY_KEYS = queryKeys.gallery;
 export const GEOCODING_QUERY_KEYS = queryKeys.geocoding;
