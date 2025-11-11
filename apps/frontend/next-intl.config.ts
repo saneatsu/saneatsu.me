@@ -1,3 +1,7 @@
-import { routing } from "./src/shared/config/routing";
+import { defaultLocale, locales } from "@saneatsu/i18n";
 
-export default routing;
+export default {
+	locales,
+	defaultLocale,
+	localePrefix: "always",
+};
