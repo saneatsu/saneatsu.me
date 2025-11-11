@@ -3,6 +3,10 @@ import { and, eq, inArray, not } from "drizzle-orm";
 
 import type { Env } from "@/env";
 import { getDatabase } from "@/lib";
+import {
+	buildContributionText,
+	recordArticleContribution,
+} from "@/lib/record-article-contribution";
 import { extractGalleryCfImageIds } from "@/lib/extract-gallery-cf-image-ids";
 import { createTranslationService } from "@/services/gemini-translation/gemini-translation";
 
@@ -118,6 +122,25 @@ export const updateArticle: Handler = async (c) => {
 			})
 			.where(eq(articles.id, articleId));
 
+		const existingJaTranslation = await db
+			.selectDistinct({
+				title: articleTranslations.title,
+				content: articleTranslations.content,
+			})
+			.from(articleTranslations)
+			.where(
+				and(
+					eq(articleTranslations.articleId, articleId),
+					eq(articleTranslations.language, "ja")
+				)
+			)
+			.limit(1);
+		const previousContributionText = buildContributionText({
+			title: existingJaTranslation[0]?.title ?? null,
+			content: existingJaTranslation[0]?.content ?? null,
+		});
+		const nextContributionText = buildContributionText({ title, content });
+
 		// 6. 翻訳データをUpsert（日本語）
 		// レコードがない場合は新規作成、ある場合は更新
 		await db
@@ -135,6 +158,14 @@ export const updateArticle: Handler = async (c) => {
 					content,
 				},
 			});
+		if (nextContributionText) {
+			await recordArticleContribution({
+				db,
+				previousText: previousContributionText,
+				nextText: nextContributionText,
+				eventDate: new Date(now),
+			});
+		}
 
 		// 7. 英語への自動翻訳を実行（公開記事の場合のみ）
 		const warnings: Array<{ code: string; message: string }> = [];
