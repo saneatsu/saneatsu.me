@@ -152,6 +152,22 @@ export const recentActivitiesSchema = z.object({
 	activities: z.array(recentActivityItemSchema).max(20),
 });
 
+/** 執筆データ1日分 */
+export const contributionDaySchema = z.object({
+	date: z.string().regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/),
+	jaChars: z.number().int().min(0),
+});
+
+/** 執筆データ概要 */
+export const contributionSummarySchema = z.object({
+	startDate: z.string().regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/),
+	endDate: z.string().regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/),
+	totalJaChars: z.number().int().min(0),
+	maxJaChars: z.number().int().min(0),
+	days: z.array(contributionDaySchema),
+	lastUpdated: dateTimeSchema,
+});
+
 /** ダッシュボード概要レスポンススキーマ */
 export const dashboardOverviewResponseSchema = z.object({
 	/** 記事統計 */
@@ -162,6 +178,8 @@ export const dashboardOverviewResponseSchema = z.object({
 	}),
 	/** 最近の活動 */
 	recentActivities: recentActivitiesSchema,
+	/** 執筆データ */
+	contributions: contributionSummarySchema,
 	/** 統計の最終更新日時 */
 	lastUpdated: dateTimeSchema,
 });
@@ -184,3 +202,5 @@ export type DashboardOverviewResponse = z.infer<
 export type ViewsTrendQuery = z.infer<typeof viewsTrendQuerySchema>;
 export type ViewsTrendDataPoint = z.infer<typeof viewsTrendDataPointSchema>;
 export type ViewsTrendResponse = z.infer<typeof viewsTrendResponseSchema>;
+export type ContributionDay = z.infer<typeof contributionDaySchema>;
+export type ContributionSummary = z.infer<typeof contributionSummarySchema>;

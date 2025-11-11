@@ -55,6 +55,7 @@ const sidebars: SidebarsConfig = {
 				"development/coding-standards",
 				"development/commit-conventions",
 				"development/database",
+				"development/content-authoring",
 			],
 		},
 		{

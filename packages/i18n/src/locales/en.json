@@ -95,8 +95,32 @@
 				}
 			]
 		},
+		"contributions": {
+			"title": "Writing characters",
+			"description": "A snapshot of my Japanese writing volume over the last 365 days.",
+			"cta": "Read more posts"
+		},
 		"contact": {
 			"title": "SNS & Websites"
+		}
+	},
+	"contributions": {
+		"title": "Writing Activity",
+		"subtitle": "Japanese characters in the last 365 days",
+		"rangeLabel": "Last {days} days",
+		"summary": {
+			"totalJaChars": "Japanese characters",
+			"currentStreak": "Current streak"
+		},
+		"legend": {
+			"less": "Less",
+			"more": "More"
+		},
+		"empty": "No activity yet",
+		"error": "Failed to load writing activity",
+		"retry": "Retry",
+		"units": {
+			"jaChars": "chars"
 		}
 	},
 	"footer": {

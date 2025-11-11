@@ -3,6 +3,7 @@ import type {
 	DashboardStatsQuery,
 	DashboardStatsResponse,
 	ArticleStats as SchemaArticleStats,
+	ContributionSummary as SchemaContributionSummary,
 	PopularArticle as SchemaPopularArticle,
 	RecentActivityItem as SchemaRecentActivityItem,
 } from "@saneatsu/schemas";
@@ -46,3 +47,4 @@ export type DashboardStatsBackendQuery = DashboardStatsQuery;
 export type ArticleStats = SchemaArticleStats;
 export type PopularArticle = SchemaPopularArticle;
 export type RecentActivityItem = SchemaRecentActivityItem;
+export type ContributionSummary = SchemaContributionSummary;
