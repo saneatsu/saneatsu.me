@@ -21,7 +21,7 @@ export function setupDbMocks() {
 		}),
 	});
 
-	// insertとupdateとselectとdeleteとselectDistinctのメソッドを追加
+	// insertとupdateとselect系のメソッドを追加
 	// insertはデフォルトでUpsertをサポートするチェーンを返す
 	mockDb.insert = vi.fn().mockReturnValue(createInsertMockChain());
 	mockDb.update = vi.fn();
@@ -116,6 +116,13 @@ export function setupDbMocks() {
 			as: vi.fn().mockReturnValue(result),
 		};
 	};
+
+	mockDb.select.mockReturnValue(createSimpleMockChain([]));
+	mockDb.selectDistinct = vi.fn();
+	mockDb.selectDistinct.mockReturnValue(createSimpleMockChain([]));
+
+	mockDb.select.mockReturnValue(createSimpleMockChain([]));
+	mockDb.selectDistinct.mockReturnValue(createSimpleMockChain([]));
 
 	return {
 		mockDb,
