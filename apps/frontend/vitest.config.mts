@@ -29,10 +29,21 @@ export default defineConfig({
 			reporter: ["text", "json-summary", "json", "html"],
 			reportsDirectory: "./coverage",
 		},
+		server: {
+			deps: {
+				// next-intl v4 は next/navigation を直接 import するため、Vite 経由で解決させる
+				inline: ["next-intl"],
+			},
+		},
 	},
 	resolve: {
 		alias: {
 			"@": path.resolve(__dirname, "./src"),
+			// VitestはNext.js独自の拡張子省略解決を知らないため .js 付きで解決させる
+			"next/navigation": path.resolve(
+				__dirname,
+				"./node_modules/next/navigation.js"
+			),
 		},
 	},
 });
