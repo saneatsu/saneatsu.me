@@ -332,7 +332,10 @@ export function ContributionHeatmap({
 																	const label = `${formatDateLabel(
 																		day.date,
 																		locale
-																	)} · ${day.jaChars} ${copy.metricJaCharsUnit}`;
+																	)} · ${formatNumber(
+																		day.jaChars,
+																		locale
+																	)} ${copy.metricJaCharsUnit}`;
 																	return (
 																		<Tooltip key={key}>
 																			<TooltipTrigger asChild>
