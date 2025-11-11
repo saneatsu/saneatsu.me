@@ -12,12 +12,15 @@ import { drizzle } from "drizzle-orm/libsql";
 
 import * as schema from "./schema";
 
+export * from "./lib/contributions/contribution-aggregator";
+
 // スキーマのエクスポート（Cloudflare Workersでも安全）
 export {
 	articleGalleryImages,
 	articles,
 	articleTags,
 	articleTranslations,
+	dailyArticleContributions,
 	dailyArticleViews,
 	galleryImages,
 	galleryImageTranslations,
@@ -26,6 +29,7 @@ export {
 	users,
 } from "./schema";
 export type { GalleryImageStatus } from "./schema/gallery-images";
+
 // 型定義のエクスポート（Cloudflare Workersでも安全）
 export type { DrizzleClient } from "./types";
 
