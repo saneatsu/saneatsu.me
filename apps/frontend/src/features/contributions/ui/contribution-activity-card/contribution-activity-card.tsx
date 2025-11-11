@@ -6,11 +6,6 @@ import { useMemo, useState } from "react";
 import { cn } from "@/shared/lib";
 import {
 	Button,
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
 	Skeleton,
 	Tooltip,
 	TooltipContent,
@@ -243,7 +238,7 @@ export function ContributionActivityCard({
 				{COLOR_CLASSES[metric].map((cls) => (
 					<div
 						key={`${metric}-${cls}`}
-						className={cn("size-3 rounded-sm border border-border/50", cls)}
+						className={cn("size-3 rounded-[3px] border border-border/50", cls)}
 					/>
 				))}
 			</div>
@@ -294,21 +289,19 @@ export function ContributionActivityCard({
 	);
 
 	return (
-		<Card>
-			<CardHeader>
-				<div className="flex items-start justify-between gap-4">
-					<div>
-						<CardTitle>{copy.title}</CardTitle>
-						{copy.subtitle && (
-							<CardDescription>{copy.subtitle}</CardDescription>
-						)}
-					</div>
-					<div className="text-sm text-muted-foreground text-right">
-						{copy.rangeLabel(computedRange)}
-					</div>
+		<section className="space-y-6">
+			<div className="flex items-start justify-between gap-4">
+				<div>
+					<h2 className="text-lg font-semibold">{copy.title}</h2>
+					{copy.subtitle && (
+						<p className="text-sm text-muted-foreground">{copy.subtitle}</p>
+					)}
 				</div>
-			</CardHeader>
-			<CardContent className="space-y-6">
+				<div className="text-sm text-muted-foreground text-right">
+					{copy.rangeLabel(computedRange)}
+				</div>
+			</div>
+			<div className="space-y-6">
 				{error ? (
 					<div className="space-y-3">
 						<p className="text-sm text-destructive">{copy.error}</p>
@@ -411,7 +404,7 @@ export function ContributionActivityCard({
 																			<button
 																				type="button"
 																				className={cn(
-																					"size-3 rounded-[2px] border border-border/40",
+																					"size-3 rounded-[3px] border border-border/40",
 																					COLOR_CLASSES[metric][intensityIndex]
 																				)}
 																				aria-label={label}
@@ -437,7 +430,7 @@ export function ContributionActivityCard({
 						</div>
 					</>
 				)}
-			</CardContent>
-		</Card>
+			</div>
+		</section>
 	);
 }
