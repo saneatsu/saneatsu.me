@@ -43,8 +43,7 @@
 			"when": 1762414360757,
 			"tag": "0005_add_status_to_gallery_images",
 			"breakpoints": true
-		}
-		,
+		},
 		{
 			"idx": 6,
 			"version": "7",
