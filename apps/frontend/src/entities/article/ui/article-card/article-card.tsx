@@ -36,7 +36,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
 		<Link href={`/blog/${article.slug}`}>
 			<div className="group cursor-pointer flex flex-row items-start gap-4">
 				{/* サムネイル画像またはフォールバック */}
-				<div className="relative w-28 md:w-40 aspect-video overflow-hidden rounded-md flex-shrink-0">
+				<div className="relative w-28 md:w-40 aspect-video overflow-hidden rounded-md shrink-0">
 					{article.cfImageId ? (
 						<Image
 							src={getCloudflareImageUrl(article.cfImageId, "medium") ?? ""}
@@ -86,19 +86,19 @@ export function ArticleCard({ article }: ArticleCardProps) {
 						{updatedDateInfo && (
 							<time className="text-xs text-muted-foreground">
 								{t("updatedAt")}:{" "}
-									{updatedDateInfo.isRelative
-										? updatedDateInfo.minutes !== undefined
-											? updatedDateInfo.minutes === 0
-												? t("justNow")
-												: t("minutesAgo", { minutes: updatedDateInfo.minutes })
-											: updatedDateInfo.hours !== undefined
-												? t("hoursAgo", { hours: updatedDateInfo.hours })
-												: updatedDateInfo.days !== undefined
-													? t("daysAgo", { days: updatedDateInfo.days })
-													: updatedDateInfo.formatted
-										: updatedDateInfo.formatted}
-								</time>
-							)}
+								{updatedDateInfo.isRelative
+									? updatedDateInfo.minutes !== undefined
+										? updatedDateInfo.minutes === 0
+											? t("justNow")
+											: t("minutesAgo", { minutes: updatedDateInfo.minutes })
+										: updatedDateInfo.hours !== undefined
+											? t("hoursAgo", { hours: updatedDateInfo.hours })
+											: updatedDateInfo.days !== undefined
+												? t("daysAgo", { days: updatedDateInfo.days })
+												: updatedDateInfo.formatted
+									: updatedDateInfo.formatted}
+							</time>
+						)}
 					</div>
 				</div>
 			</div>
