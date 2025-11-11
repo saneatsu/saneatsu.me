@@ -1,7 +1,6 @@
 "use client";
 
 import type { ContributionDay, ContributionSummary } from "@saneatsu/schemas";
-import type { ReactNode } from "react";
 import { useMemo, useState } from "react";
 
 import { cn } from "@/shared/lib";
@@ -67,7 +66,6 @@ type ContributionActivityCardProps = {
 	copy: ContributionCopy;
 	locale?: string;
 	rangeDays?: number;
-	actions?: ReactNode;
 };
 
 /** 指定したロケールで数値をフォーマットする */
@@ -159,7 +157,6 @@ const calculateCurrentStreak = (days: ContributionDay[]) => {
  * @param props.copy 表示文言セット
  * @param props.locale 数値と日付のロケール
  * @param props.rangeDays 表示する期間（日数）
- * @param props.actions 付随アクション（リンクなど）
  */
 export function ContributionActivityCard({
 	summary,
@@ -169,7 +166,6 @@ export function ContributionActivityCard({
 	copy,
 	locale = "ja-JP",
 	rangeDays,
-	actions,
 }: ContributionActivityCardProps) {
 	const [metric, setMetric] = useState<Metric>("updates");
 	// 少なくとも1日データがあれば可視化を表示
@@ -375,8 +371,6 @@ export function ContributionActivityCard({
 								})}
 							</p>
 						)}
-
-						{actions && <div className="pt-2">{actions}</div>}
 					</>
 				)}
 			</CardContent>
