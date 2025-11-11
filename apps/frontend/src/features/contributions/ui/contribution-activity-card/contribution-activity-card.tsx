@@ -38,6 +38,30 @@ const COLOR_CLASSES: Record<Metric, LegendClassList> = {
 
 type Metric = "updates" | "jaChars";
 
+const WEEKDAY_LABELS = [
+	"Mon",
+	"Tue",
+	"Wed",
+	"Thu",
+	"Fri",
+	"Sat",
+	"Sun",
+] as const;
+const MONTH_LABELS = [
+	"Jan",
+	"Feb",
+	"Mar",
+	"Apr",
+	"May",
+	"Jun",
+	"Jul",
+	"Aug",
+	"Sep",
+	"Oct",
+	"Nov",
+	"Dec",
+] as const;
+
 export type ContributionCopy = {
 	title: string;
 	subtitle?: string;
@@ -68,13 +92,20 @@ type ContributionActivityCardProps = {
 	rangeDays?: number;
 };
 
+const JST_OFFSET_MS = 9 * 60 * 60 * 1000;
+
+const toJstDate = (dateString: string) => {
+	const utcDate = new Date(`${dateString}T00:00:00Z`);
+	return new Date(utcDate.getTime() + JST_OFFSET_MS);
+};
+
 /** 指定したロケールで数値をフォーマットする */
 const formatNumber = (value: number, locale: string) =>
 	new Intl.NumberFormat(locale).format(value);
 
-/** ツールチップ用に日付をフォーマットする */
+/** ツールチップ用に日付をフォーマットする（JST基準） */
 const formatDateLabel = (dateString: string, locale: string) =>
-	new Date(`${dateString}T00:00:00`).toLocaleDateString(locale, {
+	toJstDate(dateString).toLocaleDateString(locale, {
 		year: "numeric",
 		month: "short",
 		day: "numeric",
@@ -85,23 +116,38 @@ const formatDateLabel = (dateString: string, locale: string) =>
  */
 type WeekCell = {
 	key: string;
-	day: ContributionDay;
+	day: ContributionDay | null;
 };
 
-const buildWeeks = (days: ContributionDay[]) => {
+/** 日付文字列の曜日インデックスを取得する（0 = 日曜、JST基準） */
+const getDayOfWeek = (dateString: string) => toJstDate(dateString).getUTCDay();
+
+const buildWeeks = (days: ContributionDay[], startDate: string) => {
 	const weeks: WeekCell[][] = [];
 	let currentWeek: WeekCell[] = [];
+	const paddedDays: Array<ContributionDay | null> = [];
+	const mondayAlignedOffset = (getDayOfWeek(startDate) + 6) % 7;
+
+	for (let i = 0; i < mondayAlignedOffset; i += 1) {
+		paddedDays.push(null);
+	}
 
 	for (const day of days) {
-		currentWeek.push({ key: day.date, day });
+		paddedDays.push(day);
+	}
+
+	while (paddedDays.length % 7 !== 0) {
+		paddedDays.push(null);
+	}
+
+	for (let index = 0; index < paddedDays.length; index += 1) {
+		const day = paddedDays[index];
+		const key = day?.date ?? `pad-${index}`;
+		currentWeek.push({ key, day });
 		if (currentWeek.length === 7) {
 			weeks.push(currentWeek);
 			currentWeek = [];
 		}
-	}
-
-	if (currentWeek.length > 0) {
-		weeks.push(currentWeek);
 	}
 
 	return weeks;
@@ -165,9 +211,24 @@ export function ContributionActivityCard({
 	const streak = summary ? calculateCurrentStreak(summary.days) : 0;
 	// 一度だけ週配列を計算し、再レンダーを抑制
 	const weeks = useMemo(() => {
-		if (normalizedDays.length === 0) return [];
-		return buildWeeks(normalizedDays);
-	}, [normalizedDays]);
+		if (normalizedDays.length === 0 || !summary) return [];
+		return buildWeeks(normalizedDays, summary.startDate);
+	}, [normalizedDays, summary]);
+
+	const monthLabels = useMemo(() => {
+		if (weeks.length === 0) return [];
+		return weeks.map((week, index) => {
+			const firstDay = week.find((cell) => cell.day)?.day;
+			if (!firstDay) return "";
+			const currentDate = toJstDate(firstDay.date);
+			const currentMonth = MONTH_LABELS[currentDate.getUTCMonth()];
+			if (index === 0) return currentMonth;
+			const prevDay = weeks[index - 1]?.find((cell) => cell.day)?.day;
+			if (!prevDay) return currentMonth;
+			const prevMonth = toJstDate(prevDay.date).getUTCMonth();
+			return prevMonth === currentDate.getUTCMonth() ? "" : currentMonth;
+		});
+	}, [weeks]);
 
 	const maxValue =
 		metric === "updates"
@@ -292,46 +353,86 @@ export function ContributionActivityCard({
 								</div>
 							) : hasData && isSupportedRange ? (
 								<div className="overflow-x-auto">
-									<div className="flex gap-1">
-										{weeks.map((week, weekIndex) => {
-											const weekKey =
-												week[0]?.key ??
-												`${summary?.startDate ?? "week"}-${weekIndex}`;
-											return (
-												<div key={weekKey} className="flex flex-col gap-1">
-													{week.map(({ key, day }) => {
-														const value =
-															metric === "updates" ? day.updates : day.jaChars;
-														const intensity = getIntensity(value, maxValue);
-														const intensityIndex = Math.max(
-															0,
-															Math.min(
-																intensity,
-																COLOR_CLASSES[metric].length - 1
-															)
-														) as 0 | 1 | 2 | 3 | 4;
-														const label = `${formatDateLabel(day.date, locale)} · ${day.updates} ${copy.metricUpdatesUnit} · ${day.jaChars} ${copy.metricJaCharsUnit}`;
-														return (
-															<Tooltip key={key}>
-																<TooltipTrigger asChild>
-																	<button
-																		type="button"
-																		className={cn(
-																			"size-3 rounded-[2px] border border-border/40",
-																			COLOR_CLASSES[metric][intensityIndex]
-																		)}
-																		aria-label={label}
-																		aria-pressed={value > 0}
-																		data-intensity={intensity}
-																	/>
-																</TooltipTrigger>
-																<TooltipContent>{label}</TooltipContent>
-															</Tooltip>
-														);
-													})}
-												</div>
-											);
-										})}
+									<div className="min-w-max space-y-1">
+										<div className="flex items-center gap-1 pl-10">
+											<span className="w-8" aria-hidden="true" />
+											<div className="flex gap-1">
+												{weeks.map((week, weekIndex) => {
+													const monthKey =
+														week.find((cell) => cell.day)?.day?.date ??
+														`month-${weekIndex}`;
+													return (
+														<span
+															key={monthKey}
+															className="w-3 text-[10px] text-muted-foreground text-center"
+														>
+															{monthLabels[weekIndex]}
+														</span>
+													);
+												})}
+											</div>
+										</div>
+										<div className="flex gap-1">
+											<div className="flex flex-col gap-1 pr-2 text-[10px] text-muted-foreground">
+												{WEEKDAY_LABELS.map((label) => (
+													<span key={label} className="h-3 leading-3">
+														{label}
+													</span>
+												))}
+											</div>
+											<div className="flex gap-1">
+												{weeks.map((week, weekIndex) => {
+													const weekKey =
+														week[0]?.key ??
+														`${summary?.startDate ?? "week"}-${weekIndex}`;
+													return (
+														<div key={weekKey} className="flex flex-col gap-1">
+															{week.map(({ key, day }) => {
+																if (!day) {
+																	return (
+																		<div
+																			key={key}
+																			className="size-3"
+																			aria-hidden="true"
+																		/>
+																	);
+																}
+																const value =
+																	metric === "updates"
+																		? day.updates
+																		: day.jaChars;
+																const intensity = getIntensity(value, maxValue);
+																const intensityIndex = Math.max(
+																	0,
+																	Math.min(
+																		intensity,
+																		COLOR_CLASSES[metric].length - 1
+																	)
+																) as 0 | 1 | 2 | 3 | 4;
+																const label = `${formatDateLabel(day.date, locale)} · ${day.updates} ${copy.metricUpdatesUnit} · ${day.jaChars} ${copy.metricJaCharsUnit}`;
+																return (
+																	<Tooltip key={key}>
+																		<TooltipTrigger asChild>
+																			<button
+																				type="button"
+																				className={cn(
+																					"size-3 rounded-[2px] border border-border/40",
+																					COLOR_CLASSES[metric][intensityIndex]
+																				)}
+																				aria-label={label}
+																				aria-pressed={value > 0}
+																				data-intensity={intensity}
+																			/>
+																		</TooltipTrigger>
+																		<TooltipContent>{label}</TooltipContent>
+																	</Tooltip>
+																);
+															})}
+														</div>
+													);
+												})}
+											</div>
+										</div>
 									</div>
 									{renderLegend()}
 								</div>
