@@ -3,6 +3,14 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { articlesRoute } from "@/routes/articles";
 import { setupDbMocks } from "@/utils/drizzle-test";
 
+const recordArticleContributionMock = vi.hoisted(() => vi.fn());
+const buildContributionTextMock = vi.hoisted(() => vi.fn());
+
+vi.mock("@/lib/record-article-contribution", () => ({
+	recordArticleContribution: recordArticleContributionMock,
+	buildContributionText: buildContributionTextMock,
+}));
+
 // 翻訳サービスのモック
 const mockTranslateArticle = vi.fn();
 vi.mock("@/services/gemini-translation/gemini-translation", () => ({
@@ -20,6 +28,7 @@ vi.mock("@saneatsu/db/worker", () => ({
 	galleryImages: {},
 	tags: {},
 	tagTranslations: {},
+	dailyArticleContributions: {},
 	users: {},
 	createDatabaseClient: vi.fn(),
 }));
@@ -32,6 +41,7 @@ vi.mock("@saneatsu/db", () => ({
 	galleryImages: {},
 	tags: {},
 	tagTranslations: {},
+	dailyArticleContributions: {},
 	users: {},
 	createDatabaseClient: vi.fn(),
 }));
@@ -39,6 +49,14 @@ vi.mock("@saneatsu/db", () => ({
 describe("POST /articles - 記事作成", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
+		recordArticleContributionMock.mockReset();
+		buildContributionTextMock.mockReset();
+		buildContributionTextMock.mockImplementation(
+			({ title, content }: { title?: string | null; content?: string | null }) =>
+				[title, content]
+					.filter((value) => typeof value === "string" && value.length > 0)
+					.join("\n")
+		);
 	});
 
 	it("記事を正常に作成する", async () => {
