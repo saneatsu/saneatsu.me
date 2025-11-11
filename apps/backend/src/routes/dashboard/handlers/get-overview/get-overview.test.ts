@@ -4,6 +4,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { setupDbMocks } from "@/utils/drizzle-test";
 
+const getContributionSummaryMock = vi.hoisted(() => vi.fn());
+
+vi.mock("@/lib/get-contribution-summary", () => ({
+	getContributionSummary: getContributionSummaryMock,
+}));
+
 import { getDashboardOverview } from "./get-overview";
 import { getDashboardOverviewRoute } from "./get-overview.openapi";
 
@@ -33,6 +39,19 @@ vi.mock("@saneatsu/db", () => ({
 describe("GET /dashboard/overview - ダッシュボード概要取得", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
+		getContributionSummaryMock.mockReset();
+		getContributionSummaryMock.mockResolvedValue({
+			startDate: "2025-11-09",
+			endDate: "2025-11-11",
+			totalJaChars: 1200,
+			maxJaChars: 500,
+			days: [
+				{ date: "2025-11-09", jaChars: 200 },
+				{ date: "2025-11-10", jaChars: 500 },
+				{ date: "2025-11-11", jaChars: 500 },
+			],
+			lastUpdated: "2025-11-11T00:00:00Z",
+		});
 	});
 
 	it("複数翻訳がある場合でも記事数が正しくカウントされる", async () => {
@@ -222,6 +241,18 @@ describe("GET /dashboard/overview - ダッシュボード概要取得", () => {
 
 		// 最近の活動が取得できていること
 		expect(data.recentActivities.activities).toHaveLength(1);
+
+		// 執筆データが含まれていること
+		expect(data.contributions).toMatchObject({
+			startDate: "2025-11-09",
+			endDate: "2025-11-11",
+			totalJaChars: 1200,
+			days: expect.any(Array),
+		});
+		expect(getContributionSummaryMock).toHaveBeenCalledWith(
+			expect.any(Object),
+			expect.objectContaining({ rangeDays: 365 })
+		);
 	});
 
 	it("記事数と閲覧数が正しく取得される", async () => {
@@ -332,5 +363,6 @@ describe("GET /dashboard/overview - ダッシュボード概要取得", () => {
 		expect(data.articleStats.draftArticles).toBe(30);
 		expect(data.articleStats.archivedArticles).toBe(20);
 		expect(data.articleStats.totalViews).toBe(10000);
+		expect(data.contributions).toBeDefined();
 	});
 });

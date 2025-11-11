@@ -1,8 +1,13 @@
 "use client";
 
 import { AlertCircle, BarChart3, ExternalLink } from "lucide-react";
-import { useState } from "react";
+import { createParser, useQueryState } from "nuqs";
 
+import type { ContributionCopy } from "@/features/contributions";
+import {
+	ContributionHeatmap,
+	useDashboardContributions,
+} from "@/features/contributions";
 import {
 	PopularArticles,
 	StatsCards,
@@ -10,21 +15,55 @@ import {
 	ViewsTrendChart,
 } from "@/features/dashboard";
 import { AmazonLogo, GoogleLogo, RakutenLogo } from "@/shared/image";
-import { Alert, AlertDescription } from "@/shared/ui/alert/alert";
 import {
+	Alert,
+	AlertDescription,
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@/shared/ui/card/card";
-import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@/shared/ui/select/select";
+} from "@/shared/ui";
+
+const DASHBOARD_PERIODS = [30, 90, 180, 360] as const;
+type DashboardPeriod = (typeof DASHBOARD_PERIODS)[number];
+
+const DASHBOARD_CONTRIBUTION_COPY: ContributionCopy = {
+	title: "執筆アクティビティ",
+	subtitle: "直近365日の日本語文字数",
+	rangeLabel: (days) => `直近${days}日`,
+	summaryTotalJaChars: "文字数（日本語）",
+	summaryCurrentStreak: "連続日数",
+	legendLess: "少ない",
+	legendMore: "多い",
+	empty: "まだ記録がありません",
+	error: "執筆データの取得に失敗しました",
+	retry: "再読み込み",
+	metricJaCharsUnit: "文字",
+};
+
+const isDashboardPeriod = (value: number): value is DashboardPeriod =>
+	DASHBOARD_PERIODS.includes(value as DashboardPeriod);
+
+const dashboardPeriodParser = createParser<DashboardPeriod>({
+	parse(value) {
+		const parsed = Number.parseInt(value, 10);
+		return isDashboardPeriod(parsed) ? parsed : null;
+	},
+	serialize(value) {
+		return value.toString();
+	},
+})
+	.withDefault(30)
+	.withOptions({
+		history: "replace",
+		clearOnDefault: true,
+	});
 
 /**
  * ダッシュボードのメインコンポーネント
@@ -32,9 +71,18 @@ import {
  */
 export function DashboardMain() {
 	/**
-	 * 選択された日数の状態管理
+	 * 選択された日数の状態管理（URLクエリと同期）
 	 */
-	const [selectedDays, setSelectedDays] = useState<30 | 90 | 180 | 360>(30);
+	const [selectedDays, setSelectedDays] = useQueryState(
+		"days",
+		dashboardPeriodParser
+	);
+
+	const handlePeriodChange = (value: string) => {
+		const period = Number.parseInt(value, 10);
+		if (!isDashboardPeriod(period)) return;
+		void setSelectedDays(period);
+	};
 
 	/**
 	 * ダッシュボード概要データを取得
@@ -44,6 +92,13 @@ export function DashboardMain() {
 		isLoading,
 		error,
 	} = useDashboardOverview({ language: "ja" });
+
+	const {
+		data: contributionSummary,
+		isLoading: contributionsLoading,
+		error: contributionError,
+		refetch: refetchContributionSummary,
+	} = useDashboardContributions({ language: "ja" });
 
 	/**
 	 * 最終更新日時をフォーマット
@@ -147,6 +202,18 @@ export function DashboardMain() {
 				loading={isLoading}
 			/>
 
+			<ContributionHeatmap
+				summary={contributionSummary}
+				isLoading={contributionsLoading}
+				error={contributionError}
+				onRetry={() => {
+					void refetchContributionSummary();
+				}}
+				copy={DASHBOARD_CONTRIBUTION_COPY}
+				locale="ja-JP"
+				rangeDays={contributionSummary?.days.length ?? 365}
+			/>
+
 			{/* 期間分析セクション */}
 			<Card>
 				<CardHeader>
@@ -162,20 +229,17 @@ export function DashboardMain() {
 						</div>
 						<Select
 							value={selectedDays.toString()}
-							onValueChange={(value) =>
-								setSelectedDays(
-									Number.parseInt(value, 10) as 30 | 90 | 180 | 360
-								)
-							}
+							onValueChange={handlePeriodChange}
 						>
 							<SelectTrigger className="w-[120px]">
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value="30">30日</SelectItem>
-								<SelectItem value="90">90日</SelectItem>
-								<SelectItem value="180">180日</SelectItem>
-								<SelectItem value="360">360日</SelectItem>
+								{DASHBOARD_PERIODS.map((period) => (
+									<SelectItem key={period} value={period.toString()}>
+										{period}日
+									</SelectItem>
+								))}
 							</SelectContent>
 						</Select>
 					</div>

@@ -12,6 +12,7 @@ import { galleryRoute } from "./routes/gallery";
 import { geocodingRoute } from "./routes/geocoding";
 import { imagesRoute } from "./routes/images";
 import { ogpRoute } from "./routes/ogp";
+import { publicRoute } from "./routes/public";
 import { tagsRoute } from "./routes/tags";
 
 /**
@@ -92,6 +93,7 @@ export function createApp(options?: { isDevelopment?: boolean }) {
 		.route("/api", geocodingRoute)
 		.route("/api/images", imagesRoute)
 		.route("/api/ogp", ogpRoute)
+		.route("/api/public", publicRoute)
 		.route("/api/tags", tagsRoute)
 		// ルートエンドポイント
 		.get("/", (c) => {

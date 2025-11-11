@@ -18,6 +18,10 @@
 		"./src/schema": {
 			"types": "./src/schema/index.ts",
 			"default": "./src/schema/index.ts"
+		},
+		"./lib/contributions/contribution-aggregator": {
+			"types": "./src/lib/contributions/contribution-aggregator.ts",
+			"default": "./src/lib/contributions/contribution-aggregator.ts"
 		}
 	},
 	"scripts": {
@@ -32,6 +36,7 @@
 		"db:push": "drizzle-kit push",
 		"db:studio": "drizzle-kit studio",
 		"db:seed": "tsx src/seed.ts",
+		"db:backfill-contributions": "tsx src/scripts/backfill-contributions.ts",
 		"seed": "tsx src/seed.ts"
 	},
 	"dependencies": {

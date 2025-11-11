@@ -35,12 +35,14 @@ export function createDatabaseClient(env: DatabaseEnv) {
 	return drizzle(client, { schema });
 }
 
+export * from "./lib/contributions/contribution-aggregator";
 // スキーマのエクスポート（既存のindex.tsと同じ）
 export {
 	articleGalleryImages,
 	articles,
 	articleTags,
 	articleTranslations,
+	dailyArticleContributions,
 	dailyArticleViews,
 	galleryImages,
 	galleryImageTranslations,
