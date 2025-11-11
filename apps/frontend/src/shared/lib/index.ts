@@ -73,6 +73,8 @@ export {
 } from "./remark-amazon/remark-amazon";
 // Remark Comment
 export { remarkComment } from "./remark-comment/remark-comment";
+// Remark Google Maps
+export { remarkGoogleMaps } from "./remark-google-maps/remark-google-maps";
 // Remark Product Card
 export { remarkProductCard } from "./remark-product-card/remark-product-card";
 // Remark Rakuten
