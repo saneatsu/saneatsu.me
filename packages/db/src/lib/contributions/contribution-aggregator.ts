@@ -35,6 +35,7 @@ export function calculateJapaneseCharDelta(
  * 日付を JST の yyyy-mm-dd に正規化
  */
 export function toJstDateKey(date: Date): string {
+	// en-CA は YYYY-MM-DD 形式を返すロケールなので ISO 風のフォーマットを得るのに便利
 	const formatter = new Intl.DateTimeFormat("en-CA", {
 		year: "numeric",
 		month: "2-digit",
