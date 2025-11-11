@@ -718,7 +718,6 @@ function generateContributionSeries(days = 365) {
 	const now = Date.now();
 	const contributions: Array<{
 		date: string;
-		updates: number;
 		jaCharCount: number;
 		updatedAt: string;
 	}> = [];
@@ -747,7 +746,6 @@ function generateContributionSeries(days = 365) {
 
 		contributions.push({
 			date: dateKey,
-			updates,
 			jaCharCount,
 			updatedAt: new Date().toISOString(),
 		});

@@ -12,7 +12,6 @@ import { getContributionSummary } from "@/lib/get-contribution-summary";
 const createMockDb = (
 	rows: Array<{
 		date: string;
-		updates: number;
 		jaCharCount: number;
 		updatedAt: string;
 	}>
@@ -35,13 +34,11 @@ describe("getContributionSummary", () => {
 		const db = createMockDb([
 			{
 				date: "2025-11-10",
-				updates: 2,
 				jaCharCount: 500,
 				updatedAt: "2025-11-10T09:00:00Z",
 			},
 			{
 				date: "2025-11-11",
-				updates: 1,
 				jaCharCount: 200,
 				updatedAt: "2025-11-11T08:00:00Z",
 			},
@@ -54,14 +51,12 @@ describe("getContributionSummary", () => {
 
 		expect(summary.startDate).toBe("2025-11-09");
 		expect(summary.endDate).toBe("2025-11-11");
-		expect(summary.totalUpdates).toBe(3);
 		expect(summary.totalJaChars).toBe(700);
-		expect(summary.maxUpdates).toBe(2);
 		expect(summary.maxJaChars).toBe(500);
 		expect(summary.days).toEqual([
-			{ date: "2025-11-09", updates: 0, jaChars: 0 },
-			{ date: "2025-11-10", updates: 2, jaChars: 500 },
-			{ date: "2025-11-11", updates: 1, jaChars: 200 },
+			{ date: "2025-11-09", jaChars: 0 },
+			{ date: "2025-11-10", jaChars: 500 },
+			{ date: "2025-11-11", jaChars: 200 },
 		]);
 	});
 
@@ -74,7 +69,6 @@ describe("getContributionSummary", () => {
 			now: fixedNow,
 		});
 
-		expect(summary.totalUpdates).toBe(0);
 		expect(summary.lastUpdated).toMatch(/^2025-11-11/);
 	});
 });

@@ -25,14 +25,12 @@ describe("GET /api/public/contributions", () => {
 		getContributionSummaryMock.mockResolvedValue({
 			startDate: "2025-11-09",
 			endDate: "2025-11-11",
-			totalUpdates: 5,
 			totalJaChars: 1200,
-			maxUpdates: 2,
 			maxJaChars: 500,
 			days: [
-				{ date: "2025-11-09", updates: 1, jaChars: 200 },
-				{ date: "2025-11-10", updates: 2, jaChars: 500 },
-				{ date: "2025-11-11", updates: 2, jaChars: 500 },
+				{ date: "2025-11-09", jaChars: 200 },
+				{ date: "2025-11-10", jaChars: 500 },
+				{ date: "2025-11-11", jaChars: 500 },
 			],
 			lastUpdated: "2025-11-11T00:00:00Z",
 		});
@@ -54,7 +52,7 @@ describe("GET /api/public/contributions", () => {
 		expect(res.status).toBe(200);
 		expect(res.headers.get("cache-control")).toContain("max-age=300");
 		const body = await res.json();
-		expect(body.totalUpdates).toBe(5);
+		expect(body.totalJaChars).toBe(1200);
 		expect(getContributionSummaryMock).toHaveBeenCalledWith(
 			expect.any(Object),
 			expect.objectContaining({ rangeDays: 180 })

@@ -9,8 +9,6 @@ export const dailyArticleContributions = sqliteTable(
 	{
 		/** 日本時間の日付 (YYYY-MM-DD) */
 		date: text("date").primaryKey(),
-		/** その日に行われた更新イベント数 */
-		updates: integer("updates").notNull().default(0),
 		/** その日に増えた日本語文字数 */
 		jaCharCount: integer("ja_char_count").notNull().default(0),
 		/** レコードの最終更新日時 */

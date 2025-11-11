@@ -41,7 +41,6 @@ export async function getContributionSummary(
 	const rows = await db
 		.select({
 			date: dailyArticleContributions.date,
-			updates: dailyArticleContributions.updates,
 			jaCharCount: dailyArticleContributions.jaCharCount,
 			updatedAt: dailyArticleContributions.updatedAt,
 		})
@@ -62,14 +61,11 @@ export async function getContributionSummary(
 		const row = rowMap.get(date);
 		return {
 			date,
-			updates: row ? Number(row.updates) : 0,
 			jaChars: row ? Number(row.jaCharCount) : 0,
 		};
 	});
 
-	const totalUpdates = days.reduce((sum, day) => sum + day.updates, 0);
 	const totalJaChars = days.reduce((sum, day) => sum + day.jaChars, 0);
-	const maxUpdates = days.reduce((max, day) => Math.max(max, day.updates), 0);
 	const maxJaChars = days.reduce((max, day) => Math.max(max, day.jaChars), 0);
 
 	const lastUpdated = rows.length
@@ -82,9 +78,7 @@ export async function getContributionSummary(
 	return {
 		startDate,
 		endDate,
-		totalUpdates,
 		totalJaChars,
-		maxUpdates,
 		maxJaChars,
 		days,
 		lastUpdated,

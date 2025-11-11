@@ -43,14 +43,12 @@ describe("GET /dashboard/overview - ダッシュボード概要取得", () => {
 		getContributionSummaryMock.mockResolvedValue({
 			startDate: "2025-11-09",
 			endDate: "2025-11-11",
-			totalUpdates: 5,
 			totalJaChars: 1200,
-			maxUpdates: 2,
 			maxJaChars: 500,
 			days: [
-				{ date: "2025-11-09", updates: 1, jaChars: 200 },
-				{ date: "2025-11-10", updates: 2, jaChars: 500 },
-				{ date: "2025-11-11", updates: 2, jaChars: 500 },
+				{ date: "2025-11-09", jaChars: 200 },
+				{ date: "2025-11-10", jaChars: 500 },
+				{ date: "2025-11-11", jaChars: 500 },
 			],
 			lastUpdated: "2025-11-11T00:00:00Z",
 		});
@@ -248,7 +246,6 @@ describe("GET /dashboard/overview - ダッシュボード概要取得", () => {
 		expect(data.contributions).toMatchObject({
 			startDate: "2025-11-09",
 			endDate: "2025-11-11",
-			totalUpdates: 5,
 			totalJaChars: 1200,
 			days: expect.any(Array),
 		});

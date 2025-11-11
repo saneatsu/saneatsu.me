@@ -2,16 +2,13 @@ import { createRoute, z } from "@hono/zod-openapi";
 
 const contributionDaySchema = z.object({
 	date: z.string().openapi({ example: "2025-11-11" }),
-	updates: z.number().int().openapi({ example: 2 }),
 	jaChars: z.number().int().openapi({ example: 800 }),
 });
 
 const contributionSummarySchema = z.object({
 	startDate: z.string().openapi({ example: "2024-11-12" }),
 	endDate: z.string().openapi({ example: "2025-11-11" }),
-	totalUpdates: z.number().int().openapi({ example: 320 }),
 	totalJaChars: z.number().int().openapi({ example: 145000 }),
-	maxUpdates: z.number().int().openapi({ example: 6 }),
 	maxJaChars: z.number().int().openapi({ example: 4200 }),
 	days: z.array(contributionDaySchema).max(366),
 	lastUpdated: z.string().datetime(),
