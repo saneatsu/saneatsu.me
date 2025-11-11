@@ -3,11 +3,11 @@ import { and, eq, inArray } from "drizzle-orm";
 
 import type { Env } from "@/env";
 import { getDatabase } from "@/lib";
+import { extractGalleryCfImageIds } from "@/lib/extract-gallery-cf-image-ids";
 import {
 	buildContributionText,
 	recordArticleContribution,
 } from "@/lib/record-article-contribution";
-import { extractGalleryCfImageIds } from "@/lib/extract-gallery-cf-image-ids";
 import { createTranslationService } from "@/services/gemini-translation/gemini-translation";
 
 import type { createArticleRoute } from "./create-article.openapi";
@@ -105,12 +105,6 @@ export const createArticle: Handler = async (c) => {
 				eventDate: new Date(now),
 			});
 		}
-
-		await recordArticleContribution({
-			db,
-			nextContent: content,
-			eventDate: new Date(now),
-		});
 
 		// 6. 英語への自動翻訳を実行（公開記事の場合のみ）
 		if (status === "published" && c.env.GEMINI_API_KEY) {
