@@ -52,7 +52,13 @@ describe("POST /articles - 記事作成", () => {
 		recordArticleContributionMock.mockReset();
 		buildContributionTextMock.mockReset();
 		buildContributionTextMock.mockImplementation(
-			({ title, content }: { title?: string | null; content?: string | null }) =>
+			({
+				title,
+				content,
+			}: {
+				title?: string | null;
+				content?: string | null;
+			}) =>
 				[title, content]
 					.filter((value) => typeof value === "string" && value.length > 0)
 					.join("\n")
