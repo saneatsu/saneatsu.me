@@ -14,10 +14,10 @@ import {
 
 const COLOR_CLASSES = [
 	"bg-muted text-muted-foreground",
-	"bg-sky-100 text-sky-900 dark:bg-sky-950/40 dark:text-sky-100",
-	"bg-sky-200 text-sky-900 dark:bg-sky-900/70 dark:text-sky-100",
-	"bg-sky-400 text-white dark:bg-sky-700",
-	"bg-sky-600 text-white dark:bg-sky-500",
+	"bg-emerald-100 text-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-100",
+	"bg-emerald-200 text-emerald-900 dark:bg-emerald-900/70 dark:text-emerald-100",
+	"bg-emerald-400 text-white dark:bg-emerald-700",
+	"bg-emerald-600 text-white dark:bg-emerald-500",
 ] as const;
 
 const WEEKDAY_LABELS = [
