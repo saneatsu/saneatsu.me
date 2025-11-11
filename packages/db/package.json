@@ -18,6 +18,10 @@
 		"./src/schema": {
 			"types": "./src/schema/index.ts",
 			"default": "./src/schema/index.ts"
+		},
+		"./lib/contributions/contribution-aggregator": {
+			"types": "./src/lib/contributions/contribution-aggregator.ts",
+			"default": "./src/lib/contributions/contribution-aggregator.ts"
 		}
 	},
 	"scripts": {
