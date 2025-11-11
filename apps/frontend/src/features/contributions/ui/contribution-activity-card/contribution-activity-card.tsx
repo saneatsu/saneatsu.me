@@ -237,22 +237,17 @@ export function ContributionActivityCard({
 
 	/** 凡例エリアを描画する */
 	const renderLegend = () => (
-		<div className="flex flex-col gap-1 text-xs text-muted-foreground">
-			<div className="flex items-center gap-2">
-				<div className="flex items-center gap-1">
-					{COLOR_CLASSES[metric].map((cls) => (
-						<div
-							key={`${metric}-${cls}`}
-							className={cn("size-3 rounded-sm border border-border/50", cls)}
-						/>
-					))}
-				</div>
-				<span className="ml-auto">{copy.legendLabel}</span>
+		<div className="flex items-center gap-2 text-xs text-muted-foreground">
+			<span>{copy.legendLess}</span>
+			<div className="flex items-center gap-1">
+				{COLOR_CLASSES[metric].map((cls) => (
+					<div
+						key={`${metric}-${cls}`}
+						className={cn("size-3 rounded-sm border border-border/50", cls)}
+					/>
+				))}
 			</div>
-			<div className="flex items-center justify-between">
-				<span>{copy.legendLess}</span>
-				<span>{copy.legendMore}</span>
-			</div>
+			<span>{copy.legendMore}</span>
 		</div>
 	);
 
@@ -434,7 +429,7 @@ export function ContributionActivityCard({
 											</div>
 										</div>
 									</div>
-									{renderLegend()}
+									<div className="flex justify-end pt-1">{renderLegend()}</div>
 								</div>
 							) : (
 								<p className="text-sm text-muted-foreground">{copy.empty}</p>
