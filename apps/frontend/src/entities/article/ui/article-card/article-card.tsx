@@ -93,7 +93,9 @@ export function ArticleCard({ article }: ArticleCardProps) {
 											: t("minutesAgo", { minutes: updatedDateInfo.minutes })
 										: updatedDateInfo.hours !== undefined
 											? t("hoursAgo", { hours: updatedDateInfo.hours })
-											: t("daysAgo", { days: updatedDateInfo.days })
+											: updatedDateInfo.days !== undefined
+												? t("daysAgo", { days: updatedDateInfo.days })
+												: updatedDateInfo.formatted
 									: updatedDateInfo.formatted}
 							</time>
 						)}
