@@ -1757,3 +1757,34 @@ export const AlertsWithBlockquote: Story = {
 		);
 	},
 };
+
+export const GoogleMapsEmbedExample: Story = {
+	name: "Google Maps埋め込み",
+	tags: ["validation"],
+	args: {
+		content:
+			"https://www.google.com/maps/place/Chocolaterie+%26+Bar+ROND-POINT+by+Hirofumi+Tanakamaru/@35.6599597,139.6932463,13z",
+		language: "ja",
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		await waitFor(() => {
+			const iframe = canvasElement.querySelector("iframe");
+			expect(iframe).toBeTruthy();
+		});
+	},
+};
+
+export const GoogleMapsIframeSnippet: Story = {
+	name: "Google Maps iframeスニペット",
+	tags: ["validation"],
+	args: {
+		content: `<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d51867.071777654615!2d139.6932463!3d35.6599597!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3543fa0103282099%3A0xe2e113e93417702!2z44Gf44Gr44GC44KJ44GX!5e0!3m2!1sja!2sjp!4v1762780793936!5m2!1sja!2sjp" width="600" height="450" style="border:0;" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`,
+		language: "ja",
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		await waitFor(() => {
+			const iframe = canvasElement.querySelector("iframe");
+			expect(iframe).toBeTruthy();
+		});
+	},
+};

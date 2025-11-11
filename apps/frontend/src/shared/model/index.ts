@@ -24,6 +24,7 @@ export type { ApiError, PaginatedResponse, PaginationInfo } from "./common";
 // Dashboard
 export type {
 	ArticleStats,
+	ContributionSummary,
 	DashboardOverviewRequestQuery,
 	DashboardOverviewResponseData,
 	DashboardStatsBackendQuery,
