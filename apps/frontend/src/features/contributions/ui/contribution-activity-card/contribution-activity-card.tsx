@@ -72,10 +72,6 @@ type ContributionActivityCardProps = {
 const formatNumber = (value: number, locale: string) =>
 	new Intl.NumberFormat(locale).format(value);
 
-/** 日付文字列の曜日インデックスを取得する（0 = 日曜） */
-const getDayOfWeek = (dateString: string) =>
-	new Date(`${dateString}T00:00:00`).getUTCDay();
-
 /** ツールチップ用に日付をフォーマットする */
 const formatDateLabel = (dateString: string, locale: string) =>
 	new Date(`${dateString}T00:00:00`).toLocaleDateString(locale, {
@@ -85,25 +81,16 @@ const formatDateLabel = (dateString: string, locale: string) =>
 	});
 
 /**
- * 執筆データを53週×7日のグリッドに並べ替える。
- * 先頭週の欠損は null でパディングする。
+ * 執筆データを最大7件ずつの列に並べ替える。
  */
 type WeekCell = {
 	key: string;
-	day: ContributionDay | null;
+	day: ContributionDay;
 };
 
-const buildWeeks = (days: ContributionDay[], startDate: string) => {
+const buildWeeks = (days: ContributionDay[]) => {
 	const weeks: WeekCell[][] = [];
 	let currentWeek: WeekCell[] = [];
-	let padCounter = 0;
-	const offset = getDayOfWeek(startDate);
-	if (offset > 0) {
-		currentWeek = Array.from({ length: offset }, () => ({
-			key: `pad-${padCounter++}`,
-			day: null,
-		}));
-	}
 
 	for (const day of days) {
 		currentWeek.push({ key: day.date, day });
@@ -114,9 +101,6 @@ const buildWeeks = (days: ContributionDay[], startDate: string) => {
 	}
 
 	if (currentWeek.length > 0) {
-		while (currentWeek.length < 7) {
-			currentWeek.push({ key: `pad-${padCounter++}`, day: null });
-		}
 		weeks.push(currentWeek);
 	}
 
@@ -168,16 +152,22 @@ export function ContributionActivityCard({
 	rangeDays,
 }: ContributionActivityCardProps) {
 	const [metric, setMetric] = useState<Metric>("updates");
+	const dayCount = summary?.days.length ?? 0;
+	const isSupportedRange = dayCount === 365 || dayCount === 366;
+	const normalizedDays = useMemo(() => {
+		if (!summary || !isSupportedRange) return [];
+		return summary.days;
+	}, [summary, isSupportedRange]);
 	// 少なくとも1日データがあれば可視化を表示
 	const hasData =
-		summary?.days.some((day) => day.updates > 0 || day.jaChars > 0) ?? false;
+		normalizedDays.some((day) => day.updates > 0 || day.jaChars > 0) ?? false;
 	const computedRange = rangeDays ?? summary?.days.length ?? 365;
 	const streak = summary ? calculateCurrentStreak(summary.days) : 0;
 	// 一度だけ週配列を計算し、再レンダーを抑制
 	const weeks = useMemo(() => {
-		if (!summary) return [];
-		return buildWeeks(summary.days, summary.startDate);
-	}, [summary]);
+		if (normalizedDays.length === 0) return [];
+		return buildWeeks(normalizedDays);
+	}, [normalizedDays]);
 
 	const maxValue =
 		metric === "updates"
@@ -300,21 +290,18 @@ export function ContributionActivityCard({
 									<Skeleton className="h-24 w-full" />
 									<Skeleton className="h-4 w-1/2" />
 								</div>
-							) : hasData ? (
+							) : hasData && isSupportedRange ? (
 								<div className="overflow-x-auto">
 									<div className="flex gap-1">
 										{weeks.map((week, weekIndex) => {
 											const weekKey =
-												week.find((cell) => cell.day)?.day?.date ??
 												week[0]?.key ??
 												`${summary?.startDate ?? "week"}-${weekIndex}`;
 											return (
 												<div key={weekKey} className="flex flex-col gap-1">
 													{week.map(({ key, day }) => {
 														const value =
-															metric === "updates"
-																? (day?.updates ?? 0)
-																: (day?.jaChars ?? 0);
+															metric === "updates" ? day.updates : day.jaChars;
 														const intensity = getIntensity(value, maxValue);
 														const intensityIndex = Math.max(
 															0,
@@ -323,10 +310,8 @@ export function ContributionActivityCard({
 																COLOR_CLASSES[metric].length - 1
 															)
 														) as 0 | 1 | 2 | 3 | 4;
-														const label = day
-															? `${formatDateLabel(day.date, locale)} · ${day.updates} ${copy.metricUpdatesUnit} · ${day.jaChars} ${copy.metricJaCharsUnit}`
-															: undefined;
-														return day ? (
+														const label = `${formatDateLabel(day.date, locale)} · ${day.updates} ${copy.metricUpdatesUnit} · ${day.jaChars} ${copy.metricJaCharsUnit}`;
+														return (
 															<Tooltip key={key}>
 																<TooltipTrigger asChild>
 																	<button
@@ -342,12 +327,6 @@ export function ContributionActivityCard({
 																</TooltipTrigger>
 																<TooltipContent>{label}</TooltipContent>
 															</Tooltip>
-														) : (
-															<div
-																key={key}
-																className="size-3 rounded-sm border border-dashed border-border/30 bg-muted"
-																aria-hidden="true"
-															/>
 														);
 													})}
 												</div>
