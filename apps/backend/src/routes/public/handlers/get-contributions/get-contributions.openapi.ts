@@ -45,7 +45,7 @@ export const getPublicContributionsRoute = createRoute({
 					schema: contributionSummarySchema,
 				},
 			},
-			description: "公開用の草データ概要",
+			description: "公開用の執筆データ概要",
 		},
 		400: {
 			content: {
@@ -65,6 +65,6 @@ export const getPublicContributionsRoute = createRoute({
 		},
 	},
 	tags: ["Public"],
-	summary: "公開用の草データを取得",
-	description: "公開プロフィールなどで使用する草データを返します",
+	summary: "公開用の執筆データを取得",
+	description: "公開プロフィールなどで使用する執筆データを返します",
 });

@@ -244,7 +244,7 @@ describe("GET /dashboard/overview - ダッシュボード概要取得", () => {
 		// 最近の活動が取得できていること
 		expect(data.recentActivities.activities).toHaveLength(1);
 
-		// 草データが含まれていること
+		// 執筆データが含まれていること
 		expect(data.contributions).toMatchObject({
 			startDate: "2025-11-09",
 			endDate: "2025-11-11",
