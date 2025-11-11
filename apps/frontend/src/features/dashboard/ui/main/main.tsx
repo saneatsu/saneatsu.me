@@ -3,6 +3,11 @@
 import { AlertCircle, BarChart3, ExternalLink } from "lucide-react";
 import { createParser, useQueryState } from "nuqs";
 
+import type { ContributionCopy } from "@/features/contributions";
+import {
+	ContributionActivityCard,
+	useDashboardContributions,
+} from "@/features/contributions";
 import {
 	PopularArticles,
 	StatsCards,
@@ -10,24 +15,43 @@ import {
 	ViewsTrendChart,
 } from "@/features/dashboard";
 import { AmazonLogo, GoogleLogo, RakutenLogo } from "@/shared/image";
-import { Alert, AlertDescription } from "@/shared/ui/alert/alert";
 import {
+	Alert,
+	AlertDescription,
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@/shared/ui/card/card";
-import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@/shared/ui/select/select";
+} from "@/shared/ui";
 
 const DASHBOARD_PERIODS = [30, 90, 180, 360] as const;
 type DashboardPeriod = (typeof DASHBOARD_PERIODS)[number];
+
+const DASHBOARD_CONTRIBUTION_COPY: ContributionCopy = {
+	title: "執筆アクティビティ",
+	subtitle: "直近365日の更新状況",
+	rangeLabel: (days) => `直近${days}日`,
+	toggleUpdates: "更新数",
+	toggleJaChars: "日本語文字数",
+	summaryTotalUpdates: "総更新数",
+	summaryTotalJaChars: "総日本語文字数",
+	summaryCurrentStreak: "連続日数",
+	legendLabel: "セルの濃さ",
+	legendLess: "少ない",
+	legendMore: "多い",
+	empty: "まだ記録がありません",
+	error: "執筆データの取得に失敗しました",
+	retry: "再読み込み",
+	lastUpdatedPrefix: "最終更新",
+	metricUpdatesUnit: "更新",
+	metricJaCharsUnit: "文字",
+};
 
 const isDashboardPeriod = (value: number): value is DashboardPeriod =>
 	DASHBOARD_PERIODS.includes(value as DashboardPeriod);
@@ -74,6 +98,13 @@ export function DashboardMain() {
 		isLoading,
 		error,
 	} = useDashboardOverview({ language: "ja" });
+
+	const {
+		data: contributionSummary,
+		isLoading: contributionsLoading,
+		error: contributionError,
+		refetch: refetchContributionSummary,
+	} = useDashboardContributions({ language: "ja" });
 
 	/**
 	 * 最終更新日時をフォーマット
@@ -175,6 +206,18 @@ export function DashboardMain() {
 					}
 				}
 				loading={isLoading}
+			/>
+
+			<ContributionActivityCard
+				summary={contributionSummary}
+				isLoading={contributionsLoading}
+				error={contributionError}
+				onRetry={() => {
+					void refetchContributionSummary();
+				}}
+				copy={DASHBOARD_CONTRIBUTION_COPY}
+				locale="ja-JP"
+				rangeDays={contributionSummary?.days.length ?? 365}
 			/>
 
 			{/* 期間分析セクション */}
