@@ -193,12 +193,12 @@ export function ContributionHeatmap({
 	rangeDays,
 }: ContributionHeatmapProps) {
 	const [metric, setMetric] = useState<Metric>("updates");
-	const dayCount = summary?.days.length ?? 0;
-	const isSupportedRange = dayCount === 365 || dayCount === 366;
 	const normalizedDays = useMemo(() => {
-		if (!summary || !isSupportedRange) return [];
-		return summary.days;
-	}, [summary, isSupportedRange]);
+		if (!summary) return [];
+		return summary.days.slice(-366);
+	}, [summary]);
+	const dayCount = normalizedDays.length;
+	const isSupportedRange = dayCount === 365 || dayCount === 366;
 	// 少なくとも1日データがあれば可視化を表示
 	const hasData =
 		normalizedDays.some((day) => day.updates > 0 || day.jaChars > 0) ?? false;
@@ -340,85 +340,100 @@ export function ContributionHeatmap({
 									<Skeleton className="h-4 w-1/2" />
 								</div>
 							) : hasData && isSupportedRange ? (
-								<div className="overflow-x-auto">
-									<div className="min-w-max space-y-1">
-										<div className="flex items-center gap-1 pl-10">
-											<span className="w-8" aria-hidden="true" />
+								<div className="space-y-2">
+									<div className="max-w-full overflow-x-auto lg:overflow-visible">
+										<div className="min-w-max space-y-2">
+											<div className="flex items-center gap-1 pl-8 lg:pl-10">
+												<span className="w-8" aria-hidden="true" />
+												<div className="flex gap-1">
+													{weeks.map((week, weekIndex) => {
+														const monthKey =
+															week.find((cell) => cell.day)?.day?.date ??
+															`month-${weekIndex}`;
+														return (
+															<span
+																key={monthKey}
+																className="w-3 text-[10px] text-muted-foreground text-center"
+															>
+																{monthLabels[weekIndex]}
+															</span>
+														);
+													})}
+												</div>
+											</div>
 											<div className="flex gap-1">
-												{weeks.map((week, weekIndex) => {
-													const monthKey =
-														week.find((cell) => cell.day)?.day?.date ??
-														`month-${weekIndex}`;
-													return (
-														<span
-															key={monthKey}
-															className="w-3 text-[10px] text-muted-foreground text-center"
-														>
-															{monthLabels[weekIndex]}
+												<div className="flex w-8 flex-col gap-1 text-[10px] text-muted-foreground">
+													{WEEKDAY_LABELS.map((label) => (
+														<span key={label} className="h-3 leading-3">
+															{label}
 														</span>
-													);
-												})}
-											</div>
-										</div>
-										<div className="flex gap-1">
-											<div className="flex flex-col gap-1 pr-2 text-[10px] text-muted-foreground">
-												{WEEKDAY_LABELS.map((label) => (
-													<span key={label} className="h-3 leading-3">
-														{label}
-													</span>
-												))}
-											</div>
-											<div className="flex gap-1">
-												{weeks.map((week, weekIndex) => {
-													const weekKey =
-														week[0]?.key ??
-														`${summary?.startDate ?? "week"}-${weekIndex}`;
-													return (
-														<div key={weekKey} className="flex flex-col gap-1">
-															{week.map(({ key, day }) => {
-																if (!day) {
-																	return (
-																		<div
-																			key={key}
-																			className="size-3"
-																			aria-hidden="true"
-																		/>
-																	);
-																}
-																const value =
-																	metric === "updates"
-																		? day.updates
-																		: day.jaChars;
-																const intensity = getIntensity(value, maxValue);
-																const intensityIndex = Math.max(
-																	0,
-																	Math.min(
-																		intensity,
-																		COLOR_CLASSES[metric].length - 1
-																	)
-																) as 0 | 1 | 2 | 3 | 4;
-																const label = `${formatDateLabel(day.date, locale)} · ${day.updates} ${copy.metricUpdatesUnit} · ${day.jaChars} ${copy.metricJaCharsUnit}`;
-																return (
-																	<Tooltip key={key}>
-																		<TooltipTrigger asChild>
-																			<button
-																				type="button"
-																				className={cn(
-																					"size-3 rounded-[3px] border border-border/40",
-																					COLOR_CLASSES[metric][intensityIndex]
-																				)}
-																				aria-label={label}
-																				aria-pressed={value > 0}
-																				data-intensity={intensity}
+													))}
+												</div>
+												<div className="flex gap-1">
+													{weeks.map((week, weekIndex) => {
+														const weekKey =
+															week[0]?.key ??
+															`${summary?.startDate ?? "week"}-${weekIndex}`;
+														return (
+															<div
+																key={weekKey}
+																className="flex flex-col gap-1"
+															>
+																{week.map(({ key, day }) => {
+																	if (!day) {
+																		return (
+																			<div
+																				key={key}
+																				className="size-3"
+																				aria-hidden="true"
 																			/>
-																		</TooltipTrigger>
-																		<TooltipContent>{label}</TooltipContent>
-																	</Tooltip>
-																);
-															})}
-														</div>
-													);
-												})}
+																		);
+																	}
+																	const value =
+																		metric === "updates"
+																			? day.updates
+																			: day.jaChars;
+																	const intensity = getIntensity(
+																		value,
+																		maxValue
+																	);
+																	const intensityIndex = Math.max(
+																		0,
+																		Math.min(
+																			intensity,
+																			COLOR_CLASSES[metric].length - 1
+																		)
+																	) as 0 | 1 | 2 | 3 | 4;
+																	const label = `${formatDateLabel(
+																		day.date,
+																		locale
+																	)} · ${day.updates} ${
+																		copy.metricUpdatesUnit
+																	} · ${day.jaChars} ${copy.metricJaCharsUnit}`;
+																	return (
+																		<Tooltip key={key}>
+																			<TooltipTrigger asChild>
+																				<button
+																					type="button"
+																					className={cn(
+																						"size-3 rounded-[3px] border border-border/40",
+																						COLOR_CLASSES[metric][
+																							intensityIndex
+																						]
+																					)}
+																					aria-label={label}
+																					aria-pressed={value > 0}
+																					data-intensity={intensity}
+																				/>
+																			</TooltipTrigger>
+																			<TooltipContent>{label}</TooltipContent>
+																		</Tooltip>
+																	);
+																})}
+															</div>
+														);
+													})}
+												</div>
 											</div>
 										</div>
 									</div>
