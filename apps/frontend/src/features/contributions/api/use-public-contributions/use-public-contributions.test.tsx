@@ -59,11 +59,9 @@ describe("usePublicContributions", () => {
 		const mockSummary: ContributionSummary = {
 			startDate: "2024-11-12",
 			endDate: "2025-11-11",
-			totalUpdates: 120,
 			totalJaChars: 54000,
-			maxUpdates: 6,
 			maxJaChars: 4000,
-			days: [{ date: "2025-11-10", updates: 2, jaChars: 800 }],
+			days: [{ date: "2025-11-10", jaChars: 800 }],
 			lastUpdated: "2025-11-11T12:00:00Z",
 		};
 

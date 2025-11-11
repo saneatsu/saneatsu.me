@@ -1,7 +1,7 @@
 "use client";
 
 import type { ContributionDay, ContributionSummary } from "@saneatsu/schemas";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import { cn } from "@/shared/lib";
 import {
@@ -12,26 +12,13 @@ import {
 	TooltipTrigger,
 } from "@/shared/ui";
 
-type LegendClassList = readonly [string, string, string, string, string];
-
-const COLOR_CLASSES: Record<Metric, LegendClassList> = {
-	updates: [
-		"bg-muted text-muted-foreground",
-		"bg-emerald-100 text-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-100",
-		"bg-emerald-200 text-emerald-900 dark:bg-emerald-900/70 dark:text-emerald-100",
-		"bg-emerald-400 text-white dark:bg-emerald-700",
-		"bg-emerald-600 text-white dark:bg-emerald-500",
-	],
-	jaChars: [
-		"bg-muted text-muted-foreground",
-		"bg-sky-100 text-sky-900 dark:bg-sky-950/40 dark:text-sky-100",
-		"bg-sky-200 text-sky-900 dark:bg-sky-900/70 dark:text-sky-100",
-		"bg-sky-400 text-white dark:bg-sky-700",
-		"bg-sky-600 text-white dark:bg-sky-500",
-	],
-} as const satisfies Record<Metric, LegendClassList>;
-
-type Metric = "updates" | "jaChars";
+const COLOR_CLASSES = [
+	"bg-muted text-muted-foreground",
+	"bg-sky-100 text-sky-900 dark:bg-sky-950/40 dark:text-sky-100",
+	"bg-sky-200 text-sky-900 dark:bg-sky-900/70 dark:text-sky-100",
+	"bg-sky-400 text-white dark:bg-sky-700",
+	"bg-sky-600 text-white dark:bg-sky-500",
+] as const;
 
 const WEEKDAY_LABELS = [
 	"Mon",
@@ -61,19 +48,13 @@ export type ContributionCopy = {
 	title: string;
 	subtitle?: string;
 	rangeLabel: (days: number) => string;
-	toggleUpdates: string;
-	toggleJaChars: string;
-	summaryTotalUpdates: string;
 	summaryTotalJaChars: string;
 	summaryCurrentStreak: string;
-	legendLabel: string;
 	legendLess: string;
 	legendMore: string;
 	empty: string;
 	error: string;
 	retry: string;
-	lastUpdatedPrefix: string;
-	metricUpdatesUnit: string;
 	metricJaCharsUnit: string;
 };
 
@@ -163,7 +144,7 @@ const calculateCurrentStreak = (days: ContributionDay[]) => {
 	let streak = 0;
 	for (let i = days.length - 1; i >= 0; i -= 1) {
 		const day = days[i];
-		if (day.updates > 0 || day.jaChars > 0) {
+		if (day.jaChars > 0) {
 			streak += 1;
 		} else {
 			break;
@@ -192,7 +173,6 @@ export function ContributionHeatmap({
 	locale = "ja-JP",
 	rangeDays,
 }: ContributionHeatmapProps) {
-	const [metric, setMetric] = useState<Metric>("updates");
 	const normalizedDays = useMemo(() => {
 		if (!summary) return [];
 		return summary.days.slice(-366);
@@ -200,8 +180,7 @@ export function ContributionHeatmap({
 	const dayCount = normalizedDays.length;
 	const isSupportedRange = dayCount === 365 || dayCount === 366;
 	// 少なくとも1日データがあれば可視化を表示
-	const hasData =
-		normalizedDays.some((day) => day.updates > 0 || day.jaChars > 0) ?? false;
+	const hasData = normalizedDays.some((day) => day.jaChars > 0) ?? false;
 	const computedRange = rangeDays ?? summary?.days.length ?? 365;
 	const streak = summary ? calculateCurrentStreak(summary.days) : 0;
 	// 一度だけ週配列を計算し、再レンダーを抑制
@@ -225,19 +204,16 @@ export function ContributionHeatmap({
 		});
 	}, [weeks]);
 
-	const maxValue =
-		metric === "updates"
-			? (summary?.maxUpdates ?? 0)
-			: (summary?.maxJaChars ?? 0);
+	const maxValue = summary?.maxJaChars ?? 0;
 
 	/** 凡例エリアを描画する */
 	const renderLegend = () => (
 		<div className="flex items-center gap-2 text-xs text-muted-foreground">
 			<span>{copy.legendLess}</span>
 			<div className="flex items-center gap-1">
-				{COLOR_CLASSES[metric].map((cls) => (
+				{COLOR_CLASSES.map((cls) => (
 					<div
-						key={`${metric}-${cls}`}
+						key={`legend-${cls}`}
 						className={cn("size-3 rounded-[3px] border border-border/50", cls)}
 					/>
 				))}
@@ -246,21 +222,9 @@ export function ContributionHeatmap({
 		</div>
 	);
 
-	/** 総更新数などのサマリーを描画する */
+	/** サマリーを描画する */
 	const renderSummary = () => (
-		<div className="grid gap-4 sm:grid-cols-3">
-			<div>
-				<p className="text-sm text-muted-foreground">
-					{copy.summaryTotalUpdates}
-				</p>
-				{isLoading ? (
-					<Skeleton className="h-6 w-16" />
-				) : (
-					<p className="text-2xl font-semibold">
-						{formatNumber(summary?.totalUpdates ?? 0, locale)}
-					</p>
-				)}
-			</div>
+		<div className="grid gap-1 sm:grid-cols-2">
 			<div>
 				<p className="text-sm text-muted-foreground">
 					{copy.summaryTotalJaChars}
@@ -268,7 +232,7 @@ export function ContributionHeatmap({
 				{isLoading ? (
 					<Skeleton className="h-6 w-16" />
 				) : (
-					<p className="text-2xl font-semibold">
+					<p className="text-md font-semibold">
 						{formatNumber(summary?.totalJaChars ?? 0, locale)}
 					</p>
 				)}
@@ -280,7 +244,7 @@ export function ContributionHeatmap({
 				{isLoading ? (
 					<Skeleton className="h-6 w-16" />
 				) : (
-					<p className="text-2xl font-semibold">
+					<p className="text-md font-semibold">
 						{formatNumber(streak, locale)}
 					</p>
 				)}
@@ -292,10 +256,10 @@ export function ContributionHeatmap({
 		<section className="space-y-6">
 			<div className="flex items-start justify-between gap-4">
 				<div>
-					<h2 className="text-lg font-semibold">{copy.title}</h2>
-					{copy.subtitle && (
+					<h2 className="text-2xl font-semibold">{copy.title}</h2>
+					{/* {copy.subtitle && (
 						<p className="text-sm text-muted-foreground">{copy.subtitle}</p>
-					)}
+					)} */}
 				</div>
 				<div className="text-sm text-muted-foreground text-right">
 					{copy.rangeLabel(computedRange)}
@@ -313,25 +277,7 @@ export function ContributionHeatmap({
 					</div>
 				) : (
 					<>
-						<div className="flex flex-wrap items-center justify-between gap-3">
-							{renderSummary()}
-							<div className="flex items-center gap-2">
-								<Button
-									variant={metric === "updates" ? "default" : "outline"}
-									onClick={() => setMetric("updates")}
-									aria-pressed={metric === "updates"}
-								>
-									{copy.toggleUpdates}
-								</Button>
-								<Button
-									variant={metric === "jaChars" ? "default" : "outline"}
-									onClick={() => setMetric("jaChars")}
-									aria-pressed={metric === "jaChars"}
-								>
-									{copy.toggleJaChars}
-								</Button>
-							</div>
-						</div>
+						{renderSummary()}
 
 						<div className="space-y-3">
 							{!summary || isLoading ? (
@@ -389,10 +335,7 @@ export function ContributionHeatmap({
 																			/>
 																		);
 																	}
-																	const value =
-																		metric === "updates"
-																			? day.updates
-																			: day.jaChars;
+																	const value = day.jaChars;
 																	const intensity = getIntensity(
 																		value,
 																		maxValue
@@ -401,15 +344,13 @@ export function ContributionHeatmap({
 																		0,
 																		Math.min(
 																			intensity,
-																			COLOR_CLASSES[metric].length - 1
+																			COLOR_CLASSES.length - 1
 																		)
 																	) as 0 | 1 | 2 | 3 | 4;
 																	const label = `${formatDateLabel(
 																		day.date,
 																		locale
-																	)} · ${day.updates} ${
-																		copy.metricUpdatesUnit
-																	} · ${day.jaChars} ${copy.metricJaCharsUnit}`;
+																	)} · ${day.jaChars} ${copy.metricJaCharsUnit}`;
 																	return (
 																		<Tooltip key={key}>
 																			<TooltipTrigger asChild>
@@ -417,9 +358,7 @@ export function ContributionHeatmap({
 																					type="button"
 																					className={cn(
 																						"size-3 rounded-[3px] border border-border/40",
-																						COLOR_CLASSES[metric][
-																							intensityIndex
-																						]
+																						COLOR_CLASSES[intensityIndex]
 																					)}
 																					aria-label={label}
 																					aria-pressed={value > 0}

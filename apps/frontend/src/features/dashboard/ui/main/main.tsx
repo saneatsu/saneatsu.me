@@ -35,21 +35,15 @@ type DashboardPeriod = (typeof DASHBOARD_PERIODS)[number];
 
 const DASHBOARD_CONTRIBUTION_COPY: ContributionCopy = {
 	title: "執筆アクティビティ",
-	subtitle: "直近365日の更新状況",
+	subtitle: "直近365日の日本語文字数",
 	rangeLabel: (days) => `直近${days}日`,
-	toggleUpdates: "更新数",
-	toggleJaChars: "日本語文字数",
-	summaryTotalUpdates: "総更新数",
 	summaryTotalJaChars: "総日本語文字数",
 	summaryCurrentStreak: "連続日数",
-	legendLabel: "セルの濃さ",
 	legendLess: "少ない",
 	legendMore: "多い",
 	empty: "まだ記録がありません",
 	error: "執筆データの取得に失敗しました",
 	retry: "再読み込み",
-	lastUpdatedPrefix: "最終更新",
-	metricUpdatesUnit: "更新",
 	metricJaCharsUnit: "文字",
 };
 

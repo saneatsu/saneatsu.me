@@ -24,11 +24,9 @@ describe("useDashboardContributions", () => {
 		const mockSummary: ContributionSummary = {
 			startDate: "2025-01-01",
 			endDate: "2025-12-31",
-			totalUpdates: 200,
 			totalJaChars: 120000,
-			maxUpdates: 8,
 			maxJaChars: 6000,
-			days: [{ date: "2025-10-01", updates: 3, jaChars: 900 }],
+			days: [{ date: "2025-10-01", jaChars: 900 }],
 			lastUpdated: "2025-11-11T10:00:00Z",
 		};
 
