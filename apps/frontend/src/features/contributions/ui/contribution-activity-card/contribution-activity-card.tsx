@@ -358,19 +358,6 @@ export function ContributionActivityCard({
 								<p className="text-sm text-muted-foreground">{copy.empty}</p>
 							)}
 						</div>
-
-						{summary?.lastUpdated && (
-							<p className="text-xs text-muted-foreground">
-								{copy.lastUpdatedPrefix}:{" "}
-								{new Date(summary.lastUpdated).toLocaleString(locale, {
-									year: "numeric",
-									month: "short",
-									day: "numeric",
-									hour: "2-digit",
-									minute: "2-digit",
-								})}
-							</p>
-						)}
 					</>
 				)}
 			</CardContent>
