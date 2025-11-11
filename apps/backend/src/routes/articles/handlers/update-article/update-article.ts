@@ -3,11 +3,11 @@ import { and, eq, inArray, not } from "drizzle-orm";
 
 import type { Env } from "@/env";
 import { getDatabase } from "@/lib";
+import { extractGalleryCfImageIds } from "@/lib/extract-gallery-cf-image-ids";
 import {
 	buildContributionText,
 	recordArticleContribution,
 } from "@/lib/record-article-contribution";
-import { extractGalleryCfImageIds } from "@/lib/extract-gallery-cf-image-ids";
 import { createTranslationService } from "@/services/gemini-translation/gemini-translation";
 
 import type { updateArticleRoute } from "./update-article.openapi";
