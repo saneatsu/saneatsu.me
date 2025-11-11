@@ -1,7 +1,7 @@
 "use client";
 
 import { Mail } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import type { SimpleIcon } from "simple-icons";
 import {
 	siBiome,
@@ -62,6 +62,12 @@ import {
 	siZod,
 } from "simple-icons";
 
+import type { ContributionCopy } from "@/features/contributions";
+import {
+	ContributionActivityCard,
+	usePublicContributions,
+} from "@/features/contributions";
+import { Link } from "@/shared/lib";
 import type { TimelineItem } from "@/shared/types";
 import { BadgeWithIcon, BlogNotice, StepperTimeline } from "@/shared/ui";
 
@@ -93,6 +99,39 @@ type SocialItem = {
 export function AboutView() {
 	const t = useTranslations("about");
 	const experienceT = useTranslations("about.experience");
+	const aboutContributionT = useTranslations("about.contributions");
+	const contributionsT = useTranslations("contributions");
+	const locale = useLocale();
+
+	const contributionsCopy: ContributionCopy = {
+		title: aboutContributionT("title"),
+		subtitle: aboutContributionT("description"),
+		rangeLabel: (days) => contributionsT("rangeLabel", { days }),
+		toggleUpdates: contributionsT("toggle.updates"),
+		toggleJaChars: contributionsT("toggle.jaChars"),
+		summaryTotalUpdates: contributionsT("summary.totalUpdates"),
+		summaryTotalJaChars: contributionsT("summary.totalJaChars"),
+		summaryCurrentStreak: contributionsT("summary.currentStreak"),
+		legendLabel: contributionsT("legend.label"),
+		legendLess: contributionsT("legend.less"),
+		legendMore: contributionsT("legend.more"),
+		empty: contributionsT("empty"),
+		error: contributionsT("error"),
+		retry: contributionsT("retry"),
+		lastUpdatedPrefix: contributionsT("lastUpdated"),
+		metricUpdatesUnit: contributionsT("units.updates"),
+		metricJaCharsUnit: contributionsT("units.jaChars"),
+	};
+
+	const {
+		data: publicContributions,
+		isLoading: publicContributionsLoading,
+		error: publicContributionsError,
+		refetch: refetchPublicContributions,
+	} = usePublicContributions({
+		range: 365,
+		locale: locale === "ja" ? "ja" : "en",
+	});
 
 	// 技術スタックの定義（アイコン付き）
 	const techStack: {
@@ -210,6 +249,29 @@ export function AboutView() {
 
 				{/* Blog運営方針 */}
 				<BlogNotice />
+
+				{/* 執筆アクティビティ */}
+				<section className="pt-4">
+					<ContributionActivityCard
+						summary={publicContributions}
+						isLoading={publicContributionsLoading}
+						error={publicContributionsError}
+						onRetry={() => {
+							void refetchPublicContributions();
+						}}
+						copy={contributionsCopy}
+						locale={locale === "ja" ? "ja-JP" : "en-US"}
+						rangeDays={publicContributions?.days.length ?? 365}
+						actions={
+							<Link
+								href="/blog"
+								className="text-sm font-medium text-primary hover:underline"
+							>
+								{aboutContributionT("cta")}
+							</Link>
+						}
+					/>
+				</section>
 
 				{/* コンテンツセクション */}
 				<div className="space-y-12">

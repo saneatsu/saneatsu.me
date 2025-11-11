@@ -95,8 +95,40 @@
 				}
 			]
 		},
+		"contributions": {
+			"title": "執筆の歩み",
+			"description": "直近365日の執筆ペースです。",
+			"cta": "ブログ記事をもっと読む"
+		},
 		"contact": {
 			"title": "SNS・Webサイト"
+		}
+	},
+	"contributions": {
+		"title": "執筆アクティビティ",
+		"subtitle": "直近365日の更新状況",
+		"rangeLabel": "直近 {days} 日",
+		"toggle": {
+			"updates": "更新数",
+			"jaChars": "日本語文字数"
+		},
+		"summary": {
+			"totalUpdates": "総更新数",
+			"totalJaChars": "総日本語文字数",
+			"currentStreak": "連続日数"
+		},
+		"legend": {
+			"label": "セルの濃さ",
+			"less": "少ない",
+			"more": "多い"
+		},
+		"empty": "まだ記録がありません",
+		"error": "執筆データの取得に失敗しました",
+		"retry": "再読み込み",
+		"lastUpdated": "最終更新",
+		"units": {
+			"updates": "更新",
+			"jaChars": "文字"
 		}
 	},
 	"footer": {
