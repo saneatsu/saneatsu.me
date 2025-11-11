@@ -5,7 +5,7 @@ import { createParser, useQueryState } from "nuqs";
 
 import type { ContributionCopy } from "@/features/contributions";
 import {
-	ContributionActivityCard,
+	ContributionHeatmap,
 	useDashboardContributions,
 } from "@/features/contributions";
 import {
@@ -208,7 +208,7 @@ export function DashboardMain() {
 				loading={isLoading}
 			/>
 
-			<ContributionActivityCard
+			<ContributionHeatmap
 				summary={contributionSummary}
 				isLoading={contributionsLoading}
 				error={contributionError}
