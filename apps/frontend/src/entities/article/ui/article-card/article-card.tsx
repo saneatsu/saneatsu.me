@@ -86,17 +86,19 @@ export function ArticleCard({ article }: ArticleCardProps) {
 						{updatedDateInfo && (
 							<time className="text-xs text-muted-foreground">
 								{t("updatedAt")}:{" "}
-								{updatedDateInfo.isRelative
-									? updatedDateInfo.minutes !== undefined
-										? updatedDateInfo.minutes === 0
-											? t("justNow")
-											: t("minutesAgo", { minutes: updatedDateInfo.minutes })
-										: updatedDateInfo.hours !== undefined
-											? t("hoursAgo", { hours: updatedDateInfo.hours })
-											: t("daysAgo", { days: updatedDateInfo.days })
-									: updatedDateInfo.formatted}
-							</time>
-						)}
+									{updatedDateInfo.isRelative
+										? updatedDateInfo.minutes !== undefined
+											? updatedDateInfo.minutes === 0
+												? t("justNow")
+												: t("minutesAgo", { minutes: updatedDateInfo.minutes })
+											: updatedDateInfo.hours !== undefined
+												? t("hoursAgo", { hours: updatedDateInfo.hours })
+												: updatedDateInfo.days !== undefined
+													? t("daysAgo", { days: updatedDateInfo.days })
+													: updatedDateInfo.formatted
+										: updatedDateInfo.formatted}
+								</time>
+							)}
 					</div>
 				</div>
 			</div>
