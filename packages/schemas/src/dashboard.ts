@@ -152,14 +152,14 @@ export const recentActivitiesSchema = z.object({
 	activities: z.array(recentActivityItemSchema).max(20),
 });
 
-/** 草データ1日分 */
+/** 執筆データ1日分 */
 export const contributionDaySchema = z.object({
 	date: z.string().regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/),
 	updates: z.number().int().min(0),
 	jaChars: z.number().int().min(0),
 });
 
-/** 草データ概要 */
+/** 執筆データ概要 */
 export const contributionSummarySchema = z.object({
 	startDate: z.string().regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/),
 	endDate: z.string().regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/),
@@ -181,7 +181,7 @@ export const dashboardOverviewResponseSchema = z.object({
 	}),
 	/** 最近の活動 */
 	recentActivities: recentActivitiesSchema,
-	/** 草データ */
+	/** 執筆データ */
 	contributions: contributionSummarySchema,
 	/** 統計の最終更新日時 */
 	lastUpdated: dateTimeSchema,

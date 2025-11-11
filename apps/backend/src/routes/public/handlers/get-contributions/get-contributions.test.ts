@@ -38,7 +38,7 @@ describe("GET /api/public/contributions", () => {
 		});
 	});
 
-	it("草データとキャッシュヘッダーを返す", async () => {
+	it("執筆データとキャッシュヘッダーを返す", async () => {
 		const app = new OpenAPIHono<{
 			Bindings: { TURSO_DATABASE_URL: string; TURSO_AUTH_TOKEN: string };
 		}>();
