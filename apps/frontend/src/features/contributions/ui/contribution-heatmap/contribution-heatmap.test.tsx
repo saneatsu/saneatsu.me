@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import type { ContributionSummary } from "@/shared/model";
 
-import { ContributionActivityCard } from "./contribution-activity-card";
+import { ContributionHeatmap } from "./contribution-heatmap";
 
 const COPY = {
 	title: "執筆アクティビティ",
@@ -41,10 +41,10 @@ const summary: ContributionSummary = {
 	lastUpdated: "2025-11-11T15:00:00Z",
 };
 
-describe("ContributionActivityCard", () => {
+describe("ContributionHeatmap", () => {
 	it("サマリーとトグルを表示し、メトリクスの切り替えができる", async () => {
 		render(
-			<ContributionActivityCard
+			<ContributionHeatmap
 				summary={summary}
 				copy={COPY}
 				locale="ja-JP"
@@ -73,11 +73,7 @@ describe("ContributionActivityCard", () => {
 		};
 
 		render(
-			<ContributionActivityCard
-				summary={emptySummary}
-				copy={COPY}
-				locale="ja-JP"
-			/>
+			<ContributionHeatmap summary={emptySummary} copy={COPY} locale="ja-JP" />
 		);
 
 		expect(screen.getByText("まだ記録がありません")).toBeInTheDocument();
@@ -87,7 +83,7 @@ describe("ContributionActivityCard", () => {
 		const onRetry = vi.fn();
 
 		render(
-			<ContributionActivityCard
+			<ContributionHeatmap
 				error={new Error("fetch failed")}
 				onRetry={onRetry}
 				copy={COPY}

@@ -64,7 +64,7 @@ import {
 
 import type { ContributionCopy } from "@/features/contributions";
 import {
-	ContributionActivityCard,
+	ContributionHeatmap,
 	usePublicContributions,
 } from "@/features/contributions";
 import type { TimelineItem } from "@/shared/types";
@@ -251,7 +251,7 @@ export function AboutView() {
 
 				{/* 執筆アクティビティ */}
 				<section className="pt-4">
-					<ContributionActivityCard
+					<ContributionHeatmap
 						summary={publicContributions}
 						isLoading={publicContributionsLoading}
 						error={publicContributionsError}

@@ -77,7 +77,7 @@ export type ContributionCopy = {
 	metricJaCharsUnit: string;
 };
 
-type ContributionActivityCardProps = {
+type ContributionHeatmapProps = {
 	summary?: ContributionSummary;
 	isLoading?: boolean;
 	error?: Error | null;
@@ -183,7 +183,7 @@ const calculateCurrentStreak = (days: ContributionDay[]) => {
  * @param props.locale 数値と日付のロケール
  * @param props.rangeDays 表示する期間（日数）
  */
-export function ContributionActivityCard({
+export function ContributionHeatmap({
 	summary,
 	isLoading,
 	error,
@@ -191,7 +191,7 @@ export function ContributionActivityCard({
 	copy,
 	locale = "ja-JP",
 	rangeDays,
-}: ContributionActivityCardProps) {
+}: ContributionHeatmapProps) {
 	const [metric, setMetric] = useState<Metric>("updates");
 	const dayCount = summary?.days.length ?? 0;
 	const isSupportedRange = dayCount === 365 || dayCount === 366;
