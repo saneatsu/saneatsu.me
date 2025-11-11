@@ -186,10 +186,8 @@ export function ContributionActivityCard({
 
 	/** 凡例エリアを描画する */
 	const renderLegend = () => (
-		<div className="flex flex-col gap-1">
-			<span className="text-xs text-muted-foreground">{copy.legendLabel}</span>
-			<div className="flex items-center gap-2 text-xs text-muted-foreground">
-				<span>{copy.legendLess}</span>
+		<div className="flex flex-col gap-1 text-xs text-muted-foreground">
+			<div className="flex items-center gap-2">
 				<div className="flex items-center gap-1">
 					{COLOR_CLASSES[metric].map((cls) => (
 						<div
@@ -198,6 +196,10 @@ export function ContributionActivityCard({
 						/>
 					))}
 				</div>
+				<span className="ml-auto">{copy.legendLabel}</span>
+			</div>
+			<div className="flex items-center justify-between">
+				<span>{copy.legendLess}</span>
 				<span>{copy.legendMore}</span>
 			</div>
 		</div>
