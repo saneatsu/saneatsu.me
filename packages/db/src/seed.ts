@@ -729,20 +729,19 @@ function generateContributionSeries(days = 365) {
 			baseDate.getTime() + 9 * 60 * 60 * 1000
 		).getUTCDay();
 		const seasonalFactor = Math.sin(((days - offset) / days) * Math.PI * 2);
-		let updatesFloat = 1.2 + seasonalFactor * 1.5 + seededRandom() * 2.5;
+		let activityScore = 1.2 + seasonalFactor * 1.5 + seededRandom() * 2.5;
 
 		if (jstDay === 0 || jstDay === 6) {
-			updatesFloat *= 0.7;
+			activityScore *= 0.7;
 		}
 
 		if (seededRandom() > 0.94) {
-			updatesFloat += 2 + seededRandom() * 3;
+			activityScore += 2 + seededRandom() * 3;
 		}
 
-		const updates = Math.max(0, Math.round(updatesFloat));
-		const avgCharsPerUpdate = 350 + seededRandom() * 900;
-		const jaCharCount =
-			updates > 0 ? Math.round(updates * avgCharsPerUpdate) : 0;
+		const bursts = Math.max(0, Math.round(activityScore));
+		const avgCharsPerBurst = 350 + seededRandom() * 900;
+		const jaCharCount = bursts > 0 ? Math.round(bursts * avgCharsPerBurst) : 0;
 
 		contributions.push({
 			date: dateKey,

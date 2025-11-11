@@ -37,7 +37,7 @@ const DASHBOARD_CONTRIBUTION_COPY: ContributionCopy = {
 	title: "執筆アクティビティ",
 	subtitle: "直近365日の日本語文字数",
 	rangeLabel: (days) => `直近${days}日`,
-	summaryTotalJaChars: "総日本語文字数",
+	summaryTotalJaChars: "文字数（日本語）",
 	summaryCurrentStreak: "連続日数",
 	legendLess: "少ない",
 	legendMore: "多い",
