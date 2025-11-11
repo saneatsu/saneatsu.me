@@ -96,7 +96,7 @@
 			]
 		},
 		"contributions": {
-			"title": "執筆の歩み",
+			"title": "執筆文字数",
 			"description": "直近365日の執筆ペースです。",
 			"cta": "ブログ記事をもっと読む"
 		},
@@ -109,7 +109,7 @@
 		"subtitle": "直近365日の日本語文字数",
 		"rangeLabel": "直近 {days} 日",
 		"summary": {
-			"totalJaChars": "総日本語文字数",
+			"totalJaChars": "文字数（日本語）",
 			"currentStreak": "連続日数"
 		},
 		"legend": {

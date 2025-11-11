@@ -10,7 +10,7 @@ const COPY = {
 	title: "執筆アクティビティ",
 	subtitle: "直近365日",
 	rangeLabel: (days: number) => `直近${days}日`,
-	summaryTotalJaChars: "総日本語文字数",
+	summaryTotalJaChars: "文字数（日本語）",
 	summaryCurrentStreak: "連続日数",
 	legendLess: "少ない",
 	legendMore: "多い",
@@ -44,7 +44,7 @@ describe("ContributionHeatmap", () => {
 			/>
 		);
 
-		expect(screen.getByText("総日本語文字数")).toBeInTheDocument();
+		expect(screen.getByText("文字数（日本語）")).toBeInTheDocument();
 		expect(screen.getByText("54,000")).toBeInTheDocument();
 		expect(screen.getByText("連続日数")).toBeInTheDocument();
 	});

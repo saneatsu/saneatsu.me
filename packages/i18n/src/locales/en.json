@@ -96,8 +96,8 @@
 			]
 		},
 		"contributions": {
-			"title": "Writing cadence",
-			"description": "A snapshot of my writing pace over the last 365 days.",
+			"title": "Writing characters",
+			"description": "A snapshot of my Japanese writing volume over the last 365 days.",
 			"cta": "Read more posts"
 		},
 		"contact": {
@@ -109,7 +109,7 @@
 		"subtitle": "Japanese characters in the last 365 days",
 		"rangeLabel": "Last {days} days",
 		"summary": {
-			"totalJaChars": "Total Japanese characters",
+			"totalJaChars": "Japanese characters",
 			"currentStreak": "Current streak"
 		},
 		"legend": {
