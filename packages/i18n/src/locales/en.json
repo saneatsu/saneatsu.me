@@ -116,7 +116,6 @@
 			"less": "Less",
 			"more": "More"
 		},
-		"empty": "No activity yet",
 		"error": "Failed to load writing activity",
 		"retry": "Retry",
 		"units": {

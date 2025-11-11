@@ -52,7 +52,6 @@ export type ContributionCopy = {
 	summaryCurrentStreak: string;
 	legendLess: string;
 	legendMore: string;
-	empty: string;
 	error: string;
 	retry: string;
 	metricJaCharsUnit: string;
@@ -175,14 +174,31 @@ export function ContributionHeatmap({
 }: ContributionHeatmapProps) {
 	const normalizedDays = useMemo(() => {
 		if (!summary) return [];
-		return summary.days.slice(-366);
+		const rawDays = summary.days.slice(-366);
+		const desiredLength = rawDays.length === 366 ? 366 : 365;
+		if (rawDays.length >= desiredLength) {
+			return rawDays.slice(-desiredLength);
+		}
+		const dayMap = new Map(rawDays.map((day) => [day.date, day]));
+		const startDate = summary.startDate
+			? new Date(`${summary.startDate}T00:00:00`)
+			: new Date();
+		const padded: ContributionDay[] = [];
+		for (let i = 0; i < desiredLength; i += 1) {
+			const current = new Date(startDate);
+			current.setDate(startDate.getDate() + i);
+			const dateKey = current.toISOString().split("T")[0];
+			padded.push(dayMap.get(dateKey) ?? { date: dateKey, jaChars: 0 });
+		}
+		return padded;
 	}, [summary]);
 	const dayCount = normalizedDays.length;
 	const isSupportedRange = dayCount === 365 || dayCount === 366;
-	// 少なくとも1日データがあれば可視化を表示
-	const hasData = normalizedDays.some((day) => day.jaChars > 0) ?? false;
+	const hasRenderableDays = dayCount > 0;
 	const computedRange = rangeDays ?? summary?.days.length ?? 365;
-	const streak = summary ? calculateCurrentStreak(summary.days) : 0;
+	const streak = normalizedDays.length
+		? calculateCurrentStreak(normalizedDays)
+		: 0;
 	// 一度だけ週配列を計算し、再レンダーを抑制
 	const weeks = useMemo(() => {
 		if (normalizedDays.length === 0 || !summary) return [];
@@ -281,7 +297,7 @@ export function ContributionHeatmap({
 									<Skeleton className="h-24 w-full" />
 									<Skeleton className="h-4 w-1/2" />
 								</div>
-							) : hasData && isSupportedRange ? (
+							) : hasRenderableDays && isSupportedRange ? (
 								<div className="space-y-2">
 									<div className="max-w-full overflow-x-auto lg:overflow-visible">
 										<div className="min-w-max space-y-2">
@@ -375,7 +391,7 @@ export function ContributionHeatmap({
 									<div className="flex justify-end pt-1">{renderLegend()}</div>
 								</div>
 							) : (
-								<p className="text-sm text-muted-foreground">{copy.empty}</p>
+								<div />
 							)}
 						</div>
 					</>
