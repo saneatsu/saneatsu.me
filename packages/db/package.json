@@ -36,6 +36,7 @@
 		"db:push": "drizzle-kit push",
 		"db:studio": "drizzle-kit studio",
 		"db:seed": "tsx src/seed.ts",
+		"db:backfill-contributions": "tsx src/scripts/backfill-contributions.ts",
 		"seed": "tsx src/seed.ts"
 	},
 	"dependencies": {
