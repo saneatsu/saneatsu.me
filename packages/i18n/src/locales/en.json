@@ -106,28 +106,20 @@
 	},
 	"contributions": {
 		"title": "Writing Activity",
-		"subtitle": "Updates in the last 365 days",
+		"subtitle": "Japanese characters in the last 365 days",
 		"rangeLabel": "Last {days} days",
-		"toggle": {
-			"updates": "Updates",
-			"jaChars": "Japanese characters"
-		},
 		"summary": {
-			"totalUpdates": "Total updates",
 			"totalJaChars": "Total Japanese characters",
 			"currentStreak": "Current streak"
 		},
 		"legend": {
-			"label": "Color intensity",
 			"less": "Less",
 			"more": "More"
 		},
 		"empty": "No activity yet",
 		"error": "Failed to load writing activity",
 		"retry": "Retry",
-		"lastUpdated": "Last updated",
 		"units": {
-			"updates": "updates",
 			"jaChars": "chars"
 		}
 	},
