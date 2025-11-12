@@ -33,7 +33,9 @@ export function StatsCards({ articleStats, loading = false }: StatsCardsProps) {
 			{/* 総閲覧数 */}
 			<Card className="h-full flex flex-col shadow-none">
 				<CardHeader className="flex flex-row items-center justify-between">
-					<CardTitle className="text-md font-bold">総閲覧数</CardTitle>
+					<CardTitle className="text-sm font-normal text-muted-foreground">
+						総閲覧数
+					</CardTitle>
 				</CardHeader>
 				<CardContent className="flex-1 flex flex-col justify-end items-end">
 					<div className="flex items-end gap-1">
@@ -54,7 +56,9 @@ export function StatsCards({ articleStats, loading = false }: StatsCardsProps) {
 			{/* 今月の閲覧数 */}
 			<Card className="h-full flex flex-col shadow-none">
 				<CardHeader className="flex flex-row items-center justify-between">
-					<CardTitle className="text-md font-bold">今月の閲覧数</CardTitle>
+					<CardTitle className="text-sm font-normal text-muted-foreground">
+						今月の閲覧数
+					</CardTitle>
 				</CardHeader>
 				<CardContent className="flex-1 flex flex-col justify-end items-end">
 					<div className="flex flex-col gap-1">
@@ -77,7 +81,9 @@ export function StatsCards({ articleStats, loading = false }: StatsCardsProps) {
 			{/* 総記事数カード */}
 			<Card className="h-full flex flex-col gap-2 shadow-none">
 				<CardHeader className="flex flex-row items-center justify-between">
-					<CardTitle className="text-md font-bold">総記事数</CardTitle>
+					<CardTitle className="text-sm font-normal text-muted-foreground">
+						総記事数
+					</CardTitle>
 				</CardHeader>
 				<CardContent className="flex-1 flex flex-col justify-end items-end">
 					{loading ? (
@@ -128,7 +134,9 @@ export function StatsCards({ articleStats, loading = false }: StatsCardsProps) {
 			{/* 今月の新規記事 */}
 			<Card className="h-full flex flex-col shadow-none">
 				<CardHeader className="flex flex-row items-center justify-between">
-					<CardTitle className="text-md font-bold">今月の新規記事</CardTitle>
+					<CardTitle className="text-sm font-normal text-muted-foreground">
+						今月の新規記事
+					</CardTitle>
 				</CardHeader>
 				<CardContent className="flex-1 flex flex-col justify-end items-end">
 					<div className="flex items-end gap-1">
