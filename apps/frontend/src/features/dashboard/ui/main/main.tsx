@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertCircle, ExternalLink } from "lucide-react";
+import { AlertCircle, BarChart3, ExternalLink } from "lucide-react";
 import { createParser, useQueryState } from "nuqs";
 
 import {
@@ -10,6 +10,7 @@ import {
 	ViewsTrendChart,
 } from "@/features/dashboard";
 import { AmazonLogo, GoogleLogo, RakutenLogo } from "@/shared/image";
+import { cn } from "@/shared/lib/utils";
 import {
 	Alert,
 	AlertDescription,
@@ -22,6 +23,13 @@ import {
 
 const DASHBOARD_PERIODS = [30, 90, 180, 360] as const;
 type DashboardPeriod = (typeof DASHBOARD_PERIODS)[number];
+
+const DASHBOARD_PERIOD_LABELS: Record<DashboardPeriod, string> = {
+	30: "30日",
+	90: "3ヶ月",
+	180: "6ヶ月",
+	360: "12ヶ月",
+};
 
 const isDashboardPeriod = (value: number): value is DashboardPeriod =>
 	DASHBOARD_PERIODS.includes(value as DashboardPeriod);
@@ -175,23 +183,46 @@ export function DashboardMain() {
 			<section className="space-y-6">
 				<div className="flex flex-wrap items-center justify-between gap-4">
 					<div className="flex items-center space-x-2">
+						<BarChart3 className="h-5 w-5 text-primary" />
 						<p className="text-md font-semibold">期間分析</p>
 					</div>
-					<Select
-						value={selectedDays.toString()}
-						onValueChange={handlePeriodChange}
-					>
-						<SelectTrigger className="w-[120px]">
-							<SelectValue />
-						</SelectTrigger>
-						<SelectContent>
-							{DASHBOARD_PERIODS.map((period) => (
-								<SelectItem key={period} value={period.toString()}>
-									{period}日
-								</SelectItem>
-							))}
-						</SelectContent>
-					</Select>
+					<div className="hidden md:flex rounded-md border bg-muted/30 text-sm font-medium text-muted-foreground overflow-hidden">
+						{DASHBOARD_PERIODS.map((period) => (
+							<button
+								key={period}
+								type="button"
+								onClick={() => {
+									void setSelectedDays(period);
+								}}
+								aria-pressed={selectedDays === period}
+								className={cn(
+									"px-4 py-2 transition cursor-pointer",
+									selectedDays === period
+										? "bg-background text-foreground shadow-sm"
+										: "text-muted-foreground hover:text-foreground"
+								)}
+							>
+								{DASHBOARD_PERIOD_LABELS[period]}
+							</button>
+						))}
+					</div>
+					<div className="w-full md:hidden">
+						<Select
+							value={selectedDays.toString()}
+							onValueChange={handlePeriodChange}
+						>
+							<SelectTrigger className="w-full">
+								<SelectValue />
+							</SelectTrigger>
+							<SelectContent>
+								{DASHBOARD_PERIODS.map((period) => (
+									<SelectItem key={period} value={period.toString()}>
+										{DASHBOARD_PERIOD_LABELS[period]}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+					</div>
 				</div>
 
 				<div className="space-y-6">
