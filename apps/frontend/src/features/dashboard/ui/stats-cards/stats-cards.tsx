@@ -43,7 +43,7 @@ export function StatsCards({ articleStats, loading = false }: StatsCardsProps) {
 								: (articleStats?.totalViews?.toLocaleString() ?? "0")}
 						</span>
 						{!loading && (
-							<span className="text-sm font-bold text-primary leading-none pb-[2px]">
+							<span className="text-sm font-bold text-primary leading-none pb-0.5">
 								回
 							</span>
 						)}
@@ -65,7 +65,7 @@ export function StatsCards({ articleStats, loading = false }: StatsCardsProps) {
 									: (articleStats?.thisMonthViews?.toLocaleString() ?? "0")}
 							</span>
 							{!loading && (
-								<span className="text-sm font-bold text-primary leading-none pb-[2px]">
+								<span className="text-sm font-bold text-primary leading-none pb-0.5">
 									回
 								</span>
 							)}
@@ -86,7 +86,7 @@ export function StatsCards({ articleStats, loading = false }: StatsCardsProps) {
 								<span className="text-2xl font-bold text-primary leading-none">
 									-
 								</span>
-								<span className="text-sm font-bold text-primary leading-none pb-[2px]">
+								<span className="text-sm font-bold text-primary leading-none pb-0.5">
 									記事
 								</span>
 							</div>
@@ -116,7 +116,7 @@ export function StatsCards({ articleStats, loading = false }: StatsCardsProps) {
 								<span className="text-2xl font-bold text-primary leading-none">
 									{formatNumber(articleStats.totalArticles)}
 								</span>
-								<span className="text-sm font-bold text-primary leading-none pb-[2px]">
+								<span className="text-sm font-bold text-primary leading-none pb-0.5">
 									記事
 								</span>
 							</div>
@@ -136,7 +136,7 @@ export function StatsCards({ articleStats, loading = false }: StatsCardsProps) {
 							{loading ? "-" : articleStats.thisMonthArticles}
 						</span>
 						{!loading && (
-							<span className="text-sm font-bold text-primary leading-none pb-[2px]">
+							<span className="text-sm font-bold text-primary leading-none pb-0.5">
 								記事
 							</span>
 						)}
