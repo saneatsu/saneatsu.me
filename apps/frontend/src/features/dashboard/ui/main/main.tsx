@@ -210,6 +210,7 @@ export function DashboardMain() {
 				copy={DASHBOARD_CONTRIBUTION_COPY}
 				locale="ja-JP"
 				rangeDays={contributionSummary?.days.length ?? 365}
+				className="mx-auto w-full max-w-4xl"
 			/>
 
 			{/* 期間分析セクション */}
