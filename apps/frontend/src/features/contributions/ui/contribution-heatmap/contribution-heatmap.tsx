@@ -64,6 +64,7 @@ type ContributionHeatmapProps = {
 	copy: ContributionCopy;
 	locale?: string;
 	rangeDays?: number;
+	className?: string;
 };
 
 const JST_OFFSET_MS = 9 * 60 * 60 * 1000;
@@ -156,6 +157,7 @@ export function ContributionHeatmap({
 	copy,
 	locale = "ja-JP",
 	rangeDays,
+	className,
 }: ContributionHeatmapProps) {
 	const normalizedDays = useMemo(() => {
 		if (!summary) return [];
@@ -235,7 +237,7 @@ export function ContributionHeatmap({
 	);
 
 	return (
-		<section className="space-y-6">
+		<section className={cn("space-y-6", className)}>
 			<div className="flex items-start justify-between gap-4">
 				<div>
 					<h2 className="text-2xl font-semibold">{copy.title}</h2>

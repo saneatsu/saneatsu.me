@@ -3,11 +3,6 @@
 import { AlertCircle, BarChart3, ExternalLink } from "lucide-react";
 import { createParser, useQueryState } from "nuqs";
 
-import type { ContributionCopy } from "@/features/contributions";
-import {
-	ContributionHeatmap,
-	useDashboardContributions,
-} from "@/features/contributions";
 import {
 	PopularArticles,
 	StatsCards,
@@ -15,14 +10,10 @@ import {
 	ViewsTrendChart,
 } from "@/features/dashboard";
 import { AmazonLogo, GoogleLogo, RakutenLogo } from "@/shared/image";
+import { cn } from "@/shared/lib/utils";
 import {
 	Alert,
 	AlertDescription,
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
 	Select,
 	SelectContent,
 	SelectItem,
@@ -33,16 +24,11 @@ import {
 const DASHBOARD_PERIODS = [30, 90, 180, 360] as const;
 type DashboardPeriod = (typeof DASHBOARD_PERIODS)[number];
 
-const DASHBOARD_CONTRIBUTION_COPY: ContributionCopy = {
-	title: "執筆アクティビティ",
-	subtitle: "直近365日の日本語文字数",
-	rangeLabel: (days) => `直近${days}日`,
-	summaryTotalJaChars: "文字数（日本語）",
-	legendLess: "少ない",
-	legendMore: "多い",
-	error: "執筆データの取得に失敗しました",
-	retry: "再読み込み",
-	metricJaCharsUnit: "文字",
+const DASHBOARD_PERIOD_LABELS: Record<DashboardPeriod, string> = {
+	30: "30日",
+	90: "3ヶ月",
+	180: "6ヶ月",
+	360: "12ヶ月",
 };
 
 const isDashboardPeriod = (value: number): value is DashboardPeriod =>
@@ -90,13 +76,6 @@ export function DashboardMain() {
 		isLoading,
 		error,
 	} = useDashboardOverview({ language: "ja" });
-
-	const {
-		data: contributionSummary,
-		isLoading: contributionsLoading,
-		error: contributionError,
-		refetch: refetchContributionSummary,
-	} = useDashboardContributions({ language: "ja" });
 
 	/**
 	 * 最終更新日時をフォーマット
@@ -200,53 +179,54 @@ export function DashboardMain() {
 				loading={isLoading}
 			/>
 
-			<ContributionHeatmap
-				summary={contributionSummary}
-				isLoading={contributionsLoading}
-				error={contributionError}
-				onRetry={() => {
-					void refetchContributionSummary();
-				}}
-				copy={DASHBOARD_CONTRIBUTION_COPY}
-				locale="ja-JP"
-				rangeDays={contributionSummary?.days.length ?? 365}
-			/>
-
 			{/* 期間分析セクション */}
-			<Card>
-				<CardHeader>
-					<div className="flex items-center justify-between">
-						<div className="flex items-center space-x-2">
-							<BarChart3 className="h-5 w-5 text-primary" />
-							<div>
-								<CardTitle>期間分析</CardTitle>
-								<CardDescription>
-									選択した期間の閲覧データと人気記事
-								</CardDescription>
-							</div>
-						</div>
+			<section className="space-y-6">
+				<div className="flex flex-wrap items-center justify-between gap-4">
+					<div className="flex items-center space-x-2">
+						<BarChart3 className="h-5 w-5 text-primary" />
+						<p className="text-md font-semibold">期間分析</p>
+					</div>
+					<div className="hidden md:flex rounded-md border bg-muted/30 text-sm font-medium text-muted-foreground overflow-hidden">
+						{DASHBOARD_PERIODS.map((period) => (
+							<button
+								key={period}
+								type="button"
+								onClick={() => {
+									void setSelectedDays(period);
+								}}
+								aria-pressed={selectedDays === period}
+								className={cn(
+									"px-4 py-2 transition cursor-pointer",
+									selectedDays === period
+										? "bg-background text-foreground shadow-sm"
+										: "text-muted-foreground hover:text-foreground"
+								)}
+							>
+								{DASHBOARD_PERIOD_LABELS[period]}
+							</button>
+						))}
+					</div>
+					<div className="w-full md:hidden">
 						<Select
 							value={selectedDays.toString()}
 							onValueChange={handlePeriodChange}
 						>
-							<SelectTrigger className="w-[120px]">
+							<SelectTrigger className="w-full">
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
 								{DASHBOARD_PERIODS.map((period) => (
 									<SelectItem key={period} value={period.toString()}>
-										{period}日
+										{DASHBOARD_PERIOD_LABELS[period]}
 									</SelectItem>
 								))}
 							</SelectContent>
 						</Select>
 					</div>
-				</CardHeader>
-				<CardContent className="space-y-6">
-					{/* 閲覧数推移グラフ */}
-					<ViewsTrendChart selectedDays={selectedDays} hideCard={true} />
+				</div>
 
-					{/* 人気記事ランキング */}
+				<div className="space-y-6">
+					<ViewsTrendChart selectedDays={selectedDays} hideCard={true} />
 					<PopularArticles
 						articles={dashboardData?.topArticles.articles || []}
 						loading={isLoading}
@@ -254,8 +234,8 @@ export function DashboardMain() {
 						selectedDays={selectedDays}
 						hideCard={true}
 					/>
-				</CardContent>
-			</Card>
+				</div>
+			</section>
 		</div>
 	);
 }
