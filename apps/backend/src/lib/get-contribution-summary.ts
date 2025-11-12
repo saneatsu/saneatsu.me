@@ -4,15 +4,19 @@ import type { Database } from "@saneatsu/db/worker";
 import type { ContributionSummary } from "@saneatsu/schemas";
 import { and, gte, lte } from "drizzle-orm";
 
+// 表示可能な日数レンジのプリセット
 export const CONTRIBUTION_RANGE_OPTIONS = [30, 90, 180, 365] as const;
 
+// 1日分のミリ秒
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+// 入力の範囲指定が不正な場合に安全な値へ丸める
 const clampRange = (range?: number) => {
 	if (!range || Number.isNaN(range)) return 365;
 	return Math.min(Math.max(range, 1), 366);
 };
 
+// 現在日時から指定レンジ分のJST日付キーを生成する
 const buildDateKeys = (rangeDays: number, now: Date) => {
 	const keys: string[] = [];
 	for (let i = rangeDays - 1; i >= 0; i -= 1) {
@@ -34,7 +38,11 @@ export async function getContributionSummary(
 ): Promise<ContributionSummary> {
 	const rangeDays = clampRange(options.rangeDays);
 	const now = options.now ?? new Date();
+
+	// 可視化で使う365（or 366）日の連続キー
 	const dateKeys = buildDateKeys(rangeDays, now);
+
+	// 表示期間の開始・終了キー
 	const startDate = dateKeys[0];
 	const endDate = dateKeys[dateKeys.length - 1];
 
@@ -57,6 +65,7 @@ export async function getContributionSummary(
 		rowMap.set(row.date, row);
 	}
 
+	// 可視化用の1日単位データ
 	const days = dateKeys.map((date) => {
 		const row = rowMap.get(date);
 		return {
@@ -65,15 +74,19 @@ export async function getContributionSummary(
 		};
 	});
 
+	// 総文字数とヒートマップ濃度の上限
 	const totalJaChars = days.reduce((sum, day) => sum + day.jaChars, 0);
 	const maxJaChars = days.reduce((max, day) => Math.max(max, day.jaChars), 0);
 
+	// 最新の更新日時（データ無しなら現在時刻を採用）
 	const lastUpdated = rows.length
 		? rows.reduce(
 				(latest, row) => (row.updatedAt > latest ? row.updatedAt : latest),
 				rows[0]?.updatedAt
 			)
-		: new Date().toISOString();
+		: options.now
+			? options.now.toISOString()
+			: new Date().toISOString();
 
 	return {
 		startDate,

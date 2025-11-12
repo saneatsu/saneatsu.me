@@ -5,16 +5,20 @@ import { describe, expect, it, vi } from "vitest";
 import { ArticleEditForm } from "./article-edit-form";
 
 // Mock dependencies
-vi.mock("next/navigation", () => ({
-	useRouter: vi.fn(() => ({
-		push: vi.fn(),
-		replace: vi.fn(),
-		back: vi.fn(),
-		forward: vi.fn(),
-		refresh: vi.fn(),
-		prefetch: vi.fn(),
-	})),
-}));
+vi.mock("next/navigation", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("next/navigation")>();
+	return {
+		...actual,
+		useRouter: vi.fn(() => ({
+			push: vi.fn(),
+			replace: vi.fn(),
+			back: vi.fn(),
+			forward: vi.fn(),
+			refresh: vi.fn(),
+			prefetch: vi.fn(),
+		})),
+	};
+});
 
 vi.mock("@/entities/article", () => ({
 	useUpdate: vi.fn(() => ({
