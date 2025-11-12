@@ -1,13 +1,8 @@
 "use client";
 
-import { AlertCircle, BarChart3, ExternalLink } from "lucide-react";
+import { AlertCircle, ExternalLink } from "lucide-react";
 import { createParser, useQueryState } from "nuqs";
 
-import type { ContributionCopy } from "@/features/contributions";
-import {
-	ContributionHeatmap,
-	useDashboardContributions,
-} from "@/features/contributions";
 import {
 	PopularArticles,
 	StatsCards,
@@ -18,11 +13,6 @@ import { AmazonLogo, GoogleLogo, RakutenLogo } from "@/shared/image";
 import {
 	Alert,
 	AlertDescription,
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
 	Select,
 	SelectContent,
 	SelectItem,
@@ -32,18 +22,6 @@ import {
 
 const DASHBOARD_PERIODS = [30, 90, 180, 360] as const;
 type DashboardPeriod = (typeof DASHBOARD_PERIODS)[number];
-
-const DASHBOARD_CONTRIBUTION_COPY: ContributionCopy = {
-	title: "執筆アクティビティ",
-	subtitle: "直近365日の日本語文字数",
-	rangeLabel: (days) => `直近${days}日`,
-	summaryTotalJaChars: "文字数（日本語）",
-	legendLess: "少ない",
-	legendMore: "多い",
-	error: "執筆データの取得に失敗しました",
-	retry: "再読み込み",
-	metricJaCharsUnit: "文字",
-};
 
 const isDashboardPeriod = (value: number): value is DashboardPeriod =>
 	DASHBOARD_PERIODS.includes(value as DashboardPeriod);
@@ -90,13 +68,6 @@ export function DashboardMain() {
 		isLoading,
 		error,
 	} = useDashboardOverview({ language: "ja" });
-
-	const {
-		data: contributionSummary,
-		isLoading: contributionsLoading,
-		error: contributionError,
-		refetch: refetchContributionSummary,
-	} = useDashboardContributions({ language: "ja" });
 
 	/**
 	 * 最終更新日時をフォーマット
@@ -200,54 +171,31 @@ export function DashboardMain() {
 				loading={isLoading}
 			/>
 
-			<ContributionHeatmap
-				summary={contributionSummary}
-				isLoading={contributionsLoading}
-				error={contributionError}
-				onRetry={() => {
-					void refetchContributionSummary();
-				}}
-				copy={DASHBOARD_CONTRIBUTION_COPY}
-				locale="ja-JP"
-				rangeDays={contributionSummary?.days.length ?? 365}
-				className="mx-auto w-full max-w-4xl"
-			/>
-
 			{/* 期間分析セクション */}
-			<Card>
-				<CardHeader>
-					<div className="flex items-center justify-between">
-						<div className="flex items-center space-x-2">
-							<BarChart3 className="h-5 w-5 text-primary" />
-							<div>
-								<CardTitle>期間分析</CardTitle>
-								<CardDescription>
-									選択した期間の閲覧データと人気記事
-								</CardDescription>
-							</div>
-						</div>
-						<Select
-							value={selectedDays.toString()}
-							onValueChange={handlePeriodChange}
-						>
-							<SelectTrigger className="w-[120px]">
-								<SelectValue />
-							</SelectTrigger>
-							<SelectContent>
-								{DASHBOARD_PERIODS.map((period) => (
-									<SelectItem key={period} value={period.toString()}>
-										{period}日
-									</SelectItem>
-								))}
-							</SelectContent>
-						</Select>
+			<section className="space-y-6">
+				<div className="flex flex-wrap items-center justify-between gap-4">
+					<div className="flex items-center space-x-2">
+						<p className="text-md font-semibold">期間分析</p>
 					</div>
-				</CardHeader>
-				<CardContent className="space-y-6">
-					{/* 閲覧数推移グラフ */}
-					<ViewsTrendChart selectedDays={selectedDays} hideCard={true} />
+					<Select
+						value={selectedDays.toString()}
+						onValueChange={handlePeriodChange}
+					>
+						<SelectTrigger className="w-[120px]">
+							<SelectValue />
+						</SelectTrigger>
+						<SelectContent>
+							{DASHBOARD_PERIODS.map((period) => (
+								<SelectItem key={period} value={period.toString()}>
+									{period}日
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+				</div>
 
-					{/* 人気記事ランキング */}
+				<div className="space-y-6">
+					<ViewsTrendChart selectedDays={selectedDays} hideCard={true} />
 					<PopularArticles
 						articles={dashboardData?.topArticles.articles || []}
 						loading={isLoading}
@@ -255,8 +203,8 @@ export function DashboardMain() {
 						selectedDays={selectedDays}
 						hideCard={true}
 					/>
-				</CardContent>
-			</Card>
+				</div>
+			</section>
 		</div>
 	);
 }
