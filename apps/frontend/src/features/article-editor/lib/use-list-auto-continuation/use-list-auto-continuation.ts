@@ -112,6 +112,8 @@ export function useListAutoContinuation({
 		const handleKeyDown = (e: KeyboardEvent) => {
 			const textarea = textareaRef.current;
 			if (!textarea || document.activeElement !== textarea) return;
+			// IME確定時のEnterキーは無視する
+			if (e.isComposing) return;
 
 			// Enterキーの処理（リスト項目の自動継続）
 			if (
