@@ -24,7 +24,8 @@ export const queryKeys = {
 			limit?: number;
 			sortBy?: string;
 			sortOrder?: string;
-		}) => ["articles", filters] as const,
+		}) =>
+			filters ? (["articles", filters] as const) : (["articles"] as const),
 		// 個別の記事（スラッグ指定）
 		bySlug: (slug: string, lang?: string) =>
 			["articles", slug, { lang }] as const,
