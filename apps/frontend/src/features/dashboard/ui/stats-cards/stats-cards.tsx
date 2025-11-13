@@ -31,9 +31,11 @@ export function StatsCards({ articleStats, loading = false }: StatsCardsProps) {
 	return (
 		<div className="grid gap-4 grid-cols-1 lg:grid-cols-4">
 			{/* 総閲覧数 */}
-			<Card className="h-full flex flex-col">
+			<Card className="h-full flex flex-col shadow-none">
 				<CardHeader className="flex flex-row items-center justify-between">
-					<CardTitle className="text-md font-bold">総閲覧数</CardTitle>
+					<CardTitle className="text-sm font-normal text-muted-foreground">
+						総閲覧数
+					</CardTitle>
 				</CardHeader>
 				<CardContent className="flex-1 flex flex-col justify-end items-end">
 					<div className="flex items-end gap-1">
@@ -43,7 +45,7 @@ export function StatsCards({ articleStats, loading = false }: StatsCardsProps) {
 								: (articleStats?.totalViews?.toLocaleString() ?? "0")}
 						</span>
 						{!loading && (
-							<span className="text-sm font-bold text-primary leading-none pb-[2px]">
+							<span className="text-sm font-bold text-primary leading-none pb-0.5">
 								回
 							</span>
 						)}
@@ -52,9 +54,11 @@ export function StatsCards({ articleStats, loading = false }: StatsCardsProps) {
 			</Card>
 
 			{/* 今月の閲覧数 */}
-			<Card className="h-full flex flex-col">
+			<Card className="h-full flex flex-col shadow-none">
 				<CardHeader className="flex flex-row items-center justify-between">
-					<CardTitle className="text-md font-bold">今月の閲覧数</CardTitle>
+					<CardTitle className="text-sm font-normal text-muted-foreground">
+						今月の閲覧数
+					</CardTitle>
 				</CardHeader>
 				<CardContent className="flex-1 flex flex-col justify-end items-end">
 					<div className="flex flex-col gap-1">
@@ -65,7 +69,7 @@ export function StatsCards({ articleStats, loading = false }: StatsCardsProps) {
 									: (articleStats?.thisMonthViews?.toLocaleString() ?? "0")}
 							</span>
 							{!loading && (
-								<span className="text-sm font-bold text-primary leading-none pb-[2px]">
+								<span className="text-sm font-bold text-primary leading-none pb-0.5">
 									回
 								</span>
 							)}
@@ -75,9 +79,11 @@ export function StatsCards({ articleStats, loading = false }: StatsCardsProps) {
 			</Card>
 
 			{/* 総記事数カード */}
-			<Card className="h-full flex flex-col gap-2">
+			<Card className="h-full flex flex-col gap-2 shadow-none">
 				<CardHeader className="flex flex-row items-center justify-between">
-					<CardTitle className="text-md font-bold">総記事数</CardTitle>
+					<CardTitle className="text-sm font-normal text-muted-foreground">
+						総記事数
+					</CardTitle>
 				</CardHeader>
 				<CardContent className="flex-1 flex flex-col justify-end items-end">
 					{loading ? (
@@ -86,7 +92,7 @@ export function StatsCards({ articleStats, loading = false }: StatsCardsProps) {
 								<span className="text-2xl font-bold text-primary leading-none">
 									-
 								</span>
-								<span className="text-sm font-bold text-primary leading-none pb-[2px]">
+								<span className="text-sm font-bold text-primary leading-none pb-0.5">
 									記事
 								</span>
 							</div>
@@ -116,7 +122,7 @@ export function StatsCards({ articleStats, loading = false }: StatsCardsProps) {
 								<span className="text-2xl font-bold text-primary leading-none">
 									{formatNumber(articleStats.totalArticles)}
 								</span>
-								<span className="text-sm font-bold text-primary leading-none pb-[2px]">
+								<span className="text-sm font-bold text-primary leading-none pb-0.5">
 									記事
 								</span>
 							</div>
@@ -126,9 +132,11 @@ export function StatsCards({ articleStats, loading = false }: StatsCardsProps) {
 			</Card>
 
 			{/* 今月の新規記事 */}
-			<Card className="h-full flex flex-col">
+			<Card className="h-full flex flex-col shadow-none">
 				<CardHeader className="flex flex-row items-center justify-between">
-					<CardTitle className="text-md font-bold">今月の新規記事</CardTitle>
+					<CardTitle className="text-sm font-normal text-muted-foreground">
+						今月の新規記事
+					</CardTitle>
 				</CardHeader>
 				<CardContent className="flex-1 flex flex-col justify-end items-end">
 					<div className="flex items-end gap-1">
@@ -136,7 +144,7 @@ export function StatsCards({ articleStats, loading = false }: StatsCardsProps) {
 							{loading ? "-" : articleStats.thisMonthArticles}
 						</span>
 						{!loading && (
-							<span className="text-sm font-bold text-primary leading-none pb-[2px]">
+							<span className="text-sm font-bold text-primary leading-none pb-0.5">
 								記事
 							</span>
 						)}
