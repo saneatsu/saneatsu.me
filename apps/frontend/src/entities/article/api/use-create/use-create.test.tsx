@@ -44,7 +44,7 @@ vi.mock("@/shared/lib", () => ({
 	}),
 }));
 
-// テスト用のQueryClientプロバイダー
+// テスト用のQueryClientとラッパーを生成
 function createWrapper() {
 	const queryClient = new QueryClient({
 		defaultOptions: {
@@ -53,9 +53,11 @@ function createWrapper() {
 		},
 	});
 
-	return ({ children }: { children: ReactNode }) => (
+	const wrapper = ({ children }: { children: ReactNode }) => (
 		<QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 	);
+
+	return { wrapper, queryClient };
 }
 
 describe("useCreate", () => {
@@ -99,8 +101,9 @@ describe("useCreate", () => {
 			};
 
 			// Act: フックを実行
+			const { wrapper } = createWrapper();
 			const { result } = renderHook(() => useCreate(), {
-				wrapper: createWrapper(),
+				wrapper,
 			});
 
 			await act(async () => {
@@ -161,8 +164,9 @@ describe("useCreate", () => {
 			};
 
 			// Act: フックを実行
+			const { wrapper } = createWrapper();
 			const { result } = renderHook(() => useCreate(), {
-				wrapper: createWrapper(),
+				wrapper,
 			});
 
 			await act(async () => {
@@ -190,6 +194,54 @@ describe("useCreate", () => {
 				expect(result.current.data).toEqual(mockResponseData);
 			});
 		});
+
+		it("記事作成成功時に記事一覧キャッシュを無効化する", async () => {
+			// Arrange
+			const mockResponseData: ArticleCreateResponse = {
+				data: {
+					id: 1,
+					slug: "test-article",
+					cfImageId: null,
+					status: "draft",
+					publishedAt: null,
+					updatedAt: "2024-01-01T00:00:00Z",
+					title: "テスト記事",
+					content: "テスト本文",
+					viewCount: 0,
+					tags: [],
+				},
+				message: "記事が正常に作成されました",
+			};
+
+			mockPost.mockResolvedValueOnce({
+				ok: true,
+				json: async () => mockResponseData,
+			});
+
+			const testData: ArticleCreateRequest = {
+				title: "テスト記事",
+				slug: "test-article",
+				content: "テスト本文",
+				status: "draft",
+			};
+
+			const { wrapper, queryClient } = createWrapper();
+			const invalidateSpy = vi.spyOn(queryClient, "invalidateQueries");
+
+			// Act
+			const { result } = renderHook(() => useCreate(), {
+				wrapper,
+			});
+
+			await act(async () => {
+				await result.current.mutateAsync(testData);
+			});
+
+			// Assert
+			expect(invalidateSpy).toHaveBeenCalledWith(
+				expect.objectContaining({ queryKey: ["articles"] })
+			);
+		});
 	});
 
 	describe("異常系", () => {
@@ -215,8 +267,9 @@ describe("useCreate", () => {
 			};
 
 			// Act: フックを実行
+			const { wrapper } = createWrapper();
 			const { result } = renderHook(() => useCreate(), {
-				wrapper: createWrapper(),
+				wrapper,
 			});
 
 			// Assert: エラーがスローされることを確認
