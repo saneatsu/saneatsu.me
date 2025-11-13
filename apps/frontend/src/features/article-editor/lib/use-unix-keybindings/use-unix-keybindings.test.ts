@@ -9,7 +9,7 @@ import { useUnixKeybindings } from "./use-unix-keybindings";
 describe("useUnixKeybindings", () => {
 	describe("Unit Test", () => {
 		let textarea: HTMLTextAreaElement;
-		let textareaRef: React.RefObject<HTMLTextAreaElement>;
+		let textareaRef: React.RefObject<HTMLTextAreaElement | null>;
 
 		beforeEach(() => {
 			// textareaを作成

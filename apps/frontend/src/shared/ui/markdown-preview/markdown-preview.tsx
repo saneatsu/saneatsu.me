@@ -220,14 +220,16 @@ function extractTextFromChildren(children: React.ReactNode): string {
 	if (Array.isArray(children)) {
 		return children.map((child) => extractTextFromChildren(child)).join("");
 	}
+	const candidate = children as unknown;
 	if (
-		children !== null &&
-		typeof children === "object" &&
-		"props" in children
+		candidate !== null &&
+		typeof candidate === "object" &&
+		"props" in (candidate as Record<string, unknown>)
 	) {
-		return extractTextFromChildren(
-			(children as React.ReactElement).props.children
-		);
+		const element = candidate as React.ReactElement<{
+			children?: React.ReactNode;
+		}>;
+		return extractTextFromChildren(element.props.children);
 	}
 	return "";
 }
@@ -434,14 +436,15 @@ export function createDefaultMarkdownComponents(
 		},
 		// 画像のカスタムレンダリング
 		img: ({ src, alt, ...props }) => {
+			const srcValue = typeof src === "string" ? src : "";
 			// 画像コンポーネントの種類に応じて切り替え
 			if (imageComponent === "zoomable") {
 				// 現在の画像のインデックスを計算（複数画像がある場合のナビゲーション用）
-				const currentIndex = imageUrls?.indexOf(src || "") ?? 0;
+				const currentIndex = imageUrls?.indexOf(srcValue) ?? 0;
 
 				return (
 					<ZoomableImage
-						src={src || ""}
+						src={srcValue}
 						alt={alt || ""}
 						images={imageUrls}
 						currentIndex={currentIndex}
@@ -450,13 +453,13 @@ export function createDefaultMarkdownComponents(
 			}
 
 			// Cloudflare Images URLの場合はArticleImageを使用
-			if (src?.includes("imagedelivery.net")) {
-				return <ArticleImage src={src} alt={alt} />;
+			if (srcValue.includes("imagedelivery.net")) {
+				return <ArticleImage src={srcValue} alt={alt} />;
 			}
 
 			// 通常の画像（外部URL）
 			// biome-ignore lint/performance/noImgElement: 外部画像URLはNext.js Imageで最適化できないため<img>を使用
-			return <img src={src} alt={alt} {...props} />;
+			return <img src={srcValue} alt={alt} {...props} />;
 		},
 		// Tweet埋め込みのカスタムレンダリング
 		// @ts-expect-error - カスタムノードのため型定義がない

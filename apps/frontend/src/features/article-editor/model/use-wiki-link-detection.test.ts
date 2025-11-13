@@ -9,7 +9,7 @@ import { useWikiLinkDetection } from "./use-wiki-link-detection";
 describe("useWikiLinkDetection", () => {
 	describe("Unit Test", () => {
 		let textarea: HTMLTextAreaElement;
-		let textareaRef: React.RefObject<HTMLTextAreaElement>;
+		let textareaRef: React.RefObject<HTMLTextAreaElement | null>;
 		let setShowSuggestions: ReturnType<typeof vi.fn>;
 		let setSuggestionQuery: ReturnType<typeof vi.fn>;
 		let setCursorPosition: ReturnType<typeof vi.fn>;

@@ -5,7 +5,7 @@ import { type RefObject, useEffect } from "react";
  */
 interface TagDetectionConfig {
 	/** テキストエリアのref */
-	textareaRef: RefObject<HTMLTextAreaElement>;
+	textareaRef: RefObject<HTMLTextAreaElement | null>;
 	/** タグ検知時のコールバック */
 	onTagDetection?: (detected: boolean, query: string) => void;
 }

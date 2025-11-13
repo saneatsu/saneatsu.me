@@ -34,7 +34,7 @@ import type { ImageUploadResult } from "../use-image-upload/use-image-upload";
  * ```
  */
 export function useImageUploadFile(
-	textareaRef: React.RefObject<HTMLTextAreaElement>,
+	textareaRef: React.RefObject<HTMLTextAreaElement | null>,
 	uploadImage: (file: File) => Promise<ImageUploadResult | null>,
 	onChange: (value: string) => void
 ) {

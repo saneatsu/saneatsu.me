@@ -5,7 +5,7 @@ import { useDropImage } from "./use-drop-image";
 
 describe("Unit Test", () => {
 	describe("useDropImage", () => {
-		let editorRef: React.RefObject<HTMLDivElement>;
+		let editorRef: React.RefObject<HTMLDivElement | null>;
 		let mockUploadImage: ReturnType<typeof vi.fn>;
 		let mockOnChange: ReturnType<typeof vi.fn>;
 		let mockTextarea: HTMLTextAreaElement;
