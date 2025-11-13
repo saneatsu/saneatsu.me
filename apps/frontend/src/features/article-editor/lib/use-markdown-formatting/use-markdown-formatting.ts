@@ -5,7 +5,7 @@ import { type RefObject, useEffect } from "react";
  */
 interface MarkdownFormattingConfig {
 	/** テキストエリアのref */
-	textareaRef: RefObject<HTMLTextAreaElement>;
+	textareaRef: RefObject<HTMLTextAreaElement | null>;
 	/** Markdown値を設定する関数 */
 	setMarkdownValue: (value: string) => void;
 	/** フォームのsetValue関数 */
