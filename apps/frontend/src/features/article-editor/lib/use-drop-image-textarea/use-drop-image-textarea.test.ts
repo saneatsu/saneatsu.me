@@ -6,7 +6,7 @@ import { useDropImageTextarea } from "./use-drop-image-textarea";
 
 describe("Unit Test", () => {
 	describe("useDropImageTextarea", () => {
-		let textareaRef: React.RefObject<HTMLTextAreaElement>;
+		let textareaRef: React.RefObject<HTMLTextAreaElement | null>;
 		let mockUploadImage: ReturnType<typeof vi.fn>;
 		let mockOnChange: ReturnType<typeof vi.fn>;
 		let mockTextarea: HTMLTextAreaElement;

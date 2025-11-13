@@ -32,7 +32,7 @@ import type { ImageUploadResult } from "../use-image-upload/use-image-upload";
  * ```
  */
 export function usePasteImage(
-	editorRef: React.RefObject<HTMLDivElement>,
+	editorRef: React.RefObject<HTMLDivElement | null>,
 	uploadImage: (file: File) => Promise<ImageUploadResult | null>,
 	onChange: (value: string) => void
 ) {

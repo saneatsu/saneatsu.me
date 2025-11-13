@@ -31,7 +31,7 @@ import type { ImageUploadResult } from "../use-image-upload/use-image-upload";
  * ```
  */
 export function usePasteImageTextarea(
-	textareaRef: React.RefObject<HTMLTextAreaElement>,
+	textareaRef: React.RefObject<HTMLTextAreaElement | null>,
 	uploadImage: (file: File) => Promise<ImageUploadResult | null>,
 	onChange: (value: string) => void
 ) {

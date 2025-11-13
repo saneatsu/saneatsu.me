@@ -6,7 +6,7 @@ import getCaretCoordinates from "textarea-caret";
  */
 interface WikiLinkDetectionConfig {
 	/** textareaのref */
-	textareaRef: RefObject<HTMLTextAreaElement>;
+	textareaRef: RefObject<HTMLTextAreaElement | null>;
 	/** サジェスト表示状態を設定する関数 */
 	setShowSuggestions: (show: boolean) => void;
 	/** サジェストクエリを設定する関数 */
