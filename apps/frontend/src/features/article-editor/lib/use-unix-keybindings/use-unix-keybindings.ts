@@ -5,7 +5,7 @@ import { type RefObject, useEffect } from "react";
  */
 interface UnixKeybindingsConfig {
 	/** テキストエリアのref */
-	textareaRef: RefObject<HTMLTextAreaElement>;
+	textareaRef: RefObject<HTMLTextAreaElement | null>;
 }
 
 /**

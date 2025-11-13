@@ -6,9 +6,9 @@ import { useEffect } from "react";
  */
 interface UseClickExpansionTextareaProps {
 	/** エディタコンテナのref */
-	editorRef: RefObject<HTMLDivElement>;
+	editorRef: RefObject<HTMLDivElement | null>;
 	/** textareaのref */
-	textareaRef: RefObject<HTMLTextAreaElement>;
+	textareaRef: RefObject<HTMLTextAreaElement | null>;
 }
 
 /**

@@ -9,7 +9,7 @@ import { useBracketCompletion } from "./use-bracket-completion";
 describe("useBracketCompletion", () => {
 	describe("Unit Test", () => {
 		let textarea: HTMLTextAreaElement;
-		let textareaRef: React.RefObject<HTMLTextAreaElement>;
+		let textareaRef: React.RefObject<HTMLTextAreaElement | null>;
 		let mockSetMarkdownValue: ReturnType<typeof vi.fn>;
 		let mockSetValue: ReturnType<typeof vi.fn>;
 

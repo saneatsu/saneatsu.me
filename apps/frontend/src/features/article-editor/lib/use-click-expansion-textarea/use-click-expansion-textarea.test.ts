@@ -7,8 +7,8 @@ describe("useClickExpansionTextarea", () => {
 	describe("Unit Test", () => {
 		let editorContainer: HTMLDivElement;
 		let textarea: HTMLTextAreaElement;
-		let editorRef: React.RefObject<HTMLDivElement>;
-		let textareaRef: React.RefObject<HTMLTextAreaElement>;
+		let editorRef: React.RefObject<HTMLDivElement | null>;
+		let textareaRef: React.RefObject<HTMLTextAreaElement | null>;
 
 		beforeEach(() => {
 			// エディタコンテナを作成
