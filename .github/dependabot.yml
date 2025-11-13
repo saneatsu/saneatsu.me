@@ -15,3 +15,10 @@ updates:
       - "npm"
     commit-message:
       prefix: "chore(deps)" # コミットメッセージのプレフィックス
+    groups:
+      react-stack: # React 本体と型定義は常に同一PRで更新
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
