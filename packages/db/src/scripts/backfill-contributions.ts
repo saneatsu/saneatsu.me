@@ -1,7 +1,3 @@
-import dotenv from "dotenv";
-
-dotenv.config();
-
 /**
  * 既存の記事データから `daily_article_contributions` テーブルを再構築するバックフィルスクリプト。
  *
@@ -13,6 +9,8 @@ dotenv.config();
 import { createClient } from "@libsql/client";
 import { and, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/libsql";
+
+import { env } from "../env";
 import {
 	countJapaneseCharactersFromMarkdown,
 	toJstDateKey,
@@ -20,10 +18,8 @@ import {
 import * as schema from "../schema";
 
 async function main() {
-	const url = process.env.TURSO_DATABASE_URL || "file:./local.db";
-	const authToken = url.startsWith("file:")
-		? undefined
-		: process.env.TURSO_AUTH_TOKEN;
+	const url = env.TURSO_DATABASE_URL ?? "file:./local.db";
+	const authToken = url.startsWith("file:") ? undefined : env.TURSO_AUTH_TOKEN;
 
 	const client = createClient({ url, authToken });
 	const db = drizzle(client, { schema });

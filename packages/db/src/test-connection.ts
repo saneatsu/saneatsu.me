@@ -1,17 +1,21 @@
 import { createClient } from "@libsql/client";
-import dotenv from "dotenv";
 
-dotenv.config();
+import { env } from "./env";
 
 async function testConnection() {
 	console.log("🔗 Turso接続テストを開始します...");
-	console.log("URL:", process.env.TURSO_DATABASE_URL);
-	console.log("Token exists:", !!process.env.TURSO_AUTH_TOKEN);
+	console.log("URL:", env.TURSO_DATABASE_URL ?? "file:./local.db");
+	console.log("Token exists:", !!env.TURSO_AUTH_TOKEN);
 
 	try {
+		const url = env.TURSO_DATABASE_URL ?? "file:./local.db";
+		const authToken = url.startsWith("file:")
+			? undefined
+			: env.TURSO_AUTH_TOKEN;
+
 		const client = createClient({
-			url: process.env.TURSO_DATABASE_URL || "",
-			authToken: process.env.TURSO_AUTH_TOKEN || "",
+			url,
+			authToken: authToken || "",
 		});
 
 		const result = await client.execute(

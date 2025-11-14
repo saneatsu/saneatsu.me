@@ -1,11 +1,6 @@
 /**
  * データベースのシードデータ生成スクリプト（200件記事版）
  */
-import dotenv from "dotenv";
-
-// 環境変数をロード（最初に実行）
-dotenv.config();
-
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
 

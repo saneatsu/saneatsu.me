@@ -14,8 +14,9 @@ export const envSchema = z.object({
 	 * - development: ローカル開発環境、Cloudflare Workers開発環境
 	 * - preview: Cloudflare Workersプレビュー環境
 	 * - production: Cloudflare Workers本番環境
+	 * - test: Vitestなどのテスト実行時
 	 */
-	NODE_ENV: z.enum(["development", "preview", "production"]),
+	NODE_ENV: z.enum(["development", "preview", "production", "test"]),
 
 	/**
 	 * Turso Database URL

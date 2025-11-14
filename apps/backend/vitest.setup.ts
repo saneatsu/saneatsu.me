@@ -1,20 +1,23 @@
-import { config } from "dotenv";
 import { vi } from "vitest";
 
-// テスト用の環境変数を読み込む
-config({ path: ".env" });
-
 // テスト用の環境変数を設定（存在しない場合のデフォルト値）
-if (!process.env.TURSO_DATABASE_URL) {
-	process.env.TURSO_DATABASE_URL = "file:./test.db";
-}
-if (!process.env.TURSO_AUTH_TOKEN) {
-	process.env.TURSO_AUTH_TOKEN = "test-token";
-}
+const defaultTestEnv: Record<string, string> = {
+	NODE_ENV: "test",
+	TURSO_DATABASE_URL: "file:./test.db",
+	TURSO_AUTH_TOKEN: "test-token",
+	CLOUDFLARE_ACCOUNT_ID: "test-account-id",
+	CLOUDFLARE_ACCOUNT_HASH: "test-account-hash",
+	CLOUDFLARE_API_TOKEN: "test-api-token",
+	GEMINI_API_KEY: "AI_TEST_GEMINI_API_KEY_FOR_BACKEND_SUITE_123",
+	MAPBOX_ACCESS_TOKEN: "test-mapbox-token",
+	CORS_ORIGIN: "http://localhost:3333",
+};
 
-// NODE_ENVをtestに設定
-// @ts-expect-error NODE_ENVは読み取り専用プロパティだが、テスト環境では設定が必要
-process.env.NODE_ENV = "test";
+for (const [key, value] of Object.entries(defaultTestEnv)) {
+	if (!process.env[key]) {
+		process.env[key] = value;
+	}
+}
 
 // ----------------------------------------------
 // すべてのテストで共通のモックを設定
