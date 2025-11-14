@@ -44,7 +44,7 @@
 		"drizzle-orm": "^0.44.7"
 	},
 	"devDependencies": {
-		"dotenv": "^17.2.0",
+		"dotenv": "^17.2.3",
 		"drizzle-kit": "^0.31.6",
 		"tsx": "^4.0.0",
 		"typescript": "^5.8.3"
