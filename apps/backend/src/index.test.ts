@@ -1,13 +1,7 @@
 import { testClient } from "hono/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { AppType } from "./index";
 
-// 環境変数のモック
-vi.mock("dotenv", () => ({
-	default: {
-		config: vi.fn(),
-	},
-}));
+import type { AppType } from "./index";
 
 // サーバーの起動をモック
 vi.mock("@hono/node-server", () => ({

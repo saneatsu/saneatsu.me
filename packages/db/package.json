@@ -41,10 +41,11 @@
 	},
 	"dependencies": {
 		"@libsql/client": "^0.15.10",
-		"drizzle-orm": "^0.44.7"
+		"@t3-oss/env-core": "^0.13.8",
+		"drizzle-orm": "^0.44.7",
+		"zod": "^4.0.10"
 	},
 	"devDependencies": {
-		"dotenv": "^17.2.0",
 		"drizzle-kit": "^0.31.6",
 		"tsx": "^4.0.0",
 		"typescript": "^5.8.3"
