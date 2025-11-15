@@ -54,8 +54,8 @@ export function getCloudflareImageUrl(
  *
  * @description
  * OGP用の画像URLを取得する。
- * Cloudflare Images IDがある場合はそのURLを、ない場合は動的OG画像のURLを返す。
- * OGPに最適化された1200x630pxのバリアントを使用する。
+ * Cloudflare Images IDがある場合は既存の "large" バリアント（幅1200px）を使用し、
+ * ない場合は動的OG画像のURLを返す。
  *
  * @param imageId - Cloudflare Images ID（オプショナル）
  * @param locale - ロケール（例: "ja", "en"）
@@ -66,7 +66,7 @@ export function getCloudflareImageUrl(
  * @example
  * ```ts
  * const ogImageUrl = getOgImageUrl("abc123", "ja", "article-001");
- * // => "https://imagedelivery.net/<account-hash>/abc123/ogp"
+ * // => "https://imagedelivery.net/<account-hash>/abc123/large"
  *
  * const defaultOgImageUrl = getOgImageUrl(null, "ja", "article-001");
  * // => "https://saneatsu.me/ja/blog/article-001/opengraph-image"
@@ -79,9 +79,9 @@ export function getOgImageUrl(
 	baseUrl = "https://saneatsu.me"
 ): string {
 	if (imageId) {
-		// Cloudflare Imagesを使用する場合は "ogp" バリアントを使用
-		// 1200x630pxに最適化された画像を返す
-		const imageUrl = getCloudflareImageUrl(imageId, "ogp");
+		// Cloudflare Imagesを使用する場合は既存の "large" バリアントを利用
+		// 1200px幅で出力され、Twitter/Xのlarge card要件を満たす
+		const imageUrl = getCloudflareImageUrl(imageId, "large");
 		if (imageUrl) {
 			return imageUrl;
 		}
