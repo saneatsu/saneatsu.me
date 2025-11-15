@@ -19,13 +19,28 @@
  * ビジネスロジックを共有しながら環境固有の設定を分離
  */
 
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { serve } from "@hono/node-server";
+import dotenv from "dotenv";
+
+import type { Env } from "./env";
 import { createApp } from "./index";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const envPath = path.resolve(__dirname, "../.env");
+const { error } = dotenv.config({ path: envPath });
+
+if (error) {
+	console.error("❌ Failed to load apps/backend/.env", error);
+	process.exit(1);
+}
+
 // 環境変数のバリデーション（開発環境用）
-// env.tsで@t3-oss/env-coreによるバリデーションを実行する
-// 必須の環境変数が設定されていない場合はここでエラーが投げられる
-await import("./env");
+// dotenvで読み込んだ値を使って@t3-oss/env-coreの検証を実行する
+const { env: validatedEnv } = await import("./env");
 
 // 開発環境専用の設定（localhost全ポートとngrok-free.appを許可）
 const app = createApp({ isDevelopment: true });
@@ -35,9 +50,12 @@ const port = process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 8888;
 console.log(`🚀 Server is running on http://localhost:${port}`);
 
 serve({
-	fetch: (request, env) => {
-		// Node.js環境でprocess.envをc.envに渡す
-		return app.fetch(request, { ...process.env, ...env });
+	fetch: (request) => {
+		const mergedEnv = {
+			...process.env,
+			...validatedEnv,
+		} satisfies Env & NodeJS.ProcessEnv;
+		return app.fetch(request, mergedEnv);
 	},
 	port,
 });
