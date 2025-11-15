@@ -56,6 +56,7 @@ const sidebars: SidebarsConfig = {
 				"development/commit-conventions",
 				"development/database",
 				"development/content-authoring",
+				"development/ogp-preview",
 			],
 		},
 		{
