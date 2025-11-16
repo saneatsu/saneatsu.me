@@ -71,6 +71,7 @@ const sidebars: SidebarsConfig = {
 				"deployment/overview",
 				"deployment/ci-cd",
 				"deployment/environment-variables",
+				"deployment/cloudflare-images",
 			],
 		},
 		// Additional docs will be added as we create them
