@@ -54,8 +54,9 @@ export function getCloudflareImageUrl(
  *
  * @description
  * OGP用の画像URLを取得する。
- * Cloudflare Images IDがある場合は既存の "large" バリアント（幅1200px）を使用し、
- * ない場合は動的OG画像のURLを返す。
+ * Cloudflare Images IDの有無にかかわらず、記事固有のOGP生成エンドポイントを返す。
+ * サムネイルがある場合は、動的OG画像の背景として `large` バリアントを使用し、
+ * ない場合は従来のグリッド背景のみの画像が生成される。
  *
  * @param imageId - Cloudflare Images ID（オプショナル）
  * @param locale - ロケール（例: "ja", "en"）
@@ -73,20 +74,10 @@ export function getCloudflareImageUrl(
  * ```
  */
 export function getOgImageUrl(
-	imageId: string | null | undefined,
+	_imageId: string | null | undefined,
 	locale: string,
 	slug: string,
 	baseUrl = "https://saneatsu.me"
 ): string {
-	if (imageId) {
-		// Cloudflare Imagesを使用する場合は既存の "large" バリアントを利用
-		// 1200px幅で出力され、Twitter/Xのlarge card要件を満たす
-		const imageUrl = getCloudflareImageUrl(imageId, "large");
-		if (imageUrl) {
-			return imageUrl;
-		}
-	}
-
-	// 動的OG画像のURLを返す
 	return `${baseUrl}/${locale}/blog/${slug}/opengraph-image`;
 }
