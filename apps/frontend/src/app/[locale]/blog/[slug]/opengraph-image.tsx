@@ -21,6 +21,66 @@ interface OgImageProps {
 }
 
 /**
+ * ArrayBuffer -> base64 変換ユーティリティ
+ *
+ * @description
+ * next/og の `ImageResponse` は Node/Edge runtime 上で動作するため、`btoa` などの
+ * ブラウザAPIが常に使えるとは限らず、逆に `Buffer` がない環境も存在する。
+ * そのため両方の環境で動作するように、Buffer があればそれを利用し、なければ
+ * 手動で文字列化して base64 に変換する処理を提供する。
+ */
+function arrayBufferToBase64(buffer: ArrayBuffer): string {
+	if (typeof Buffer !== "undefined") {
+		return Buffer.from(buffer).toString("base64");
+	}
+
+	let binary = "";
+	const bytes = new Uint8Array(buffer);
+	const chunkSize = 0x8000;
+	for (let i = 0; i < bytes.length; i += chunkSize) {
+		const chunk = bytes.subarray(i, i + chunkSize);
+		binary += String.fromCharCode(...chunk);
+	}
+
+	return btoa(binary);
+}
+
+/**
+ * Cloudflare Images のバリアントを data URL へ変換
+ *
+ * @description
+ * next/og では `<img src="https://">` がサポートされず、背景として画像を利用する
+ * には data URL で埋め込む必要がある。記事サムネイルをOG画像の背景に使うため、
+ * Cloudflare Imagesから該当バリアントを取得しbase64へエンコードして返す。
+ * 失敗した場合は `null` を返して従来のグリッド背景のみ表示する。
+ */
+async function getBackgroundImageDataUrl(
+	cfImageId: string | null,
+	variant: string
+): Promise<string | null> {
+	const imageUrl = getCloudflareImageUrl(cfImageId, variant);
+	if (!imageUrl) {
+		return null;
+	}
+
+	try {
+		const response = await fetch(imageUrl);
+		if (!response.ok) {
+			console.warn("⚠️ Failed to fetch Cloudflare image", response.status);
+			return null;
+		}
+
+		const arrayBuffer = await response.arrayBuffer();
+		const contentType = response.headers.get("content-type") || "image/jpeg";
+		const base64 = arrayBufferToBase64(arrayBuffer);
+		return `data:${contentType};base64,${base64}`;
+	} catch (error) {
+		console.error("Failed to load Cloudflare image", error);
+		return null;
+	}
+}
+
+/**
  * 記事ページ用のOG画像生成
  *
  * @description
@@ -46,12 +106,12 @@ export default async function Image({ params }: OgImageProps) {
 		// FIXME: titleはnullableじゃなくする
 		const title = article.title || "Untitled";
 
-		const backgroundImageUrl = getCloudflareImageUrl(
+		const backgroundImageDataUrl = await getBackgroundImageDataUrl(
 			article.cfImageId,
 			"large"
 		);
 
-		return ArticleOgImage(title, backgroundImageUrl);
+		return ArticleOgImage(title, backgroundImageDataUrl);
 	} catch (error) {
 		// 記事が見つからない場合はデフォルトの画像を生成
 		console.error("Failed to generate OG image:", error);
