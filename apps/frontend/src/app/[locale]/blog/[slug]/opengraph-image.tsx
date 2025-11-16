@@ -1,4 +1,4 @@
-import { fetchArticle } from "@/shared/lib";
+import { fetchArticle, getCloudflareImageUrl } from "@/shared/lib";
 import {
 	OG_IMAGE_ALT,
 	OG_IMAGE_CONTENT_TYPE,
@@ -46,7 +46,12 @@ export default async function Image({ params }: OgImageProps) {
 		// FIXME: titleはnullableじゃなくする
 		const title = article.title || "Untitled";
 
-		return ArticleOgImage(title);
+		const backgroundImageUrl = getCloudflareImageUrl(
+			article.cfImageId,
+			"large"
+		);
+
+		return ArticleOgImage(title, backgroundImageUrl);
 	} catch (error) {
 		// 記事が見つからない場合はデフォルトの画像を生成
 		console.error("Failed to generate OG image:", error);
