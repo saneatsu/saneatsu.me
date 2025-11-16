@@ -20,6 +20,10 @@ Cloudflare Images では、画像のリサイズや最適化のために「バ�
 | large      | 1200x  | contain | Lightbox拡大表示（中） |
 | xlarge     | 1600x  | contain | Lightbox拡大表示（大） |
 
+> **NOTE:** SNS向けのOGPメタデータでも `large` バリアントを使用します。幅1200pxが確保されるため、Twitter/Xのlarge card要件を満たす一方で、追加のバリアントを増やす必要がありません。
+>
+> **注意:** `large` バリアントは `fit=contain` でアスペクト比を維持します。元画像の比率によってはSNS側で推奨アスペクト比から外れ、プラットフォーム側で自動クロップされる可能性がありますが、バリアント管理の簡潔さを優先してこのトレードオフを受け入れています。
+
 ## Fit モードの使い分け
 
 このプロジェクトでは、**`original` バリアントのみ `fit=scale-down` を使用し、その他のバリアント（small, medium, large, xlarge）は `fit=contain` を使用**しています。
