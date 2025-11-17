@@ -159,7 +159,7 @@ importers:
         version: 0.24.1
       '@hookform/resolvers':
         specifier: ^5.2.2
-        version: 5.2.2(react-hook-form@7.61.1(react@19.2.0))
+        version: 5.2.2(react-hook-form@7.66.1(react@19.2.0))
       '@libsql/client':
         specifier: ^0.15.10
         version: 0.15.10
@@ -302,8 +302,8 @@ importers:
         specifier: ^5.5.3
         version: 5.5.3(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       react-hook-form:
-        specifier: ^7.61.1
-        version: 7.61.1(react@19.2.0)
+        specifier: ^7.66.1
+        version: 7.66.1(react@19.2.0)
       react-map-gl:
         specifier: ^8.1.0
         version: 8.1.0(mapbox-gl@3.16.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -10684,8 +10684,8 @@ packages:
   react-fast-compare@3.2.2:
     resolution: {integrity: sha512-nsO+KSNgo1SbJqJEYRE9ERzo7YtYbou/OqjSQKxV7jcKox7+usiUVZOAC+XnDOABXggQTno0Y1CpVnuWEc1boQ==}
 
-  react-hook-form@7.61.1:
-    resolution: {integrity: sha512-2vbXUFDYgqEgM2RcXcAT2PwDW/80QARi+PKmHy5q2KhuKvOlG8iIYgf7eIlIANR5trW9fJbP4r5aub3a4egsew==}
+  react-hook-form@7.66.1:
+    resolution: {integrity: sha512-2KnjpgG2Rhbi+CIiIBQQ9Df6sMGH5ExNyFl4Hw9qO7pIqMBR8Bvu9RQyjl3JM4vehzCh9soiNUM/xYMswb2EiA==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18 || ^19
@@ -16281,10 +16281,10 @@ snapshots:
       hono: 4.10.6
       zod: 4.0.10
 
-  '@hookform/resolvers@5.2.2(react-hook-form@7.61.1(react@19.2.0))':
+  '@hookform/resolvers@5.2.2(react-hook-form@7.66.1(react@19.2.0))':
     dependencies:
       '@standard-schema/utils': 0.3.0
-      react-hook-form: 7.61.1(react@19.2.0)
+      react-hook-form: 7.66.1(react@19.2.0)
 
   '@img/colour@1.0.0':
     optional: true
@@ -25069,7 +25069,7 @@ snapshots:
 
   react-fast-compare@3.2.2: {}
 
-  react-hook-form@7.61.1(react@19.2.0):
+  react-hook-form@7.66.1(react@19.2.0):
     dependencies:
       react: 19.2.0
 
