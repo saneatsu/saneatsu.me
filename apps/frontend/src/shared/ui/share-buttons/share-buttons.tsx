@@ -29,11 +29,17 @@ export interface ShareButtonsProps {
 /**
  * SNSシェアURLを生成する関数群
  */
+const formatTitleForX = (title: string) => {
+	const suffix = " - saneatsu.me";
+	const normalized = title.trim() || "saneatsu.me";
+	return normalized.endsWith(suffix) ? normalized : `${normalized}${suffix}`;
+};
+
 const createShareUrls = (url: string, title: string) => ({
 	/**
 	 * X（旧Twitter）のシェアURLを生成
 	 */
-	x: `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}&hashtags=saneatsu_me`,
+	x: `https://twitter.com/intent/tweet?text=${encodeURIComponent(formatTitleForX(title))}&url=${encodeURIComponent(url)}&hashtags=saneatsu_me`,
 
 	/**
 	 * Facebookのシェアラ URLを生成
