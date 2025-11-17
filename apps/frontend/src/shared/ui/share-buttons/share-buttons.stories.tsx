@@ -161,5 +161,6 @@ export const HashtagValidation: Story = {
 		expect(href).toContain(
 			`url=${encodeURIComponent("https://saneatsu.me/blog/hashtag-test")}`
 		);
+		expect(href).toContain("via=saneatsu_wakana");
 	},
 };

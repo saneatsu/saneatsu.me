@@ -35,11 +35,13 @@ const formatTitleForX = (title: string) => {
 	return normalized.endsWith(suffix) ? normalized : `${normalized}${suffix}`;
 };
 
+const TWITTER_HANDLE = "saneatsu_wakana";
+
 const createShareUrls = (url: string, title: string) => ({
 	/**
 	 * X（旧Twitter）のシェアURLを生成
 	 */
-	x: `https://twitter.com/intent/tweet?text=${encodeURIComponent(formatTitleForX(title))}&url=${encodeURIComponent(url)}&hashtags=saneatsu_me`,
+	x: `https://twitter.com/intent/tweet?text=${encodeURIComponent(formatTitleForX(title))}&url=${encodeURIComponent(url)}&hashtags=saneatsu_me&via=${encodeURIComponent(TWITTER_HANDLE)}`,
 
 	/**
 	 * Facebookのシェアラ URLを生成
