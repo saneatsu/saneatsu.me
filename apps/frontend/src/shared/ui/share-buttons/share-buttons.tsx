@@ -30,9 +30,8 @@ export interface ShareButtonsProps {
  * SNSシェアURLを生成する関数群
  */
 const formatTitleForX = (title: string) => {
-	const suffix = " - saneatsu.me";
-	const normalized = title.trim() || "saneatsu.me";
-	return normalized.endsWith(suffix) ? normalized : `${normalized}${suffix}`;
+	const normalized = title.trim();
+	return normalized.length > 0 ? normalized : "saneatsu.me";
 };
 
 const TWITTER_HANDLE = "saneatsu_wakana";
