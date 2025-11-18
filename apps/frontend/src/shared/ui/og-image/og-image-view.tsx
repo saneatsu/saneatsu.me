@@ -33,6 +33,18 @@ export function OgImageLayout({
 	children,
 	backgroundImage,
 }: OgImageLayoutProps) {
+	// デバッグ用ログ
+	console.log("🎨 OgImageLayout rendering");
+	console.log("  - hasBackgroundImage:", !!backgroundImage);
+	console.log("  - backgroundImageType:", typeof backgroundImage);
+	if (backgroundImage) {
+		console.log("  - backgroundImageLength:", backgroundImage.length);
+		console.log(
+			"  - backgroundImagePrefix:",
+			backgroundImage.substring(0, 100)
+		);
+	}
+
 	return (
 		<div
 			style={{
