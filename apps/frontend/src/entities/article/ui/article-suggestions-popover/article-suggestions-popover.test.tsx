@@ -5,7 +5,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { SuggestionItem } from "@/entities/article";
 
-import { ArticleSuggestionsPopover } from "./article-suggestions-popover";
+import {
+	ArticleSuggestionsPopover,
+	DEFAULT_SUGGESTION_LIMIT,
+} from "./article-suggestions-popover";
 
 // モックデータ
 const mockSuggestions: SuggestionItem[] = [
@@ -163,6 +166,30 @@ describe("Unit Test", () => {
 				expect(screen.getByText("見出し")).toBeInTheDocument();
 				expect(screen.getByText("コンポーネントの作成")).toBeInTheDocument();
 				expect(screen.getByText("型定義の基本")).toBeInTheDocument();
+			});
+		});
+
+		it("should show info text with default limit", async () => {
+			renderWithQueryClient(<ArticleSuggestionsPopover {...defaultProps} />);
+
+			await waitFor(() => {
+				const formatted = DEFAULT_SUGGESTION_LIMIT.toLocaleString();
+				expect(
+					screen.getByText(`公開済みの記事・見出しを最大${formatted}件表示`)
+				).toBeInTheDocument();
+			});
+		});
+
+		it("should show heading-specific info text", async () => {
+			renderWithQueryClient(
+				<ArticleSuggestionsPopover {...defaultProps} filterMode="heading" />
+			);
+
+			await waitFor(() => {
+				const formatted = DEFAULT_SUGGESTION_LIMIT.toLocaleString();
+				expect(
+					screen.getByText(`公開済みの記事の見出しを最大${formatted}件表示`)
+				).toBeInTheDocument();
 			});
 		});
 
@@ -461,7 +488,24 @@ describe("Unit Test", () => {
 					query: {
 						q: "",
 						lang: "ja",
-						limit: "20",
+						limit: DEFAULT_SUGGESTION_LIMIT.toString(),
+					},
+				});
+			});
+		});
+
+		it("should respect custom limit prop", async () => {
+			vi.clearAllMocks();
+			renderWithQueryClient(
+				<ArticleSuggestionsPopover {...defaultProps} limit={50} />
+			);
+
+			await waitFor(() => {
+				expect(mockGet).toHaveBeenCalledWith({
+					query: {
+						q: "test",
+						lang: "ja",
+						limit: "50",
 					},
 				});
 			});
@@ -544,7 +588,7 @@ describe("Integration Test", () => {
 					query: {
 						q: "react",
 						lang: "en",
-						limit: "20",
+						limit: DEFAULT_SUGGESTION_LIMIT.toString(),
 					},
 				});
 			});

@@ -31,7 +31,7 @@ const nextConfig = {
 		BASIC_AUTH_PASSWORD: process.env.BASIC_AUTH_PASSWORD,
 		AUTH_TRUST_HOST: process.env.AUTH_TRUST_HOST,
 	},
-	// Webpack設定でファイルウォッチャーの監視対象を制限
+	// Webpack設定でファイルウォッチャーの監視対象を制限（webpackモード用）
 	webpack: (config) => {
 		// ファイルウォッチャーの設定を追加して、不要なファイルを監視対象から除外
 		config.watchOptions = {
@@ -45,11 +45,14 @@ const nextConfig = {
 				"**/coverage/**",
 				"**/.storybook-static/**",
 			],
-			// ポーリング方式を使用してファイルウォッチャーの問題を回避
-			poll: 1000,
 		};
 		return config;
 	},
+	// Experimental features
+	// experimental: {
+	// 	// Turbopackのファイルシステムキャッシュを無効化（ホットリロード問題を回避）
+	// 	turbopackFileSystemCacheForDev: false,
+	// },
 };
 
 /**
