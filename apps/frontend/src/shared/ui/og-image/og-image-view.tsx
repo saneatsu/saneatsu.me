@@ -59,6 +59,8 @@ export function OgImageLayout({
 					<img
 						src={backgroundImage}
 						alt="article background"
+						width={1200}
+						height={630}
 						style={{
 							position: "absolute",
 							top: 0,
