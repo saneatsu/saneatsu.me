@@ -91,6 +91,28 @@ const isRakutenUrl = (url: string): boolean => {
 };
 
 /**
+ * 自サイトのURLかどうかを判定
+ *
+ * @description
+ * saneatsu.meまたはそのサブドメイン（*.saneatsu.me）のURLを検出する。
+ * Cloudflare Workersの同一ゾーンfetch制限を回避するため、
+ * 自サイトURLの場合はService Bindingを使用してfetchする必要がある。
+ *
+ * @param url - 判定対象のURL
+ * @returns 自サイトのURLの場合true
+ */
+const isSelfReferenceUrl = (url: string): boolean => {
+	try {
+		const urlObj = new URL(url);
+		const hostname = urlObj.hostname.toLowerCase();
+		// saneatsu.me または *.saneatsu.me の場合true
+		return hostname === "saneatsu.me" || hostname.endsWith(".saneatsu.me");
+	} catch {
+		return false;
+	}
+};
+
+/**
  * バイナリデータから文字コードを判定
  *
  * @description
@@ -318,18 +340,68 @@ export const getOgp: Handler = async (c) => {
 			headers["Upgrade-Insecure-Requests"] = "1";
 		}
 
-		const response = await fetch(url, { headers });
+		// タイムアウト設定（30秒）
+		const controller = new AbortController();
+		const timeoutId = setTimeout(() => controller.abort(), 30000);
 
-		if (!response.ok) {
-			return c.json(
-				{
-					error: {
-						code: "OGP_FETCH_ERROR",
-						message: "Failed to fetch OGP data from the provided URL",
+		let response: Response;
+
+		try {
+			// 自サイトURLの場合はService Bindingを使用、そうでなければ通常のfetch
+			if (isSelfReferenceUrl(url) && c.env.FRONTEND_WEB) {
+				console.log(`Using Service Binding for self-reference URL: ${url}`);
+				response = await c.env.FRONTEND_WEB.fetch(url, {
+					headers,
+					signal: controller.signal,
+				});
+			} else {
+				if (isSelfReferenceUrl(url)) {
+					console.warn(
+						`Service Binding not available for self-reference URL: ${url}`
+					);
+				}
+				response = await fetch(url, { headers, signal: controller.signal });
+			}
+
+			clearTimeout(timeoutId);
+
+			if (!response.ok) {
+				console.error("OGP fetch failed:", {
+					url,
+					status: response.status,
+					statusText: response.statusText,
+					usingServiceBinding: isSelfReferenceUrl(url) && !!c.env.FRONTEND_WEB,
+				});
+
+				return c.json(
+					{
+						error: {
+							code: "OGP_FETCH_ERROR",
+							message: `Failed to fetch OGP data: ${response.status} ${response.statusText}`,
+						},
 					},
-				},
-				500
-			);
+					500
+				);
+			}
+		} catch (fetchErr) {
+			clearTimeout(timeoutId);
+
+			// タイムアウトエラーの場合
+			if (fetchErr instanceof Error && fetchErr.name === "AbortError") {
+				console.error("OGP fetch timeout:", { url });
+				return c.json(
+					{
+						error: {
+							code: "OGP_FETCH_TIMEOUT",
+							message:
+								"OGP取得がタイムアウトしました。後ほど再試行してください。",
+						},
+					},
+					504
+				);
+			}
+
+			throw fetchErr;
 		}
 
 		// URLに応じて適切な方法でHTMLを取得
@@ -367,12 +439,16 @@ export const getOgp: Handler = async (c) => {
 		);
 	} catch (err) {
 		// 5. エラーハンドリング
-		console.error("OGP fetch error:", err);
+		console.error("OGP fetch error:", {
+			error: err,
+			message: err instanceof Error ? err.message : "Unknown error",
+			stack: err instanceof Error ? err.stack : undefined,
+		});
 		return c.json(
 			{
 				error: {
 					code: "INTERNAL_SERVER_ERROR",
-					message: "An error occurred while fetching OGP data",
+					message: "OGP情報の取得中にエラーが発生しました。",
 				},
 			},
 			500
