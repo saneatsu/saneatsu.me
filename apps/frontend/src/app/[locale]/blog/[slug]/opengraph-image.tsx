@@ -58,24 +58,59 @@ async function getBackgroundImageDataUrl(
 	cfImageId: string | null,
 	variant: string
 ): Promise<string | null> {
+	console.log("🔍 Getting background image:", {
+		cfImageId,
+		variant,
+	});
+
 	const imageUrl = getCloudflareImageUrl(cfImageId, variant);
+
+	console.log("🔍 Cloudflare Image URL:", {
+		imageUrl,
+		hasUrl: !!imageUrl,
+	});
+
 	if (!imageUrl) {
+		console.warn("⚠️ No image URL generated (cfImageId may be null or invalid)");
 		return null;
 	}
 
 	try {
-		const response = await fetch(imageUrl);
+		// タイムアウトを設定（10秒）
+		const controller = new AbortController();
+		const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+		const response = await fetch(imageUrl, {
+			signal: controller.signal,
+		});
+
+		clearTimeout(timeoutId);
+
 		if (!response.ok) {
-			console.warn("⚠️ Failed to fetch Cloudflare image", response.status);
+			console.warn("⚠️ Failed to fetch Cloudflare image", {
+				status: response.status,
+				statusText: response.statusText,
+				imageUrl,
+			});
 			return null;
 		}
 
 		const arrayBuffer = await response.arrayBuffer();
 		const contentType = response.headers.get("content-type") || "image/jpeg";
 		const base64 = arrayBufferToBase64(arrayBuffer);
+		console.log("✅ Successfully loaded Cloudflare image", {
+			imageUrl,
+			contentType,
+			base64Length: base64.length,
+		});
 		return `data:${contentType};base64,${base64}`;
 	} catch (error) {
-		console.error("Failed to load Cloudflare image", error);
+		console.error("❌ Failed to load Cloudflare image", {
+			error,
+			errorMessage: error instanceof Error ? error.message : "Unknown error",
+			errorName: error instanceof Error ? error.name : undefined,
+			imageUrl,
+		});
 		return null;
 	}
 }
@@ -103,6 +138,14 @@ export default async function Image({ params }: OgImageProps) {
 		});
 		const article = articleResponse.data;
 
+		console.log("🔍 OG Image Generation Debug:", {
+			locale,
+			slug,
+			articleTitle: article.title,
+			cfImageId: article.cfImageId,
+			hasCfImageId: !!article.cfImageId,
+		});
+
 		// FIXME: titleはnullableじゃなくする
 		const title = article.title || "Untitled";
 
@@ -111,10 +154,20 @@ export default async function Image({ params }: OgImageProps) {
 			"large"
 		);
 
+		console.log("🔍 Background Image Result:", {
+			hasBackgroundImage: !!backgroundImageDataUrl,
+			backgroundImageLength: backgroundImageDataUrl?.length,
+		});
+
 		return ArticleOgImage(title, backgroundImageDataUrl);
 	} catch (error) {
 		// 記事が見つからない場合はデフォルトの画像を生成
-		console.error("Failed to generate OG image:", error);
+		console.error("❌ Failed to generate OG image:", {
+			error,
+			errorMessage: error instanceof Error ? error.message : "Unknown error",
+			locale,
+			slug,
+		});
 
 		return SiteOgImage();
 	}
