@@ -350,8 +350,17 @@ export const getOgp: Handler = async (c) => {
 			// 自サイトURLの場合はService Bindingを使用、そうでなければ通常のfetch
 			if (isSelfReferenceUrl(url) && c.env.FRONTEND_WEB) {
 				console.log(`Using Service Binding for self-reference URL: ${url}`);
+
+				// Service BindingでfetchするときはHostヘッダーを明示的に設定する必要がある
+				// Next.jsが headers().get("host") で正しいホスト名を取得できるようにするため
+				const urlObj = new URL(url);
+				const headersWithHost = {
+					...headers,
+					Host: urlObj.host,
+				};
+
 				response = await c.env.FRONTEND_WEB.fetch(url, {
-					headers,
+					headers: headersWithHost,
 					signal: controller.signal,
 				});
 			} else {
