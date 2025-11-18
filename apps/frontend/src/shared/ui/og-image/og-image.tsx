@@ -15,7 +15,10 @@ export function SiteOgImage() {
 /**
  * 記事用OG画像を生成
  */
-export function ArticleOgImage(title: string, backgroundImage?: string | null) {
+export function ArticleOgImage(
+	title: string,
+	backgroundImage?: ArrayBuffer | null
+) {
 	return new ImageResponse(
 		<ArticleOgImageContent title={title} backgroundImage={backgroundImage} />,
 		{
