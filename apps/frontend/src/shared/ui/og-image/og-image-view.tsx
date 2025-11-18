@@ -55,7 +55,6 @@ export function OgImageLayout({
 			{backgroundImage ? (
 				<>
 					{/* next/og runtimeではnext/imageが利用できず、純粋なJSXのみ許可されているため */}
-					{/* @ts-expect-error - Satoriは実行時にArrayBufferをサポート */}
 					{/* biome-ignore lint/performance/noImgElement: next/ogは画像タグ以外で背景を描画できない */}
 					<img
 						src={backgroundImage}
