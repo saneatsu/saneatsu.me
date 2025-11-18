@@ -98,6 +98,14 @@ export const getOgpRoute = createRoute({
 			},
 			description: "サーバーエラー",
 		},
+		504: {
+			content: {
+				"application/json": {
+					schema: ErrorSchema,
+				},
+			},
+			description: "タイムアウト",
+		},
 	},
 	tags: ["OGP"],
 	summary: "OGP情報取得",

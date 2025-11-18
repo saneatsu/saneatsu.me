@@ -14,6 +14,11 @@ enabled = true
 [env.development]
 name = "saneatsu-backend-dev"
 
+# Service binding to frontend
+[[env.development.services]]
+binding = "FRONTEND_WEB"
+service = "saneatsu-web-dev"
+
 [env.development.vars]
 NODE_ENV = "development"
 CORS_ORIGIN = "http://localhost:3333"
@@ -22,6 +27,11 @@ CORS_ORIGIN = "http://localhost:3333"
 [env.preview]
 name = "saneatsu-backend-preview"
 
+# Service binding to frontend
+[[env.preview.services]]
+binding = "FRONTEND_WEB"
+service = "saneatsu-web-preview"
+
 [env.preview.vars]
 NODE_ENV = "preview"
 CORS_ORIGIN = "https://saneatsu.me"
@@ -29,6 +39,11 @@ CORS_ORIGIN = "https://saneatsu.me"
 # Production environment
 [env.production]
 name = "saneatsu-backend"
+
+# Service binding to frontend
+[[env.production.services]]
+binding = "FRONTEND_WEB"
+service = "saneatsu-web"
 
 [env.production.vars]
 NODE_ENV = "production"
