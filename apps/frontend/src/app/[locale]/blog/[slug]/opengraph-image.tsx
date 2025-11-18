@@ -46,19 +46,24 @@ function _arrayBufferToBase64(buffer: ArrayBuffer): string {
 }
 
 /**
- * Cloudflare Images のバリアントを取得
+ * Cloudflare Imagesから画像を取得してbase64 data URLに変換
  *
  * @description
- * 記事サムネイルをOG画像の背景に使うため、Cloudflare ImagesのURLを返す。
- * 以前はdata URLに変換していたが、next/ogでサイズの大きいdata URLが
- * 正しくレンダリングされない問題があったため、直接URLを返すように変更。
+ * 記事サムネイルをOG画像の背景に使うため、Cloudflare Imagesから画像を取得し、
+ * base64エンコードしたdata URLに変換する。
+ * Satori（next/og）で画像を正しくレンダリングするには、imgタグにwidth/height属性と
+ * data URL形式の画像が必要なため、この関数でfetchしてbase64に変換する。
  * 失敗した場合は `null` を返して従来のグリッド背景のみ表示する。
+ *
+ * @param cfImageId - Cloudflare ImagesのID
+ * @param variant - バリアント名（small/medium/large/xlarge）
+ * @returns base64エンコードされたdata URL、または取得失敗時はnull
  */
-function getBackgroundImageUrl(
+async function fetchImageAsBase64(
 	cfImageId: string | null,
 	variant: string
-): string | null {
-	console.log("🔍 Getting background image");
+): Promise<string | null> {
+	console.log("🔍 Fetching image as base64");
 	console.log("  - cfImageId:", cfImageId ?? "null");
 	console.log("  - variant:", variant);
 
@@ -72,7 +77,40 @@ function getBackgroundImageUrl(
 		return null;
 	}
 
-	return imageUrl;
+	try {
+		// 画像をfetch
+		console.log("🔍 Fetching image from URL:", imageUrl);
+		const response = await fetch(imageUrl);
+
+		if (!response.ok) {
+			console.error("❌ Failed to fetch image:", {
+				status: response.status,
+				statusText: response.statusText,
+			});
+			return null;
+		}
+
+		// ArrayBufferに変換
+		const buffer = await response.arrayBuffer();
+		console.log("✅ Image fetched successfully:", {
+			size: buffer.byteLength,
+			sizeKB: Math.round(buffer.byteLength / 1024),
+		});
+
+		// base64にエンコード
+		const base64 = _arrayBufferToBase64(buffer);
+		const dataUrl = `data:image/png;base64,${base64}`;
+
+		console.log("✅ Base64 conversion complete:", {
+			base64Length: base64.length,
+			dataUrlLength: dataUrl.length,
+		});
+
+		return dataUrl;
+	} catch (error) {
+		console.error("❌ Error fetching or converting image:", error);
+		return null;
+	}
 }
 
 /**
@@ -108,18 +146,21 @@ export default async function Image({ params }: OgImageProps) {
 		// FIXME: titleはnullableじゃなくする
 		const title = article.title || "Untitled";
 
-		const backgroundImageUrl = getBackgroundImageUrl(
+		const backgroundImageDataUrl = await fetchImageAsBase64(
 			article.cfImageId,
 			"large"
 		);
 
 		console.log("🔍 Background Image Result");
-		console.log("  - hasBackgroundImage:", !!backgroundImageUrl);
-		if (backgroundImageUrl) {
-			console.log("  - backgroundImageUrl:", backgroundImageUrl);
+		console.log("  - hasBackgroundImage:", !!backgroundImageDataUrl);
+		if (backgroundImageDataUrl) {
+			console.log(
+				"  - backgroundImageDataUrlLength:",
+				backgroundImageDataUrl.length
+			);
 		}
 
-		return ArticleOgImage(title, backgroundImageUrl);
+		return ArticleOgImage(title, backgroundImageDataUrl);
 	} catch (error) {
 		// 記事が見つからない場合はデフォルトの画像を生成
 		console.error("❌ Failed to generate OG image");
