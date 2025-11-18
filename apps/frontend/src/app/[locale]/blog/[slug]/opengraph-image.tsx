@@ -29,7 +29,7 @@ interface OgImageProps {
  * そのため両方の環境で動作するように、Buffer があればそれを利用し、なければ
  * 手動で文字列化して base64 に変換する処理を提供する。
  */
-function arrayBufferToBase64(buffer: ArrayBuffer): string {
+function _arrayBufferToBase64(buffer: ArrayBuffer): string {
 	if (typeof Buffer !== "undefined") {
 		return Buffer.from(buffer).toString("base64");
 	}
@@ -46,18 +46,18 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
 }
 
 /**
- * Cloudflare Images のバリアントを data URL へ変換
+ * Cloudflare Images のバリアントを取得
  *
  * @description
- * next/og では `<img src="https://">` がサポートされず、背景として画像を利用する
- * には data URL で埋め込む必要がある。記事サムネイルをOG画像の背景に使うため、
- * Cloudflare Imagesから該当バリアントを取得しbase64へエンコードして返す。
+ * 記事サムネイルをOG画像の背景に使うため、Cloudflare ImagesのURLを返す。
+ * 以前はdata URLに変換していたが、next/ogでサイズの大きいdata URLが
+ * 正しくレンダリングされない問題があったため、直接URLを返すように変更。
  * 失敗した場合は `null` を返して従来のグリッド背景のみ表示する。
  */
-async function getBackgroundImageDataUrl(
+function getBackgroundImageUrl(
 	cfImageId: string | null,
 	variant: string
-): Promise<string | null> {
+): string | null {
 	console.log("🔍 Getting background image");
 	console.log("  - cfImageId:", cfImageId ?? "null");
 	console.log("  - variant:", variant);
@@ -72,52 +72,7 @@ async function getBackgroundImageDataUrl(
 		return null;
 	}
 
-	try {
-		// タイムアウトを設定（10秒）
-		const controller = new AbortController();
-		const timeoutId = setTimeout(() => controller.abort(), 10000);
-
-		const response = await fetch(imageUrl, {
-			signal: controller.signal,
-		});
-
-		clearTimeout(timeoutId);
-
-		if (!response.ok) {
-			console.warn("⚠️ Failed to fetch Cloudflare image");
-			console.warn("  - status:", response.status);
-			console.warn("  - statusText:", response.statusText);
-			console.warn("  - imageUrl:", imageUrl);
-			return null;
-		}
-
-		const arrayBuffer = await response.arrayBuffer();
-		const contentType = response.headers.get("content-type") || "image/jpeg";
-		const base64 = arrayBufferToBase64(arrayBuffer);
-
-		console.log("✅ Successfully loaded Cloudflare image");
-		console.log("  - contentType:", contentType);
-		console.log("  - base64Length:", base64.length);
-		console.log("  - arrayBufferSize:", arrayBuffer.byteLength);
-
-		const dataUrl = `data:${contentType};base64,${base64}`;
-		console.log("  - dataUrlLength:", dataUrl.length);
-		console.log("  - dataUrlPrefix:", dataUrl.substring(0, 100));
-
-		return dataUrl;
-	} catch (error) {
-		console.error("❌ Failed to load Cloudflare image");
-		console.error(
-			"  - errorName:",
-			error instanceof Error ? error.name : "Unknown"
-		);
-		console.error(
-			"  - errorMessage:",
-			error instanceof Error ? error.message : String(error)
-		);
-		console.error("  - imageUrl:", imageUrl);
-		return null;
-	}
+	return imageUrl;
 }
 
 /**
@@ -153,25 +108,18 @@ export default async function Image({ params }: OgImageProps) {
 		// FIXME: titleはnullableじゃなくする
 		const title = article.title || "Untitled";
 
-		const backgroundImageDataUrl = await getBackgroundImageDataUrl(
+		const backgroundImageUrl = getBackgroundImageUrl(
 			article.cfImageId,
 			"large"
 		);
 
 		console.log("🔍 Background Image Result");
-		console.log("  - hasBackgroundImage:", !!backgroundImageDataUrl);
-		console.log(
-			"  - backgroundImageLength:",
-			backgroundImageDataUrl?.length ?? 0
-		);
-		if (backgroundImageDataUrl) {
-			console.log(
-				"  - backgroundImagePrefix:",
-				backgroundImageDataUrl.substring(0, 100)
-			);
+		console.log("  - hasBackgroundImage:", !!backgroundImageUrl);
+		if (backgroundImageUrl) {
+			console.log("  - backgroundImageUrl:", backgroundImageUrl);
 		}
 
-		return ArticleOgImage(title, backgroundImageDataUrl);
+		return ArticleOgImage(title, backgroundImageUrl);
 	} catch (error) {
 		// 記事が見つからない場合はデフォルトの画像を生成
 		console.error("❌ Failed to generate OG image");
