@@ -21,23 +21,25 @@ interface OgImageProps {
 }
 
 /**
- * Cloudflare Images のバリアントURLを取得
+ * Cloudflare Imagesから画像をfetchしてArrayBufferに変換
  *
  * @description
- * 記事サムネイルをOG画像の背景に使うため、Cloudflare ImagesのURLを返す。
- * Satori（next/og）で画像を正しくレンダリングするには、imgタグにwidth/height属性が必須。
- * 大きなdata URLはSatoriで処理できないため、直接URLを返す。
+ * 記事サムネイルをOG画像の背景に使うため、Cloudflare Imagesから画像を取得し、
+ * ArrayBufferに変換する。Satori（next/og）で画像を正しくレンダリングするには、
+ * 直接URLではなくArrayBufferを渡す必要がある。
+ *
+ * User-Agentヘッダーを追加することで、Cloudflare Imagesの403エラーを回避する。
  * 失敗した場合は `null` を返して従来のグリッド背景のみ表示する。
  *
  * @param cfImageId - Cloudflare ImagesのID
  * @param variant - バリアント名（small/medium/large/xlarge）
- * @returns Cloudflare ImagesのURL、またはnull
+ * @returns ArrayBuffer、または取得失敗時はnull
  */
-function getBackgroundImageUrl(
+async function fetchImageAsArrayBuffer(
 	cfImageId: string | null,
 	variant: string
-): string | null {
-	console.log("🔍 Getting background image URL");
+): Promise<ArrayBuffer | null> {
+	console.log("🔍 Fetching image as ArrayBuffer");
 	console.log("  - cfImageId:", cfImageId ?? "null");
 	console.log("  - variant:", variant);
 
@@ -51,7 +53,45 @@ function getBackgroundImageUrl(
 		return null;
 	}
 
-	return imageUrl;
+	try {
+		// 画像をfetch（User-Agentヘッダーを追加してCloudflare Imagesの403エラーを回避）
+		console.log("🔍 Fetching image from URL:", imageUrl);
+		const response = await fetch(imageUrl, {
+			headers: {
+				"User-Agent": "Mozilla/5.0 (compatible; OGImageBot/1.0)",
+			},
+			// Cloudflare Workersでキャッシュを活用
+			cache: "force-cache",
+		});
+
+		if (!response.ok) {
+			console.error("❌ Failed to fetch image:", {
+				status: response.status,
+				statusText: response.statusText,
+			});
+			return null;
+		}
+
+		// Content-Typeをチェック（JPG/PNGのみ）
+		const contentType = response.headers.get("content-type");
+		if (!contentType?.startsWith("image/")) {
+			console.error("❌ Invalid content type:", contentType);
+			return null;
+		}
+
+		// ArrayBufferに変換
+		const buffer = await response.arrayBuffer();
+		console.log("✅ Image fetched successfully:", {
+			size: buffer.byteLength,
+			sizeKB: Math.round(buffer.byteLength / 1024),
+			contentType,
+		});
+
+		return buffer;
+	} catch (error) {
+		console.error("❌ Error fetching image:", error);
+		return null;
+	}
 }
 
 /**
@@ -87,18 +127,22 @@ export default async function Image({ params }: OgImageProps) {
 		// FIXME: titleはnullableじゃなくする
 		const title = article.title || "Untitled";
 
-		const backgroundImageUrl = getBackgroundImageUrl(
+		const backgroundImageData = await fetchImageAsArrayBuffer(
 			article.cfImageId,
 			"large"
 		);
 
 		console.log("🔍 Background Image Result");
-		console.log("  - hasBackgroundImage:", !!backgroundImageUrl);
-		if (backgroundImageUrl) {
-			console.log("  - backgroundImageUrl:", backgroundImageUrl);
+		console.log("  - hasBackgroundImage:", !!backgroundImageData);
+		if (backgroundImageData) {
+			console.log("  - backgroundImageSize:", backgroundImageData.byteLength);
+			console.log(
+				"  - backgroundImageSizeKB:",
+				Math.round(backgroundImageData.byteLength / 1024)
+			);
 		}
 
-		return ArticleOgImage(title, backgroundImageUrl);
+		return ArticleOgImage(title, backgroundImageData);
 	} catch (error) {
 		// 記事が見つからない場合はデフォルトの画像を生成
 		console.error("❌ Failed to generate OG image");
