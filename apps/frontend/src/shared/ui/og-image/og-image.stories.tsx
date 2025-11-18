@@ -43,8 +43,7 @@ export const ArticleWithoutThumbnail: Story = {
 
 export const ArticleWithThumbnail: Story = {
 	args: {
-		backgroundImage:
-			"https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?w=1200&auto=format&fit=crop",
+		backgroundImage: null,
 	},
 	render: (args) => renderArticle(args as ArticleOgImageContentProps),
 };
