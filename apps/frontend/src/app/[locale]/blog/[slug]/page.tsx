@@ -45,9 +45,11 @@ export async function generateMetadata({
 		const headersList = await headers();
 		const host = headersList.get("host");
 		const protocol = host?.includes("localhost") ? "http" : "https";
-		const baseUrl = host
-			? `${protocol}://${host}`
-			: process.env.NEXT_PUBLIC_SITE_URL || "https://saneatsu.me";
+		// hostがundefinedまたは"undefined"文字列の場合は環境変数にフォールバック
+		const baseUrl =
+			host && host !== "undefined"
+				? `${protocol}://${host}`
+				: process.env.NEXT_PUBLIC_SITE_URL || "https://saneatsu.me";
 		const articleUrl = `${baseUrl}/${locale}/blog/${slug}`;
 
 		// OGP画像URLを取得
@@ -89,9 +91,11 @@ export async function generateMetadata({
 		const headersList = await headers();
 		const host = headersList.get("host");
 		const protocol = host?.includes("localhost") ? "http" : "https";
-		const baseUrl = host
-			? `${protocol}://${host}`
-			: process.env.NEXT_PUBLIC_SITE_URL || "https://saneatsu.me";
+		// hostがundefinedまたは"undefined"文字列の場合は環境変数にフォールバック
+		const baseUrl =
+			host && host !== "undefined"
+				? `${protocol}://${host}`
+				: process.env.NEXT_PUBLIC_SITE_URL || "https://saneatsu.me";
 
 		const defaultDescription =
 			locale === "ja"
