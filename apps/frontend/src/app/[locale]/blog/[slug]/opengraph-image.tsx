@@ -58,17 +58,14 @@ async function getBackgroundImageDataUrl(
 	cfImageId: string | null,
 	variant: string
 ): Promise<string | null> {
-	console.log("🔍 Getting background image:", {
-		cfImageId,
-		variant,
-	});
+	console.log("🔍 Getting background image");
+	console.log("  - cfImageId:", cfImageId ?? "null");
+	console.log("  - variant:", variant);
 
 	const imageUrl = getCloudflareImageUrl(cfImageId, variant);
 
-	console.log("🔍 Cloudflare Image URL:", {
-		imageUrl,
-		hasUrl: !!imageUrl,
-	});
+	console.log("🔍 Cloudflare Image URL:", imageUrl ?? "null");
+	console.log("  - hasUrl:", !!imageUrl);
 
 	if (!imageUrl) {
 		console.warn("⚠️ No image URL generated (cfImageId may be null or invalid)");
@@ -87,30 +84,38 @@ async function getBackgroundImageDataUrl(
 		clearTimeout(timeoutId);
 
 		if (!response.ok) {
-			console.warn("⚠️ Failed to fetch Cloudflare image", {
-				status: response.status,
-				statusText: response.statusText,
-				imageUrl,
-			});
+			console.warn("⚠️ Failed to fetch Cloudflare image");
+			console.warn("  - status:", response.status);
+			console.warn("  - statusText:", response.statusText);
+			console.warn("  - imageUrl:", imageUrl);
 			return null;
 		}
 
 		const arrayBuffer = await response.arrayBuffer();
 		const contentType = response.headers.get("content-type") || "image/jpeg";
 		const base64 = arrayBufferToBase64(arrayBuffer);
-		console.log("✅ Successfully loaded Cloudflare image", {
-			imageUrl,
-			contentType,
-			base64Length: base64.length,
-		});
-		return `data:${contentType};base64,${base64}`;
+
+		console.log("✅ Successfully loaded Cloudflare image");
+		console.log("  - contentType:", contentType);
+		console.log("  - base64Length:", base64.length);
+		console.log("  - arrayBufferSize:", arrayBuffer.byteLength);
+
+		const dataUrl = `data:${contentType};base64,${base64}`;
+		console.log("  - dataUrlLength:", dataUrl.length);
+		console.log("  - dataUrlPrefix:", dataUrl.substring(0, 100));
+
+		return dataUrl;
 	} catch (error) {
-		console.error("❌ Failed to load Cloudflare image", {
-			error,
-			errorMessage: error instanceof Error ? error.message : "Unknown error",
-			errorName: error instanceof Error ? error.name : undefined,
-			imageUrl,
-		});
+		console.error("❌ Failed to load Cloudflare image");
+		console.error(
+			"  - errorName:",
+			error instanceof Error ? error.name : "Unknown"
+		);
+		console.error(
+			"  - errorMessage:",
+			error instanceof Error ? error.message : String(error)
+		);
+		console.error("  - imageUrl:", imageUrl);
 		return null;
 	}
 }
@@ -138,13 +143,12 @@ export default async function Image({ params }: OgImageProps) {
 		});
 		const article = articleResponse.data;
 
-		console.log("🔍 OG Image Generation Debug:", {
-			locale,
-			slug,
-			articleTitle: article.title,
-			cfImageId: article.cfImageId,
-			hasCfImageId: !!article.cfImageId,
-		});
+		console.log("🔍 OG Image Generation Debug");
+		console.log("  - locale:", locale);
+		console.log("  - slug:", slug);
+		console.log("  - articleTitle:", article.title ?? "null");
+		console.log("  - cfImageId:", article.cfImageId ?? "null");
+		console.log("  - hasCfImageId:", !!article.cfImageId);
 
 		// FIXME: titleはnullableじゃなくする
 		const title = article.title || "Untitled";
@@ -154,20 +158,33 @@ export default async function Image({ params }: OgImageProps) {
 			"large"
 		);
 
-		console.log("🔍 Background Image Result:", {
-			hasBackgroundImage: !!backgroundImageDataUrl,
-			backgroundImageLength: backgroundImageDataUrl?.length,
-		});
+		console.log("🔍 Background Image Result");
+		console.log("  - hasBackgroundImage:", !!backgroundImageDataUrl);
+		console.log(
+			"  - backgroundImageLength:",
+			backgroundImageDataUrl?.length ?? 0
+		);
+		if (backgroundImageDataUrl) {
+			console.log(
+				"  - backgroundImagePrefix:",
+				backgroundImageDataUrl.substring(0, 100)
+			);
+		}
 
 		return ArticleOgImage(title, backgroundImageDataUrl);
 	} catch (error) {
 		// 記事が見つからない場合はデフォルトの画像を生成
-		console.error("❌ Failed to generate OG image:", {
-			error,
-			errorMessage: error instanceof Error ? error.message : "Unknown error",
-			locale,
-			slug,
-		});
+		console.error("❌ Failed to generate OG image");
+		console.error(
+			"  - errorName:",
+			error instanceof Error ? error.name : "Unknown"
+		);
+		console.error(
+			"  - errorMessage:",
+			error instanceof Error ? error.message : String(error)
+		);
+		console.error("  - locale:", locale);
+		console.error("  - slug:", slug);
 
 		return SiteOgImage();
 	}
