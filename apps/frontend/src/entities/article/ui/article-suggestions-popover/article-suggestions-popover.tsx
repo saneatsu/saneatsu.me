@@ -37,7 +37,12 @@ export interface ArticleSuggestionsPopoverProps {
 	filterMode?: "heading";
 	/** 対象記事のスラッグ（見出しフィルタリング用） */
 	targetSlug?: string;
+	/** 取得する最大件数 */
+	limit?: number;
 }
+
+// test
+export const DEFAULT_SUGGESTION_LIMIT = 200;
 
 /**
  * 記事サジェストポップアップコンポーネント
@@ -45,6 +50,7 @@ export interface ArticleSuggestionsPopoverProps {
  * @description
  * Wiki Link機能で使用される記事と見出しのサジェストを表示するポップアップ。
  * `[[`を入力した際に表示され、記事タイトルや見出しから選択できます。
+ * 記事はステータスが"公開済み"のもののみを取得して候補として表示する
  *
  * @example
  * ```tsx
@@ -69,6 +75,7 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 	position,
 	filterMode,
 	targetSlug,
+	limit = DEFAULT_SUGGESTION_LIMIT,
 }) => {
 	const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -76,7 +83,7 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 	const { data, isLoading } = useArticleSuggestions({
 		query,
 		language,
-		limit: 20,
+		limit,
 		targetSlug,
 		queryConfig: {
 			// 空文字列でも全記事を表示するために、openだけで有効化
@@ -86,6 +93,11 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 
 	// サジェスト一覧（targetSlugが指定されている場合はバックエンドで既にフィルタリング済み）
 	const suggestions = data?.suggestions || [];
+	const formattedLimit = limit.toLocaleString();
+	const limitDescription =
+		filterMode === "heading"
+			? `公開済みの記事の見出しを最大${formattedLimit}件表示`
+			: `公開済みの記事・見出しを最大${formattedLimit}件表示`;
 
 	// キーボードナビゲーション
 	useEffect(() => {
@@ -284,6 +296,9 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 		>
 			<Command shouldFilter={false} loop={true}>
 				<CommandList>
+					<div className="px-3 py-1 text-xs text-muted-foreground">
+						{limitDescription}
+					</div>
 					{isLoading && (
 						<div className="px-2 py-6 text-center text-sm text-muted-foreground">
 							読み込み中...
@@ -307,7 +322,7 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 											const actualIndex = suggestions.indexOf(suggestion);
 											return (
 												<CommandItem
-													key={`article-${suggestion.slug}`}
+													key={`article-${actualIndex}`}
 													value={suggestion.slug}
 													onSelect={() => {
 														onSelect(suggestion);
@@ -336,7 +351,7 @@ export const ArticleSuggestionsPopover: FC<ArticleSuggestionsPopoverProps> = ({
 											const actualIndex = suggestions.indexOf(suggestion);
 											return (
 												<CommandItem
-													key={`heading-${suggestion.slug}-${suggestion.headingId}`}
+													key={`heading-${actualIndex}`}
 													value={`${suggestion.slug}#${suggestion.headingId}`}
 													onSelect={() => {
 														onSelect(suggestion);
