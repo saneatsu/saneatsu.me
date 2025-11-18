@@ -57,7 +57,7 @@ export function OgImageLayout({
 					{/* next/og runtimeではnext/imageが利用できず、純粋なJSXのみ許可されているため */}
 					{/* biome-ignore lint/performance/noImgElement: next/ogは画像タグ以外で背景を描画できない */}
 					<img
-						src={backgroundImage}
+						src={backgroundImage as unknown as string}
 						alt="article background"
 						width={1200}
 						height={630}
