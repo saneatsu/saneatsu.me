@@ -21,49 +21,23 @@ interface OgImageProps {
 }
 
 /**
- * ArrayBuffer -> base64 変換ユーティリティ
+ * Cloudflare Images のバリアントURLを取得
  *
  * @description
- * next/og の `ImageResponse` は Node/Edge runtime 上で動作するため、`btoa` などの
- * ブラウザAPIが常に使えるとは限らず、逆に `Buffer` がない環境も存在する。
- * そのため両方の環境で動作するように、Buffer があればそれを利用し、なければ
- * 手動で文字列化して base64 に変換する処理を提供する。
- */
-function _arrayBufferToBase64(buffer: ArrayBuffer): string {
-	if (typeof Buffer !== "undefined") {
-		return Buffer.from(buffer).toString("base64");
-	}
-
-	let binary = "";
-	const bytes = new Uint8Array(buffer);
-	const chunkSize = 0x8000;
-	for (let i = 0; i < bytes.length; i += chunkSize) {
-		const chunk = bytes.subarray(i, i + chunkSize);
-		binary += String.fromCharCode(...chunk);
-	}
-
-	return btoa(binary);
-}
-
-/**
- * Cloudflare Imagesから画像を取得してbase64 data URLに変換
- *
- * @description
- * 記事サムネイルをOG画像の背景に使うため、Cloudflare Imagesから画像を取得し、
- * base64エンコードしたdata URLに変換する。
- * Satori（next/og）で画像を正しくレンダリングするには、imgタグにwidth/height属性と
- * data URL形式の画像が必要なため、この関数でfetchしてbase64に変換する。
+ * 記事サムネイルをOG画像の背景に使うため、Cloudflare ImagesのURLを返す。
+ * Satori（next/og）で画像を正しくレンダリングするには、imgタグにwidth/height属性が必須。
+ * 大きなdata URLはSatoriで処理できないため、直接URLを返す。
  * 失敗した場合は `null` を返して従来のグリッド背景のみ表示する。
  *
  * @param cfImageId - Cloudflare ImagesのID
  * @param variant - バリアント名（small/medium/large/xlarge）
- * @returns base64エンコードされたdata URL、または取得失敗時はnull
+ * @returns Cloudflare ImagesのURL、またはnull
  */
-async function fetchImageAsBase64(
+function getBackgroundImageUrl(
 	cfImageId: string | null,
 	variant: string
-): Promise<string | null> {
-	console.log("🔍 Fetching image as base64");
+): string | null {
+	console.log("🔍 Getting background image URL");
 	console.log("  - cfImageId:", cfImageId ?? "null");
 	console.log("  - variant:", variant);
 
@@ -77,40 +51,7 @@ async function fetchImageAsBase64(
 		return null;
 	}
 
-	try {
-		// 画像をfetch
-		console.log("🔍 Fetching image from URL:", imageUrl);
-		const response = await fetch(imageUrl);
-
-		if (!response.ok) {
-			console.error("❌ Failed to fetch image:", {
-				status: response.status,
-				statusText: response.statusText,
-			});
-			return null;
-		}
-
-		// ArrayBufferに変換
-		const buffer = await response.arrayBuffer();
-		console.log("✅ Image fetched successfully:", {
-			size: buffer.byteLength,
-			sizeKB: Math.round(buffer.byteLength / 1024),
-		});
-
-		// base64にエンコード
-		const base64 = _arrayBufferToBase64(buffer);
-		const dataUrl = `data:image/png;base64,${base64}`;
-
-		console.log("✅ Base64 conversion complete:", {
-			base64Length: base64.length,
-			dataUrlLength: dataUrl.length,
-		});
-
-		return dataUrl;
-	} catch (error) {
-		console.error("❌ Error fetching or converting image:", error);
-		return null;
-	}
+	return imageUrl;
 }
 
 /**
@@ -146,21 +87,18 @@ export default async function Image({ params }: OgImageProps) {
 		// FIXME: titleはnullableじゃなくする
 		const title = article.title || "Untitled";
 
-		const backgroundImageDataUrl = await fetchImageAsBase64(
+		const backgroundImageUrl = getBackgroundImageUrl(
 			article.cfImageId,
 			"large"
 		);
 
 		console.log("🔍 Background Image Result");
-		console.log("  - hasBackgroundImage:", !!backgroundImageDataUrl);
-		if (backgroundImageDataUrl) {
-			console.log(
-				"  - backgroundImageDataUrlLength:",
-				backgroundImageDataUrl.length
-			);
+		console.log("  - hasBackgroundImage:", !!backgroundImageUrl);
+		if (backgroundImageUrl) {
+			console.log("  - backgroundImageUrl:", backgroundImageUrl);
 		}
 
-		return ArticleOgImage(title, backgroundImageDataUrl);
+		return ArticleOgImage(title, backgroundImageUrl);
 	} catch (error) {
 		// 記事が見つからない場合はデフォルトの画像を生成
 		console.error("❌ Failed to generate OG image");
