@@ -49,10 +49,10 @@ const nextConfig = {
 		return config;
 	},
 	// Experimental features
-	experimental: {
-		// Turbopackのファイルシステムキャッシュを無効化（ホットリロード問題を回避）
-		turbopackFileSystemCacheForDev: false,
-	},
+	// experimental: {
+	// 	// Turbopackのファイルシステムキャッシュを無効化（ホットリロード問題を回避）
+	// 	turbopackFileSystemCacheForDev: false,
+	// },
 };
 
 /**
