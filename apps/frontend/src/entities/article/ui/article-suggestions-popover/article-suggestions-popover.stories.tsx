@@ -56,6 +56,10 @@ const meta: Meta<typeof ArticleSuggestionsPopover> = {
 	argTypes: {
 		onSelect: { action: "selected" },
 		onOpenChange: { action: "openChanged" },
+		limit: {
+			control: { type: "number" },
+			description: "取得する最大件数（デフォルト200件）",
+		},
 	},
 };
 

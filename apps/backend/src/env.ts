@@ -2,6 +2,14 @@ import { createEnv } from "@t3-oss/env-core";
 import { z } from "zod";
 
 /**
+ * Cloudflare Workers Service Bindingの型
+ * @see https://developers.cloudflare.com/workers/runtime-apis/bindings/service-bindings/
+ */
+type Fetcher = {
+	fetch: typeof fetch;
+};
+
+/**
  * 環境変数スキーマ定義
  *
  * @description
@@ -96,10 +104,20 @@ export const envSchema = z.object({
  * 環境変数の型定義
  *
  * @description
- * envSchemaから自動生成される型。
+ * envSchemaから自動生成される型 + Cloudflare Workers Service Binding。
  * すべてのハンドラーで `c.env` の型として使用される。
  */
-export type Env = z.infer<typeof envSchema>;
+export type Env = z.infer<typeof envSchema> & {
+	/**
+	 * フロントエンドWorkerへのService Binding
+	 *
+	 * @description
+	 * 自サイトのOGP情報を取得する際に使用する。
+	 * 同一ゾーンfetch制限を回避するために、Service Bindingを使用して
+	 * フロントエンドWorkerに直接リクエストを送る。
+	 */
+	FRONTEND_WEB?: Fetcher;
+};
 
 /**
  * 環境変数の型安全な定義（開発環境用）

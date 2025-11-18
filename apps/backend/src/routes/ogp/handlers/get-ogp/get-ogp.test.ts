@@ -115,6 +115,7 @@ describe("Unit Test", () => {
 			mockFetch.mockResolvedValueOnce({
 				ok: false,
 				status: 404,
+				statusText: "Not Found",
 			});
 
 			// Act
@@ -126,7 +127,7 @@ describe("Unit Test", () => {
 			expect(json).toEqual({
 				error: {
 					code: "OGP_FETCH_ERROR",
-					message: "Failed to fetch OGP data from the provided URL",
+					message: "Failed to fetch OGP data: 404 Not Found",
 				},
 			});
 		});
@@ -150,7 +151,137 @@ describe("Unit Test", () => {
 			expect(json).toEqual({
 				error: {
 					code: "INTERNAL_SERVER_ERROR",
-					message: "An error occurred while fetching OGP data",
+					message: "OGP情報の取得中にエラーが発生しました。",
+				},
+			});
+		});
+
+		it("自サイトURLの場合、Service Bindingを使用してOGP情報を取得する", async () => {
+			// Arrange
+			const mockFrontendFetch = vi.fn();
+			const app = new OpenAPIHono<{ Bindings: Env }>().openapi(
+				getOgpRoute,
+				getOgp
+			);
+
+			const mockHtml = `
+				<!DOCTYPE html>
+				<html>
+					<head>
+						<meta property="og:title" content="saneatsu.me というサイトを作った" />
+						<meta property="og:description" content="技術スタック - Next.js, TypeScript" />
+						<meta property="og:image" content="https://saneatsu.me/og-image.png" />
+						<meta property="og:url" content="https://saneatsu.me/ja/blog/made-this-site" />
+						<meta property="og:site_name" content="saneatsu.me" />
+					</head>
+					<body></body>
+				</html>
+			`;
+
+			mockFrontendFetch.mockResolvedValueOnce({
+				ok: true,
+				text: async () => mockHtml,
+			});
+
+			// Act
+			const res = await app.request(
+				"/?url=https://saneatsu.me/ja/blog/made-this-site",
+				{},
+				{
+					FRONTEND_WEB: { fetch: mockFrontendFetch },
+				} as unknown as Env
+			);
+			const json = await res.json();
+
+			// Assert
+			expect(res.status).toBe(200);
+			expect(mockFrontendFetch).toHaveBeenCalledWith(
+				"https://saneatsu.me/ja/blog/made-this-site",
+				expect.objectContaining({
+					headers: expect.any(Object),
+				})
+			);
+			expect(mockFetch).not.toHaveBeenCalled(); // 通常のfetchは呼ばれない
+			expect(json).toEqual({
+				data: {
+					title: "saneatsu.me というサイトを作った",
+					description: "技術スタック - Next.js, TypeScript",
+					image: "https://saneatsu.me/og-image.png",
+					favicon: null,
+					siteName: "saneatsu.me",
+					url: "https://saneatsu.me/ja/blog/made-this-site",
+				},
+			});
+		});
+
+		it("Service Bindingが未設定の自サイトURLの場合、通常のfetchにフォールバックする", async () => {
+			// Arrange
+			const app = new OpenAPIHono<{ Bindings: Env }>().openapi(
+				getOgpRoute,
+				getOgp
+			);
+
+			const mockHtml = `
+				<!DOCTYPE html>
+				<html>
+					<head>
+						<meta property="og:title" content="saneatsu.me" />
+					</head>
+					<body></body>
+				</html>
+			`;
+
+			mockFetch.mockResolvedValueOnce({
+				ok: true,
+				text: async () => mockHtml,
+			});
+
+			// Act
+			// 空のenvを渡すことでFRONTEND_WEBがundefinedになる
+			const res = await app.request(
+				"/?url=https://saneatsu.me/ja/blog/made-this-site",
+				{},
+				{} as Env
+			);
+			const json = (await res.json()) as { data: { title: string } };
+
+			// Assert
+			expect(res.status).toBe(200);
+			expect(mockFetch).toHaveBeenCalledWith(
+				"https://saneatsu.me/ja/blog/made-this-site",
+				expect.objectContaining({
+					headers: expect.any(Object),
+				})
+			);
+			expect(json.data.title).toBe("saneatsu.me");
+		});
+
+		it("タイムアウトした場合、504エラーを返す", async () => {
+			// Arrange
+			const app = new OpenAPIHono<{ Bindings: Env }>().openapi(
+				getOgpRoute,
+				getOgp
+			);
+
+			// AbortErrorをモック（DOMException として AbortError を生成）
+			const abortError = new Error("The operation was aborted");
+			abortError.name = "AbortError";
+			mockFetch.mockRejectedValueOnce(abortError);
+
+			// Act
+			const res = await app.request(
+				"/?url=https://example.com/",
+				{},
+				{} as Env
+			);
+			const json = await res.json();
+
+			// Assert
+			expect(res.status).toBe(504);
+			expect(json).toEqual({
+				error: {
+					code: "OGP_FETCH_TIMEOUT",
+					message: "OGP取得がタイムアウトしました。後ほど再試行してください。",
 				},
 			});
 		});
