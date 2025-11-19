@@ -21,25 +21,25 @@ interface OgImageProps {
 }
 
 /**
- * Cloudflare Imagesから画像をfetchしてArrayBufferに変換
+ * Cloudflare Imagesから画像をfetchしてbase64 data URLに変換
  *
  * @description
  * 記事サムネイルをOG画像の背景に使うため、Cloudflare Imagesから画像を取得し、
- * ArrayBufferに変換する。Satori（next/og）で画像を正しくレンダリングするには、
- * 直接URLではなくArrayBufferを渡す必要がある。
+ * base64エンコードしたdata URLに変換する。Satori（next/og）で確実に画像を
+ * レンダリングするため、ArrayBufferの自動変換に依存せず、手動でdata URLに変換する。
  *
  * User-Agentヘッダーを追加することで、Cloudflare Imagesの403エラーを回避する。
  * 失敗した場合は `null` を返して従来のグリッド背景のみ表示する。
  *
  * @param cfImageId - Cloudflare ImagesのID
  * @param variant - バリアント名（small/medium/large/xlarge）
- * @returns ArrayBuffer、または取得失敗時はnull
+ * @returns base64 data URL、または取得失敗時はnull
  */
-async function fetchImageAsArrayBuffer(
+async function fetchImageAsDataUrl(
 	cfImageId: string | null,
 	variant: string
-): Promise<ArrayBuffer | null> {
-	console.log("🔍 Fetching image as ArrayBuffer");
+): Promise<string | null> {
+	console.log("🔍 Fetching image as data URL");
 	console.log("  - cfImageId:", cfImageId ?? "null");
 	console.log("  - variant:", variant);
 
@@ -81,13 +81,54 @@ async function fetchImageAsArrayBuffer(
 
 		// ArrayBufferに変換
 		const buffer = await response.arrayBuffer();
+
+		// 先頭16バイトを確認（画像フォーマットの検証）
+		const uint8 = new Uint8Array(buffer);
+		const first16Bytes = Array.from(uint8.slice(0, 16));
+
+		// 画像フォーマットの確認（magic numbers）
+		let detectedFormat = "unknown";
+		if (
+			first16Bytes[0] === 0x89 &&
+			first16Bytes[1] === 0x50 &&
+			first16Bytes[2] === 0x4e &&
+			first16Bytes[3] === 0x47
+		) {
+			detectedFormat = "PNG";
+		} else if (
+			first16Bytes[0] === 0xff &&
+			first16Bytes[1] === 0xd8 &&
+			first16Bytes[2] === 0xff
+		) {
+			detectedFormat = "JPEG";
+		} else if (
+			first16Bytes[0] === 0x47 &&
+			first16Bytes[1] === 0x49 &&
+			first16Bytes[2] === 0x46
+		) {
+			detectedFormat = "GIF";
+		}
+
 		console.log("✅ Image fetched successfully:", {
 			size: buffer.byteLength,
 			sizeKB: Math.round(buffer.byteLength / 1024),
 			contentType,
+			detectedFormat,
+			first16Bytes: first16Bytes
+				.map((b) => b.toString(16).padStart(2, "0"))
+				.join(" "),
 		});
 
-		return buffer;
+		// base64エンコードしてdata URLに変換
+		const base64 = Buffer.from(buffer).toString("base64");
+		const dataUrl = `data:${contentType};base64,${base64}`;
+
+		console.log("✅ Converted to data URL:", {
+			dataUrlLength: dataUrl.length,
+			dataUrlPreview: `${dataUrl.substring(0, 50)}...`,
+		});
+
+		return dataUrl;
 	} catch (error) {
 		console.error("❌ Error fetching image:", error);
 		return null;
@@ -127,7 +168,7 @@ export default async function Image({ params }: OgImageProps) {
 		// FIXME: titleはnullableじゃなくする
 		const title = article.title || "Untitled";
 
-		const backgroundImageData = await fetchImageAsArrayBuffer(
+		const backgroundImageData = await fetchImageAsDataUrl(
 			article.cfImageId,
 			"large"
 		);
@@ -135,10 +176,10 @@ export default async function Image({ params }: OgImageProps) {
 		console.log("🔍 Background Image Result");
 		console.log("  - hasBackgroundImage:", !!backgroundImageData);
 		if (backgroundImageData) {
-			console.log("  - backgroundImageSize:", backgroundImageData.byteLength);
+			console.log("  - backgroundImageDataLength:", backgroundImageData.length);
 			console.log(
-				"  - backgroundImageSizeKB:",
-				Math.round(backgroundImageData.byteLength / 1024)
+				"  - backgroundImagePreview:",
+				`${backgroundImageData.substring(0, 50)}...`
 			);
 		}
 
