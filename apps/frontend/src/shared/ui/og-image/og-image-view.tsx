@@ -26,25 +26,13 @@ const BASE_LAYOUT_STYLES = {
 
 export interface OgImageLayoutProps {
 	children: React.ReactNode;
-	backgroundImage?: ArrayBuffer | null;
+	backgroundImage?: string | null;
 }
 
 export function OgImageLayout({
 	children,
 	backgroundImage,
 }: OgImageLayoutProps) {
-	// デバッグ用ログ
-	console.log("🎨 OgImageLayout rendering");
-	console.log("  - hasBackgroundImage:", !!backgroundImage);
-	console.log("  - backgroundImageType:", typeof backgroundImage);
-	if (backgroundImage) {
-		console.log("  - backgroundImageSize:", backgroundImage.byteLength);
-		console.log(
-			"  - backgroundImageSizeKB:",
-			Math.round(backgroundImage.byteLength / 1024)
-		);
-	}
-
 	return (
 		<div
 			style={{
@@ -55,11 +43,9 @@ export function OgImageLayout({
 			{backgroundImage ? (
 				<>
 					{/* next/og runtimeではnext/imageが利用できず、純粋なJSXのみ許可されているため */}
-					{/* Satoriは内部でArrayBufferをdata URLに自動変換する（実行時に型チェックするため、型アサーションは実行時の動作に影響しない） */}
 					{/* biome-ignore lint/performance/noImgElement: next/ogは画像タグ以外で背景を描画できない */}
 					<img
-						// biome-ignore lint/suspicious/noExplicitAny: 型アサーションは実行時に影響しない
-						src={backgroundImage as any}
+						src={backgroundImage}
 						alt="article background"
 						width={1200}
 						height={630}
@@ -143,7 +129,7 @@ export function SiteOgImageContent() {
 
 export interface ArticleOgImageContentProps {
 	title: string;
-	backgroundImage?: ArrayBuffer | null;
+	backgroundImage?: string | null;
 }
 
 export function ArticleOgImageContent({
