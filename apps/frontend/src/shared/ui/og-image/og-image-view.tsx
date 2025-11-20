@@ -37,7 +37,7 @@ export function OgImageLayout({
 		<div
 			style={{
 				...BASE_LAYOUT_STYLES,
-				...(backgroundImage ? { background: "#050505" } : BACKGROUND_STYLES),
+				...BACKGROUND_STYLES,
 			}}
 		>
 			{backgroundImage ? (
