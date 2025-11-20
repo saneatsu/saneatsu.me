@@ -52,6 +52,14 @@ export default async function Image({ params }: OgImageProps) {
 			"large"
 		);
 
+		// デバッグログ：OGP画像生成時の情報を出力
+		console.log("🔍 OG Image Debug Info:");
+		console.log("  - slug:", slug);
+		console.log("  - locale:", locale);
+		console.log("  - article.cfImageId:", article.cfImageId);
+		console.log("  - backgroundImageUrl:", backgroundImageUrl);
+		console.log("  - title:", title);
+
 		return ArticleOgImage(title, backgroundImageUrl);
 	} catch (error) {
 		// 記事が見つからない場合はデフォルトの画像を生成
