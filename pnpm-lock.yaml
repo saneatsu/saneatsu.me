@@ -357,8 +357,8 @@ importers:
         specifier: ^10.0.0
         version: 10.0.2(@types/react@19.2.6)(esbuild@0.25.12)(rollup@4.45.1)(storybook@10.0.7(@testing-library/dom@10.4.0)(msw@2.12.2(@types/node@24.10.1)(typescript@5.9.3))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(vite@7.0.5(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.44.1)(tsx@4.20.3)(yaml@2.8.1)))(vite@7.0.5(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.44.1)(tsx@4.20.3)(yaml@2.8.1))(webpack@5.102.1(@swc/core@1.13.3(@swc/helpers@0.5.15))(esbuild@0.25.12))
       '@storybook/addon-onboarding':
-        specifier: ^10.0.7
-        version: 10.0.7(storybook@10.0.7(@testing-library/dom@10.4.0)(msw@2.12.2(@types/node@24.10.1)(typescript@5.9.3))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(vite@7.0.5(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.44.1)(tsx@4.20.3)(yaml@2.8.1)))
+        specifier: ^10.0.8
+        version: 10.0.8(storybook@10.0.7(@testing-library/dom@10.4.0)(msw@2.12.2(@types/node@24.10.1)(typescript@5.9.3))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(vite@7.0.5(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.44.1)(tsx@4.20.3)(yaml@2.8.1)))
       '@storybook/nextjs':
         specifier: ^10.0.7
         version: 10.0.7(@swc/core@1.13.3(@swc/helpers@0.5.15))(esbuild@0.25.12)(next@16.0.2(@babel/core@7.28.5)(@playwright/test@1.56.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(storybook@10.0.7(@testing-library/dom@10.4.0)(msw@2.12.2(@types/node@24.10.1)(typescript@5.9.3))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(vite@7.0.5(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.44.1)(tsx@4.20.3)(yaml@2.8.1)))(type-fest@4.41.0)(typescript@5.9.3)(webpack-dev-server@5.2.2(webpack@5.102.1(@swc/core@1.13.3(@swc/helpers@0.5.15))(esbuild@0.25.12)))(webpack-hot-middleware@2.26.1)(webpack@5.102.1(@swc/core@1.13.3(@swc/helpers@0.5.15))(esbuild@0.25.12))
@@ -4987,10 +4987,10 @@ packages:
     peerDependencies:
       storybook: ^10.0.2
 
-  '@storybook/addon-onboarding@10.0.7':
-    resolution: {integrity: sha512-zfgiyudFAoJsXG/lK9ESW7SpcjXB9Ef3+xsMnb2BkX0a3WRgQuJk18xdPAVXIta6fbBjMbcMAxeoBHntD1vP6w==}
+  '@storybook/addon-onboarding@10.0.8':
+    resolution: {integrity: sha512-VHZT4yoNvE9CGtO/C5NgJyZdAeeKkXJN2IOg21YLEUuqY/tVUY4Ljt6iI0OxTh3EEkXzMVrO/CrC2HFqWMVu0Q==}
     peerDependencies:
-      storybook: ^10.0.7
+      storybook: ^10.0.8
 
   '@storybook/builder-webpack5@10.0.7':
     resolution: {integrity: sha512-zGLVCllY6taKpLRTILsb7SVf71qe8KISsGxR9XEiKf1CV4P4ikFj94Gj9UEafXxfDa+pGGrB+45911KSnJ3rWg==}
@@ -18422,7 +18422,7 @@ snapshots:
       - vite
       - webpack
 
-  '@storybook/addon-onboarding@10.0.7(storybook@10.0.7(@testing-library/dom@10.4.0)(msw@2.12.2(@types/node@24.10.1)(typescript@5.9.3))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(vite@7.0.5(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.44.1)(tsx@4.20.3)(yaml@2.8.1)))':
+  '@storybook/addon-onboarding@10.0.8(storybook@10.0.7(@testing-library/dom@10.4.0)(msw@2.12.2(@types/node@24.10.1)(typescript@5.9.3))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(vite@7.0.5(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.44.1)(tsx@4.20.3)(yaml@2.8.1)))':
     dependencies:
       storybook: 10.0.7(@testing-library/dom@10.4.0)(msw@2.12.2(@types/node@24.10.1)(typescript@5.9.3))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(vite@7.0.5(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.44.1)(tsx@4.20.3)(yaml@2.8.1))
 
