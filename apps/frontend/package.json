@@ -98,7 +98,7 @@
 	"devDependencies": {
 		"@playwright/test": "^1.56.1",
 		"@storybook/addon-docs": "^10.0.8",
-		"@storybook/addon-onboarding": "^10.0.8",
+		"@storybook/addon-onboarding": "^10.1.0",
 		"@storybook/nextjs": "^10.0.8",
 		"@storybook/test-runner": "^0.24.1",
 		"@tailwindcss/postcss": "^4.1.11",
