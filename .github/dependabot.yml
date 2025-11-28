@@ -22,3 +22,7 @@ updates:
           - "react-dom"
           - "@types/react"
           - "@types/react-dom"
+      storybook: # Storybook 関連パッケージは常に同一PRで更新
+        patterns:
+          - "@storybook/*"
+          - "storybook"
