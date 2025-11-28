@@ -126,6 +126,8 @@ function ChartTooltipContent({
 		indicator?: "line" | "dot" | "dashed";
 		nameKey?: string;
 		labelKey?: string;
+		payload?: ReadonlyArray<any>;
+		label?: string | number;
 	}) {
 	const { config } = useChart();
 
@@ -257,11 +259,12 @@ function ChartLegendContent({
 	payload,
 	verticalAlign = "bottom",
 	nameKey,
-}: React.ComponentProps<"div"> &
-	Pick<RechartsPrimitive.LegendProps, "payload" | "verticalAlign"> & {
-		hideIcon?: boolean;
-		nameKey?: string;
-	}) {
+}: React.ComponentProps<"div"> & {
+	hideIcon?: boolean;
+	nameKey?: string;
+	payload?: ReadonlyArray<any>;
+	verticalAlign?: "top" | "bottom";
+}) {
 	const { config } = useChart();
 
 	if (!payload?.length) {
