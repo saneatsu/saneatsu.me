@@ -297,8 +297,8 @@ importers:
         specifier: ^19.2.0
         version: 19.2.0
       react-day-picker:
-        specifier: ^9.11.2
-        version: 9.11.2(react@19.2.0)
+        specifier: ^9.11.3
+        version: 9.11.3(react@19.2.0)
       react-dom:
         specifier: ^19.2.0
         version: 19.2.0(react@19.2.0)
@@ -2765,8 +2765,8 @@ packages:
     resolution: {integrity: sha512-yL/sLrpmtDaFEiUj1osRP4TI2MDz1AddJL+jZ7KSqvBuliN4xqYY54IfdN8qD8Toa6g1iloph1fxQNkjOxrrpQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@eslint/eslintrc@3.3.1':
-    resolution: {integrity: sha512-gtF186CXhIl1p4pJNGZw8Yc6RlshoePRvE0X91oPGb3vZ8pM3qOS9W9NGPat9LziaBV7XrJWGylNQXkGcnM3IQ==}
+  '@eslint/eslintrc@3.3.3':
+    resolution: {integrity: sha512-Kr+LPIUVKz2qkx1HAMH8q1q6azbqBAsXJUxBl/ODDuVPX45Z9DfwB8tPjTi6nNZ8BuM3nbJxC5zCAg5elnBUTQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
   '@eslint/js@9.39.1':
@@ -10532,8 +10532,8 @@ packages:
     resolution: {integrity: sha512-y3bGgqKj3QBdxLbLkomlohkvsA8gdAiUQlSBJnBhfn+BPxg4bc62d8TcBW15wavDfgexCgccckhcZvywyQYPOw==}
     hasBin: true
 
-  react-day-picker@9.11.2:
-    resolution: {integrity: sha512-TD/xMUGg2oiKX8jUR21MST5pj+7Y36097YtnDHQFlIcZOu3mbLLw2B2JqEByEGrR3HHveWYnKlyls6WqJgohAg==}
+  react-day-picker@9.11.3:
+    resolution: {integrity: sha512-7lD12UvGbkyXqgzbYIGQTbl+x29B9bAf+k0pP5Dcs1evfpKk6zv4EdH/edNc8NxcmCiTNXr2HIYPrSZ3XvmVBg==}
     engines: {node: '>=18'}
     peerDependencies:
       react: '>=16.8.0'
@@ -15975,7 +15975,7 @@ snapshots:
     dependencies:
       '@types/json-schema': 7.0.15
 
-  '@eslint/eslintrc@3.3.1':
+  '@eslint/eslintrc@3.3.3':
     dependencies:
       ajv: 6.12.6
       debug: 4.4.3
@@ -21040,7 +21040,7 @@ snapshots:
       '@eslint/config-array': 0.21.1
       '@eslint/config-helpers': 0.4.2
       '@eslint/core': 0.17.0
-      '@eslint/eslintrc': 3.3.1
+      '@eslint/eslintrc': 3.3.3
       '@eslint/js': 9.39.1
       '@eslint/plugin-kit': 0.4.1
       '@humanfs/node': 0.16.7
@@ -24948,7 +24948,7 @@ snapshots:
       minimist: 1.2.8
       strip-json-comments: 2.0.1
 
-  react-day-picker@9.11.2(react@19.2.0):
+  react-day-picker@9.11.3(react@19.2.0):
     dependencies:
       '@date-fns/tz': 1.4.1
       date-fns: 4.1.0
