@@ -276,8 +276,8 @@ importers:
         specifier: ^0.555.0
         version: 0.555.0(react@19.2.1)
       mapbox-gl:
-        specifier: ^3.16.0
-        version: 3.16.0
+        specifier: ^3.17.0
+        version: 3.17.0
       next:
         specifier: ^16.0.2
         version: 16.0.2(@babel/core@7.28.5)(@playwright/test@1.57.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
@@ -310,7 +310,7 @@ importers:
         version: 7.66.1(react@19.2.1)
       react-map-gl:
         specifier: ^8.1.0
-        version: 8.1.0(mapbox-gl@3.16.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
+        version: 8.1.0(mapbox-gl@3.17.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
       react-markdown:
         specifier: ^10.1.0
         version: 10.1.0(@types/react@19.2.7)(react@19.2.1)
@@ -9231,8 +9231,8 @@ packages:
   makeerror@1.0.12:
     resolution: {integrity: sha512-JmqCvUhmt43madlpFzG4BQzG2Z3m6tvQDNKdClZnO3VbIudJYmxsT0FNJMeiB2+JTSlTQTSbU8QdesVmwJcmLg==}
 
-  mapbox-gl@3.16.0:
-    resolution: {integrity: sha512-rluV1Zp/0oHf1Y9BV+nePRNnKyTdljko3E19CzO5rBqtQaNUYS0ePCMPRtxOuWRwSdKp3f9NWJkOCjemM8nmjw==}
+  mapbox-gl@3.17.0:
+    resolution: {integrity: sha512-nCrDKRlr5di6xUksUDslNWwxroJ5yv1hT8pyVFtcpWJOOKsYQxF/wOFTMie8oxMnXeFkrz1Tl1TwA1XN1yX0KA==}
 
   markdown-extensions@2.0.0:
     resolution: {integrity: sha512-o5vL7aDWatOTX8LzaS1WMoaoxIiLRQJuIKKe2wAw6IeULDHaqbiqiggmx+pKvZDb1Sj+pE46Sn1T7lCqfFtg1Q==}
@@ -11192,10 +11192,6 @@ packages:
 
   serialize-javascript@6.0.2:
     resolution: {integrity: sha512-Saa1xPByTTq2gdeFZYLLo+RFE35NHZkAbqZeWNd3BpzppeVisAqpDjcp8dyf6uIvEqJRd46jemmyA4iFIeVk8g==}
-
-  serialize-to-js@3.1.2:
-    resolution: {integrity: sha512-owllqNuDDEimQat7EPG0tH7JjO090xKNzUtYz6X+Sk2BXDnOCilDdNLwjWeFywG9xkJul1ULvtUQa9O4pUaY0w==}
-    engines: {node: '>=4.0.0'}
 
   serve-handler@6.1.6:
     resolution: {integrity: sha512-x5RL9Y2p5+Sh3D38Fh9i/iQ5ZK+e4xuXRd/pGbM4D13tgo/MGwbttUk8emytcr1YYzBYs+apnUngBDFYfpjPuQ==}
@@ -19391,12 +19387,12 @@ snapshots:
   '@unrs/resolver-binding-win32-x64-msvc@1.11.1':
     optional: true
 
-  '@vis.gl/react-mapbox@8.1.0(mapbox-gl@3.16.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)':
+  '@vis.gl/react-mapbox@8.1.0(mapbox-gl@3.17.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)':
     dependencies:
       react: 19.2.1
       react-dom: 19.2.1(react@19.2.1)
     optionalDependencies:
-      mapbox-gl: 3.16.0
+      mapbox-gl: 3.17.0
 
   '@vis.gl/react-maplibre@8.1.0(react-dom@19.2.1(react@19.2.1))(react@19.2.1)':
     dependencies:
@@ -23391,7 +23387,7 @@ snapshots:
     dependencies:
       tmpl: 1.0.5
 
-  mapbox-gl@3.16.0:
+  mapbox-gl@3.17.0:
     dependencies:
       '@mapbox/jsonlint-lines-primitives': 2.0.2
       '@mapbox/mapbox-gl-supported': 3.0.0
@@ -23417,7 +23413,6 @@ snapshots:
       pbf: 4.0.1
       potpack: 2.1.0
       quickselect: 3.0.0
-      serialize-to-js: 3.1.2
       supercluster: 8.0.1
       tinyqueue: 3.0.0
 
@@ -25309,14 +25304,14 @@ snapshots:
       react-loadable: '@docusaurus/react-loadable@6.0.0(react@19.2.1)'
       webpack: 5.102.1
 
-  react-map-gl@8.1.0(mapbox-gl@3.16.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1):
+  react-map-gl@8.1.0(mapbox-gl@3.17.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1):
     dependencies:
-      '@vis.gl/react-mapbox': 8.1.0(mapbox-gl@3.16.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
+      '@vis.gl/react-mapbox': 8.1.0(mapbox-gl@3.17.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
       '@vis.gl/react-maplibre': 8.1.0(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
       react: 19.2.1
       react-dom: 19.2.1(react@19.2.1)
     optionalDependencies:
-      mapbox-gl: 3.16.0
+      mapbox-gl: 3.17.0
 
   react-markdown@10.1.0(@types/react@19.2.7)(react@19.2.1):
     dependencies:
@@ -25877,8 +25872,6 @@ snapshots:
   serialize-javascript@6.0.2:
     dependencies:
       randombytes: 2.1.0
-
-  serialize-to-js@3.1.2: {}
 
   serve-handler@6.1.6:
     dependencies:
