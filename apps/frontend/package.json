@@ -112,7 +112,7 @@
 		"@types/textarea-caret": "^3.0.4",
 		"@vitejs/plugin-react": "^5.1.1",
 		"concurrently": "^9.1.2",
-		"jsdom": "26.1.0",
+		"jsdom": "27.2.0",
 		"msw": "^2.12.2",
 		"msw-storybook-addon": "^2.0.6",
 		"postcss": "^8.5.6",
