@@ -67,7 +67,7 @@
 		"drizzle-orm": "^0.44.7",
 		"highlight.js": "^11.11.1",
 		"hono": "^4.10.8",
-		"lucide-react": "^0.555.0",
+		"lucide-react": "^0.556.0",
 		"mapbox-gl": "^3.17.0",
 		"next": "^16.0.8",
 		"next-auth": "5.0.0-beta.30",
