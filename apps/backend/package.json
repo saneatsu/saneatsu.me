@@ -36,7 +36,7 @@
 		"@saneatsu/schemas": "workspace:*",
 		"@t3-oss/env-core": "^0.13.8",
 		"drizzle-orm": "^0.44.7",
-		"hono": "^4.10.7",
+		"hono": "^4.10.8",
 		"htmlparser2": "^10.0.0",
 		"zod": "^4.0.10"
 	},
