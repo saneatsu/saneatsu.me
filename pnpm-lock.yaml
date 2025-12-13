@@ -58,8 +58,8 @@ importers:
         specifier: ^0.24.1
         version: 0.24.1
       '@hono/node-server':
-        specifier: ^1.19.6
-        version: 1.19.6(hono@4.11.0)
+        specifier: ^1.19.7
+        version: 1.19.7(hono@4.11.0)
       '@hono/zod-openapi':
         specifier: ^1.1.5
         version: 1.1.5(hono@4.11.0)(zod@4.0.10)
@@ -3170,8 +3170,8 @@ packages:
   '@hapi/topo@6.0.2':
     resolution: {integrity: sha512-KR3rD5inZbGMrHmgPxsJ9dbi6zEK+C3ZwUwTa+eMwWLz7oijWUTWD2pMSNNYJAU6Qq+65NkxXjqHr/7LM2Xkqg==}
 
-  '@hono/node-server@1.19.6':
-    resolution: {integrity: sha512-Shz/KjlIeAhfiuE93NDKVdZ7HdBVLQAfdbaXEaoAVO3ic9ibRSLGIQGkcBbFyuLr+7/1D5ZCINM8B+6IvXeMtw==}
+  '@hono/node-server@1.19.7':
+    resolution: {integrity: sha512-vUcD0uauS7EU2caukW8z5lJKtoGMokxNbJtBiwHgpqxEXokaHCBkQUmCHhjFB1VUTWdqj25QoMkMKzgjq+uhrw==}
     engines: {node: '>=18.14.1'}
     peerDependencies:
       hono: ^4
@@ -16619,7 +16619,7 @@ snapshots:
     dependencies:
       '@hapi/hoek': 11.0.7
 
-  '@hono/node-server@1.19.6(hono@4.11.0)':
+  '@hono/node-server@1.19.7(hono@4.11.0)':
     dependencies:
       hono: 4.11.0
 
