@@ -43,7 +43,7 @@
 		"@libsql/client": "^0.15.15",
 		"@t3-oss/env-core": "^0.13.8",
 		"drizzle-orm": "^0.45.1",
-		"zod": "^4.0.10"
+		"zod": "^4.1.13"
 	},
 	"devDependencies": {
 		"drizzle-kit": "^0.31.8",
