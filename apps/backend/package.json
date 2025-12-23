@@ -31,7 +31,7 @@
 		"@google/generative-ai": "^0.24.1",
 		"@hono/node-server": "^1.19.7",
 		"@hono/zod-openapi": "^1.1.5",
-		"@hono/zod-validator": "^0.7.5",
+		"@hono/zod-validator": "^0.7.6",
 		"@saneatsu/db": "workspace:*",
 		"@saneatsu/schemas": "workspace:*",
 		"@t3-oss/env-core": "^0.13.10",
