@@ -1,13 +1,13 @@
 "use client";
 
 import { AlertCircle, BarChart3, ExternalLink } from "lucide-react";
+import dynamic from "next/dynamic";
 import { createParser, useQueryState } from "nuqs";
 
 import {
 	PopularArticles,
 	StatsCards,
 	useDashboardOverview,
-	ViewsTrendChart,
 } from "@/features/dashboard";
 import { AmazonLogo, GoogleLogo, RakutenLogo } from "@/shared/image";
 import { cn } from "@/shared/lib/utils";
@@ -48,6 +48,23 @@ const dashboardPeriodParser = createParser<DashboardPeriod>({
 		history: "replace",
 		clearOnDefault: true,
 	});
+
+/**
+ * ViewsTrendChart を動的インポートで読み込む
+ * SSRを無効化することで、Cloudflare Workers環境でのfrozen objectエラーを回避
+ */
+const ViewsTrendChart = dynamic(
+	() =>
+		import("@/features/dashboard").then((mod) => ({
+			default: mod.ViewsTrendChart,
+		})),
+	{
+		ssr: false,
+		loading: () => (
+			<div className="h-[300px] animate-pulse bg-muted rounded-lg" />
+		),
+	}
+);
 
 /**
  * ダッシュボードのメインコンポーネント
