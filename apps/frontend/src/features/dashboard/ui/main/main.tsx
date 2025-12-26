@@ -54,10 +54,7 @@ const dashboardPeriodParser = createParser<DashboardPeriod>({
  * SSRを無効化することで、Cloudflare Workers環境でのfrozen objectエラーを回避
  */
 const ViewsTrendChart = dynamic(
-	() =>
-		import("@/features/dashboard").then((mod) => ({
-			default: mod.ViewsTrendChart,
-		})),
+	() => import("@/features/dashboard").then((mod) => mod.ViewsTrendChart),
 	{
 		ssr: false,
 		loading: () => (
