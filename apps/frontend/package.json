@@ -55,7 +55,7 @@
 		"@saneatsu/i18n": "workspace:*",
 		"@saneatsu/schemas": "workspace:*",
 		"@stepperize/react": "^5.1.9",
-		"@t3-oss/env-nextjs": "^0.13.8",
+		"@t3-oss/env-nextjs": "^0.13.10",
 		"@tanstack/react-query": "^5.90.12",
 		"@tanstack/react-query-devtools": "^5.91.1",
 		"@tanstack/react-table": "^8.21.3",
