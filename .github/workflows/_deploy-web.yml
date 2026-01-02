@@ -83,7 +83,7 @@ jobs:
           export $(cat .env | xargs)
 
           # Cloudflare Workersにデプロイ（環境変数を渡す）
-          npx wrangler deploy --env ${{ env.ENV }} \
+          npx wrangler deploy \
             --var NEXTAUTH_URL:"$NEXTAUTH_URL" \
             --var NEXTAUTH_SECRET:"$NEXTAUTH_SECRET" \
             --var NEXT_PUBLIC_API_URL:"$NEXT_PUBLIC_API_URL" \
@@ -93,6 +93,7 @@ jobs:
             --var BASIC_AUTH_USER:"$BASIC_AUTH_USER" \
             --var BASIC_AUTH_PASSWORD:"$BASIC_AUTH_PASSWORD"
         env:
+          CLOUDFLARE_ENV: ${{ env.ENV }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
