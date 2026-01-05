@@ -327,8 +327,8 @@ importers:
         specifier: ^4.0.1
         version: 4.0.1
       simple-icons:
-        specifier: ^16.3.0
-        version: 16.3.0
+        specifier: ^16.4.0
+        version: 16.4.0
       sonner:
         specifier: ^2.0.7
         version: 2.0.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -11372,8 +11372,8 @@ packages:
   simple-get@4.0.1:
     resolution: {integrity: sha512-brv7p5WgH0jmQJr1ZDDfKDOSeWWg+OVypG99A/5vYGPqJ6pxiaHLy8nxtFjBA7oMa01ebA9gfh1uMCFqOuXxvA==}
 
-  simple-icons@16.3.0:
-    resolution: {integrity: sha512-Bi28W15wyjt9902EnR6Mfr9gqt5ElKbKviYA80j77VkcUJtkeSGa6K4XKJWmBw1djiMPy0+it9KOk9nKMisYeQ==}
+  simple-icons@16.4.0:
+    resolution: {integrity: sha512-8CKtCvx1Zq3L0CBsR4RR1MjGCXkXbzdspwl2yCxs8oWkstbzj2+DatRKDee/tuj3Ffd/2CDzwEky9RgG2yggew==}
     engines: {node: '>=0.12.18'}
 
   simple-swizzle@0.2.2:
@@ -26127,7 +26127,7 @@ snapshots:
       simple-concat: 1.0.1
     optional: true
 
-  simple-icons@16.3.0: {}
+  simple-icons@16.4.0: {}
 
   simple-swizzle@0.2.2:
     dependencies:
