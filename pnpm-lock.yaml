@@ -62,10 +62,10 @@ importers:
         version: 1.19.7(hono@4.11.1)
       '@hono/zod-openapi':
         specifier: ^1.2.0
-        version: 1.2.0(hono@4.11.1)(zod@4.2.1)
+        version: 1.2.0(hono@4.11.1)(zod@4.3.5)
       '@hono/zod-validator':
         specifier: ^0.7.6
-        version: 0.7.6(hono@4.11.1)(zod@4.2.1)
+        version: 0.7.6(hono@4.11.1)(zod@4.3.5)
       '@saneatsu/db':
         specifier: workspace:*
         version: link:../../packages/db
@@ -74,7 +74,7 @@ importers:
         version: link:../../packages/schemas
       '@t3-oss/env-core':
         specifier: ^0.13.10
-        version: 0.13.10(typescript@5.9.3)(zod@4.2.1)
+        version: 0.13.10(typescript@5.9.3)(zod@4.3.5)
       drizzle-orm:
         specifier: ^0.45.1
         version: 0.45.1(@libsql/client@0.15.15)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.2.0)
@@ -85,8 +85,8 @@ importers:
         specifier: ^10.0.0
         version: 10.0.0
       zod:
-        specifier: ^4.1.13
-        version: 4.2.1
+        specifier: ^4.3.5
+        version: 4.3.5
     devDependencies:
       '@types/node':
         specifier: ^25.0.2
@@ -238,7 +238,7 @@ importers:
         version: 5.1.9(react@19.2.3)(typescript@5.9.3)
       '@t3-oss/env-nextjs':
         specifier: ^0.13.10
-        version: 0.13.10(typescript@5.9.3)(zod@4.2.1)
+        version: 0.13.10(typescript@5.9.3)(zod@4.3.5)
       '@tanstack/react-query':
         specifier: ^5.90.16
         version: 5.90.16(react@19.2.3)
@@ -351,8 +351,8 @@ importers:
         specifier: ^3.28.0
         version: 3.28.0(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       zod:
-        specifier: ^4.1.13
-        version: 4.2.1
+        specifier: ^4.3.5
+        version: 4.3.5
     devDependencies:
       '@playwright/test':
         specifier: ^1.57.0
@@ -440,13 +440,13 @@ importers:
         version: 0.15.15
       '@t3-oss/env-core':
         specifier: ^0.13.10
-        version: 0.13.10(typescript@5.9.3)(zod@4.2.1)
+        version: 0.13.10(typescript@5.9.3)(zod@4.3.5)
       drizzle-orm:
         specifier: ^0.45.1
         version: 0.45.1(@libsql/client@0.15.15)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.2.0)
       zod:
-        specifier: ^4.1.13
-        version: 4.2.1
+        specifier: ^4.3.5
+        version: 4.3.5
     devDependencies:
       drizzle-kit:
         specifier: ^0.31.8
@@ -474,8 +474,8 @@ importers:
         specifier: workspace:*
         version: link:../i18n
       zod:
-        specifier: ^4.1.13
-        version: 4.2.1
+        specifier: ^4.3.5
+        version: 4.3.5
     devDependencies:
       typescript:
         specifier: ^5.9.3
@@ -6402,8 +6402,8 @@ packages:
     resolution: {integrity: sha512-Sg0xJUNDU1sJNGdfGWhVHX0kkZ+HWcvmVymJbj6NSgZZmW/8S9Y2HQ5euytnIgakgxN6papOAWiwDo1ctFDcoQ==}
     hasBin: true
 
-  baseline-browser-mapping@2.9.12:
-    resolution: {integrity: sha512-Mij6Lij93pTAIsSYy5cyBQ975Qh9uLEc5rwGTpomiZeXZL9yIS6uORJakb3ScHgfs0serMMfIbXzokPMuEiRyw==}
+  baseline-browser-mapping@2.9.13:
+    resolution: {integrity: sha512-WhtvB2NG2wjr04+h77sg3klAIwrgOqnjS49GGudnUPGFFgg7G17y7Qecqp+2Dr5kUDxNRBca0SK7cG8JwzkWDQ==}
     hasBin: true
 
   batch@0.6.1:
@@ -12734,8 +12734,8 @@ packages:
   zod@3.22.3:
     resolution: {integrity: sha512-EjIevzuJRiRPbVH4mGc8nApb/lVLKVpmUhAaR5R5doKGfAnGJ6Gr3CViAVjP+4FWSxCsybeWQdcgCtbX+7oZug==}
 
-  zod@4.2.1:
-    resolution: {integrity: sha512-0wZ1IRqGGhMP76gLqz8EyfBXKk0J2qo2+H3fi4mcUP/KtTocoX08nmIAHl1Z2kJIZbZee8KOpBCSNPRgauucjw==}
+  zod@4.3.5:
+    resolution: {integrity: sha512-k7Nwx6vuWx1IJ9Bjuf4Zt1PEllcwe7cls3VNzm4CQ1/hgtFUK2bRNG3rvnpPUhFjmqJKAKtjV576KnUkHocg/g==}
 
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
@@ -12924,10 +12924,10 @@ snapshots:
       '@ast-grep/napi-win32-ia32-msvc': 0.40.0
       '@ast-grep/napi-win32-x64-msvc': 0.40.0
 
-  '@asteasolutions/zod-to-openapi@8.2.0(zod@4.2.1)':
+  '@asteasolutions/zod-to-openapi@8.2.0(zod@4.3.5)':
     dependencies:
       openapi3-ts: 4.5.0
-      zod: 4.2.1
+      zod: 4.3.5
 
   '@auth/core@0.41.0':
     dependencies:
@@ -16510,18 +16510,18 @@ snapshots:
     dependencies:
       hono: 4.11.1
 
-  '@hono/zod-openapi@1.2.0(hono@4.11.1)(zod@4.2.1)':
+  '@hono/zod-openapi@1.2.0(hono@4.11.1)(zod@4.3.5)':
     dependencies:
-      '@asteasolutions/zod-to-openapi': 8.2.0(zod@4.2.1)
-      '@hono/zod-validator': 0.7.6(hono@4.11.1)(zod@4.2.1)
+      '@asteasolutions/zod-to-openapi': 8.2.0(zod@4.3.5)
+      '@hono/zod-validator': 0.7.6(hono@4.11.1)(zod@4.3.5)
       hono: 4.11.1
       openapi3-ts: 4.5.0
-      zod: 4.2.1
+      zod: 4.3.5
 
-  '@hono/zod-validator@0.7.6(hono@4.11.1)(zod@4.2.1)':
+  '@hono/zod-validator@0.7.6(hono@4.11.1)(zod@4.3.5)':
     dependencies:
       hono: 4.11.1
-      zod: 4.2.1
+      zod: 4.3.5
 
   '@hookform/resolvers@5.2.2(react-hook-form@7.70.0(react@19.2.3))':
     dependencies:
@@ -19085,17 +19085,17 @@ snapshots:
     dependencies:
       defer-to-connect: 2.0.1
 
-  '@t3-oss/env-core@0.13.10(typescript@5.9.3)(zod@4.2.1)':
+  '@t3-oss/env-core@0.13.10(typescript@5.9.3)(zod@4.3.5)':
     optionalDependencies:
       typescript: 5.9.3
-      zod: 4.2.1
+      zod: 4.3.5
 
-  '@t3-oss/env-nextjs@0.13.10(typescript@5.9.3)(zod@4.2.1)':
+  '@t3-oss/env-nextjs@0.13.10(typescript@5.9.3)(zod@4.3.5)':
     dependencies:
-      '@t3-oss/env-core': 0.13.10(typescript@5.9.3)(zod@4.2.1)
+      '@t3-oss/env-core': 0.13.10(typescript@5.9.3)(zod@4.3.5)
     optionalDependencies:
       typescript: 5.9.3
-      zod: 4.2.1
+      zod: 4.3.5
 
   '@tailwindcss/node@4.1.18':
     dependencies:
@@ -20095,7 +20095,7 @@ snapshots:
 
   baseline-browser-mapping@2.9.11: {}
 
-  baseline-browser-mapping@2.9.12: {}
+  baseline-browser-mapping@2.9.13: {}
 
   batch@0.6.1: {}
 
@@ -24356,7 +24356,7 @@ snapshots:
     dependencies:
       '@next/env': 16.1.1
       '@swc/helpers': 0.5.15
-      baseline-browser-mapping: 2.9.12
+      baseline-browser-mapping: 2.9.13
       caniuse-lite: 1.0.30001763
       postcss: 8.4.31
       react: 19.2.3
@@ -27711,6 +27711,6 @@ snapshots:
 
   zod@3.22.3: {}
 
-  zod@4.2.1: {}
+  zod@4.3.5: {}
 
   zwitch@2.0.4: {}
