@@ -38,7 +38,7 @@
 		"drizzle-orm": "^0.45.1",
 		"hono": "^4.11.0",
 		"htmlparser2": "^10.0.0",
-		"zod": "^4.1.13"
+		"zod": "^4.3.5"
 	},
 	"devDependencies": {
 		"dotenv": "^16.6.1",
