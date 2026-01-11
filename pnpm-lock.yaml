@@ -59,13 +59,13 @@ importers:
         version: 0.24.1
       '@hono/node-server':
         specifier: ^1.19.7
-        version: 1.19.7(hono@4.11.1)
+        version: 1.19.7(hono@4.11.3)
       '@hono/zod-openapi':
         specifier: ^1.2.0
-        version: 1.2.0(hono@4.11.1)(zod@4.3.5)
+        version: 1.2.0(hono@4.11.3)(zod@4.3.5)
       '@hono/zod-validator':
         specifier: ^0.7.6
-        version: 0.7.6(hono@4.11.1)(zod@4.3.5)
+        version: 0.7.6(hono@4.11.3)(zod@4.3.5)
       '@saneatsu/db':
         specifier: workspace:*
         version: link:../../packages/db
@@ -79,8 +79,8 @@ importers:
         specifier: ^0.45.1
         version: 0.45.1(@libsql/client@0.15.15)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.2.0)
       hono:
-        specifier: ^4.11.0
-        version: 4.11.1
+        specifier: ^4.11.3
+        version: 4.11.3
       htmlparser2:
         specifier: ^10.0.0
         version: 10.0.0
@@ -270,8 +270,8 @@ importers:
         specifier: ^11.11.1
         version: 11.11.1
       hono:
-        specifier: ^4.11.0
-        version: 4.11.1
+        specifier: ^4.11.3
+        version: 4.11.3
       lucide-react:
         specifier: ^0.562.0
         version: 0.562.0(react@19.2.3)
@@ -8365,8 +8365,8 @@ packages:
     resolution: {integrity: sha512-eSmmWE5bZTK2Nou4g0AI3zZ9rswp7GRKoKXS1BLUkvPviOqs4YTN1djQIqrXy9k5gEtdLPy86JjRwsNM9tnDcA==}
     engines: {node: '>=0.10.0'}
 
-  hono@4.11.1:
-    resolution: {integrity: sha512-KsFcH0xxHes0J4zaQgWbYwmz3UPOOskdqZmItstUG93+Wk1ePBLkLGwbP9zlmh1BFUiL8Qp+Xfu9P7feJWpGNg==}
+  hono@4.11.3:
+    resolution: {integrity: sha512-PmQi306+M/ct/m5s66Hrg+adPnkD5jiO6IjA7WhWw0gSBSo1EcRegwuI1deZ+wd5pzCGynCcn2DprnE4/yEV4w==}
     engines: {node: '>=16.9.0'}
 
   hpack.js@2.1.6:
@@ -16515,21 +16515,21 @@ snapshots:
     dependencies:
       '@hapi/hoek': 11.0.7
 
-  '@hono/node-server@1.19.7(hono@4.11.1)':
+  '@hono/node-server@1.19.7(hono@4.11.3)':
     dependencies:
-      hono: 4.11.1
+      hono: 4.11.3
 
-  '@hono/zod-openapi@1.2.0(hono@4.11.1)(zod@4.3.5)':
+  '@hono/zod-openapi@1.2.0(hono@4.11.3)(zod@4.3.5)':
     dependencies:
       '@asteasolutions/zod-to-openapi': 8.2.0(zod@4.3.5)
-      '@hono/zod-validator': 0.7.6(hono@4.11.1)(zod@4.3.5)
-      hono: 4.11.1
+      '@hono/zod-validator': 0.7.6(hono@4.11.3)(zod@4.3.5)
+      hono: 4.11.3
       openapi3-ts: 4.5.0
       zod: 4.3.5
 
-  '@hono/zod-validator@0.7.6(hono@4.11.1)(zod@4.3.5)':
+  '@hono/zod-validator@0.7.6(hono@4.11.3)(zod@4.3.5)':
     dependencies:
-      hono: 4.11.1
+      hono: 4.11.3
       zod: 4.3.5
 
   '@hookform/resolvers@5.2.2(react-hook-form@7.70.0(react@19.2.3))':
@@ -22368,7 +22368,7 @@ snapshots:
     dependencies:
       parse-passwd: 1.0.0
 
-  hono@4.11.1: {}
+  hono@4.11.3: {}
 
   hpack.js@2.1.6:
     dependencies:
