@@ -38,7 +38,7 @@
 		"concurrently": "^9.1.2",
 		"identity-obj-proxy": "^3.0.0",
 		"lefthook": "^2.0.13",
-		"turbo": "^2.7.3",
+		"turbo": "^2.7.4",
 		"typescript": "^5.9.3",
 		"vitest": "^3.2.4",
 		"wrangler": "^4.59.1"
