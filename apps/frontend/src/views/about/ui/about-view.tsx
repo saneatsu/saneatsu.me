@@ -254,10 +254,8 @@ export function AboutView() {
 	const handleSheetClose = (open: boolean) => {
 		setIsSheetOpen(open);
 		if (!open) {
-			// アニメーション完了後に選択をクリア
-			setTimeout(() => {
-				setSelectedItem(null);
-			}, 300);
+			// 選択を即座にクリア（アニメーション中でも問題なし）
+			setSelectedItem(null);
 		}
 	};
 
