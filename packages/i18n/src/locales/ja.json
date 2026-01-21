@@ -81,8 +81,8 @@
 			"timeline": [
 				{
 					"period": {
-						"start": "2025-03",
-						"end": null
+						"from": "2025-03",
+						"to": null
 					},
 					"title": "個人事業主",
 					"description": "フリーランスとして活動開始",
@@ -90,8 +90,8 @@
 				},
 				{
 					"period": {
-						"start": "2018-07",
-						"end": "2025-02"
+						"from": "2018-07",
+						"to": "2025-02"
 					},
 					"title": "株式会社Algoage",
 					"description": "ソフトウェアエンジニアとして従事",
@@ -99,8 +99,8 @@
 				},
 				{
 					"period": {
-						"start": "2017-08",
-						"end": "2018-06"
+						"from": "2017-08",
+						"to": "2018-06"
 					},
 					"title": "株式会社Accenture",
 					"description": "ITコンサルタントとして従事",
