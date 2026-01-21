@@ -50,6 +50,16 @@ export type TimelineItemPeriod = {
  */
 export type TimelineItem = {
 	/**
+	 * スラッグ（必須）
+	 * 言語に依存しない一意の識別子
+	 *
+	 * @example "freelancer"
+	 * @example "algoage-inc"
+	 * @example "accenture"
+	 */
+	slug: string;
+
+	/**
 	 * 経歴の期間
 	 */
 	period: TimelineItemPeriod;
