@@ -73,6 +73,8 @@ import {
 	BlogNotice,
 	Sheet,
 	SheetContent,
+	SheetHeader,
+	SheetTitle,
 	StepperTimeline,
 } from "@/shared/ui";
 
@@ -420,6 +422,11 @@ export function AboutView() {
 			{/* 経歴詳細Sheet */}
 			<Sheet open={isSheetOpen} onOpenChange={handleSheetClose}>
 				<SheetContent className="overflow-y-auto w-[90vw] md:w-[70vw] md:max-w-[800px]">
+					<SheetHeader className="sr-only p-0">
+						<SheetTitle>
+							{selectedItem?.title ?? t("experience.detail.title")}
+						</SheetTitle>
+					</SheetHeader>
 					{selectedItem && (
 						<div className="px-6 py-4">
 							<TimelineItemDetail item={selectedItem} />
