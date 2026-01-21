@@ -22,21 +22,23 @@ export type TimelineItemCategory =
  */
 export type TimelineItemPeriod = {
 	/**
-	 * 開始日（YYYY-MM形式または年のみ）
+	 * 開始日（必須）
+	 * YYYY-MM形式または年のみ
 	 *
 	 * @example "2020-04"
 	 * @example "2020"
 	 */
-	start: string;
+	from: string;
 
 	/**
-	 * 終了日（YYYY-MM形式または年のみ、現在進行中の場合はnull）
+	 * 終了日（nullable、現在進行中の場合はnull）
+	 * YYYY-MM形式または年のみ
 	 *
 	 * @example "2023-03"
 	 * @example "2023"
 	 * @example null // 現在進行中
 	 */
-	end: string | null;
+	to: string | null;
 };
 
 /**

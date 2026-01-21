@@ -4,7 +4,7 @@ import { useLocale, useTranslations } from "next-intl";
 import type { SimpleIcon } from "simple-icons";
 
 import type { TimelineItem } from "@/shared/types";
-import { BadgeWithIcon } from "@/shared/ui";
+import { BadgeWithIcon, Separator } from "@/shared/ui";
 
 /**
  * TimelineItemDetailコンポーネントのProps
@@ -19,20 +19,20 @@ export type TimelineItemDetailProps = {
 /**
  * 期間を文字列にフォーマットする関数
  *
- * @param start - 開始日（YYYY-MM形式または年のみ）
- * @param end - 終了日（YYYY-MM形式、年のみ、またはnull）
+ * @param from - 開始日（YYYY-MM形式または年のみ）
+ * @param to - 終了日（YYYY-MM形式、年のみ、またはnull）
  * @param locale - ロケール（"ja" | "en"）
  * @returns フォーマットされた期間文字列
  */
 function formatPeriod(
-	start: string,
-	end: string | null,
+	from: string,
+	to: string | null,
 	locale: string
 ): string {
-	if (end === null) {
-		return locale === "ja" ? `${start} - 現在` : `${start} - Present`;
+	if (to === null) {
+		return locale === "ja" ? `${from} - 現在` : `${from} - Present`;
 	}
-	return `${start} - ${end}`;
+	return `${from} - ${to}`;
 }
 
 /**
@@ -66,53 +66,52 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 
 	return (
 		<div className="space-y-6">
-			{/* タイトル */}
+			{/* 会社名セクション */}
 			<div>
 				<h2 className="text-2xl font-bold">{item.title}</h2>
 			</div>
 
-			{/* 期間 */}
+			<Separator />
+
+			{/* 期間セクション */}
 			<div>
-				<h3 className="text-sm font-semibold text-muted-foreground mb-1">
+				<h3 className="text-sm font-semibold text-muted-foreground mb-2">
 					{t("experience.detail.period")}
 				</h3>
 				<p className="text-base">
-					{formatPeriod(item.period.start, item.period.end, locale)}
+					{formatPeriod(item.period.from, item.period.to, locale)}
 				</p>
 			</div>
 
-			{/* カテゴリ */}
-			<div>
-				<h3 className="text-sm font-semibold text-muted-foreground mb-1">
-					{t("experience.detail.category")}
-				</h3>
-				<p className="text-base">{getCategoryLabel(item.category)}</p>
-			</div>
+			<Separator />
 
-			{/* 説明 */}
+			{/* 職種・業務内容セクション */}
 			<div>
-				<h3 className="text-sm font-semibold text-muted-foreground mb-1">
+				<h3 className="text-sm font-semibold text-muted-foreground mb-2">
 					{t("experience.detail.description")}
 				</h3>
 				<p className="text-base whitespace-pre-line">{item.description}</p>
 			</div>
 
-			{/* 技術スタック */}
+			{/* 技術スタックセクション */}
 			{item.techStack && item.techStack.length > 0 && (
-				<div>
-					<h3 className="text-sm font-semibold text-muted-foreground mb-2">
-						{t("experience.detail.techStack")}
-					</h3>
-					<div className="flex flex-wrap gap-2">
-						{item.techStack.map((tech: SimpleIcon) => (
-							<BadgeWithIcon
-								key={tech.slug}
-								icon={tech}
-								text={tech.title}
-							/>
-						))}
+				<>
+					<Separator />
+					<div>
+						<h3 className="text-sm font-semibold text-muted-foreground mb-2">
+							{t("experience.detail.techStack")}
+						</h3>
+						<div className="flex flex-wrap gap-2">
+							{item.techStack.map((tech: SimpleIcon) => (
+								<BadgeWithIcon
+									key={tech.slug}
+									icon={tech}
+									text={tech.title}
+								/>
+							))}
+						</div>
 					</div>
-				</div>
+				</>
 			)}
 		</div>
 	);

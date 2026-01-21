@@ -31,8 +31,8 @@ export type StepperTimelineProps = {
 /**
  * 期間を文字列にフォーマットする関数
  *
- * @param start - 開始日（YYYY-MM形式または年のみ）
- * @param end - 終了日（YYYY-MM形式、年のみ、またはnull）
+ * @param from - 開始日（YYYY-MM形式または年のみ）
+ * @param to - 終了日（YYYY-MM形式、年のみ、またはnull）
  * @returns フォーマットされた期間文字列
  *
  * @example
@@ -40,11 +40,11 @@ export type StepperTimelineProps = {
  * formatPeriod("2022", "2023") // "2022 - 2023"
  * formatPeriod("2023-04", "2023-12") // "2023-04 - 2023-12"
  */
-function formatPeriod(start: string, end: string | null): string {
-	if (end === null) {
-		return `${start} - 現在`;
+function formatPeriod(from: string, to: string | null): string {
+	if (to === null) {
+		return `${from} - 現在`;
 	}
-	return `${start} - ${end}`;
+	return `${from} - ${to}`;
 }
 
 /**
@@ -96,14 +96,14 @@ export function StepperTimeline({ items, onItemClick }: StepperTimelineProps) {
 							<div className="flex flex-col items-center">
 								{/* ドットマーカー */}
 								<div
-									className="w-3 h-3 rounded-full bg-primary mt-4 flex-shrink-0"
+									className="w-3 h-3 rounded-full bg-primary mt-4 shrink-0"
 									aria-hidden="true"
 								/>
 
 								{/* 縦線（最後のアイテムでは表示しない） */}
 								{index < array.length - 1 && (
 									<div
-										className="w-[1px] flex-1 bg-border mt-4"
+										className="w-px flex-1 bg-border mt-4"
 										aria-hidden="true"
 									/>
 								)}
@@ -130,11 +130,13 @@ export function StepperTimeline({ items, onItemClick }: StepperTimelineProps) {
 										<CardContent>
 											{/* 期間 */}
 											<p className="text-sm text-muted-foreground mb-1">
-												{formatPeriod(item.period.start, item.period.end)}
+												{formatPeriod(item.period.from, item.period.to)}
 											</p>
 
 											{/* タイトル */}
-											<h3 className="text-lg font-semibold mb-2">{item.title}</h3>
+											<h3 className="text-lg font-semibold mb-2">
+												{item.title}
+											</h3>
 
 											{/* 説明 */}
 											<p className="text-muted-foreground mb-3">
@@ -159,7 +161,7 @@ export function StepperTimeline({ items, onItemClick }: StepperTimelineProps) {
 									<>
 										{/* 期間 */}
 										<p className="text-sm text-muted-foreground mb-1">
-											{formatPeriod(item.period.start, item.period.end)}
+											{formatPeriod(item.period.from, item.period.to)}
 										</p>
 
 										{/* タイトル */}
