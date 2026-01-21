@@ -76,7 +76,8 @@
 				"period": "期間",
 				"category": "カテゴリ",
 				"description": "説明",
-				"techStack": "技術スタック"
+				"techStack": "技術スタック",
+				"present": "現在"
 			},
 			"timeline": [
 				{

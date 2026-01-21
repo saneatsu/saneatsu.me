@@ -1,6 +1,6 @@
 "use client";
 
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import type { SimpleIcon } from "simple-icons";
 
 import type { TimelineItem } from "@/shared/types";
@@ -17,25 +17,6 @@ export type TimelineItemDetailProps = {
 };
 
 /**
- * 期間を文字列にフォーマットする関数
- *
- * @param from - 開始日（YYYY-MM形式または年のみ）
- * @param to - 終了日（YYYY-MM形式、年のみ、またはnull）
- * @param locale - ロケール（"ja" | "en"）
- * @returns フォーマットされた期間文字列
- */
-function formatPeriod(
-	from: string,
-	to: string | null,
-	locale: string
-): string {
-	if (to === null) {
-		return locale === "ja" ? `${from} - 現在` : `${from} - Present`;
-	}
-	return `${from} - ${to}`;
-}
-
-/**
  * TimelineItemDetailコンポーネント
  *
  * @description
@@ -44,7 +25,20 @@ function formatPeriod(
  */
 export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 	const t = useTranslations("about");
-	const locale = useLocale();
+
+	/**
+	 * 期間を文字列にフォーマットする関数
+	 *
+	 * @param from - 開始日（YYYY-MM形式または年のみ）
+	 * @param to - 終了日（YYYY-MM形式、年のみ、またはnull）
+	 * @returns フォーマットされた期間文字列
+	 */
+	const formatPeriod = (from: string, to: string | null): string => {
+		if (to === null) {
+			return `${from} - ${t("experience.detail.present")}`;
+		}
+		return `${from} - ${to}`;
+	};
 
 	/**
 	 * カテゴリを翻訳された文字列に変換する関数
@@ -52,9 +46,7 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 	 * @param category - カテゴリ
 	 * @returns 翻訳されたカテゴリ名
 	 */
-	const getCategoryLabel = (
-		category: TimelineItem["category"]
-	): string => {
+	const getCategoryLabel = (category: TimelineItem["category"]): string => {
 		const categoryMap: Record<TimelineItem["category"], string> = {
 			work: t("experience.category.work"),
 			education: t("experience.category.education"),
@@ -79,7 +71,7 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 					{t("experience.detail.period")}
 				</h3>
 				<p className="text-base">
-					{formatPeriod(item.period.from, item.period.to, locale)}
+					{formatPeriod(item.period.from, item.period.to)}
 				</p>
 			</div>
 
@@ -103,11 +95,7 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 						</h3>
 						<div className="flex flex-wrap gap-2">
 							{item.techStack.map((tech: SimpleIcon) => (
-								<BadgeWithIcon
-									key={tech.slug}
-									icon={tech}
-									text={tech.title}
-								/>
+								<BadgeWithIcon key={tech.slug} icon={tech} text={tech.title} />
 							))}
 						</div>
 					</div>
