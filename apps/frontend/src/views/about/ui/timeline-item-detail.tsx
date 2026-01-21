@@ -75,16 +75,6 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 				</p>
 			</div>
 
-			<Separator />
-
-			{/* 職種・業務内容セクション */}
-			<div>
-				<h3 className="text-sm font-semibold text-muted-foreground mb-2">
-					{t("experience.detail.description")}
-				</h3>
-				<p className="text-base whitespace-pre-line">{item.description}</p>
-			</div>
-
 			{/* 技術スタックセクション */}
 			{item.techStack && item.techStack.length > 0 && (
 				<>
@@ -101,6 +91,16 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 					</div>
 				</>
 			)}
+
+			<Separator />
+
+			{/* 職種・業務内容セクション */}
+			<div>
+				<h3 className="text-sm font-semibold text-muted-foreground mb-2">
+					{t("experience.detail.description")}
+				</h3>
+				<p className="text-base whitespace-pre-line">{item.description}</p>
+			</div>
 		</div>
 	);
 }
