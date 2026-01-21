@@ -76,7 +76,8 @@
 				"period": "Period",
 				"category": "Category",
 				"description": "Description",
-				"techStack": "Tech Stack"
+				"techStack": "Tech Stack",
+				"present": "Present"
 			},
 			"timeline": [
 				{
