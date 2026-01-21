@@ -164,7 +164,9 @@ export function StepperTimeline({ items, onItemClick }: StepperTimelineProps) {
 										<h3 className="text-lg font-semibold mb-2">{item.title}</h3>
 
 										{/* 説明 */}
-										<p className="text-muted-foreground mb-3">{item.description}</p>
+										<p className="text-muted-foreground mb-3">
+											{item.description}
+										</p>
 
 										{/* 技術スタックのバッジ */}
 										{item.techStack && item.techStack.length > 0 && (

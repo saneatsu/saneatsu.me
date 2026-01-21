@@ -3,8 +3,8 @@
 import { useLocale, useTranslations } from "next-intl";
 import type { SimpleIcon } from "simple-icons";
 
-import type { TimelineItem } from "../../types";
-import { BadgeWithIcon } from "../../ui";
+import type { TimelineItem } from "@/shared/types";
+import { BadgeWithIcon } from "@/shared/ui";
 
 /**
  * TimelineItemDetailコンポーネントのProps
