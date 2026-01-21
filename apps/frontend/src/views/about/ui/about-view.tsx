@@ -77,7 +77,8 @@ import {
 	SheetTitle,
 	StepperTimeline,
 } from "@/shared/ui";
-import { TimelineItemDetail } from "@/shared/ui/stepper-timeline/timeline-item-detail";
+
+import { TimelineItemDetail } from "./timeline-item-detail";
 
 /**
  * 技術アイテムの型定義
