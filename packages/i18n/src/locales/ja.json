@@ -65,6 +65,19 @@
 		"experience": {
 			"title": "経歴・経験",
 			"description": "これまでの開発経験と取り組み",
+			"category": {
+				"work": "職歴",
+				"education": "学歴",
+				"project": "個人プロジェクト",
+				"skill": "技術習得・マイルストーン"
+			},
+			"detail": {
+				"title": "経歴詳細",
+				"period": "期間",
+				"category": "カテゴリ",
+				"description": "説明",
+				"techStack": "技術スタック"
+			},
 			"timeline": [
 				{
 					"period": {

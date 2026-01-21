@@ -65,6 +65,19 @@
 		"experience": {
 			"title": "Experience",
 			"description": "My development experience and initiatives",
+			"category": {
+				"work": "Work",
+				"education": "Education",
+				"project": "Project",
+				"skill": "Skill"
+			},
+			"detail": {
+				"title": "Experience Details",
+				"period": "Period",
+				"category": "Category",
+				"description": "Description",
+				"techStack": "Tech Stack"
+			},
 			"timeline": [
 				{
 					"period": {

@@ -2,6 +2,7 @@
 
 import { Mail } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import { useState } from "react";
 import type { SimpleIcon } from "simple-icons";
 import {
 	siBiome,
@@ -67,7 +68,16 @@ import {
 	usePublicContributions,
 } from "@/features/contributions";
 import type { TimelineItem } from "@/shared/types";
-import { BadgeWithIcon, BlogNotice, StepperTimeline } from "@/shared/ui";
+import {
+	BadgeWithIcon,
+	BlogNotice,
+	Sheet,
+	SheetContent,
+	SheetHeader,
+	SheetTitle,
+	StepperTimeline,
+} from "@/shared/ui";
+import { TimelineItemDetail } from "@/shared/ui/stepper-timeline/timeline-item-detail";
 
 /**
  * 技術アイテムの型定義
@@ -229,6 +239,27 @@ export function AboutView() {
 		"timeline"
 	) as TimelineItem[];
 
+	// Sheetの状態管理
+	const [selectedItem, setSelectedItem] = useState<TimelineItem | null>(null);
+	const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+	// タイムラインアイテムがクリックされたときのハンドラ
+	const handleItemClick = (item: TimelineItem) => {
+		setSelectedItem(item);
+		setIsSheetOpen(true);
+	};
+
+	// Sheetが閉じられたときのハンドラ
+	const handleSheetClose = (open: boolean) => {
+		setIsSheetOpen(open);
+		if (!open) {
+			// アニメーション完了後に選択をクリア
+			setTimeout(() => {
+				setSelectedItem(null);
+			}, 300);
+		}
+	};
+
 	return (
 		<main className="container mx-auto px-4 py-8">
 			<div className="max-w-4xl mx-auto space-y-16">
@@ -333,7 +364,10 @@ export function AboutView() {
 								{t("experience.description")}
 							</p>
 						</div>
-						<StepperTimeline items={timelineItems} />
+						<StepperTimeline
+							items={timelineItems}
+							onItemClick={handleItemClick}
+						/>
 					</section>
 
 					{/* SNS・Webサイトセクション */}
@@ -385,6 +419,20 @@ export function AboutView() {
 					</section>
 				</div>
 			</div>
+
+			{/* 経歴詳細Sheet */}
+			<Sheet open={isSheetOpen} onOpenChange={handleSheetClose}>
+				<SheetContent className="overflow-y-auto">
+					<SheetHeader>
+						<SheetTitle>{t("experience.detail.title")}</SheetTitle>
+					</SheetHeader>
+					{selectedItem && (
+						<div className="mt-6">
+							<TimelineItemDetail item={selectedItem} />
+						</div>
+					)}
+				</SheetContent>
+			</Sheet>
 		</main>
 	);
 }

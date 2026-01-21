@@ -5,7 +5,7 @@ import * as React from "react";
 import type { SimpleIcon } from "simple-icons";
 
 import type { TimelineItem as TimelineItemType } from "../../types";
-import { BadgeWithIcon } from "../../ui";
+import { BadgeWithIcon, Card } from "../../ui";
 
 /**
  * StepperTimelineコンポーネントのProps
@@ -18,6 +18,14 @@ export type StepperTimelineProps = {
 	 * 新しい順（最新が最初）で渡すことを想定している。
 	 */
 	items: TimelineItemType[];
+	/**
+	 * アイテムのタイトルがクリックされたときのコールバック
+	 *
+	 * @description
+	 * 疎結合設計のため、クリックイベントは親コンポーネントに委譲する。
+	 * このコールバックが提供されない場合、タイトルはクリック不可になる。
+	 */
+	onItemClick?: (item: TimelineItemType) => void;
 };
 
 /**
@@ -53,7 +61,7 @@ function formatPeriod(start: string, end: string | null): string {
  * 3. 全ステップを縦に並べて表示
  * 4. 既存のTimelineItemと同じビジュアルデザイン
  */
-export function StepperTimeline({ items }: StepperTimelineProps) {
+export function StepperTimeline({ items, onItemClick }: StepperTimelineProps) {
 	// 経歴データからステップを定義
 	// 空の場合はダミーステップを作成してフックルールに従う
 	const steps =
@@ -103,28 +111,74 @@ export function StepperTimeline({ items }: StepperTimelineProps) {
 
 							{/* 右側のコンテンツ部分 */}
 							<div className="flex-1 pt-3 pb-8">
-								{/* 期間 */}
-								<p className="text-sm text-muted-foreground mb-1">
-									{formatPeriod(item.period.start, item.period.end)}
-								</p>
+								{onItemClick ? (
+									<Card
+										role="button"
+										tabIndex={0}
+										onClick={() => {
+											onItemClick(item);
+										}}
+										onKeyDown={(e) => {
+											if (e.key === "Enter" || e.key === " ") {
+												e.preventDefault();
+												onItemClick(item);
+											}
+										}}
+										className="cursor-pointer transition-all hover:shadow-md hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 gap-0 py-4 px-4"
+										aria-label={`${item.title}の詳細を表示`}
+									>
+										{/* 期間 */}
+										<p className="text-sm text-muted-foreground mb-1">
+											{formatPeriod(item.period.start, item.period.end)}
+										</p>
 
-								{/* タイトル */}
-								<h3 className="text-lg font-semibold mb-2">{item.title}</h3>
+										{/* タイトル */}
+										<h3 className="text-lg font-semibold mb-2">{item.title}</h3>
 
-								{/* 説明 */}
-								<p className="text-muted-foreground mb-3">{item.description}</p>
+										{/* 説明 */}
+										<p className="text-muted-foreground mb-3">
+											{item.description}
+										</p>
 
-								{/* 技術スタックのバッジ */}
-								{item.techStack && item.techStack.length > 0 && (
-									<div className="flex flex-wrap gap-2">
-										{item.techStack.map((tech: SimpleIcon) => (
-											<BadgeWithIcon
-												key={tech.slug}
-												icon={tech}
-												text={tech.title}
-											/>
-										))}
-									</div>
+										{/* 技術スタックのバッジ */}
+										{item.techStack && item.techStack.length > 0 && (
+											<div className="flex flex-wrap gap-2">
+												{item.techStack.map((tech: SimpleIcon) => (
+													<BadgeWithIcon
+														key={tech.slug}
+														icon={tech}
+														text={tech.title}
+													/>
+												))}
+											</div>
+										)}
+									</Card>
+								) : (
+									<>
+										{/* 期間 */}
+										<p className="text-sm text-muted-foreground mb-1">
+											{formatPeriod(item.period.start, item.period.end)}
+										</p>
+
+										{/* タイトル */}
+										<h3 className="text-lg font-semibold mb-2">{item.title}</h3>
+
+										{/* 説明 */}
+										<p className="text-muted-foreground mb-3">{item.description}</p>
+
+										{/* 技術スタックのバッジ */}
+										{item.techStack && item.techStack.length > 0 && (
+											<div className="flex flex-wrap gap-2">
+												{item.techStack.map((tech: SimpleIcon) => (
+													<BadgeWithIcon
+														key={tech.slug}
+														icon={tech}
+														text={tech.title}
+													/>
+												))}
+											</div>
+										)}
+									</>
 								)}
 							</div>
 						</div>
