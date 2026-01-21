@@ -5,7 +5,7 @@ import * as React from "react";
 import type { SimpleIcon } from "simple-icons";
 
 import type { TimelineItem as TimelineItemType } from "../../types";
-import { BadgeWithIcon, Card } from "../../ui";
+import { BadgeWithIcon, Card, CardContent } from "../../ui";
 
 /**
  * StepperTimelineコンポーネントのProps
@@ -124,34 +124,36 @@ export function StepperTimeline({ items, onItemClick }: StepperTimelineProps) {
 												onItemClick(item);
 											}
 										}}
-										className="cursor-pointer transition-all hover:shadow-md hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 gap-0 py-4 px-4"
+										className="cursor-pointer transition-all hover:shadow-md hover:border-primary/20 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
 										aria-label={`${item.title}の詳細を表示`}
 									>
-										{/* 期間 */}
-										<p className="text-sm text-muted-foreground mb-1">
-											{formatPeriod(item.period.start, item.period.end)}
-										</p>
+										<CardContent>
+											{/* 期間 */}
+											<p className="text-sm text-muted-foreground mb-1">
+												{formatPeriod(item.period.start, item.period.end)}
+											</p>
 
-										{/* タイトル */}
-										<h3 className="text-lg font-semibold mb-2">{item.title}</h3>
+											{/* タイトル */}
+											<h3 className="text-lg font-semibold mb-2">{item.title}</h3>
 
-										{/* 説明 */}
-										<p className="text-muted-foreground mb-3">
-											{item.description}
-										</p>
+											{/* 説明 */}
+											<p className="text-muted-foreground mb-3">
+												{item.description}
+											</p>
 
-										{/* 技術スタックのバッジ */}
-										{item.techStack && item.techStack.length > 0 && (
-											<div className="flex flex-wrap gap-2">
-												{item.techStack.map((tech: SimpleIcon) => (
-													<BadgeWithIcon
-														key={tech.slug}
-														icon={tech}
-														text={tech.title}
-													/>
-												))}
-											</div>
-										)}
+											{/* 技術スタックのバッジ */}
+											{item.techStack && item.techStack.length > 0 && (
+												<div className="flex flex-wrap gap-2">
+													{item.techStack.map((tech: SimpleIcon) => (
+														<BadgeWithIcon
+															key={tech.slug}
+															icon={tech}
+															text={tech.title}
+														/>
+													))}
+												</div>
+											)}
+										</CardContent>
 									</Card>
 								) : (
 									<>
