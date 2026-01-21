@@ -1,8 +1,9 @@
 "use client";
 
 import { Mail } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { SimpleIcon } from "simple-icons";
 import {
 	siBiome,
@@ -81,6 +82,11 @@ import {
 import { TimelineItemDetail } from "./timeline-item-detail";
 
 /**
+ * クエリパラメータ名の定数
+ */
+const COMPANY_QUERY_KEY = "company" as const;
+
+/**
  * 技術アイテムの型定義
  */
 type TechItem = {
@@ -133,6 +139,10 @@ export function AboutView() {
 		range: 365,
 		locale: locale === "ja" ? "ja" : "en",
 	});
+
+	const router = useRouter();
+	const pathname = usePathname();
+	const searchParams = useSearchParams();
 
 	// 技術スタックの定義（アイコン付き）
 	const techStack: {
@@ -248,6 +258,15 @@ export function AboutView() {
 	const handleItemClick = (item: TimelineItem) => {
 		setSelectedItem(item);
 		setIsSheetOpen(true);
+
+		// URLクエリに選択中のタイムラインアイテムのスラッグを追加
+		const params = new URLSearchParams(searchParams.toString());
+		params.set(COMPANY_QUERY_KEY, item.slug);
+		const queryString = params.toString();
+
+		router.push(queryString ? `${pathname}?${queryString}` : pathname, {
+			scroll: false,
+		});
 	};
 
 	// Sheetが閉じられたときのハンドラ
@@ -256,8 +275,33 @@ export function AboutView() {
 		if (!open) {
 			// 選択を即座にクリア（アニメーション中でも問題なし）
 			setSelectedItem(null);
+
+			// URLクエリからタイムラインアイテムのスラッグを削除
+			const params = new URLSearchParams(searchParams.toString());
+			params.delete(COMPANY_QUERY_KEY);
+			const queryString = params.toString();
+
+			router.push(queryString ? `${pathname}?${queryString}` : pathname, {
+				scroll: false,
+			});
 		}
 	};
+
+	// クエリパラメータからSheetの状態を復元
+	useEffect(() => {
+		const slug = searchParams.get(COMPANY_QUERY_KEY);
+		if (!slug) {
+			return;
+		}
+
+		const item = timelineItems.find((i) => i.slug === slug);
+		if (!item) {
+			return;
+		}
+
+		setSelectedItem(item);
+		setIsSheetOpen(true);
+	}, [searchParams, timelineItems]);
 
 	return (
 		<main className="container mx-auto px-4 py-8">

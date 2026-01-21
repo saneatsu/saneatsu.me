@@ -29,9 +29,10 @@ export const デフォルト: Story = {
 	args: {
 		items: [
 			{
+				slug: "personal-blog",
 				period: {
-					start: "2024-01",
-					end: null,
+					from: "2024-01",
+					to: null,
 				},
 				title: "個人ブログサイトの開発",
 				description:
@@ -40,9 +41,10 @@ export const デフォルト: Story = {
 				techStack: [siReact, siNextdotjs, siTypescript],
 			},
 			{
+				slug: "fullstack-learning",
 				period: {
-					start: "2023",
-					end: "2023",
+					from: "2023",
+					to: "2023",
 				},
 				title: "フルスタック開発の学習",
 				description:
@@ -50,9 +52,10 @@ export const デフォルト: Story = {
 				category: "skill",
 			},
 			{
+				slug: "portfolio-site",
 				period: {
-					start: "2022",
-					end: "2023",
+					from: "2022",
+					to: "2023",
 				},
 				title: "ポートフォリオサイトの開発",
 				description:
@@ -85,9 +88,10 @@ export const 単一アイテム: Story = {
 	args: {
 		items: [
 			{
+				slug: "personal-blog",
 				period: {
-					start: "2024-01",
-					end: null,
+					from: "2024-01",
+					to: null,
 				},
 				title: "個人ブログサイトの開発",
 				description:

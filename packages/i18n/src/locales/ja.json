@@ -81,6 +81,7 @@
 			},
 			"timeline": [
 				{
+					"slug": "freelancer",
 					"period": {
 						"from": "2025-03",
 						"to": null
@@ -90,6 +91,7 @@
 					"category": "work"
 				},
 				{
+					"slug": "algoage-inc",
 					"period": {
 						"from": "2018-07",
 						"to": "2025-02"
@@ -99,6 +101,7 @@
 					"category": "work"
 				},
 				{
+					"slug": "accenture",
 					"period": {
 						"from": "2017-08",
 						"to": "2018-06"
