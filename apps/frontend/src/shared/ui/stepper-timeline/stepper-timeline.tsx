@@ -98,6 +98,43 @@ export function StepperTimeline({ items, onItemClick, presentLabel }: StepperTim
 			{stepper.all.map((step, index, array) => {
 				const item = step.data as TimelineItemType;
 
+				// 共通のコンテンツを変数として抽出
+				const itemContent = (
+					<>
+						{/* 期間 */}
+						<p className="text-sm text-muted-foreground mb-1">
+							{formatPeriod(item.period.from, item.period.to, presentLabel)}
+						</p>
+
+						{/* 会社名 */}
+						<h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+							{item.logoUrl && (
+								<Image
+									src={item.logoUrl}
+									alt={`${item.companyName} logo`}
+									width={24}
+									height={24}
+									className="object-contain shrink-0"
+								/>
+							)}
+							<span>{item.companyName}</span>
+						</h3>
+
+						{/* 技術スタックのバッジ */}
+						{item.techStack && item.techStack.length > 0 && (
+							<div className="flex flex-wrap gap-2">
+								{item.techStack.map((tech: SimpleIcon) => (
+									<BadgeWithIcon
+										key={tech.slug}
+										icon={tech}
+										text={tech.title}
+									/>
+								))}
+							</div>
+						)}
+					</>
+				);
+
 				return (
 					<React.Fragment key={step.id}>
 						{/* アイテム本体 */}
@@ -137,74 +174,10 @@ export function StepperTimeline({ items, onItemClick, presentLabel }: StepperTim
 										className="cursor-pointer transition-all hover:shadow-md hover:border-primary/20 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
 										aria-label={`View details for ${item.companyName}`}
 									>
-										<CardContent>
-											{/* 期間 */}
-											<p className="text-sm text-muted-foreground mb-1">
-												{formatPeriod(item.period.from, item.period.to, presentLabel)}
-											</p>
-
-											{/* 会社名 */}
-											<h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
-												{item.logoUrl && (
-													<Image
-														src={item.logoUrl}
-														alt={`${item.companyName} logo`}
-														width={24}
-														height={24}
-														className="object-contain shrink-0"
-													/>
-												)}
-												<span>{item.companyName}</span>
-											</h3>
-
-											{/* 技術スタックのバッジ */}
-											{item.techStack && item.techStack.length > 0 && (
-												<div className="flex flex-wrap gap-2">
-													{item.techStack.map((tech: SimpleIcon) => (
-														<BadgeWithIcon
-															key={tech.slug}
-															icon={tech}
-															text={tech.title}
-														/>
-													))}
-												</div>
-											)}
-										</CardContent>
+										<CardContent>{itemContent}</CardContent>
 									</Card>
 								) : (
-									<>
-										{/* 期間 */}
-										<p className="text-sm text-muted-foreground mb-1">
-											{formatPeriod(item.period.from, item.period.to, presentLabel)}
-										</p>
-
-										{/* 会社名 */}
-										<h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
-											{item.logoUrl && (
-												<Image
-													src={item.logoUrl}
-													alt={`${item.companyName} logo`}
-													width={24}
-													height={24}
-													className="object-contain shrink-0"
-												/>
-											)}
-											<span>{item.companyName}</span>
-										</h3>
-
-										{/* 技術スタックのバッジ */}
-										{item.techStack && item.techStack.length > 0 && (
-											<div className="flex flex-wrap gap-2">
-												{item.techStack.map((tech: SimpleIcon) => (
-													<BadgeWithIcon
-														key={tech.slug}
-														icon={tech}
-														text={tech.title}
-													/>
-												))}
-											</div>
-										)}
-									</>
+									itemContent
 								)}
 							</div>
 						</div>
