@@ -107,7 +107,7 @@
 						"to": "2018-06"
 					},
 					"title": "Accenture",
-					"description": "Worked as an IT Consultant",
+					"description": "## 2017-12: In-house Product Development\n### Overview\nDeveloped in-house products at SONY from requirements definition to implementation.\n\n### Technologies Used\n\n- VBA\n\n## 2018-02: AI-based Anomaly Detection System for Factory\n### Overview\nDeveloped a system that detects anomalies in factory production lines using image analysis.\n\n### Technologies Used\n\n- Python\n- Django",
 					"category": "work"
 				}
 			]
