@@ -27,6 +27,14 @@ export type StepperTimelineProps = {
 	 * このコールバックが提供されない場合、タイトルはクリック不可になる。
 	 */
 	onItemClick?: (item: TimelineItemType) => void;
+	/**
+	 * 現在進行中の期間を表すラベル
+	 *
+	 * @description
+	 * i18n対応のため、翻訳された文字列を渡す必要がある。
+	 * 例: "現在" (ja), "Present" (en)
+	 */
+	presentLabel: string;
 };
 
 /**
@@ -34,16 +42,17 @@ export type StepperTimelineProps = {
  *
  * @param from - 開始日（YYYY-MM形式または年のみ）
  * @param to - 終了日（YYYY-MM形式、年のみ、またはnull）
+ * @param presentLabel - 現在進行中を表すラベル
  * @returns フォーマットされた期間文字列
  *
  * @example
- * formatPeriod("2024-01", null) // "2024-01 - 現在"
- * formatPeriod("2022", "2023") // "2022 - 2023"
- * formatPeriod("2023-04", "2023-12") // "2023-04 - 2023-12"
+ * formatPeriod("2024-01", null, "現在") // "2024-01 - 現在"
+ * formatPeriod("2022", "2023", "現在") // "2022 - 2023"
+ * formatPeriod("2023-04", "2023-12", "現在") // "2023-04 - 2023-12"
  */
-function formatPeriod(from: string, to: string | null): string {
+function formatPeriod(from: string, to: string | null, presentLabel: string): string {
 	if (to === null) {
-		return `${from} - 現在`;
+		return `${from} - ${presentLabel}`;
 	}
 	return `${from} - ${to}`;
 }
@@ -62,7 +71,7 @@ function formatPeriod(from: string, to: string | null): string {
  * 3. 全ステップを縦に並べて表示
  * 4. 既存のTimelineItemと同じビジュアルデザイン
  */
-export function StepperTimeline({ items, onItemClick }: StepperTimelineProps) {
+export function StepperTimeline({ items, onItemClick, presentLabel }: StepperTimelineProps) {
 	// 経歴データからステップを定義
 	// 空の場合はダミーステップを作成してフックルールに従う
 	const steps =
@@ -131,7 +140,7 @@ export function StepperTimeline({ items, onItemClick }: StepperTimelineProps) {
 										<CardContent>
 											{/* 期間 */}
 											<p className="text-sm text-muted-foreground mb-1">
-												{formatPeriod(item.period.from, item.period.to)}
+												{formatPeriod(item.period.from, item.period.to, presentLabel)}
 											</p>
 
 											{/* 会社名 */}
@@ -166,7 +175,7 @@ export function StepperTimeline({ items, onItemClick }: StepperTimelineProps) {
 									<>
 										{/* 期間 */}
 										<p className="text-sm text-muted-foreground mb-1">
-											{formatPeriod(item.period.from, item.period.to)}
+											{formatPeriod(item.period.from, item.period.to, presentLabel)}
 										</p>
 
 										{/* 会社名 */}

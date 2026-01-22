@@ -27,6 +27,7 @@ type Story = StoryObj<typeof meta>;
 export const デフォルト: Story = {
 	tags: ["code-only"],
 	args: {
+		presentLabel: "現在",
 		items: [
 			{
 				slug: "personal-blog",
@@ -86,6 +87,7 @@ export const デフォルト: Story = {
 export const 単一アイテム: Story = {
 	tags: ["code-only"],
 	args: {
+		presentLabel: "現在",
 		items: [
 			{
 				slug: "personal-blog",
@@ -116,6 +118,7 @@ export const 単一アイテム: Story = {
 export const 空: Story = {
 	tags: ["code-only"],
 	args: {
+		presentLabel: "現在",
 		items: [],
 	},
 	render: ({ items }) => {
@@ -124,7 +127,7 @@ export const 空: Story = {
 			return <div className="text-muted-foreground">アイテムがありません</div>;
 		}
 
-		return <StepperTimeline items={items} />;
+		return <StepperTimeline items={items} presentLabel="現在" />;
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
