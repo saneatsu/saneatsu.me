@@ -1,11 +1,12 @@
 "use client";
 
 import { defineStepper } from "@stepperize/react";
+import Image from "next/image";
 import * as React from "react";
 import type { SimpleIcon } from "simple-icons";
 
 import type { TimelineItem as TimelineItemType } from "../../types";
-import { BadgeWithIcon } from "../../ui";
+import { BadgeWithIcon, Card, CardContent } from "../../ui";
 
 /**
  * StepperTimelineコンポーネントのProps
@@ -18,25 +19,46 @@ export type StepperTimelineProps = {
 	 * 新しい順（最新が最初）で渡すことを想定している。
 	 */
 	items: TimelineItemType[];
+	/**
+	 * アイテムのタイトルがクリックされたときのコールバック
+	 *
+	 * @description
+	 * 疎結合設計のため、クリックイベントは親コンポーネントに委譲する。
+	 * このコールバックが提供されない場合、タイトルはクリック不可になる。
+	 */
+	onItemClick?: (item: TimelineItemType) => void;
+	/**
+	 * 現在進行中の期間を表すラベル
+	 *
+	 * @description
+	 * i18n対応のため、翻訳された文字列を渡す必要がある。
+	 * 例: "現在" (ja), "Present" (en)
+	 */
+	presentLabel: string;
 };
 
 /**
  * 期間を文字列にフォーマットする関数
  *
- * @param start - 開始日（YYYY-MM形式または年のみ）
- * @param end - 終了日（YYYY-MM形式、年のみ、またはnull）
+ * @param from - 開始日（YYYY-MM形式または年のみ）
+ * @param to - 終了日（YYYY-MM形式、年のみ、またはnull）
+ * @param presentLabel - 現在進行中を表すラベル
  * @returns フォーマットされた期間文字列
  *
  * @example
- * formatPeriod("2024-01", null) // "2024-01 - 現在"
- * formatPeriod("2022", "2023") // "2022 - 2023"
- * formatPeriod("2023-04", "2023-12") // "2023-04 - 2023-12"
+ * formatPeriod("2024-01", null, "現在") // "2024-01 - 現在"
+ * formatPeriod("2022", "2023", "現在") // "2022 - 2023"
+ * formatPeriod("2023-04", "2023-12", "現在") // "2023-04 - 2023-12"
  */
-function formatPeriod(start: string, end: string | null): string {
-	if (end === null) {
-		return `${start} - 現在`;
+function formatPeriod(
+	from: string,
+	to: string | null,
+	presentLabel: string
+): string {
+	if (to === null) {
+		return `${from} - ${presentLabel}`;
 	}
-	return `${start} - ${end}`;
+	return `${from} - ${to}`;
 }
 
 /**
@@ -53,7 +75,11 @@ function formatPeriod(start: string, end: string | null): string {
  * 3. 全ステップを縦に並べて表示
  * 4. 既存のTimelineItemと同じビジュアルデザイン
  */
-export function StepperTimeline({ items }: StepperTimelineProps) {
+export function StepperTimeline({
+	items,
+	onItemClick,
+	presentLabel,
+}: StepperTimelineProps) {
 	// 経歴データからステップを定義
 	// 空の場合はダミーステップを作成してフックルールに従う
 	const steps =
@@ -80,6 +106,43 @@ export function StepperTimeline({ items }: StepperTimelineProps) {
 			{stepper.all.map((step, index, array) => {
 				const item = step.data as TimelineItemType;
 
+				// 共通のコンテンツを変数として抽出
+				const itemContent = (
+					<>
+						{/* 期間 */}
+						<p className="text-sm text-muted-foreground mb-1">
+							{formatPeriod(item.period.from, item.period.to, presentLabel)}
+						</p>
+
+						{/* 会社名 */}
+						<h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+							{item.logoUrl && (
+								<Image
+									src={item.logoUrl}
+									alt={`${item.companyName} logo`}
+									width={24}
+									height={24}
+									className="object-contain shrink-0"
+								/>
+							)}
+							<span>{item.companyName}</span>
+						</h3>
+
+						{/* 技術スタックのバッジ */}
+						{item.techStack && item.techStack.length > 0 && (
+							<div className="flex flex-wrap gap-2">
+								{item.techStack.map((tech: SimpleIcon) => (
+									<BadgeWithIcon
+										key={tech.slug}
+										icon={tech}
+										text={tech.title}
+									/>
+								))}
+							</div>
+						)}
+					</>
+				);
+
 				return (
 					<React.Fragment key={step.id}>
 						{/* アイテム本体 */}
@@ -88,14 +151,14 @@ export function StepperTimeline({ items }: StepperTimelineProps) {
 							<div className="flex flex-col items-center">
 								{/* ドットマーカー */}
 								<div
-									className="w-3 h-3 rounded-full bg-primary mt-4 flex-shrink-0"
+									className="w-3 h-3 rounded-full bg-primary mt-4 shrink-0"
 									aria-hidden="true"
 								/>
 
 								{/* 縦線（最後のアイテムでは表示しない） */}
 								{index < array.length - 1 && (
 									<div
-										className="w-[1px] flex-1 bg-border mt-4"
+										className="w-px flex-1 bg-border mt-4"
 										aria-hidden="true"
 									/>
 								)}
@@ -103,28 +166,26 @@ export function StepperTimeline({ items }: StepperTimelineProps) {
 
 							{/* 右側のコンテンツ部分 */}
 							<div className="flex-1 pt-3 pb-8">
-								{/* 期間 */}
-								<p className="text-sm text-muted-foreground mb-1">
-									{formatPeriod(item.period.start, item.period.end)}
-								</p>
-
-								{/* タイトル */}
-								<h3 className="text-lg font-semibold mb-2">{item.title}</h3>
-
-								{/* 説明 */}
-								<p className="text-muted-foreground mb-3">{item.description}</p>
-
-								{/* 技術スタックのバッジ */}
-								{item.techStack && item.techStack.length > 0 && (
-									<div className="flex flex-wrap gap-2">
-										{item.techStack.map((tech: SimpleIcon) => (
-											<BadgeWithIcon
-												key={tech.slug}
-												icon={tech}
-												text={tech.title}
-											/>
-										))}
-									</div>
+								{onItemClick ? (
+									<Card
+										role="button"
+										tabIndex={0}
+										onClick={() => {
+											onItemClick(item);
+										}}
+										onKeyDown={(e) => {
+											if (e.key === "Enter" || e.key === " ") {
+												e.preventDefault();
+												onItemClick(item);
+											}
+										}}
+										className="cursor-pointer transition-all hover:shadow-md hover:border-primary/20 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+										aria-label={`View details for ${item.companyName}`}
+									>
+										<CardContent>{itemContent}</CardContent>
+									</Card>
+								) : (
+									itemContent
 								)}
 							</div>
 						</div>
