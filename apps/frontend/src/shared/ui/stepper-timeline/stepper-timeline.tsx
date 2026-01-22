@@ -1,11 +1,15 @@
 "use client";
 
+import type { Locale } from "@saneatsu/i18n";
 import { defineStepper } from "@stepperize/react";
+import { useLocale } from "next-intl";
 import * as React from "react";
+import remarkBreaks from "remark-breaks";
+import remarkGfm from "remark-gfm";
 import type { SimpleIcon } from "simple-icons";
 
 import type { TimelineItem as TimelineItemType } from "../../types";
-import { BadgeWithIcon, Card, CardContent } from "../../ui";
+import { BadgeWithIcon, Card, CardContent, MarkdownPreview } from "../../ui";
 
 /**
  * StepperTimelineコンポーネントのProps
@@ -62,6 +66,8 @@ function formatPeriod(from: string, to: string | null): string {
  * 4. 既存のTimelineItemと同じビジュアルデザイン
  */
 export function StepperTimeline({ items, onItemClick }: StepperTimelineProps) {
+	const locale = useLocale() as Locale;
+
 	// 経歴データからステップを定義
 	// 空の場合はダミーステップを作成してフックルールに従う
 	const steps =
@@ -139,9 +145,14 @@ export function StepperTimeline({ items, onItemClick }: StepperTimelineProps) {
 											</h3>
 
 											{/* 説明 */}
-											<p className="text-muted-foreground mb-3">
-												{item.description}
-											</p>
+											<div className="mb-3">
+												<MarkdownPreview
+													content={item.description}
+													language={locale}
+													className="prose-sm prose-p:text-muted-foreground prose-p:mb-0"
+													remarkPlugins={[remarkGfm, remarkBreaks]}
+												/>
+											</div>
 
 											{/* 技術スタックのバッジ */}
 											{item.techStack && item.techStack.length > 0 && (
@@ -168,9 +179,14 @@ export function StepperTimeline({ items, onItemClick }: StepperTimelineProps) {
 										<h3 className="text-lg font-semibold mb-2">{item.title}</h3>
 
 										{/* 説明 */}
-										<p className="text-muted-foreground mb-3">
-											{item.description}
-										</p>
+										<div className="mb-3">
+											<MarkdownPreview
+												content={item.description}
+												language={locale}
+												className="prose-sm prose-p:text-muted-foreground prose-p:mb-0"
+												remarkPlugins={[remarkGfm, remarkBreaks]}
+											/>
+										</div>
 
 										{/* 技術スタックのバッジ */}
 										{item.techStack && item.techStack.length > 0 && (

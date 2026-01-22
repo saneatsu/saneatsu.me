@@ -166,6 +166,8 @@ export interface MarkdownPreviewProps {
 	className?: string;
 	/** カスタムコンポーネント */
 	components?: Partial<Components>;
+	/** remarkプラグイン（オプショナル、デフォルトはdefaultRemarkPlugins） */
+	remarkPlugins?: PluggableList;
 	/** rehypeプラグイン（オプショナル） */
 	rehypePlugins?: PluggableList;
 	/** 画像コンポーネントの種類（デフォルト: "article"） */
@@ -584,6 +586,7 @@ export function MarkdownPreview({
 	language = "ja",
 	className = "",
 	components: customComponents,
+	remarkPlugins,
 	rehypePlugins = [],
 	imageComponent = "article",
 	headings,
@@ -641,13 +644,13 @@ export function MarkdownPreview({
 			className={`prose dark:prose-invert max-w-none bg-background [&>h1:first-child]:mt-0 [&>h2:first-child]:mt-0 ${className}`}
 			data-color-mode={currentTheme === "dark" ? "dark" : "light"}
 		>
-			<ReactMarkdown
-				remarkPlugins={[...defaultRemarkPlugins]}
-				rehypePlugins={[rehypeHighlight, ...rehypePlugins]}
-				components={mergedComponents}
-			>
-				{content}
-			</ReactMarkdown>
+		<ReactMarkdown
+			remarkPlugins={remarkPlugins ?? [...defaultRemarkPlugins]}
+			rehypePlugins={[rehypeHighlight, ...rehypePlugins]}
+			components={mergedComponents}
+		>
+			{content}
+		</ReactMarkdown>
 		</div>
 	);
 }
