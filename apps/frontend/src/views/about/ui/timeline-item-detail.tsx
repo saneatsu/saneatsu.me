@@ -7,7 +7,15 @@ import remarkGfm from "remark-gfm";
 import type { SimpleIcon } from "simple-icons";
 
 import type { TimelineItem } from "@/shared/types";
-import { BadgeWithIcon, MarkdownPreview, Separator } from "@/shared/ui";
+import {
+	BadgeWithIcon,
+	Card,
+	CardContent,
+	CardHeader,
+	CardTitle,
+	MarkdownPreview,
+	Separator,
+} from "@/shared/ui";
 
 /**
  * TimelineItemDetailコンポーネントのProps
@@ -79,23 +87,28 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 			<Separator />
 
 			{/* 期間セクション */}
-			<div>
-				<h3 className="text-sm font-semibold text-muted-foreground mb-2">
-					{t("experience.detail.period")}
-				</h3>
-				<p className="text-base">
-					{formatPeriod(item.period.from, item.period.to)}
-				</p>
-			</div>
+			<Card>
+				<CardHeader>
+					<CardTitle>
+						{t("experience.detail.period")}
+					</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<p className="text-base">
+						{formatPeriod(item.period.from, item.period.to)}
+					</p>
+				</CardContent>
+			</Card>
 
 			{/* 役職セクション */}
 			{item.role && item.role.length > 0 && (
-				<>
-					<Separator />
-					<div>
-						<h3 className="text-sm font-semibold text-muted-foreground mb-2">
+				<Card>
+					<CardHeader>
+						<CardTitle>
 							{t("experience.detail.role")}
-						</h3>
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
 						<div className="flex flex-wrap gap-2">
 							{item.role.map((r, index) => (
 								<span key={index} className="text-base">
@@ -106,41 +119,44 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 								</span>
 							))}
 						</div>
-					</div>
-				</>
+					</CardContent>
+				</Card>
 			)}
 
 			{/* 技術スタックセクション */}
 			{item.techStack && item.techStack.length > 0 && (
-				<>
-					<Separator />
-					<div>
-						<h3 className="text-sm font-semibold text-muted-foreground mb-2">
+				<Card>
+					<CardHeader>
+						<CardTitle>
 							{t("experience.detail.techStack")}
-						</h3>
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
 						<div className="flex flex-wrap gap-2">
 							{item.techStack.map((tech: SimpleIcon) => (
 								<BadgeWithIcon key={tech.slug} icon={tech} text={tech.title} />
 							))}
 						</div>
-					</div>
-				</>
+					</CardContent>
+				</Card>
 			)}
 
-			<Separator />
-
 			{/* 職種・業務内容セクション */}
-			<div>
-				<h3 className="text-sm font-semibold text-muted-foreground mb-2">
-					{t("experience.detail.description")}
-				</h3>
-				<MarkdownPreview
-					content={item.description}
-					language={locale}
-					className="prose-sm"
-					remarkPlugins={[remarkGfm, remarkBreaks]}
-				/>
-			</div>
+			<Card>
+				<CardHeader>
+					<CardTitle>
+						{t("experience.detail.description")}
+					</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<MarkdownPreview
+						content={item.description}
+						language={locale}
+						className="prose-sm"
+						remarkPlugins={[remarkGfm, remarkBreaks]}
+					/>
+				</CardContent>
+			</Card>
 		</div>
 	);
 }
