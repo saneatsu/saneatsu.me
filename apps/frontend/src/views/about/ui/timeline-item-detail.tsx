@@ -68,11 +68,11 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 					{item.logoUrl && (
 						<img
 							src={item.logoUrl}
-							alt={`${item.title} logo`}
+							alt={`${item.companyName} logo`}
 							className="w-8 h-8 object-contain shrink-0"
 						/>
 					)}
-					<span>{item.title}</span>
+					<span>{item.companyName}</span>
 				</h2>
 			</div>
 
@@ -87,6 +87,28 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 					{formatPeriod(item.period.from, item.period.to)}
 				</p>
 			</div>
+
+			{/* 役職セクション */}
+			{item.role && item.role.length > 0 && (
+				<>
+					<Separator />
+					<div>
+						<h3 className="text-sm font-semibold text-muted-foreground mb-2">
+							{t("experience.detail.role")}
+						</h3>
+						<div className="flex flex-wrap gap-2">
+							{item.role.map((r, index) => (
+								<span key={index} className="text-base">
+									{r}
+									{index < item.role!.length - 1 && (
+										<span className="text-muted-foreground mx-1">/</span>
+									)}
+								</span>
+							))}
+						</div>
+					</div>
+				</>
+			)}
 
 			{/* 技術スタックセクション */}
 			{item.techStack && item.techStack.length > 0 && (
