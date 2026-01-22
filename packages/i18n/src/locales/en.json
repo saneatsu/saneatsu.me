@@ -111,7 +111,7 @@
 					},
 					"companyName": "Accenture",
 					"role": ["Project Manager", "Frontend Engineer", "Backend Engineer"],
-					"description": "## 2017-12: In-house Product Development\n### Overview\nDeveloped in-house products at SONY from requirements definition to implementation.\n\n### Technologies Used\n\n- VBA\n\n## 2018-02: AI-based Anomaly Detection System for Factory\n### Overview\nDeveloped a system that detects anomalies in factory production lines using image analysis.\n\n### Technologies Used\n\n- Python\n- Django",
+					"description": "## 2017-12: In-house Product Development\n### Business Content\nDeveloped in-house products at SONY from requirements definition to implementation.\n\n### Technologies Used\n\n- VBA\n\n## 2018-02: AI-based Anomaly Detection System for Factory\n### Business Content\nDeveloped a system that detects anomalies in factory production lines using image analysis.\n\n### Technologies Used\n\n- Python\n- Django",
 					"category": "work",
 					"logoUrl": "/company-logo/accenture-logo.svg"
 				}
