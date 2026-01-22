@@ -98,7 +98,17 @@
 						"to": "2025-02"
 					},
 					"companyName": "Algoage, Inc.",
-					"role": ["Project Manager", "Product Manager", "Tech Lead", "Scrum Master", "Frontend Engineer", "Backend Engineer", "Mobile Engineer", "Web Designer", "Machine Learning Engineer"],
+					"role": [
+						"Project Manager",
+						"Product Manager",
+						"Tech Lead",
+						"Scrum Master",
+						"Frontend Engineer",
+						"Backend Engineer",
+						"Mobile Engineer",
+						"Web Designer",
+						"Machine Learning Engineer"
+					],
 					"description": "Worked as a Software Engineer",
 					"category": "work",
 					"logoUrl": "/company-logo/algoage-logo.webp"

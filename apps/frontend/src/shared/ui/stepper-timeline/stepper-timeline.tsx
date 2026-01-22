@@ -1,6 +1,7 @@
 "use client";
 
 import { defineStepper } from "@stepperize/react";
+import Image from "next/image";
 import * as React from "react";
 import type { SimpleIcon } from "simple-icons";
 
@@ -136,10 +137,12 @@ export function StepperTimeline({ items, onItemClick }: StepperTimelineProps) {
 											{/* 会社名 */}
 											<h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
 												{item.logoUrl && (
-													<img
+													<Image
 														src={item.logoUrl}
 														alt={`${item.companyName} logo`}
-														className="w-6 h-6 object-contain shrink-0"
+														width={24}
+														height={24}
+														className="object-contain shrink-0"
 													/>
 												)}
 												<span>{item.companyName}</span>
@@ -169,10 +172,12 @@ export function StepperTimeline({ items, onItemClick }: StepperTimelineProps) {
 										{/* 会社名 */}
 										<h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
 											{item.logoUrl && (
-												<img
+												<Image
 													src={item.logoUrl}
 													alt={`${item.companyName} logo`}
-													className="w-6 h-6 object-contain shrink-0"
+													width={24}
+													height={24}
+													className="object-contain shrink-0"
 												/>
 											)}
 											<span>{item.companyName}</span>
