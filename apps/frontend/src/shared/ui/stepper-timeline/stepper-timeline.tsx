@@ -50,7 +50,11 @@ export type StepperTimelineProps = {
  * formatPeriod("2022", "2023", "現在") // "2022 - 2023"
  * formatPeriod("2023-04", "2023-12", "現在") // "2023-04 - 2023-12"
  */
-function formatPeriod(from: string, to: string | null, presentLabel: string): string {
+function formatPeriod(
+	from: string,
+	to: string | null,
+	presentLabel: string
+): string {
 	if (to === null) {
 		return `${from} - ${presentLabel}`;
 	}
@@ -71,7 +75,11 @@ function formatPeriod(from: string, to: string | null, presentLabel: string): st
  * 3. 全ステップを縦に並べて表示
  * 4. 既存のTimelineItemと同じビジュアルデザイン
  */
-export function StepperTimeline({ items, onItemClick, presentLabel }: StepperTimelineProps) {
+export function StepperTimeline({
+	items,
+	onItemClick,
+	presentLabel,
+}: StepperTimelineProps) {
 	// 経歴データからステップを定義
 	// 空の場合はダミーステップを作成してフックルールに従う
 	const steps =
