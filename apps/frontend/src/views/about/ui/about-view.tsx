@@ -403,6 +403,7 @@ export function AboutView() {
 						<StepperTimeline
 							items={timelineItems}
 							onItemClick={handleItemClick}
+							presentLabel={t("experience.detail.present")}
 						/>
 					</section>
 
