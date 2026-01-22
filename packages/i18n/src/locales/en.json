@@ -74,6 +74,7 @@
 			"detail": {
 				"title": "Experience Details",
 				"period": "Period",
+				"role": "Role",
 				"category": "Category",
 				"description": "Description",
 				"techStack": "Tech Stack",
@@ -86,7 +87,8 @@
 						"from": "2025-03",
 						"to": null
 					},
-					"title": "Freelancer",
+					"companyName": "Freelancer",
+					"role": ["Scrum Master", "Tech Lead", "Frontend Engineer"],
 					"description": "Started working as a freelancer",
 					"category": "work"
 				},
@@ -96,7 +98,8 @@
 						"from": "2018-07",
 						"to": "2025-02"
 					},
-					"title": "Algoage, Inc.",
+					"companyName": "Algoage, Inc.",
+					"role": ["Project Manager", "Product Manager", "Tech Lead", "Scrum Master", "Frontend Engineer", "Backend Engineer", "Mobile Engineer", "Web Designer", "Machine Learning Engineer"],
 					"description": "Worked as a Software Engineer",
 					"category": "work",
 					"logoUrl": "/company-logo/algoage-logo.webp"
@@ -107,7 +110,8 @@
 						"from": "2017-08",
 						"to": "2018-06"
 					},
-					"title": "Accenture",
+					"companyName": "Accenture",
+					"role": ["Project Manager", "Frontend Engineer", "Backend Engineer"],
 					"description": "## 2017-12: In-house Product Development\n### Overview\nDeveloped in-house products at SONY from requirements definition to implementation.\n\n### Technologies Used\n\n- VBA\n\n## 2018-02: AI-based Anomaly Detection System for Factory\n### Overview\nDeveloped a system that detects anomalies in factory production lines using image analysis.\n\n### Technologies Used\n\n- Python\n- Django",
 					"category": "work",
 					"logoUrl": "/company-logo/accenture-logo.svg"
