@@ -1,10 +1,13 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import type { Locale } from "@saneatsu/i18n";
+import { useLocale, useTranslations } from "next-intl";
+import remarkBreaks from "remark-breaks";
+import remarkGfm from "remark-gfm";
 import type { SimpleIcon } from "simple-icons";
 
 import type { TimelineItem } from "@/shared/types";
-import { BadgeWithIcon, Separator } from "@/shared/ui";
+import { BadgeWithIcon, MarkdownPreview, Separator } from "@/shared/ui";
 
 /**
  * TimelineItemDetailコンポーネントのProps
@@ -25,6 +28,7 @@ export type TimelineItemDetailProps = {
  */
 export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 	const t = useTranslations("about");
+	const locale = useLocale() as Locale;
 
 	/**
 	 * 期間を文字列にフォーマットする関数
@@ -99,7 +103,12 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 				<h3 className="text-sm font-semibold text-muted-foreground mb-2">
 					{t("experience.detail.description")}
 				</h3>
-				<p className="text-base whitespace-pre-line">{item.description}</p>
+				<MarkdownPreview
+					content={item.description}
+					language={locale}
+					className="prose-sm"
+					remarkPlugins={[remarkGfm, remarkBreaks]}
+				/>
 			</div>
 		</div>
 	);
