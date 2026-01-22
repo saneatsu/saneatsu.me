@@ -74,6 +74,7 @@
 			"detail": {
 				"title": "経歴詳細",
 				"period": "期間",
+				"role": "役職",
 				"category": "カテゴリ",
 				"description": "説明",
 				"techStack": "技術スタック",
@@ -86,7 +87,8 @@
 						"from": "2025-03",
 						"to": null
 					},
-					"title": "個人事業主",
+					"companyName": "個人事業主",
+					"role": ["スクラムマスター", "テックリード", "フロントエンドエンジニア"],
 					"description": "フリーランスとして活動開始",
 					"category": "work"
 				},
@@ -96,7 +98,8 @@
 						"from": "2018-07",
 						"to": "2025-02"
 					},
-					"title": "株式会社Algoage",
+					"companyName": "株式会社Algoage",
+					"role": ["プロジェクトマネージャー", "プロダクトマネージャー", "テックリード", "スクラムマスター", "フロントエンドエンジニア", "バックエンドエンジニア", "モバイルエンジニア", "Webデザイナー", "機械学習エンジニア"],
 					"description": "ソフトウェアエンジニアとして従事",
 					"category": "work",
 					"logoUrl": "/company-logo/algoage-logo.webp"
@@ -107,7 +110,8 @@
 						"from": "2017-08",
 						"to": "2018-06"
 					},
-					"title": "株式会社Accenture",
+					"companyName": "株式会社Accenture",
+					"role": ["プロジェクトマネージャー", "フロントエンドエンジニア", "バックエンドエンジニア"],
 					"description": "## 2017-12: 社内プロダクトの開発\n### 概要\nSONYにおいて要件定義から実装まですべて一貫して社内プロダクトの開発を行った。\n\n### 使用技術\n\n- VBA\n\n## 2018-02: AIを使った工場内の異常検知システムの開発\n### 概要\n画像解析を行い、工場のラインにおける異常を検知するシステムを開発した。\n\n### 使用技術\n\n- Python\n- Django",
 					"category": "work",
 					"logoUrl": "/company-logo/accenture-logo.svg"
