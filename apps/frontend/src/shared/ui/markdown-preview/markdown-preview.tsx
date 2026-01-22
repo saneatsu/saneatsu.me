@@ -644,13 +644,13 @@ export function MarkdownPreview({
 			className={`prose dark:prose-invert max-w-none bg-background [&>h1:first-child]:mt-0 [&>h2:first-child]:mt-0 ${className}`}
 			data-color-mode={currentTheme === "dark" ? "dark" : "light"}
 		>
-		<ReactMarkdown
-			remarkPlugins={remarkPlugins ?? [...defaultRemarkPlugins]}
-			rehypePlugins={[rehypeHighlight, ...rehypePlugins]}
-			components={mergedComponents}
-		>
-			{content}
-		</ReactMarkdown>
+			<ReactMarkdown
+				remarkPlugins={remarkPlugins ?? [...defaultRemarkPlugins]}
+				rehypePlugins={[rehypeHighlight, ...rehypePlugins]}
+				components={mergedComponents}
+			>
+				{content}
+			</ReactMarkdown>
 		</div>
 	);
 }
