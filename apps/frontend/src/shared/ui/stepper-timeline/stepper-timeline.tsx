@@ -125,7 +125,7 @@ export function StepperTimeline({ items, onItemClick }: StepperTimelineProps) {
 											}
 										}}
 										className="cursor-pointer transition-all hover:shadow-md hover:border-primary/20 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-										aria-label={`${item.title}の詳細を表示`}
+										aria-label={`View details for ${item.companyName}`}
 									>
 										<CardContent>
 											{/* 期間 */}
@@ -133,16 +133,16 @@ export function StepperTimeline({ items, onItemClick }: StepperTimelineProps) {
 												{formatPeriod(item.period.from, item.period.to)}
 											</p>
 
-											{/* タイトル */}
+											{/* 会社名 */}
 											<h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
 												{item.logoUrl && (
 													<img
 														src={item.logoUrl}
-														alt={`${item.title} logo`}
+														alt={`${item.companyName} logo`}
 														className="w-6 h-6 object-contain shrink-0"
 													/>
 												)}
-												<span>{item.title}</span>
+												<span>{item.companyName}</span>
 											</h3>
 
 											{/* 技術スタックのバッジ */}
@@ -166,16 +166,16 @@ export function StepperTimeline({ items, onItemClick }: StepperTimelineProps) {
 											{formatPeriod(item.period.from, item.period.to)}
 										</p>
 
-										{/* タイトル */}
+										{/* 会社名 */}
 										<h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
 											{item.logoUrl && (
 												<img
 													src={item.logoUrl}
-													alt={`${item.title} logo`}
+													alt={`${item.companyName} logo`}
 													className="w-6 h-6 object-contain shrink-0"
 												/>
 											)}
-											<span>{item.title}</span>
+											<span>{item.companyName}</span>
 										</h3>
 
 										{/* 技術スタックのバッジ */}

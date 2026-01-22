@@ -468,7 +468,7 @@ export function AboutView() {
 				<SheetContent className="overflow-y-auto w-[90vw] md:w-[70vw] md:max-w-[800px]">
 					<SheetHeader className="sr-only p-0">
 						<SheetTitle>
-							{selectedItem?.title ?? t("experience.detail.title")}
+							{selectedItem?.companyName ?? t("experience.detail.title")}
 						</SheetTitle>
 					</SheetHeader>
 					{selectedItem && (

@@ -46,7 +46,7 @@ export type TimelineItemPeriod = {
  *
  * @description
  * 経歴の1つの項目を表す型。
- * 期間、タイトル、説明、カテゴリ、技術スタックなどの情報を持つ。
+ * 期間、会社名、役職、説明、カテゴリ、技術スタックなどの情報を持つ。
  */
 export type TimelineItem = {
 	/**
@@ -65,13 +65,25 @@ export type TimelineItem = {
 	period: TimelineItemPeriod;
 
 	/**
-	 * タイトル・役職
+	 * 会社名・組織名
 	 *
-	 * @example "株式会社Example / フロントエンドエンジニア"
-	 * @example "○○大学 情報工学部"
+	 * @example "株式会社Example"
+	 * @example "○○大学"
 	 * @example "個人ブログサイトの開発"
 	 */
-	title: string;
+	companyName: string;
+
+	/**
+	 * 役職・ロール（オプショナル、複数可）
+	 *
+	 * @description
+	 * その経歴での役職やロールの配列。
+	 * 複数の役職を同時に担当していた場合などに使用する。
+	 *
+	 * @example ["フロントエンドエンジニア", "テックリード"]
+	 * @example ["ソフトウェアエンジニア"]
+	 */
+	role?: string[];
 
 	/**
 	 * 詳細な説明
