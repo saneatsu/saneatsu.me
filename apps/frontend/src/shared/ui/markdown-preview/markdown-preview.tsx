@@ -166,6 +166,8 @@ export interface MarkdownPreviewProps {
 	className?: string;
 	/** カスタムコンポーネント */
 	components?: Partial<Components>;
+	/** remarkプラグイン（オプショナル、デフォルトはdefaultRemarkPlugins） */
+	remarkPlugins?: PluggableList;
 	/** rehypeプラグイン（オプショナル） */
 	rehypePlugins?: PluggableList;
 	/** 画像コンポーネントの種類（デフォルト: "article"） */
@@ -584,6 +586,7 @@ export function MarkdownPreview({
 	language = "ja",
 	className = "",
 	components: customComponents,
+	remarkPlugins,
 	rehypePlugins = [],
 	imageComponent = "article",
 	headings,
@@ -642,7 +645,7 @@ export function MarkdownPreview({
 			data-color-mode={currentTheme === "dark" ? "dark" : "light"}
 		>
 			<ReactMarkdown
-				remarkPlugins={[...defaultRemarkPlugins]}
+				remarkPlugins={remarkPlugins ?? [...defaultRemarkPlugins]}
 				rehypePlugins={[rehypeHighlight, ...rehypePlugins]}
 				components={mergedComponents}
 			>

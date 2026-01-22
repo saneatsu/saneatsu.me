@@ -1,7 +1,9 @@
 "use client";
 
 import { Mail } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import type { SimpleIcon } from "simple-icons";
 import {
 	siBiome,
@@ -67,7 +69,22 @@ import {
 	usePublicContributions,
 } from "@/features/contributions";
 import type { TimelineItem } from "@/shared/types";
-import { BadgeWithIcon, BlogNotice, StepperTimeline } from "@/shared/ui";
+import {
+	BadgeWithIcon,
+	BlogNotice,
+	Sheet,
+	SheetContent,
+	SheetHeader,
+	SheetTitle,
+	StepperTimeline,
+} from "@/shared/ui";
+
+import { TimelineItemDetail } from "./timeline-item-detail";
+
+/**
+ * クエリパラメータ名の定数
+ */
+const COMPANY_QUERY_KEY = "company" as const;
 
 /**
  * 技術アイテムの型定義
@@ -122,6 +139,10 @@ export function AboutView() {
 		range: 365,
 		locale: locale === "ja" ? "ja" : "en",
 	});
+
+	const router = useRouter();
+	const pathname = usePathname();
+	const searchParams = useSearchParams();
 
 	// 技術スタックの定義（アイコン付き）
 	const techStack: {
@@ -229,6 +250,59 @@ export function AboutView() {
 		"timeline"
 	) as TimelineItem[];
 
+	// Sheetの状態管理
+	const [selectedItem, setSelectedItem] = useState<TimelineItem | null>(null);
+	const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+	// タイムラインアイテムがクリックされたときのハンドラ
+	const handleItemClick = (item: TimelineItem) => {
+		setSelectedItem(item);
+		setIsSheetOpen(true);
+
+		// URLクエリに選択中のタイムラインアイテムのスラッグを追加
+		const params = new URLSearchParams(searchParams.toString());
+		params.set(COMPANY_QUERY_KEY, item.slug);
+		const queryString = params.toString();
+
+		router.push(queryString ? `${pathname}?${queryString}` : pathname, {
+			scroll: false,
+		});
+	};
+
+	// Sheetが閉じられたときのハンドラ
+	const handleSheetClose = (open: boolean) => {
+		setIsSheetOpen(open);
+		if (!open) {
+			// 選択を即座にクリア（アニメーション中でも問題なし）
+			setSelectedItem(null);
+
+			// URLクエリからタイムラインアイテムのスラッグを削除
+			const params = new URLSearchParams(searchParams.toString());
+			params.delete(COMPANY_QUERY_KEY);
+			const queryString = params.toString();
+
+			router.push(queryString ? `${pathname}?${queryString}` : pathname, {
+				scroll: false,
+			});
+		}
+	};
+
+	// クエリパラメータからSheetの状態を復元
+	useEffect(() => {
+		const slug = searchParams.get(COMPANY_QUERY_KEY);
+		if (!slug) {
+			return;
+		}
+
+		const item = timelineItems.find((i) => i.slug === slug);
+		if (!item) {
+			return;
+		}
+
+		setSelectedItem(item);
+		setIsSheetOpen(true);
+	}, [searchParams, timelineItems]);
+
 	return (
 		<main className="container mx-auto px-4 py-8">
 			<div className="max-w-4xl mx-auto space-y-16">
@@ -325,15 +399,12 @@ export function AboutView() {
 
 					{/* 経歴セクション */}
 					<section className="space-y-6 pb-12 border-b">
-						<div>
-							<h2 className="text-2xl font-bold mb-2">
-								{t("experience.title")}
-							</h2>
-							<p className="text-muted-foreground">
-								{t("experience.description")}
-							</p>
-						</div>
-						<StepperTimeline items={timelineItems} />
+						<h2 className="text-2xl font-bold mb-2">{t("experience.title")}</h2>
+						<StepperTimeline
+							items={timelineItems}
+							onItemClick={handleItemClick}
+							presentLabel={t("experience.detail.present")}
+						/>
 					</section>
 
 					{/* SNS・Webサイトセクション */}
@@ -385,6 +456,22 @@ export function AboutView() {
 					</section>
 				</div>
 			</div>
+
+			{/* 経歴詳細Sheet */}
+			<Sheet open={isSheetOpen} onOpenChange={handleSheetClose}>
+				<SheetContent className="overflow-y-auto w-[90vw] md:w-[70vw] md:max-w-[800px]">
+					<SheetHeader className="sr-only p-0">
+						<SheetTitle>
+							{selectedItem?.companyName ?? t("experience.detail.title")}
+						</SheetTitle>
+					</SheetHeader>
+					{selectedItem && (
+						<div className="px-6 py-4">
+							<TimelineItemDetail item={selectedItem} />
+						</div>
+					)}
+				</SheetContent>
+			</Sheet>
 		</main>
 	);
 }

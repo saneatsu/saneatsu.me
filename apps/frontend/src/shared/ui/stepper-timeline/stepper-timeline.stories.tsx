@@ -27,34 +27,38 @@ type Story = StoryObj<typeof meta>;
 export const デフォルト: Story = {
 	tags: ["code-only"],
 	args: {
+		presentLabel: "現在",
 		items: [
 			{
+				slug: "personal-blog",
 				period: {
-					start: "2024-01",
-					end: null,
+					from: "2024-01",
+					to: null,
 				},
-				title: "個人ブログサイトの開発",
+				companyName: "個人ブログサイトの開発",
 				description:
 					"Next.js と TypeScript を使用した個人ブログサイトを開発。Cloudflare へのデプロイ、記事管理機能、国際化対応などを実装。",
 				category: "project",
 				techStack: [siReact, siNextdotjs, siTypescript],
 			},
 			{
+				slug: "fullstack-learning",
 				period: {
-					start: "2023",
-					end: "2023",
+					from: "2023",
+					to: "2023",
 				},
-				title: "フルスタック開発の学習",
+				companyName: "フルスタック開発の学習",
 				description:
 					"React、Next.js、TypeScript、Node.js などのモダンな Web 技術スタックを習得。Feature-Sliced Design などの設計手法も学習。",
 				category: "skill",
 			},
 			{
+				slug: "portfolio-site",
 				period: {
-					start: "2022",
-					end: "2023",
+					from: "2022",
+					to: "2023",
 				},
-				title: "ポートフォリオサイトの開発",
+				companyName: "ポートフォリオサイトの開発",
 				description:
 					"自身の技術スタックやプロジェクトを紹介するポートフォリオサイトを作成。レスポンシブデザインとアクセシビリティを重視。",
 				category: "project",
@@ -83,13 +87,15 @@ export const デフォルト: Story = {
 export const 単一アイテム: Story = {
 	tags: ["code-only"],
 	args: {
+		presentLabel: "現在",
 		items: [
 			{
+				slug: "personal-blog",
 				period: {
-					start: "2024-01",
-					end: null,
+					from: "2024-01",
+					to: null,
 				},
-				title: "個人ブログサイトの開発",
+				companyName: "個人ブログサイトの開発",
 				description:
 					"Next.js と TypeScript を使用した個人ブログサイトを開発。Cloudflare へのデプロイ、記事管理機能、国際化対応などを実装。",
 				category: "project",
@@ -112,6 +118,7 @@ export const 単一アイテム: Story = {
 export const 空: Story = {
 	tags: ["code-only"],
 	args: {
+		presentLabel: "現在",
 		items: [],
 	},
 	render: ({ items }) => {
@@ -120,7 +127,7 @@ export const 空: Story = {
 			return <div className="text-muted-foreground">アイテムがありません</div>;
 		}
 
-		return <StepperTimeline items={items} />;
+		return <StepperTimeline items={items} presentLabel="現在" />;
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);

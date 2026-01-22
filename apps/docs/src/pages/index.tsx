@@ -3,6 +3,7 @@ import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import Heading from "@theme/Heading";
 import Layout from "@theme/Layout";
 import clsx from "clsx";
+import type React from "react";
 
 import styles from "./index.module.css";
 
@@ -58,7 +59,7 @@ function HomepageHeader() {
 type FeatureItem = {
 	title: string;
 	Svg: React.ComponentType<React.ComponentProps<"svg">>;
-	description: JSX.Element;
+	description: React.ReactElement;
 };
 
 const FeatureList: FeatureItem[] = [
@@ -114,7 +115,7 @@ function Feature({ title, Svg, description }: FeatureItem) {
 /**
  * ホームページの特徴セクション
  */
-function HomepageFeatures(): JSX.Element {
+function HomepageFeatures(): React.ReactElement {
 	return (
 		<section className={styles.features}>
 			<div className="container">
@@ -131,7 +132,7 @@ function HomepageFeatures(): JSX.Element {
 /**
  * ホームページのメインコンポーネント
  */
-export default function Home(): JSX.Element {
+export default function Home(): React.ReactElement {
 	const { siteConfig } = useDocusaurusContext();
 	return (
 		<Layout
