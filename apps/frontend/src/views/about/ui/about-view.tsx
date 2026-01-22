@@ -399,14 +399,9 @@ export function AboutView() {
 
 					{/* 経歴セクション */}
 					<section className="space-y-6 pb-12 border-b">
-						<div>
-							<h2 className="text-2xl font-bold mb-2">
-								{t("experience.title")}
-							</h2>
-							<p className="text-muted-foreground">
-								{t("experience.description")}
-							</p>
-						</div>
+						<h2 className="text-2xl font-bold mb-2">
+							{t("experience.title")}
+						</h2>
 						<StepperTimeline
 							items={timelineItems}
 							onItemClick={handleItemClick}

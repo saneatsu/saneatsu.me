@@ -63,8 +63,7 @@
 			}
 		},
 		"experience": {
-			"title": "経歴・経験",
-			"description": "これまでの開発経験と取り組み",
+			"title": "経歴",
 			"category": {
 				"work": "職歴",
 				"education": "学歴",
