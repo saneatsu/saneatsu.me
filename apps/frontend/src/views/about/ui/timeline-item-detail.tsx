@@ -1,6 +1,7 @@
 "use client";
 
 import type { Locale } from "@saneatsu/i18n";
+import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
@@ -52,32 +53,18 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 		return `${from} - ${to}`;
 	};
 
-	/**
-	 * カテゴリを翻訳された文字列に変換する関数
-	 *
-	 * @param category - カテゴリ
-	 * @returns 翻訳されたカテゴリ名
-	 */
-	const getCategoryLabel = (category: TimelineItem["category"]): string => {
-		const categoryMap: Record<TimelineItem["category"], string> = {
-			work: t("experience.category.work"),
-			education: t("experience.category.education"),
-			project: t("experience.category.project"),
-			skill: t("experience.category.skill"),
-		};
-		return categoryMap[category];
-	};
-
 	return (
 		<div className="space-y-6">
 			{/* 会社名セクション */}
 			<div>
 				<h2 className="text-2xl font-bold flex items-center gap-3">
 					{item.logoUrl && (
-						<img
+						<Image
 							src={item.logoUrl}
 							alt={`${item.companyName} logo`}
-							className="w-8 h-8 object-contain shrink-0"
+							width={32}
+							height={32}
+							className="object-contain shrink-0"
 						/>
 					)}
 					<span>{item.companyName}</span>
@@ -89,9 +76,7 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 			{/* 期間セクション */}
 			<Card>
 				<CardHeader>
-					<CardTitle>
-						{t("experience.detail.period")}
-					</CardTitle>
+					<CardTitle>{t("experience.detail.period")}</CardTitle>
 				</CardHeader>
 				<CardContent>
 					<p className="text-base">
@@ -104,16 +89,14 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 			{item.role && item.role.length > 0 && (
 				<Card>
 					<CardHeader>
-						<CardTitle>
-							{t("experience.detail.role")}
-						</CardTitle>
+						<CardTitle>{t("experience.detail.role")}</CardTitle>
 					</CardHeader>
 					<CardContent>
 						<div className="flex flex-wrap gap-2">
 							{item.role.map((r, index) => (
-								<span key={index} className="text-base">
+								<span key={r} className="text-base">
 									{r}
-									{index < item.role!.length - 1 && (
+									{index < (item.role?.length ?? 0) - 1 && (
 										<span className="text-muted-foreground mx-1">/</span>
 									)}
 								</span>
@@ -127,9 +110,7 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 			{item.techStack && item.techStack.length > 0 && (
 				<Card>
 					<CardHeader>
-						<CardTitle>
-							{t("experience.detail.techStack")}
-						</CardTitle>
+						<CardTitle>{t("experience.detail.techStack")}</CardTitle>
 					</CardHeader>
 					<CardContent>
 						<div className="flex flex-wrap gap-2">
@@ -144,9 +125,7 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 			{/* 職種・業務内容セクション */}
 			<Card>
 				<CardHeader>
-					<CardTitle>
-						{t("experience.detail.description")}
-					</CardTitle>
+					<CardTitle>{t("experience.detail.description")}</CardTitle>
 				</CardHeader>
 				<CardContent>
 					<MarkdownPreview
