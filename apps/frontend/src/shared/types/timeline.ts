@@ -94,4 +94,15 @@ export type TimelineItem = {
 	 * simple-iconsのSimpleIcon型を使用する。
 	 */
 	techStack?: SimpleIcon[];
+
+	/**
+	 * 会社ロゴのURL（オプショナル）
+	 *
+	 * @description
+	 * 会社や組織のロゴ画像のパス。
+	 * `/company-logo/{slug}-logo.{ext}`形式を想定。
+	 *
+	 * @example "/company-logo/accenture-logo.svg"
+	 */
+	logoUrl?: string;
 };

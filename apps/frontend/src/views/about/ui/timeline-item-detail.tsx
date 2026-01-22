@@ -64,7 +64,16 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 		<div className="space-y-6">
 			{/* 会社名セクション */}
 			<div>
-				<h2 className="text-2xl font-bold">{item.title}</h2>
+				<h2 className="text-2xl font-bold flex items-center gap-3">
+					{item.logoUrl && (
+						<img
+							src={item.logoUrl}
+							alt={`${item.title} logo`}
+							className="w-8 h-8 object-contain shrink-0"
+						/>
+					)}
+					<span>{item.title}</span>
+				</h2>
 			</div>
 
 			<Separator />
