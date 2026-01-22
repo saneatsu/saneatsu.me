@@ -98,7 +98,8 @@
 					},
 					"title": "株式会社Algoage",
 					"description": "ソフトウェアエンジニアとして従事",
-					"category": "work"
+					"category": "work",
+					"logoUrl": "/company-logo/algoage-logo.webp"
 				},
 				{
 					"slug": "accenture",
@@ -108,7 +109,8 @@
 					},
 					"title": "株式会社Accenture",
 					"description": "## 2017-12: 社内プロダクトの開発\n### 概要\nSONYにおいて要件定義から実装まですべて一貫して社内プロダクトの開発を行った。\n\n### 使用技術\n\n- VBA\n\n## 2018-02: AIを使った工場内の異常検知システムの開発\n### 概要\n画像解析を行い、工場のラインにおける異常を検知するシステムを開発した。\n\n### 使用技術\n\n- Python\n- Django",
-					"category": "work"
+					"category": "work",
+					"logoUrl": "/company-logo/accenture-logo.svg"
 				}
 			]
 		},

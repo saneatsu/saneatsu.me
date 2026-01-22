@@ -134,8 +134,15 @@ export function StepperTimeline({ items, onItemClick }: StepperTimelineProps) {
 											</p>
 
 											{/* タイトル */}
-											<h3 className="text-lg font-semibold mb-2">
-												{item.title}
+											<h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+												{item.logoUrl && (
+													<img
+														src={item.logoUrl}
+														alt={`${item.title} logo`}
+														className="w-6 h-6 object-contain shrink-0"
+													/>
+												)}
+												<span>{item.title}</span>
 											</h3>
 
 											{/* 技術スタックのバッジ */}
@@ -160,7 +167,16 @@ export function StepperTimeline({ items, onItemClick }: StepperTimelineProps) {
 										</p>
 
 										{/* タイトル */}
-										<h3 className="text-lg font-semibold mb-2">{item.title}</h3>
+										<h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+											{item.logoUrl && (
+												<img
+													src={item.logoUrl}
+													alt={`${item.title} logo`}
+													className="w-6 h-6 object-contain shrink-0"
+												/>
+											)}
+											<span>{item.title}</span>
+										</h3>
 
 										{/* 技術スタックのバッジ */}
 										{item.techStack && item.techStack.length > 0 && (
