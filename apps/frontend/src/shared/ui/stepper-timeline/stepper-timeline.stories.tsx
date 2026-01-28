@@ -36,8 +36,13 @@ export const デフォルト: Story = {
 					to: null,
 				},
 				companyName: "個人ブログサイトの開発",
-				description:
-					"Next.js と TypeScript を使用した個人ブログサイトを開発。Cloudflare へのデプロイ、記事管理機能、国際化対応などを実装。",
+				description: [
+					{
+						title: "個人ブログサイトの開発",
+						content:
+							"Next.js と TypeScript を使用した個人ブログサイトを開発。Cloudflare へのデプロイ、記事管理機能、国際化対応などを実装。",
+					},
+				],
 				category: "project",
 				techStack: [siReact, siNextdotjs, siTypescript],
 			},
@@ -48,8 +53,13 @@ export const デフォルト: Story = {
 					to: "2023",
 				},
 				companyName: "フルスタック開発の学習",
-				description:
-					"React、Next.js、TypeScript、Node.js などのモダンな Web 技術スタックを習得。Feature-Sliced Design などの設計手法も学習。",
+				description: [
+					{
+						title: "フルスタック開発の学習",
+						content:
+							"React、Next.js、TypeScript、Node.js などのモダンな Web 技術スタックを習得。Feature-Sliced Design などの設計手法も学習。",
+					},
+				],
 				category: "skill",
 			},
 			{
@@ -59,8 +69,13 @@ export const デフォルト: Story = {
 					to: "2023",
 				},
 				companyName: "ポートフォリオサイトの開発",
-				description:
-					"自身の技術スタックやプロジェクトを紹介するポートフォリオサイトを作成。レスポンシブデザインとアクセシビリティを重視。",
+				description: [
+					{
+						title: "ポートフォリオサイトの開発",
+						content:
+							"自身の技術スタックやプロジェクトを紹介するポートフォリオサイトを作成。レスポンシブデザインとアクセシビリティを重視。",
+					},
+				],
 				category: "project",
 			},
 		],
@@ -96,8 +111,13 @@ export const 単一アイテム: Story = {
 					to: null,
 				},
 				companyName: "個人ブログサイトの開発",
-				description:
-					"Next.js と TypeScript を使用した個人ブログサイトを開発。Cloudflare へのデプロイ、記事管理機能、国際化対応などを実装。",
+				description: [
+					{
+						title: "個人ブログサイトの開発",
+						content:
+							"Next.js と TypeScript を使用した個人ブログサイトを開発。Cloudflare へのデプロイ、記事管理機能、国際化対応などを実装。",
+					},
+				],
 				category: "project",
 			},
 		],

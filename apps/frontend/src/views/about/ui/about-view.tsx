@@ -184,6 +184,7 @@ export function AboutView() {
 			{ name: "Vite", icon: siVite },
 			{ name: "Vitest", icon: siVitest },
 			{ name: "Storybook", icon: siStorybook },
+			{ name: "Playwright" },
 			{ name: "Kysely" },
 			{ name: "Drizzle ORM", icon: siDrizzle },
 			{ name: "Prisma", icon: siPrisma },
