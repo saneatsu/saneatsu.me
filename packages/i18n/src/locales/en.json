@@ -88,7 +88,12 @@
 					},
 					"companyName": "Freelancer",
 					"role": ["Scrum Master", "Tech Lead", "Frontend Engineer"],
-					"description": "Started working as a freelancer",
+					"description": [
+						{
+							"title": "Started working as a freelancer",
+							"content": "Started working as a freelancer"
+						}
+					],
 					"category": "work"
 				},
 				{
@@ -109,7 +114,12 @@
 						"Web Designer",
 						"Machine Learning Engineer"
 					],
-					"description": "Worked as a Software Engineer",
+					"description": [
+						{
+							"title": "Worked as a Software Engineer",
+							"content": "Worked as a Software Engineer"
+						}
+					],
 					"category": "work",
 					"logoUrl": "/company-logo/algoage-logo.webp"
 				},
@@ -121,7 +131,18 @@
 					},
 					"companyName": "Accenture",
 					"role": ["Project Manager", "Frontend Engineer", "Backend Engineer"],
-					"description": "## 2017-12: In-house Product Development\n### Business Content\nDeveloped in-house products at SONY from requirements definition to implementation.\n\n### Technologies Used\n\n- VBA\n\n## 2018-02: AI-based Anomaly Detection System for Factory\n### Business Content\nDeveloped a system that detects anomalies in factory production lines using image analysis.\n\n### Technologies Used\n\n- Python\n- Django",
+					"description": [
+						{
+							"title": "2017-12: In-house Product Development",
+							"content": "Developed in-house products at SONY from requirements definition to implementation.",
+							"techStack": ["VBA"]
+						},
+						{
+							"title": "2018-02: AI-based Anomaly Detection System for Factory",
+							"content": "Developed a system that detects anomalies in factory production lines using image analysis.",
+							"techStack": ["Python", "Django"]
+						}
+					],
 					"category": "work",
 					"logoUrl": "/company-logo/accenture-logo.svg"
 				}
