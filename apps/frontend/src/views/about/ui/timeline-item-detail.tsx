@@ -7,6 +7,7 @@ import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import type { SimpleIcon } from "simple-icons";
 
+import { getTechIcon } from "@/shared/lib";
 import type { TimelineItem } from "@/shared/types";
 import {
 	BadgeWithIcon,
@@ -128,12 +129,68 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 					<CardTitle>{t("experience.detail.description")}</CardTitle>
 				</CardHeader>
 				<CardContent>
-					<MarkdownPreview
-						content={item.description}
-						language={locale}
-						className="prose-sm"
-						remarkPlugins={[remarkGfm, remarkBreaks]}
-					/>
+					<div className="space-y-6">
+						{item.description.map((desc, index) => (
+							<div key={desc.title} className="space-y-3">
+								{/* タイトル */}
+								<h3 className="text-lg font-semibold">{desc.title}</h3>
+
+								{/* 業務内容 */}
+								<div className="space-y-2">
+									<h4 className="text-base font-semibold">
+										{t("experience.detail.content")}
+									</h4>
+									<MarkdownPreview
+										content={desc.content}
+										language={locale}
+										className="prose-sm"
+										remarkPlugins={[remarkGfm, remarkBreaks]}
+									/>
+								</div>
+
+								{/* 技術スタック */}
+								{desc.techStack && desc.techStack.length > 0 && (
+									<div className="space-y-2">
+										<h4 className="text-base font-semibold">
+											{t("experience.detail.techStack")}
+										</h4>
+										<div className="flex flex-wrap gap-2">
+											{desc.techStack.map((techName) => {
+												const icon = getTechIcon(techName);
+												return (
+													<BadgeWithIcon
+														key={techName}
+														icon={icon}
+														text={techName}
+													/>
+												);
+											})}
+										</div>
+									</div>
+								)}
+
+								{/* その他 */}
+								{desc.other && (
+									<div className="space-y-2">
+										<h4 className="text-base font-semibold">
+											{t("experience.detail.other")}
+										</h4>
+										<MarkdownPreview
+											content={desc.other}
+											language={locale}
+											className="prose-sm"
+											remarkPlugins={[remarkGfm, remarkBreaks]}
+										/>
+									</div>
+								)}
+
+								{/* 最後の項目以外は区切り線を表示 */}
+								{index < item.description.length - 1 && (
+									<Separator className="my-4" />
+								)}
+							</div>
+						))}
+					</div>
 				</CardContent>
 			</Card>
 		</div>

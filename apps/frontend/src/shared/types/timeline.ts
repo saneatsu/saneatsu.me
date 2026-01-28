@@ -14,6 +14,50 @@ export type TimelineItemCategory =
 	| "skill"; // 技術習得・マイルストーン
 
 /**
+ * タイムラインアイテムの説明項目
+ *
+ * @description
+ * 経歴の詳細説明を構造化するための型。
+ * 各項目にはタイトル、内容、技術スタック、その他の情報を含めることができる。
+ */
+export type TimelineItemDescription = {
+	/**
+	 * 項目のタイトル
+	 *
+	 * @example "2017-12: 社内プロダクトの開発"
+	 */
+	title: string;
+
+	/**
+	 * 業務内容の説明
+	 *
+	 * @description
+	 * Markdown形式で記述可能。
+	 */
+	content: string;
+
+	/**
+	 * 使用技術スタック（オプショナル）
+	 *
+	 * @description
+	 * その項目で使用した技術名の配列。
+	 * 表示時にsimple-iconsから対応するアイコンを取得してバッジ形式で表示する。
+	 *
+	 * @example ["Python", "Django"]
+	 * @example ["VBA"]
+	 */
+	techStack?: string[];
+
+	/**
+	 * その他の情報（オプショナル）
+	 *
+	 * @description
+	 * Markdown形式で記述可能。
+	 */
+	other?: string;
+};
+
+/**
  * タイムラインアイテムの期間
  *
  * @description
@@ -90,8 +134,9 @@ export type TimelineItem = {
 	 *
 	 * @description
 	 * その経歴での取り組みや成果を説明する。
+	 * 配列形式で複数の項目を構造化して記述できる。
 	 */
-	description: string;
+	description: TimelineItemDescription[];
 
 	/**
 	 * カテゴリ

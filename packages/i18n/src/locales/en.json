@@ -76,7 +76,9 @@
 				"role": "Role",
 				"category": "Category",
 				"description": "Description",
+				"content": "Business Content",
 				"techStack": "Tech Stack",
+				"other": "Other",
 				"present": "Present"
 			},
 			"timeline": [
@@ -87,8 +89,20 @@
 						"to": null
 					},
 					"companyName": "Freelancer",
-					"role": ["Scrum Master", "Tech Lead", "Frontend Engineer"],
-					"description": "Started working as a freelancer",
+					"role": ["Advisor", "Scrum Master", "Tech Lead", "Frontend Engineer"],
+					"description": [
+						{
+							"title": "Started working as a freelancer",
+							"content": "Working 4 hours per day. While I did write code, my primary role was to enhance the base capabilities of the frontend team and serve as an advisor to the development team.\n\nI shared various ideas about what we could do to make things better, and while writing concrete code, I contributed to building a team culture where we continuously learn and improve to develop better.\n\n### Advisor\n\n- Facilitating retrospectives\n- Setting product goals\n- Reading and discussing the Scrum Guide\n- Designing effective meetings\n- Organizing roadmaps\n- Introducing AI and sharing knowledge\n\n### Product Owner / Scrum Master\n\n- Introduced GitHub Project to organize the backlog\n- Designed effective Refinement sessions\n- Conducted Scrum study sessions\n\n### Lead Engineer\n\n- Designed the overall frontend architecture\n- Built testing infrastructure from scratch (it was zero before), conducted study sessions, and integrated it into the development cycle\n  - Vitest, Storybook, Playwright\n- Introduced Feature-Slice Design\n- Built a culture of refactoring by increasing tests and breaking down large components into appropriately sized ones\n- Conducted study sessions on Cycle Time and Four Keys, visualized metrics, and held weekly retrospectives to improve the team's learning cycle\n- Reduced lead time\n- Conducted study sessions\n  - Weekly study sessions continue to be held even after I left the team",
+							"techStack": [
+								"Next.js",
+								"Tailwind CSS",
+								"Vitest",
+								"Storybook",
+								"Playwright"
+							]
+						}
+					],
 					"category": "work"
 				},
 				{
@@ -109,7 +123,67 @@
 						"Web Designer",
 						"Machine Learning Engineer"
 					],
-					"description": "Worked as a Software Engineer",
+					"description": [
+						{
+							"title": "2023-09: Creation of a chat branching workflow editor",
+							"content": "Creation of an editor that makes it easy to create chat branching workflows and preview them in LINE's UI.\n\nTo fundamentally improve operations, I analyzed and identified the core bottlenecks, and created a demo product in one week by myself and released it internally.\nI continued development in my spare time, and from November 2023, the product was recognized and the team started moving. I created a rich editor for creating workflows using Next.js and React Flow. With a team including a first-year engineer, we created a v0.1 product in about 8 months, reducing lead time by up to 75%.",
+							"techStack": [
+								"Next.js",
+								"ReactFlow",
+								"Tailwind CSS",
+								"shadcn/ui",
+								"Vercel"
+							]
+						},
+						{
+							"title": "2020-09: Development of DMM Chat Boost CV",
+							"content": "Development of [DMM Chat Boost CV](https://chatboost.dmm.com/cv/).",
+							"techStack": ["Vue.js", "PrimeVue", "Rails", "AWS", "Cloudflare"],
+							"other": "In February 2020, we became a subsidiary of DMM, and at the same time, we moved the office to the current Yushima location.\nWe increased the number of employees to about 200, and development began in earnest using Scrum with advisors invited."
+						},
+						{
+							"title": "2019-10: Development of a health app for a construction company",
+							"content": "Development of a health app for a construction company.",
+							"techStack": ["Nuxt", "Vuetify", "AWS", "Flutter"]
+						},
+						{
+							"title": "2019-06: Creation of a meeting audio transcription app",
+							"content": "Creation of a meeting audio transcription app.",
+							"techStack": [
+								"Python",
+								"Flask",
+								"OpenCV",
+								"Keras",
+								"TensorFlow",
+								"PyTorch"
+							],
+							"other": "We rented a 1K office in Mita, and the three company members lived in the same nearby apartment building (floors 4, 5, and 7) and commuted to work."
+						},
+						{
+							"title": "2018-12: Development of a character video generation system",
+							"content": "Development of a system that generates videos of a character moving, using a single bust-up image of the character as input.",
+							"techStack": [
+								"Python",
+								"Flask",
+								"OpenCV",
+								"Keras",
+								"TensorFlow",
+								"PyTorch"
+							]
+						},
+						{
+							"title": "2018-07: Development of a system to create room layouts from multiple photos",
+							"content": "Development of a system to create room layouts from multiple photos.",
+							"techStack": [
+								"Python",
+								"OpenCV",
+								"Keras",
+								"TensorFlow",
+								"PyTorch"
+							],
+							"other": "At this time, we didn't have an office yet, so we basically worked at the founder's house with two desks side by side.\nSince all company members were initial members belonging to [KERNEL](https://deepcore.jp/kernel), we also started working at [KERNEL HONGO](https://ut-base.info/facilities/8) from time to time.\nAlso, within the company, we took turns reading and presenting machine learning-related papers every week."
+						}
+					],
 					"category": "work",
 					"logoUrl": "/company-logo/algoage-logo.webp"
 				},
@@ -121,7 +195,18 @@
 					},
 					"companyName": "Accenture",
 					"role": ["Project Manager", "Frontend Engineer", "Backend Engineer"],
-					"description": "## 2017-12: In-house Product Development\n### Business Content\nDeveloped in-house products at SONY from requirements definition to implementation.\n\n### Technologies Used\n\n- VBA\n\n## 2018-02: AI-based Anomaly Detection System for Factory\n### Business Content\nDeveloped a system that detects anomalies in factory production lines using image analysis.\n\n### Technologies Used\n\n- Python\n- Django",
+					"description": [
+						{
+							"title": "2018-02: AI-based Anomaly Detection System for Factory",
+							"content": "Developed a system that detects anomalies in factory production lines using image analysis.",
+							"techStack": ["Python", "Django"]
+						},
+						{
+							"title": "2017-12: In-house Product Development",
+							"content": "Developed in-house products at SONY from requirements definition to implementation.",
+							"techStack": ["VBA"]
+						}
+					],
 					"category": "work",
 					"logoUrl": "/company-logo/accenture-logo.svg"
 				}
