@@ -14,11 +14,13 @@ import {
 	siPytorch,
 	siRubyonrails,
 	siShadcnui,
+	siStorybook,
 	siTailwindcss,
 	siTensorflow,
 	siVercel,
 	siVuedotjs,
 	siVuetify,
+	siVitest,
 	siXyflow,
 } from "simple-icons";
 
@@ -56,6 +58,9 @@ const TECH_ICON_MAP: Record<string, SimpleIcon> = {
 	"shadcn/ui": siShadcnui,
 	shadcnui: siShadcnui,
 	vercel: siVercel,
+	vitest: siVitest,
+	storybook: siStorybook,
+	// Playwright: simple-iconsにPlaywrightのアイコンがないため、アイコンなしで表示
 };
 
 /**
