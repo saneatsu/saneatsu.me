@@ -93,7 +93,14 @@
 					"description": [
 						{
 							"title": "Started working as a freelancer",
-							"content": "Started working as a freelancer"
+							"content": "Working 4 hours per day. While I did write code, my primary role was to enhance the base capabilities of the frontend team and serve as an advisor to the development team.\n\nI shared various ideas about what we could do to make things better, and while writing concrete code, I contributed to building a team culture where we continuously learn and improve to develop better.\n\n### Advisor\n\n- Facilitating retrospectives\n- Setting product goals\n- Reading and discussing the Scrum Guide\n- Designing effective meetings\n- Organizing roadmaps\n- Introducing AI and sharing knowledge\n\n### Product Owner / Scrum Master\n\n- Introduced GitHub Project to organize the backlog\n- Designed effective Refinement sessions\n- Conducted Scrum study sessions\n\n### Lead Engineer\n\n- Designed the overall frontend architecture\n- Built testing infrastructure from scratch (it was zero before), conducted study sessions, and integrated it into the development cycle\n  - Vitest, Storybook, Playwright\n- Introduced Feature-Slice Design\n- Built a culture of refactoring by increasing tests and breaking down large components into appropriately sized ones\n- Conducted study sessions on Cycle Time and Four Keys, visualized metrics, and held weekly retrospectives to improve the team's learning cycle\n- Reduced lead time\n- Conducted study sessions\n  - Weekly study sessions continue to be held even after I left the team",
+							"techStack": [
+								"Next.js",
+								"Tailwind CSS",
+								"Vitest",
+								"Storybook",
+								"Playwright"
+							]
 						}
 					],
 					"category": "work"
