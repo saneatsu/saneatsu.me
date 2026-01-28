@@ -18,9 +18,9 @@ import {
 	siTailwindcss,
 	siTensorflow,
 	siVercel,
+	siVitest,
 	siVuedotjs,
 	siVuetify,
-	siVitest,
 	siXyflow,
 } from "simple-icons";
 
