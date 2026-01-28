@@ -125,28 +125,26 @@
 					],
 					"description": [
 						{
-							"title": "2018-07: Development of a system to create room layouts from multiple photos",
-							"content": "Development of a system to create room layouts from multiple photos.",
+							"title": "2023-09: Creation of a chat branching workflow editor",
+							"content": "Creation of an editor that makes it easy to create chat branching workflows and preview them in LINE's UI.\n\nTo fundamentally improve operations, I analyzed and identified the core bottlenecks, and created a demo product in one week by myself and released it internally.\nI continued development in my spare time, and from November 2023, the product was recognized and the team started moving. I created a rich editor for creating workflows using Next.js and React Flow. With a team including a first-year engineer, we created a v0.1 product in about 8 months, reducing lead time by up to 75%.",
 							"techStack": [
-								"Python",
-								"OpenCV",
-								"Keras",
-								"TensorFlow",
-								"PyTorch"
-							],
-							"other": "At this time, we didn't have an office yet, so we basically worked at the founder's house with two desks side by side.\nSince all company members were initial members belonging to [KERNEL](https://deepcore.jp/kernel), we also started working at [KERNEL HONGO](https://ut-base.info/facilities/8) from time to time.\nAlso, within the company, we took turns reading and presenting machine learning-related papers every week."
+								"Next.js",
+								"ReactFlow",
+								"Tailwind CSS",
+								"shadcn/ui",
+								"Vercel"
+							]
 						},
 						{
-							"title": "2018-12: Development of a character video generation system",
-							"content": "Development of a system that generates videos of a character moving, using a single bust-up image of the character as input.",
-							"techStack": [
-								"Python",
-								"Flask",
-								"OpenCV",
-								"Keras",
-								"TensorFlow",
-								"PyTorch"
-							]
+							"title": "2020-09: Development of DMM Chat Boost CV",
+							"content": "Development of [DMM Chat Boost CV](https://chatboost.dmm.com/cv/).",
+							"techStack": ["Vue.js", "PrimeVue", "Rails", "AWS", "Cloudflare"],
+							"other": "In February 2020, we became a subsidiary of DMM, and at the same time, we moved the office to the current Yushima location.\nWe increased the number of employees to about 200, and development began in earnest using Scrum with advisors invited."
+						},
+						{
+							"title": "2019-10: Development of a health app for a construction company",
+							"content": "Development of a health app for a construction company.",
+							"techStack": ["Nuxt", "Vuetify", "AWS", "Flutter"]
 						},
 						{
 							"title": "2019-06: Creation of a meeting audio transcription app",
@@ -162,26 +160,28 @@
 							"other": "We rented a 1K office in Mita, and the three company members lived in the same nearby apartment building (floors 4, 5, and 7) and commuted to work."
 						},
 						{
-							"title": "2019-10: Development of a health app for a construction company",
-							"content": "Development of a health app for a construction company.",
-							"techStack": ["Nuxt", "Vuetify", "AWS", "Flutter"]
-						},
-						{
-							"title": "2020-09: Development of DMM Chat Boost CV",
-							"content": "Development of [DMM Chat Boost CV](https://chatboost.dmm.com/cv/).",
-							"techStack": ["Vue.js", "PrimeVue", "Rails", "AWS", "Cloudflare"],
-							"other": "In February 2020, we became a subsidiary of DMM, and at the same time, we moved the office to the current Yushima location.\nWe increased the number of employees to about 200, and development began in earnest using Scrum with advisors invited."
-						},
-						{
-							"title": "2023-09: Creation of a chat branching workflow editor",
-							"content": "Creation of an editor that makes it easy to create chat branching workflows and preview them in LINE's UI.\n\nTo fundamentally improve operations, I analyzed and identified the core bottlenecks, and created a demo product in one week by myself and released it internally.\nI continued development in my spare time, and from November 2023, the product was recognized and the team started moving. I created a rich editor for creating workflows using Next.js and React Flow. With a team including a first-year engineer, we created a v0.1 product in about 8 months, reducing lead time by up to 75%.",
+							"title": "2018-12: Development of a character video generation system",
+							"content": "Development of a system that generates videos of a character moving, using a single bust-up image of the character as input.",
 							"techStack": [
-								"Next.js",
-								"ReactFlow",
-								"Tailwind CSS",
-								"shadcn/ui",
-								"Vercel"
+								"Python",
+								"Flask",
+								"OpenCV",
+								"Keras",
+								"TensorFlow",
+								"PyTorch"
 							]
+						},
+						{
+							"title": "2018-07: Development of a system to create room layouts from multiple photos",
+							"content": "Development of a system to create room layouts from multiple photos.",
+							"techStack": [
+								"Python",
+								"OpenCV",
+								"Keras",
+								"TensorFlow",
+								"PyTorch"
+							],
+							"other": "At this time, we didn't have an office yet, so we basically worked at the founder's house with two desks side by side.\nSince all company members were initial members belonging to [KERNEL](https://deepcore.jp/kernel), we also started working at [KERNEL HONGO](https://ut-base.info/facilities/8) from time to time.\nAlso, within the company, we took turns reading and presenting machine learning-related papers every week."
 						}
 					],
 					"category": "work",
@@ -197,14 +197,14 @@
 					"role": ["Project Manager", "Frontend Engineer", "Backend Engineer"],
 					"description": [
 						{
-							"title": "2017-12: In-house Product Development",
-							"content": "Developed in-house products at SONY from requirements definition to implementation.",
-							"techStack": ["VBA"]
-						},
-						{
 							"title": "2018-02: AI-based Anomaly Detection System for Factory",
 							"content": "Developed a system that detects anomalies in factory production lines using image analysis.",
 							"techStack": ["Python", "Django"]
+						},
+						{
+							"title": "2017-12: In-house Product Development",
+							"content": "Developed in-house products at SONY from requirements definition to implementation.",
+							"techStack": ["VBA"]
 						}
 					],
 					"category": "work",
