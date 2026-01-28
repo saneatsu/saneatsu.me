@@ -76,7 +76,9 @@
 				"role": "役職",
 				"category": "カテゴリ",
 				"description": "説明",
+				"content": "業務内容",
 				"techStack": "技術スタック",
+				"other": "その他",
 				"present": "現在"
 			},
 			"timeline": [

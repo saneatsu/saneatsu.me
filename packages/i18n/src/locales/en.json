@@ -76,7 +76,9 @@
 				"role": "Role",
 				"category": "Category",
 				"description": "Description",
+				"content": "Business Content",
 				"techStack": "Tech Stack",
+				"other": "Other",
 				"present": "Present"
 			},
 			"timeline": [
