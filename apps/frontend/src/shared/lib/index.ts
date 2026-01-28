@@ -41,6 +41,8 @@ export {
 // Get Article Emoji
 export { getArticleEmoji } from "./get-article-emoji";
 export { extractImageId, getImageUrl } from "./get-image-url";
+// Get Tech Icon
+export { getTechIcon } from "./get-tech-icon";
 // Hono Hook
 export { type HonoClient, useHonoClient } from "./hono/use-client";
 export { usePersistentQueryStates } from "./hooks";
