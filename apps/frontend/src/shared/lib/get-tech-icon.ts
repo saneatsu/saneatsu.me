@@ -1,5 +1,26 @@
 import type { SimpleIcon } from "simple-icons";
-import { siDjango, siDotnet, siPython } from "simple-icons";
+import {
+	siCloudflare,
+	siDjango,
+	siDotnet,
+	siFlask,
+	siFlutter,
+	siKeras,
+	siNextdotjs,
+	siNuxt,
+	siOpencv,
+	siPrimevue,
+	siPython,
+	siPytorch,
+	siRubyonrails,
+	siShadcnui,
+	siTailwindcss,
+	siTensorflow,
+	siVercel,
+	siVuedotjs,
+	siVuetify,
+	siXyflow,
+} from "simple-icons";
 
 /**
  * 技術名からSimpleIconへのマッピング
@@ -12,6 +33,29 @@ const TECH_ICON_MAP: Record<string, SimpleIcon> = {
 	python: siPython,
 	django: siDjango,
 	vba: siDotnet, // VBAは.NETの一部として扱う
+	opencv: siOpencv,
+	keras: siKeras,
+	tensorflow: siTensorflow,
+	flask: siFlask,
+	pytorch: siPytorch,
+	nuxt: siNuxt,
+	vuetify: siVuetify,
+	// AWS: simple-iconsにAWSのアイコンがないため、アイコンなしで表示
+	flutter: siFlutter,
+	"vue.js": siVuedotjs,
+	vue: siVuedotjs,
+	primevue: siPrimevue,
+	rails: siRubyonrails,
+	cloudflare: siCloudflare,
+	"next.js": siNextdotjs,
+	nextjs: siNextdotjs,
+	reactflow: siXyflow,
+	"react flow": siXyflow,
+	"tailwind css": siTailwindcss,
+	tailwindcss: siTailwindcss,
+	"shadcn/ui": siShadcnui,
+	shadcnui: siShadcnui,
+	vercel: siVercel,
 };
 
 /**
