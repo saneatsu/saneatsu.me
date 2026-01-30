@@ -47,6 +47,39 @@
 	},
 	"about": {
 		"title": "About",
+		"blog": {
+			"title": "About This Blog",
+			"purpose": {
+				"title": "Purpose",
+				"items": [
+					"Sharing technical information",
+					"Output of learning",
+					"Portfolio",
+					"Organizing my thoughts and sharing/structuring with the team"
+				]
+			},
+			"history": {
+				"title": "History",
+				"content": "Development started in July 2025. For details about the tech stack and motivation, please refer to the article [I made a site called saneatsu.me](/en/blog/made-this-site)."
+			},
+			"policy": {
+				"title": "Editorial Policy",
+				"principle1": "Articles are published without waiting for perfection and are continuously updated. Content reflects the time of writing and may change over time",
+				"principle2": "This approach is inspired by GitLab's transparency-focused culture",
+				"bookLink": "The GitLab Handbook (Remote Work Best Practices)"
+			}
+		},
+		"author": {
+			"title": "About Me",
+			"profile": {
+				"title": "Profile",
+				"content": "I'm an engineer born in Yamagata, raised in Hokkaido, and currently based in Tokyo. For more details, please see the \"Career\" section below."
+			},
+			"interests": {
+				"title": "Interests & Hobbies",
+				"hobbies": "I've been creating software for a long time, but I also enjoy hands-on crafts like ikebana (Sogetsu school) and embroidery."
+			}
+		},
 		"tech": {
 			"title": "Tech Stack",
 			"languages": {

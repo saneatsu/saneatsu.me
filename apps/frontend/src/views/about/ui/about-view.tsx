@@ -71,7 +71,6 @@ import {
 import type { TimelineItem } from "@/shared/types";
 import {
 	BadgeWithIcon,
-	BlogNotice,
 	Sheet,
 	SheetContent,
 	SheetHeader,
@@ -79,6 +78,8 @@ import {
 	StepperTimeline,
 } from "@/shared/ui";
 
+import { AboutAuthorSection } from "./about-author-section";
+import { AboutBlogSection } from "./about-blog-section";
 import { TimelineItemDetail } from "./timeline-item-detail";
 
 /**
@@ -312,27 +313,47 @@ export function AboutView() {
 					<h1 className="text-4xl font-bold">{t("title")}</h1>
 				</section>
 
-				{/* Blog運営方針 */}
-				<BlogNotice />
+				{/* ============================================ */}
+				{/* ブログについてグループ */}
+				{/* ============================================ */}
+				<div className="space-y-16">
+					{/* 執筆アクティビティ */}
+					<section className="pt-4">
+						<ContributionHeatmap
+							summary={publicContributions}
+							isLoading={publicContributionsLoading}
+							error={publicContributionsError}
+							onRetry={() => {
+								void refetchPublicContributions();
+							}}
+							copy={contributionsCopy}
+							locale={locale === "ja" ? "ja-JP" : "en-US"}
+							rangeDays={publicContributions?.days.length ?? 365}
+						/>
+					</section>
 
-				{/* 執筆アクティビティ */}
-				<section className="pt-4">
-					<ContributionHeatmap
-						summary={publicContributions}
-						isLoading={publicContributionsLoading}
-						error={publicContributionsError}
-						onRetry={() => {
-							void refetchPublicContributions();
-						}}
-						copy={contributionsCopy}
-						locale={locale === "ja" ? "ja-JP" : "en-US"}
-						rangeDays={publicContributions?.days.length ?? 365}
-					/>
-				</section>
+					{/* このブログについて */}
+					<AboutBlogSection />
+				</div>
 
-				{/* コンテンツセクション */}
+				{/* ============================================ */}
+				{/* 自分についてグループ */}
+				{/* ============================================ */}
 				<div className="space-y-12">
-					{/* 技術セクション */}
+					{/* 私について */}
+					<AboutAuthorSection />
+
+					{/* 経歴セクション */}
+					<section className="space-y-6 pb-12 border-b">
+						<h2 className="text-2xl font-bold mb-2">{t("experience.title")}</h2>
+						<StepperTimeline
+							items={timelineItems}
+							onItemClick={handleItemClick}
+							presentLabel={t("experience.detail.present")}
+						/>
+					</section>
+
+					{/* 技術スタックセクション */}
 					<section className="space-y-6 pb-12 border-b">
 						<h2 className="text-2xl font-bold">{t("tech.title")}</h2>
 						<div className="space-y-6">
@@ -398,17 +419,7 @@ export function AboutView() {
 						</div>
 					</section>
 
-					{/* 経歴セクション */}
-					<section className="space-y-6 pb-12 border-b">
-						<h2 className="text-2xl font-bold mb-2">{t("experience.title")}</h2>
-						<StepperTimeline
-							items={timelineItems}
-							onItemClick={handleItemClick}
-							presentLabel={t("experience.detail.present")}
-						/>
-					</section>
-
-					{/* SNS・Webサイトセクション */}
+					{/* SNS・連絡先セクション */}
 					<section className="space-y-4">
 						<h2 className="text-2xl font-bold">{t("contact.title")}</h2>
 						<div className="space-y-2">
