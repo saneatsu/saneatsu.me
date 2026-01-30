@@ -73,6 +73,7 @@
 			"detail": {
 				"title": "経歴詳細",
 				"period": "期間",
+				"employmentType": "雇用形態",
 				"role": "役職",
 				"category": "カテゴリ",
 				"description": "説明",
@@ -83,22 +84,27 @@
 			},
 			"timeline": [
 				{
-					"slug": "freelancer",
+					"slug": "mobile-order-lab-and-tacoms",
 					"period": {
 						"from": "2025-03",
 						"to": null
 					},
-					"companyName": "個人事業主",
+					"companyName": "株式会社Mobile Order Lab・株式会社tacoms",
 					"role": [
 						"アドバイザー",
 						"スクラムマスター",
 						"テックリード",
 						"フロントエンドエンジニア"
 					],
+					"employmentType": "業務委託",
 					"description": [
 						{
-							"title": "フリーランスとして活動開始",
-							"content": "4h/日の稼働。コードも書いていたが、基本的にはフロントエンドチームのベースの力を上げるための動きや、開発チームのアドバイザーとしてのロールを担っていた。\n\nこういうことやれると嬉しいよねを色々と共有しながら、具体のコードを書くのはもちろん、常に自分たちで学び・改善していくことで、より良く開発していくチームの文化の形成に貢献した。\n\n### アドバイザー\n\n- 振り返りの促進\n- プロダクトゴールの設定\n- スクラムガイドの読み合わせ\n- 効果的な会議の設計\n- ロードマップの整備\n- AIの導入・知見の共有\n\n### プロダクトオーナー・スクラムマスター\n\n- GitHub Projectを導入してバックログの整理\n- 効果的なRefinementの設計\n- スクラム勉強会の実施\n\n### リードエンジニア\n\n- フロントエンド全体の設計\n- テストがゼロだったので環境構築をして、勉強会を開催し、開発サイクルに組み込み\n  - Vitest, Storybook, Playwright\n- Feature-Slice Designの導入\n- 1つ1つのコンポーネントが大きかったのでテストを増やしつつ、適切な粒度に小さくして随時リファクタリングをする文化の形成\n- Cycle Time, Four Keysについての勉強会を行い、可視化して毎週振り返りを実施し、チームの学習サイクルの改善\n- リードタイムの短縮\n- 勉強会の実施\n  - 毎週の勉強会は自分がそのチームを抜けた後も実施されている",
+							"title": "経営統合について",
+							"content": "株式会社Mobile Order Labと株式会社tacomsが経営統合したため、2社分のロゴを表示しています。\n\n詳細については、[経営統合のプレスリリース](https://prtimes.jp/main/html/rd/p/000000047.000077961.html)をご覧ください。"
+						},
+						{
+							"title": "フリーランス",
+							"content": "4h/日の稼働。コードも書いていたが、基本的にはフロントエンドチームのベースの力を上げるための動きや、開発チームのアドバイザーとしてのロールを担っていた。\n\nこういうことやれると嬉しいよねを色々と共有しながら、具体のコードを書くのはもちろん、常に自分たちで学び・改善していくことで、より良く開発していくチームの文化の形成に貢献した。",
 							"techStack": [
 								"Next.js",
 								"Tailwind CSS",
@@ -106,9 +112,25 @@
 								"Storybook",
 								"Playwright"
 							]
+						},
+						{
+							"title": "アドバイザー",
+							"content": "- 振り返りの促進\n- プロダクトゴールの設定\n- スクラムガイドの読み合わせ\n- 効果的な会議の設計\n- ロードマップの整備\n- AIの導入・知見の共有"
+						},
+						{
+							"title": "プロダクトオーナー・スクラムマスター",
+							"content": "- GitHub Projectを導入してバックログの整理\n- 効果的なRefinementの設計\n- スクラム勉強会の実施"
+						},
+						{
+							"title": "リードエンジニア",
+							"content": "- フロントエンド全体の設計\n- テストがゼロだったので環境構築をして、勉強会を開催し、開発サイクルに組み込み\n  - Vitest, Storybook, Playwright\n- Feature-Slice Designの導入\n- 1つ1つのコンポーネントが大きかったのでテストを増やしつつ、適切な粒度に小さくして随時リファクタリングをする文化の形成\n- Cycle Time, Four Keysについての勉強会を行い、可視化して毎週振り返りを実施し、チームの学習サイクルの改善\n- リードタイムの短縮\n- 勉強会の実施\n  - 毎週の勉強会は自分がそのチームを抜けた後も実施されている"
 						}
 					],
-					"category": "work"
+					"category": "work",
+					"logoUrls": [
+						"/company-logo/mobile-order-lab-logo.png",
+						"/company-logo/tacoms-logo.webp"
+					]
 				},
 				{
 					"slug": "algoage-inc",
@@ -190,7 +212,8 @@
 						}
 					],
 					"category": "work",
-					"logoUrl": "/company-logo/algoage-logo.webp"
+					"logoUrls": ["/company-logo/algoage-logo.webp"],
+					"employmentType": "正社員"
 				},
 				{
 					"slug": "accenture",
@@ -217,7 +240,8 @@
 						}
 					],
 					"category": "work",
-					"logoUrl": "/company-logo/accenture-logo.svg"
+					"logoUrls": ["/company-logo/accenture-logo.svg"],
+					"employmentType": "正社員"
 				}
 			]
 		},

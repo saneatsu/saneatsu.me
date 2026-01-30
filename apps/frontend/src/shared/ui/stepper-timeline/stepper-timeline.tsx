@@ -116,14 +116,19 @@ export function StepperTimeline({
 
 						{/* 会社名 */}
 						<h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
-							{item.logoUrl && (
-								<Image
-									src={item.logoUrl}
-									alt={`${item.companyName} logo`}
-									width={24}
-									height={24}
-									className="object-contain shrink-0"
-								/>
+							{item.logoUrls && item.logoUrls.length > 0 && (
+								<div className="flex items-center gap-1">
+									{item.logoUrls.map((logoUrl, index) => (
+										<Image
+											key={logoUrl}
+											src={logoUrl}
+											alt={`${item.companyName} logo ${index + 1}`}
+											width={24}
+											height={24}
+											className="object-contain shrink-0"
+										/>
+									))}
+								</div>
 							)}
 							<span>{item.companyName}</span>
 						</h3>
