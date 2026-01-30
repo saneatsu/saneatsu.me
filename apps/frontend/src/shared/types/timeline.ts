@@ -162,4 +162,16 @@ export type TimelineItem = {
 	 * @example "/company-logo/accenture-logo.svg"
 	 */
 	logoUrl?: string;
+
+	/**
+	 * 雇用形態（オプショナル）
+	 *
+	 * @description
+	 * その経歴での雇用形態を表す文字列。
+	 * 例: "正社員", "契約社員", "フリーランス"など
+	 *
+	 * @example "正社員"
+	 * @example "Full-time Employee"
+	 */
+	employmentType?: string;
 };

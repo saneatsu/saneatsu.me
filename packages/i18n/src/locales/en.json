@@ -73,6 +73,7 @@
 			"detail": {
 				"title": "Experience Details",
 				"period": "Period",
+				"employmentType": "Employment Type",
 				"role": "Role",
 				"category": "Category",
 				"description": "Description",
@@ -185,7 +186,8 @@
 						}
 					],
 					"category": "work",
-					"logoUrl": "/company-logo/algoage-logo.webp"
+					"logoUrl": "/company-logo/algoage-logo.webp",
+					"employmentType": "Full-time Employee"
 				},
 				{
 					"slug": "accenture",
@@ -208,7 +210,8 @@
 						}
 					],
 					"category": "work",
-					"logoUrl": "/company-logo/accenture-logo.svg"
+					"logoUrl": "/company-logo/accenture-logo.svg",
+					"employmentType": "Full-time Employee"
 				}
 			]
 		},
