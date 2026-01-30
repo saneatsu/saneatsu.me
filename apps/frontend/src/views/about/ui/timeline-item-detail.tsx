@@ -59,14 +59,19 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 			{/* 会社名セクション */}
 			<div>
 				<h2 className="text-2xl font-bold flex items-center gap-3">
-					{item.logoUrl && (
-						<Image
-							src={item.logoUrl}
-							alt={`${item.companyName} logo`}
-							width={32}
-							height={32}
-							className="object-contain shrink-0"
-						/>
+					{item.logoUrls && item.logoUrls.length > 0 && (
+						<div className="flex items-center gap-2">
+							{item.logoUrls.map((logoUrl, index) => (
+								<Image
+									key={logoUrl}
+									src={logoUrl}
+									alt={`${item.companyName} logo ${index + 1}`}
+									width={32}
+									height={32}
+									className="object-contain shrink-0"
+								/>
+							))}
+						</div>
 					)}
 					<span>{item.companyName}</span>
 				</h2>

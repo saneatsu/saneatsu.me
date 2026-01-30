@@ -153,15 +153,17 @@ export type TimelineItem = {
 	techStack?: SimpleIcon[];
 
 	/**
-	 * 会社ロゴのURL（オプショナル）
+	 * 会社ロゴのURL（オプショナル、複数可）
 	 *
 	 * @description
-	 * 会社や組織のロゴ画像のパス。
+	 * 会社や組織のロゴ画像のパスの配列。
+	 * 複数の会社が合併した場合などに複数のロゴを表示できる。
 	 * `/company-logo/{slug}-logo.{ext}`形式を想定。
 	 *
-	 * @example "/company-logo/accenture-logo.svg"
+	 * @example ["/company-logo/accenture-logo.svg"]
+	 * @example ["/company-logo/mobile-order-lab-logo.png", "/company-logo/tacoms-logo.webp"]
 	 */
-	logoUrl?: string;
+	logoUrls?: string[];
 
 	/**
 	 * 雇用形態（オプショナル）
