@@ -105,8 +105,19 @@
 								"Vitest",
 								"Storybook",
 								"Playwright"
-							],
-							"other": "**Advisor**\n- Facilitating retrospectives\n- Setting product goals\n- Reading and discussing the Scrum Guide\n- Designing effective meetings\n- Organizing roadmaps\n- Introducing AI and sharing knowledge\n\n**Product Owner / Scrum Master**\n- Introduced GitHub Project to organize the backlog\n- Designed effective Refinement sessions\n- Conducted Scrum study sessions\n\n**Lead Engineer**\n- Designed the overall frontend architecture\n- Built testing infrastructure from scratch (it was zero before), conducted study sessions, and integrated it into the development cycle\n  - Vitest, Storybook, Playwright\n- Introduced Feature-Slice Design\n- Built a culture of refactoring by increasing tests and breaking down large components into appropriately sized ones\n- Conducted study sessions on Cycle Time and Four Keys, visualized metrics, and held weekly retrospectives to improve the team's learning cycle\n- Reduced lead time\n- Conducted study sessions\n  - Weekly study sessions continue to be held even after I left the team"
+							]
+						},
+						{
+							"title": "Advisor",
+							"content": "- Facilitating retrospectives\n- Setting product goals\n- Reading and discussing the Scrum Guide\n- Designing effective meetings\n- Organizing roadmaps\n- Introducing AI and sharing knowledge"
+						},
+						{
+							"title": "Product Owner / Scrum Master",
+							"content": "- Introduced GitHub Project to organize the backlog\n- Designed effective Refinement sessions\n- Conducted Scrum study sessions"
+						},
+						{
+							"title": "Lead Engineer",
+							"content": "- Designed the overall frontend architecture\n- Built testing infrastructure from scratch (it was zero before), conducted study sessions, and integrated it into the development cycle\n  - Vitest, Storybook, Playwright\n- Introduced Feature-Slice Design\n- Built a culture of refactoring by increasing tests and breaking down large components into appropriately sized ones\n- Conducted study sessions on Cycle Time and Four Keys, visualized metrics, and held weekly retrospectives to improve the team's learning cycle\n- Reduced lead time\n- Conducted study sessions\n  - Weekly study sessions continue to be held even after I left the team"
 						}
 					],
 					"category": "work",
