@@ -6,7 +6,8 @@ import { useTranslations } from "next-intl";
  * 「saneatsuについて」セクションを表示するコンポーネント
  *
  * @description
- * プロフィール、趣味・興味関心、経歴サマリー、ビジョンを表示する。
+ * プロフィール、趣味・興味関心、ビジョンを表示する。
+ * 詳細な経歴は別セクションにあるため、プロフィールで案内を行う。
  */
 export function AboutAuthorSection() {
 	const t = useTranslations("about.author");
@@ -28,15 +29,6 @@ export function AboutAuthorSection() {
 					<h3 className="text-lg font-semibold">{t("interests.title")}</h3>
 					<p className="text-muted-foreground">{t("interests.tech")}</p>
 					<p className="text-muted-foreground">{t("interests.hobbies")}</p>
-				</div>
-
-				{/* 経歴サマリー */}
-				<div className="space-y-2">
-					<h3 className="text-lg font-semibold">{t("careerSummary.title")}</h3>
-					<p className="text-muted-foreground">{t("careerSummary.role")}</p>
-					<p className="text-muted-foreground">
-						{t("careerSummary.expertise")}
-					</p>
 				</div>
 
 				{/* ビジョン */}
