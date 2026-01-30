@@ -73,6 +73,7 @@
 			"detail": {
 				"title": "経歴詳細",
 				"period": "期間",
+				"employmentType": "雇用形態",
 				"role": "役職",
 				"category": "カテゴリ",
 				"description": "説明",
@@ -190,7 +191,8 @@
 						}
 					],
 					"category": "work",
-					"logoUrl": "/company-logo/algoage-logo.webp"
+					"logoUrl": "/company-logo/algoage-logo.webp",
+					"employmentType": "正社員"
 				},
 				{
 					"slug": "accenture",
@@ -217,7 +219,8 @@
 						}
 					],
 					"category": "work",
-					"logoUrl": "/company-logo/accenture-logo.svg"
+					"logoUrl": "/company-logo/accenture-logo.svg",
+					"employmentType": "正社員"
 				}
 			]
 		},

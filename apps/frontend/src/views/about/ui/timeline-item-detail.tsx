@@ -86,6 +86,18 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 				</CardContent>
 			</Card>
 
+			{/* 雇用形態セクション */}
+			{item.employmentType && (
+				<Card>
+					<CardHeader>
+						<CardTitle>{t("experience.detail.employmentType")}</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<p className="text-base">{item.employmentType}</p>
+					</CardContent>
+				</Card>
+			)}
+
 			{/* 役職セクション */}
 			{item.role && item.role.length > 0 && (
 				<Card>
