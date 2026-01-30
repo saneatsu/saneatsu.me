@@ -154,9 +154,14 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 
 								{/* 業務内容 */}
 								<div className="space-y-2">
-									<h4 className="text-base font-semibold">
-										{t("experience.detail.content")}
-									</h4>
+									{/* 経営統合についての項目では見出しを表示しない */}
+									{/* Mobile Order Lab・tacoms向けの特殊な処理 */}
+									{desc.title !== "経営統合について" &&
+										desc.title !== "About the Business Integration" && (
+											<h4 className="text-base font-semibold">
+												{t("experience.detail.content")}
+											</h4>
+										)}
 									<MarkdownPreview
 										content={desc.content}
 										language={locale}
