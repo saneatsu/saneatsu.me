@@ -47,6 +47,50 @@
 	},
 	"about": {
 		"title": "About",
+		"blog": {
+			"title": "About This Blog",
+			"purpose": {
+				"title": "Purpose",
+				"items": [
+					"Sharing technical information",
+					"Output of learning",
+					"Portfolio",
+					"Organizing my thoughts and sharing/structuring with the team"
+				]
+			},
+			"history": {
+				"title": "History",
+				"content": "(To be filled in)"
+			},
+			"policy": {
+				"title": "Editorial Policy",
+				"principle1": "Articles are published without waiting for perfection and are continuously updated. Content reflects the time of writing and may change over time",
+				"principle2": "This approach is inspired by GitLab's transparency-focused culture",
+				"bookLink": "The GitLab Handbook (Remote Work Best Practices)"
+			}
+		},
+		"author": {
+			"title": "About Me",
+			"profile": {
+				"title": "Profile",
+				"content": "(To be filled in)",
+				"location": "(To be filled in)"
+			},
+			"interests": {
+				"title": "Interests & Hobbies",
+				"tech": "(To be filled in)",
+				"hobbies": "I've been creating software for a long time, but I also enjoy hands-on crafts like ikebana (Sogetsu school) and embroidery."
+			},
+			"careerSummary": {
+				"title": "Career Summary",
+				"role": "(To be filled in)",
+				"expertise": "(To be filled in)"
+			},
+			"vision": {
+				"title": "Vision",
+				"content": "(To be filled in)"
+			}
+		},
 		"tech": {
 			"title": "Tech Stack",
 			"languages": {

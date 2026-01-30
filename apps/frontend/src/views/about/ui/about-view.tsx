@@ -71,7 +71,6 @@ import {
 import type { TimelineItem } from "@/shared/types";
 import {
 	BadgeWithIcon,
-	BlogNotice,
 	Sheet,
 	SheetContent,
 	SheetHeader,
@@ -79,6 +78,8 @@ import {
 	StepperTimeline,
 } from "@/shared/ui";
 
+import { AboutAuthorSection } from "./about-author-section";
+import { AboutBlogSection } from "./about-blog-section";
 import { TimelineItemDetail } from "./timeline-item-detail";
 
 /**
@@ -312,8 +313,11 @@ export function AboutView() {
 					<h1 className="text-4xl font-bold">{t("title")}</h1>
 				</section>
 
-				{/* Blog運営方針 */}
-				<BlogNotice />
+				{/* このブログについて */}
+				<AboutBlogSection />
+
+				{/* saneatsuについて */}
+				<AboutAuthorSection />
 
 				{/* 執筆アクティビティ */}
 				<section className="pt-4">
