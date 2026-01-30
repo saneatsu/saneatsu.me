@@ -89,7 +89,7 @@
 						"from": "2025-03",
 						"to": null
 					},
-					"companyName": "個人事業主",
+					"companyName": "株式会社Mobile Order Lab・株式会社tacoms",
 					"role": [
 						"アドバイザー",
 						"スクラムマスター",
@@ -109,7 +109,11 @@
 							]
 						}
 					],
-					"category": "work"
+					"category": "work",
+					"logoUrls": [
+						"/company-logo/mobile-order-lab-logo.png",
+						"/company-logo/tacoms-logo.webp"
+					]
 				},
 				{
 					"slug": "algoage-inc",
@@ -191,7 +195,7 @@
 						}
 					],
 					"category": "work",
-					"logoUrl": "/company-logo/algoage-logo.webp",
+					"logoUrls": ["/company-logo/algoage-logo.webp"],
 					"employmentType": "正社員"
 				},
 				{
@@ -219,7 +223,7 @@
 						}
 					],
 					"category": "work",
-					"logoUrl": "/company-logo/accenture-logo.svg",
+					"logoUrls": ["/company-logo/accenture-logo.svg"],
 					"employmentType": "正社員"
 				}
 			]
