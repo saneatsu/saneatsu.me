@@ -1,6 +1,7 @@
 "use client";
 
 import { defineStepper } from "@stepperize/react";
+import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import * as React from "react";
 import type { SimpleIcon } from "simple-icons";
@@ -187,7 +188,10 @@ export function StepperTimeline({
 										className="cursor-pointer transition-all hover:shadow-md hover:border-primary/20 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
 										aria-label={`View details for ${item.companyName}`}
 									>
-										<CardContent>{itemContent}</CardContent>
+										<CardContent className="flex items-center justify-between">
+											<div className="flex-1">{itemContent}</div>
+											<ChevronRight className="h-5 w-5 text-muted-foreground shrink-0 ml-4" />
+										</CardContent>
 									</Card>
 								) : (
 									itemContent
