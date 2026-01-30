@@ -49,7 +49,7 @@ export function AboutBlogSection() {
 							{t("policy.principle2")}
 							{" - "}
 							<a
-								href="https://www.amazon.co.jp/dp/4798170577"
+								href="https://amzn.to/4q6DVyI"
 								target="_blank"
 								rel="noopener noreferrer"
 								className="inline-flex items-center gap-1 text-primary hover:underline"
