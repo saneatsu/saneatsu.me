@@ -59,14 +59,19 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 			{/* 会社名セクション */}
 			<div>
 				<h2 className="text-2xl font-bold flex items-center gap-3">
-					{item.logoUrl && (
-						<Image
-							src={item.logoUrl}
-							alt={`${item.companyName} logo`}
-							width={32}
-							height={32}
-							className="object-contain shrink-0"
-						/>
+					{item.logoUrls && item.logoUrls.length > 0 && (
+						<div className="flex items-center gap-2">
+							{item.logoUrls.map((logoUrl, index) => (
+								<Image
+									key={logoUrl}
+									src={logoUrl}
+									alt={`${item.companyName} logo ${index + 1}`}
+									width={32}
+									height={32}
+									className="object-contain shrink-0"
+								/>
+							))}
+						</div>
 					)}
 					<span>{item.companyName}</span>
 				</h2>
@@ -85,6 +90,18 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 					</p>
 				</CardContent>
 			</Card>
+
+			{/* 雇用形態セクション */}
+			{item.employmentType && (
+				<Card>
+					<CardHeader>
+						<CardTitle>{t("experience.detail.employmentType")}</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<p className="text-base">{item.employmentType}</p>
+					</CardContent>
+				</Card>
+			)}
 
 			{/* 役職セクション */}
 			{item.role && item.role.length > 0 && (
@@ -137,9 +154,14 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 
 								{/* 業務内容 */}
 								<div className="space-y-2">
-									<h4 className="text-base font-semibold">
-										{t("experience.detail.content")}
-									</h4>
+									{/* 経営統合についての項目では見出しを表示しない */}
+									{/* Mobile Order Lab・tacoms向けの特殊な処理 */}
+									{desc.title !== "経営統合について" &&
+										desc.title !== "About the Business Integration" && (
+											<h4 className="text-base font-semibold">
+												{t("experience.detail.content")}
+											</h4>
+										)}
 									<MarkdownPreview
 										content={desc.content}
 										language={locale}
