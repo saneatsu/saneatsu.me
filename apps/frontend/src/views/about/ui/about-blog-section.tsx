@@ -1,7 +1,9 @@
 "use client";
 
 import { ExternalLink } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+
+import { MarkdownPreview } from "@/shared/ui";
 
 /**
  * 「このブログについて」セクションを表示するコンポーネント
@@ -12,6 +14,7 @@ import { useTranslations } from "next-intl";
  */
 export function AboutBlogSection() {
 	const t = useTranslations("about.blog");
+	const locale = useLocale() as "ja" | "en";
 
 	// 翻訳ファイルからブログの目的リストを取得
 	const purposeItems: string[] = t.raw("purpose.items") as string[];
@@ -34,7 +37,7 @@ export function AboutBlogSection() {
 				{/* ブログの歴史 */}
 				<div className="space-y-2">
 					<h3 className="text-lg font-semibold">{t("history.title")}</h3>
-					<p className="text-muted-foreground">{t("history.content")}</p>
+					<MarkdownPreview content={t("history.content")} language={locale} />
 				</div>
 
 				{/* 運営方針 */}
