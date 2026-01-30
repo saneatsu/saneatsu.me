@@ -73,17 +73,11 @@
 			"title": "About Me",
 			"profile": {
 				"title": "Profile",
-				"content": "I'm an engineer born in Yamagata, raised in Hokkaido, and currently based in Tokyo. For more details, please see the \"Career\" section below.",
-				"location": "(To be filled in)"
+				"content": "I'm an engineer born in Yamagata, raised in Hokkaido, and currently based in Tokyo. For more details, please see the \"Career\" section below."
 			},
 			"interests": {
 				"title": "Interests & Hobbies",
-				"tech": "(To be filled in)",
 				"hobbies": "I've been creating software for a long time, but I also enjoy hands-on crafts like ikebana (Sogetsu school) and embroidery."
-			},
-			"vision": {
-				"title": "Vision",
-				"content": "(To be filled in)"
 			}
 		},
 		"tech": {
