@@ -96,7 +96,7 @@
 		"zod": "^4.3.5"
 	},
 	"devDependencies": {
-		"@playwright/test": "^1.57.0",
+		"@playwright/test": "^1.58.1",
 		"@storybook/addon-docs": "^10.2.1",
 		"@storybook/addon-onboarding": "^10.2.1",
 		"@storybook/nextjs": "^10.2.1",
