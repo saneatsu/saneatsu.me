@@ -368,6 +368,23 @@ export function AboutView() {
 						/>
 					</section>
 
+					{/* 仕事への姿勢と考え方セクション */}
+					<section className="space-y-6 pb-12 border-b">
+						<div className="space-y-2">
+							<h2 className="text-2xl font-bold">
+								{t("recommendedArticles.title")}
+							</h2>
+							<p className="text-muted-foreground">
+								{t("recommendedArticles.description")}
+							</p>
+						</div>
+						<div className="space-y-4">
+							{RECOMMENDED_ARTICLE_URLS.map((url) => (
+								<UrlCard key={url} url={url} />
+							))}
+						</div>
+					</section>
+
 					{/* 技術スタックセクション */}
 					<section className="space-y-6 pb-12 border-b">
 						<h2 className="text-2xl font-bold">{t("tech.title")}</h2>
@@ -431,33 +448,6 @@ export function AboutView() {
 									))}
 								</div>
 							</div>
-						</div>
-					</section>
-
-					{/* 経歴セクション */}
-					<section className="space-y-6 pb-12 border-b">
-						<h2 className="text-2xl font-bold mb-2">{t("experience.title")}</h2>
-						<StepperTimeline
-							items={timelineItems}
-							onItemClick={handleItemClick}
-							presentLabel={t("experience.detail.present")}
-						/>
-					</section>
-
-					{/* 仕事への姿勢と考え方セクション */}
-					<section className="space-y-6 pb-12 border-b">
-						<div className="space-y-2">
-							<h2 className="text-2xl font-bold">
-								{t("recommendedArticles.title")}
-							</h2>
-							<p className="text-muted-foreground">
-								{t("recommendedArticles.description")}
-							</p>
-						</div>
-						<div className="space-y-4">
-							{RECOMMENDED_ARTICLE_URLS.map((url) => (
-								<UrlCard key={url} url={url} />
-							))}
 						</div>
 					</section>
 
