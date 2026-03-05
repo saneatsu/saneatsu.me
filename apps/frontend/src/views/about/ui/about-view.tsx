@@ -490,7 +490,7 @@ export function AboutView() {
 
 			{/* 経歴詳細Sheet */}
 			<Sheet open={isSheetOpen} onOpenChange={handleSheetClose}>
-				<SheetContent className="overflow-y-auto w-[90vw] md:w-[70vw] md:max-w-[800px]">
+				<SheetContent className="overflow-y-auto w-[90vw] md:w-[80vw] md:max-w-[1000px]">
 					<SheetHeader className="sr-only p-0">
 						<SheetTitle>
 							{selectedItem?.companyName ?? t("experience.detail.title")}
