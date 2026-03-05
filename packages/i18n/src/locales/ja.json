@@ -120,7 +120,7 @@
 					"slug": "mobile-order-lab-and-tacoms",
 					"period": {
 						"from": "2025-03",
-						"to": null
+						"to": "2026-03"
 					},
 					"companyName": "株式会社Mobile Order Lab・株式会社tacoms",
 					"role": [
@@ -189,7 +189,7 @@
 							"content": "チャットの分岐ワークフローを簡単に作成し、LINEのUIでプレビューできるエディターの作成。\n\n抜本的に業務改善をするために中核となるボトルネックを分析・特定し、解決のために1人で1週間でデモプロダクトを作成して社内向けに公開した。\nそのまま空いている時間で開発を続けて2023/11からはプロダクトが認められチームとして動き始めた。Next.js, React Flowで、ワークフローを作成するリッチなエディターを作成した。エンジニア1年目の新入社員を含んだチームで約8ヶ月でv0.1となるプロダクトを作成し、最大75%のリードタイムを削減した。",
 							"techStack": [
 								"Next.js",
-								"ReactFlow",
+								"React Flow",
 								"Tailwind CSS",
 								"shadcn/ui",
 								"Vercel"
@@ -288,7 +288,8 @@
 			"description": "どんな姿勢で仕事に向き合っているか、どんなことを大切にしているか。日々の仕事や学びの中で考えていることを記事にしています。自分がどんな人間か、少しでも伝われば嬉しいです。"
 		},
 		"contact": {
-			"title": "SNS・Webサイト"
+			"title": "SNS・Webサイト",
+			"dmNote": "（一番気づきやすいです！）"
 		}
 	},
 	"contributions": {
@@ -569,7 +570,7 @@
 		},
 		"contact": {
 			"title": "お問い合わせ",
-			"content": "本プライバシーポリシーに関するお問い合わせは、nito.tech.official@gmail.com までご連絡ください。"
+			"content": "本プライバシーポリシーに関するお問い合わせは、saneatsu.wakana@gmail.com までご連絡ください。"
 		},
 		"changes": {
 			"title": "変更について",
@@ -641,7 +642,7 @@
 		},
 		"contact": {
 			"title": "お問い合わせ",
-			"content": "本規約および当サイトの運用に関するお問い合わせは、nito.tech.official@gmail.com までご連絡ください。"
+			"content": "本規約および当サイトの運用に関するお問い合わせは、saneatsu.wakana@gmail.com までご連絡ください。"
 		},
 		"lastUpdated": "最終更新日"
 	}

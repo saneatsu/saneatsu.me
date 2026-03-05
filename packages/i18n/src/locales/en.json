@@ -120,7 +120,7 @@
 					"slug": "mobile-order-lab-and-tacoms",
 					"period": {
 						"from": "2025-03",
-						"to": null
+						"to": "2026-03"
 					},
 					"companyName": "Mobile Order Lab, Inc.・tacoms, Inc.",
 					"role": ["Advisor", "Scrum Master", "Tech Lead", "Frontend Engineer"],
@@ -184,7 +184,7 @@
 							"content": "Creation of an editor that makes it easy to create chat branching workflows and preview them in LINE's UI.\n\nTo fundamentally improve operations, I analyzed and identified the core bottlenecks, and created a demo product in one week by myself and released it internally.\nI continued development in my spare time, and from November 2023, the product was recognized and the team started moving. I created a rich editor for creating workflows using Next.js and React Flow. With a team including a first-year engineer, we created a v0.1 product in about 8 months, reducing lead time by up to 75%.",
 							"techStack": [
 								"Next.js",
-								"ReactFlow",
+								"React Flow",
 								"Tailwind CSS",
 								"shadcn/ui",
 								"Vercel"
@@ -279,7 +279,8 @@
 			"description": "How I approach my work, and what I value most. I write about things I think about through my daily work and learning. I hope this gives you a glimpse of who I am."
 		},
 		"contact": {
-			"title": "SNS & Websites"
+			"title": "SNS & Websites",
+			"dmNote": "(Quickest way to reach me!)"
 		}
 	},
 	"contributions": {
@@ -560,7 +561,7 @@
 		},
 		"contact": {
 			"title": "Contact Us",
-			"content": "For inquiries about this Privacy Policy, please contact nito.tech.official@gmail.com."
+			"content": "For inquiries about this Privacy Policy, please contact saneatsu.wakana@gmail.com."
 		},
 		"changes": {
 			"title": "Changes to This Policy",
@@ -632,7 +633,7 @@
 		},
 		"contact": {
 			"title": "Contact",
-			"content": "For questions regarding these Terms or the operation of the Site, please contact nito.tech.official@gmail.com."
+			"content": "For questions regarding these Terms or the operation of the Site, please contact saneatsu.wakana@gmail.com."
 		},
 		"lastUpdated": "Last Updated"
 	}

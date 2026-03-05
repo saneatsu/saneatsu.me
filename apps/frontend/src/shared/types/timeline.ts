@@ -1,6 +1,100 @@
 import type { SimpleIcon } from "simple-icons";
 
 /**
+ * aboutページで使用可能な技術スタック名の一覧
+ *
+ * @description
+ * aboutページの技術スタックセクションに表示される全技術名。
+ * 経歴Drawer内のtechStackもこのリストに含まれる名前のみ使用できる。
+ * 新しい技術を追加する場合は、このリストとabout-view.tsxの両方に追加すること。
+ */
+export const TECH_STACK_NAMES = [
+	// Languages
+	"TypeScript",
+	"JavaScript",
+	"Python",
+	"Dart",
+	"HTML5",
+	"CSS",
+	"Visual Basic",
+	"VBA",
+	// Frameworks & Libraries
+	"React",
+	"Next.js",
+	"Vue.js",
+	"Nuxt",
+	"Remix",
+	"React Native",
+	"Expo",
+	"NativeWind",
+	"Flutter",
+	"Rails",
+	"Sass",
+	"Tailwind CSS",
+	"MUI",
+	"Vuetify",
+	"Radix UI",
+	"shadcn/ui",
+	"Mantine",
+	"PrimeVue",
+	"Pinia",
+	"Node.js",
+	"Hono",
+	"Fastify",
+	"Flask",
+	"Django",
+	"PyTorch",
+	"TensorFlow",
+	"Keras",
+	"OpenCV",
+	"Vite",
+	"Vitest",
+	"Testing Library",
+	"Storybook",
+	"Playwright",
+	"TanStack",
+	"Kysely",
+	"Drizzle ORM",
+	"Prisma",
+	"Zod",
+	"React Hook Form",
+	"React Flow",
+	"Konva",
+	"Lefthook",
+	"Biome",
+	"Prettier",
+	// Databases
+	"PostgreSQL",
+	"SQLite",
+	"Supabase",
+	"Turso",
+	"BigQuery",
+	// Tools & Services
+	"Git",
+	"GitHub",
+	"GitHub Actions",
+	"Vercel",
+	"Cloudflare",
+	"AWS",
+	"Docker",
+	"Notion",
+	"Slack",
+	"Stripe",
+	"Asana",
+	"Dependabot",
+] as const;
+
+/**
+ * 技術スタック名のユニオン型
+ *
+ * @description
+ * TECH_STACK_NAMESから導出されたリテラル型。
+ * 経歴の技術スタックフィールドに使用することで、
+ * aboutページの技術スタックとの整合性を型レベルで担保する。
+ */
+export type TechStackName = (typeof TECH_STACK_NAMES)[number];
+
+/**
  * タイムラインアイテムのカテゴリ
  *
  * @description
@@ -41,12 +135,10 @@ export type TimelineItemDescription = {
 	 *
 	 * @description
 	 * その項目で使用した技術名の配列。
+	 * aboutページの技術スタック一覧（TECH_STACK_NAMES）に含まれる名前のみ使用可能。
 	 * 表示時にsimple-iconsから対応するアイコンを取得してバッジ形式で表示する。
-	 *
-	 * @example ["Python", "Django"]
-	 * @example ["VBA"]
 	 */
-	techStack?: string[];
+	techStack?: TechStackName[];
 
 	/**
 	 * その他の情報（オプショナル）

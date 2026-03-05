@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import type { SimpleIcon } from "simple-icons";
 import {
+	siAsana,
 	siBiome,
 	siCloudflare,
 	siCss,
@@ -15,6 +16,7 @@ import {
 	siDocker,
 	siDotnet,
 	siDrizzle,
+	siExpo,
 	siFastify,
 	siFlask,
 	siFlutter,
@@ -25,13 +27,16 @@ import {
 	siHono,
 	siHtml5,
 	siJavascript,
+	siKeras,
 	siKonva,
+	siLefthook,
 	siMantine,
 	siMui,
 	siNextdotjs,
 	siNodedotjs,
 	siNotion,
 	siNuxt,
+	siOpencv,
 	siPinia,
 	siPostgresql,
 	siPrettier,
@@ -44,6 +49,7 @@ import {
 	siReact,
 	siReacthookform,
 	siRemix,
+	siRubyonrails,
 	siSass,
 	siShadcnui,
 	siSqlite,
@@ -51,19 +57,22 @@ import {
 	siStripe,
 	siSupabase,
 	siTailwindcss,
+	siTanstack,
+	siTensorflow,
+	siTestinglibrary,
 	siTurso,
 	siTypescript,
 	siVercel,
 	siVite,
 	siVitest,
 	siVuedotjs,
+	siVuetify,
 	siX,
 	siXyflow,
 	siZenn,
 	siZod,
 } from "simple-icons";
 
-import { UrlCard } from "@/entities/article";
 import type { ContributionCopy } from "@/features/contributions";
 import {
 	ContributionHeatmap,
@@ -87,18 +96,6 @@ import { TimelineItemDetail } from "./timeline-item-detail";
  * クエリパラメータ名の定数
  */
 const COMPANY_QUERY_KEY = "company" as const;
-
-/**
- * aboutページで表示するおすすめ記事のURL一覧
- * 自分の思想や仕事観を伝える記事を厳選している
- */
-const RECOMMENDED_ARTICLE_URLS = [
-	"https://saneatsu.me/ja/blog/3-keys-to-growth-and-achievement",
-	"https://saneatsu.me/ja/blog/face-the-task-dont-skip",
-	"https://saneatsu.me/ja/blog/writing-is-thinking",
-	"https://saneatsu.me/ja/blog/scrum-and-painting",
-	"https://saneatsu.me/ja/blog/my-credo",
-] as const;
 
 /**
  * 技術アイテムの型定義
@@ -181,13 +178,19 @@ export function AboutView() {
 			{ name: "Vue.js", icon: siVuedotjs },
 			{ name: "Nuxt", icon: siNuxt },
 			{ name: "Remix", icon: siRemix },
+			{ name: "React Native", icon: siReact },
+			{ name: "Expo", icon: siExpo },
+			{ name: "NativeWind", icon: siTailwindcss },
 			{ name: "Flutter", icon: siFlutter },
+			{ name: "Rails", icon: siRubyonrails },
 			{ name: "Sass", icon: siSass },
 			{ name: "Tailwind CSS", icon: siTailwindcss },
 			{ name: "MUI", icon: siMui },
+			{ name: "Vuetify", icon: siVuetify },
 			{ name: "Radix UI", icon: siRadixui },
 			{ name: "shadcn/ui", icon: siShadcnui },
 			{ name: "Mantine", icon: siMantine },
+			{ name: "PrimeVue", icon: siPrimevue },
 			{ name: "Pinia", icon: siPinia },
 			{ name: "Node.js", icon: siNodedotjs },
 			{ name: "Hono", icon: siHono },
@@ -195,10 +198,15 @@ export function AboutView() {
 			{ name: "Flask", icon: siFlask },
 			{ name: "Django", icon: siDjango },
 			{ name: "PyTorch", icon: siPytorch },
+			{ name: "TensorFlow", icon: siTensorflow },
+			{ name: "Keras", icon: siKeras },
+			{ name: "OpenCV", icon: siOpencv },
 			{ name: "Vite", icon: siVite },
 			{ name: "Vitest", icon: siVitest },
+			{ name: "Testing Library", icon: siTestinglibrary },
 			{ name: "Storybook", icon: siStorybook },
 			{ name: "Playwright" },
+			{ name: "TanStack", icon: siTanstack },
 			{ name: "Kysely" },
 			{ name: "Drizzle ORM", icon: siDrizzle },
 			{ name: "Prisma", icon: siPrisma },
@@ -206,7 +214,7 @@ export function AboutView() {
 			{ name: "React Hook Form", icon: siReacthookform },
 			{ name: "React Flow", icon: siXyflow },
 			{ name: "Konva", icon: siKonva },
-			{ name: "PrimeVue", icon: siPrimevue },
+			{ name: "Lefthook", icon: siLefthook },
 			{ name: "Biome", icon: siBiome },
 			{ name: "Prettier", icon: siPrettier },
 		],
@@ -223,10 +231,12 @@ export function AboutView() {
 			{ name: "GitHub Actions", icon: siGithubactions },
 			{ name: "Vercel", icon: siVercel },
 			{ name: "Cloudflare", icon: siCloudflare },
+			{ name: "AWS" },
 			{ name: "Docker", icon: siDocker },
 			{ name: "Notion", icon: siNotion },
 			{ name: "Slack" },
 			{ name: "Stripe", icon: siStripe },
+			{ name: "Asana", icon: siAsana },
 			{ name: "Dependabot", icon: siDependabot },
 		],
 	};
@@ -432,33 +442,6 @@ export function AboutView() {
 						</div>
 					</section>
 
-					{/* 経歴セクション */}
-					<section className="space-y-6 pb-12 border-b">
-						<h2 className="text-2xl font-bold mb-2">{t("experience.title")}</h2>
-						<StepperTimeline
-							items={timelineItems}
-							onItemClick={handleItemClick}
-							presentLabel={t("experience.detail.present")}
-						/>
-					</section>
-
-					{/* 仕事への姿勢と考え方セクション */}
-					<section className="space-y-6 pb-12 border-b">
-						<div className="space-y-2">
-							<h2 className="text-2xl font-bold">
-								{t("recommendedArticles.title")}
-							</h2>
-							<p className="text-muted-foreground">
-								{t("recommendedArticles.description")}
-							</p>
-						</div>
-						<div className="space-y-4">
-							{RECOMMENDED_ARTICLE_URLS.map((url) => (
-								<UrlCard key={url} url={url} />
-							))}
-						</div>
-					</section>
-
 					{/* SNS・連絡先セクション */}
 					<section className="space-y-4">
 						<h2 className="text-2xl font-bold">{t("contact.title")}</h2>
@@ -490,6 +473,11 @@ export function AboutView() {
 											</svg>
 											<span>
 												{social.name}: {social.username}
+												{social.name === "X (Twitter)" && (
+													<span className="ml-1 text-sm text-muted-foreground">
+														{t("contact.dmNote")}
+													</span>
+												)}
 											</span>
 										</a>
 									</div>
@@ -497,11 +485,11 @@ export function AboutView() {
 							})}
 							<div>
 								<a
-									href="mailto:nito.tech.official@gmail.com"
+									href="mailto:saneatsu.wakana@gmail.com"
 									className="inline-flex items-center gap-2 text-foreground hover:underline"
 								>
 									<Mail className="h-4 w-4" />
-									<span>Email: nito.tech.official@gmail.com</span>
+									<span>Email: saneatsu.wakana@gmail.com</span>
 								</a>
 							</div>
 						</div>
