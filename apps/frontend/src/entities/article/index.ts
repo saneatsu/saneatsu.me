@@ -33,4 +33,5 @@ export {
 	RakutenProductCard,
 	type RakutenProductCardProps,
 } from "./ui/rakuten-product-card/rakuten-product-card";
+export { UrlCard } from "./ui/url-card/url-card";
 export { WikiLink } from "./ui/wiki-link/wiki-link";
