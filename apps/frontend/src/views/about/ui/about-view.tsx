@@ -63,6 +63,7 @@ import {
 	siZod,
 } from "simple-icons";
 
+import { UrlCard } from "@/entities/article";
 import type { ContributionCopy } from "@/features/contributions";
 import {
 	ContributionHeatmap,
@@ -85,6 +86,18 @@ import { TimelineItemDetail } from "./timeline-item-detail";
  * クエリパラメータ名の定数
  */
 const COMPANY_QUERY_KEY = "company" as const;
+
+/**
+ * aboutページで表示するおすすめ記事のURL一覧
+ * 自分の思想や仕事観を伝える記事を厳選している
+ */
+const RECOMMENDED_ARTICLE_URLS = [
+	"https://saneatsu.me/ja/blog/3-keys-to-growth-and-achievement",
+	"https://saneatsu.me/ja/blog/face-the-task-dont-skip",
+	"https://saneatsu.me/ja/blog/writing-is-thinking",
+	"https://saneatsu.me/ja/blog/scrum-and-painting",
+	"https://saneatsu.me/ja/blog/my-credo",
+] as const;
 
 /**
  * 技術アイテムの型定義
@@ -406,6 +419,23 @@ export function AboutView() {
 							onItemClick={handleItemClick}
 							presentLabel={t("experience.detail.present")}
 						/>
+					</section>
+
+					{/* 仕事への姿勢と考え方セクション */}
+					<section className="space-y-6 pb-12 border-b">
+						<div className="space-y-2">
+							<h2 className="text-2xl font-bold">
+								{t("recommendedArticles.title")}
+							</h2>
+							<p className="text-muted-foreground">
+								{t("recommendedArticles.description")}
+							</p>
+						</div>
+						<div className="space-y-4">
+							{RECOMMENDED_ARTICLE_URLS.map((url) => (
+								<UrlCard key={url} url={url} />
+							))}
+						</div>
 					</section>
 
 					{/* SNS・Webサイトセクション */}
