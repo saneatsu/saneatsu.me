@@ -181,6 +181,8 @@ export function AboutView() {
 			{ name: "Vue.js", icon: siVuedotjs },
 			{ name: "Nuxt", icon: siNuxt },
 			{ name: "Remix", icon: siRemix },
+			{ name: "React Native", icon: siReact },
+			{ name: "NativeWind", icon: siTailwindcss },
 			{ name: "Flutter", icon: siFlutter },
 			{ name: "Sass", icon: siSass },
 			{ name: "Tailwind CSS", icon: siTailwindcss },

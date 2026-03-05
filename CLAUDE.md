@@ -34,6 +34,9 @@
   - react-hook-form
   - tailwindcss-animate
   - next-intl
+- モバイル
+  - React Native
+  - NativeWind
 - UI フレームワーク
   - shadcn/ui
 - バリデーション
