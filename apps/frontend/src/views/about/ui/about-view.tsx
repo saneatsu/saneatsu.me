@@ -490,6 +490,11 @@ export function AboutView() {
 											</svg>
 											<span>
 												{social.name}: {social.username}
+												{social.name === "X (Twitter)" && (
+													<span className="ml-1 text-sm text-muted-foreground">
+														{t("contact.dmNote")}
+													</span>
+												)}
 											</span>
 										</a>
 									</div>
