@@ -184,7 +184,7 @@
 							"content": "Creation of an editor that makes it easy to create chat branching workflows and preview them in LINE's UI.\n\nTo fundamentally improve operations, I analyzed and identified the core bottlenecks, and created a demo product in one week by myself and released it internally.\nI continued development in my spare time, and from November 2023, the product was recognized and the team started moving. I created a rich editor for creating workflows using Next.js and React Flow. With a team including a first-year engineer, we created a v0.1 product in about 8 months, reducing lead time by up to 75%.",
 							"techStack": [
 								"Next.js",
-								"ReactFlow",
+								"React Flow",
 								"Tailwind CSS",
 								"shadcn/ui",
 								"Vercel"
