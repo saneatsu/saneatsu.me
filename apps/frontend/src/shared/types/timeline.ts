@@ -25,6 +25,7 @@ export const TECH_STACK_NAMES = [
 	"Nuxt",
 	"Remix",
 	"React Native",
+	"Expo",
 	"NativeWind",
 	"Flutter",
 	"Rails",
@@ -48,8 +49,10 @@ export const TECH_STACK_NAMES = [
 	"OpenCV",
 	"Vite",
 	"Vitest",
+	"Testing Library",
 	"Storybook",
 	"Playwright",
+	"TanStack",
 	"Kysely",
 	"Drizzle ORM",
 	"Prisma",
@@ -57,6 +60,7 @@ export const TECH_STACK_NAMES = [
 	"React Hook Form",
 	"React Flow",
 	"Konva",
+	"Lefthook",
 	"Biome",
 	"Prettier",
 	// Databases
@@ -76,6 +80,7 @@ export const TECH_STACK_NAMES = [
 	"Notion",
 	"Slack",
 	"Stripe",
+	"Asana",
 	"Dependabot",
 ] as const;
 
