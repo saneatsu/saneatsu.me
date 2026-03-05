@@ -504,11 +504,11 @@ export function AboutView() {
 							})}
 							<div>
 								<a
-									href="mailto:nito.tech.official@gmail.com"
+									href="mailto:saneatsu.wakana@gmail.com"
 									className="inline-flex items-center gap-2 text-foreground hover:underline"
 								>
 									<Mail className="h-4 w-4" />
-									<span>Email: nito.tech.official@gmail.com</span>
+									<span>Email: saneatsu.wakana@gmail.com</span>
 								</a>
 							</div>
 						</div>
