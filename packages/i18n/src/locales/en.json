@@ -241,6 +241,10 @@
 			"description": "A snapshot of my Japanese writing volume over the last 365 days.",
 			"cta": "Read more posts"
 		},
+		"recommendedArticles": {
+			"title": "My Approach to Work",
+			"description": "How I approach my work, and what I value most. I write about things I think about through my daily work and learning. I hope this gives you a glimpse of who I am."
+		},
 		"contact": {
 			"title": "SNS & Websites"
 		}
