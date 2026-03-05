@@ -120,7 +120,7 @@
 					"slug": "mobile-order-lab-and-tacoms",
 					"period": {
 						"from": "2025-03",
-						"to": null
+						"to": "2026-03"
 					},
 					"companyName": "Mobile Order Lab, Inc.・tacoms, Inc.",
 					"role": ["Advisor", "Scrum Master", "Tech Lead", "Frontend Engineer"],
