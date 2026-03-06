@@ -16,10 +16,6 @@ import {
 	MarkdownPreview,
 	ShareButtons,
 	TableOfContents,
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
 } from "@/shared/ui";
 
 export interface ArticleDetailViewProps {
@@ -176,33 +172,25 @@ export function ArticleDetailView({
 				<div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8 lg:gap-12">
 					<div className="min-w-0 order-2 lg:order-1">
 						{/* Markdownコピーボタン + シェアボタン（上部） */}
-						<div className="flex justify-end items-center gap-2">
-							<TooltipProvider>
-								<Tooltip>
-									<TooltipTrigger asChild>
-										<button
-											type="button"
-											onClick={handleCopyMarkdown}
-											className="flex h-10 w-10 items-center justify-center bg-background rounded-md transition-colors hover:text-blue-500 cursor-pointer"
-											aria-label="Copy Markdown"
-										>
-											<svg
-												role="img"
-												viewBox="0 0 24 24"
-												className="h-4 w-4"
-												fill="currentColor"
-												aria-label={siMarkdown.title}
-											>
-												<title>{siMarkdown.title}</title>
-												<path d={siMarkdown.path} />
-											</svg>
-										</button>
-									</TooltipTrigger>
-									<TooltipContent>
-										<p>{tShare("copyMarkdownTooltip")}</p>
-									</TooltipContent>
-								</Tooltip>
-							</TooltipProvider>
+						<div className="flex justify-between items-center">
+							<button
+								type="button"
+								onClick={handleCopyMarkdown}
+								className="flex items-center gap-1.5 rounded-md pr-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
+								aria-label="Copy Markdown"
+							>
+								<svg
+									role="img"
+									viewBox="0 0 24 24"
+									className="h-4 w-4"
+									fill="currentColor"
+									aria-label={siMarkdown.title}
+								>
+									<title>{siMarkdown.title}</title>
+									<path d={siMarkdown.path} />
+								</svg>
+								{tShare("copyMarkdownTooltip")}
+							</button>
 							<ShareButtons url={articleUrl} title={article.title || ""} />
 						</div>
 
