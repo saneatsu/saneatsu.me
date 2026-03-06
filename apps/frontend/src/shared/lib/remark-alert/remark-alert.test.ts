@@ -198,6 +198,46 @@ describe("Integration Test", () => {
 			expect(alert.data.hProperties.variant).toBe("destructive");
 		});
 
+		it("[!note]のように小文字でもalertノードに変換する", async () => {
+			const markdown = "> [!note]\n> 小文字でも動くのだ。";
+
+			const processor = unified()
+				.use(remarkParse)
+				.use(remarkGfm)
+				.use(remarkAlert);
+
+			const ast = processor.parse(markdown);
+			const result = (await processor.run(ast)) as ParentNode;
+
+			// alertノード1つのみになることを確認
+			expect(result.children).toHaveLength(1);
+			expect(result.children[0]?.type).toBe("alert");
+
+			// プロパティの検証（小文字でもinfo variantに変換される）
+			const alert = result.children[0] as AlertNode;
+			expect(alert.data.hProperties.variant).toBe("info");
+		});
+
+		it("[!Warning]のように混在ケースでもalertノードに変換する", async () => {
+			const markdown = "> [!Warning]\n> 大文字小文字混在でも動くのだ。";
+
+			const processor = unified()
+				.use(remarkParse)
+				.use(remarkGfm)
+				.use(remarkAlert);
+
+			const ast = processor.parse(markdown);
+			const result = (await processor.run(ast)) as ParentNode;
+
+			// alertノード1つのみになることを確認
+			expect(result.children).toHaveLength(1);
+			expect(result.children[0]?.type).toBe("alert");
+
+			// プロパティの検証（混在ケースでもwarning variantに変換される）
+			const alert = result.children[0] as AlertNode;
+			expect(alert.data.hProperties.variant).toBe("warning");
+		});
+
 		it("タイトル付きの[!INFO]を正しく変換する", async () => {
 			const markdown = "> [!INFO] 重要な情報\n> 詳細な説明文なのだ。";
 
