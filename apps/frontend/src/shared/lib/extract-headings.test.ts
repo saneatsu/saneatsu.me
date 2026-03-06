@@ -75,6 +75,82 @@ describe("Unit Test", () => {
 			expect(result[2].id).toBe("はじめに-2");
 		});
 
+		describe("コードブロック内の見出しの除外", () => {
+			it("コードブロック内の見出しは抽出しない", () => {
+				const markdown = `# 本文の見出し
+
+\`\`\`markdown
+## コードブロック内の見出し
+\`\`\`
+
+## 本文の見出し2`;
+				const result = extractHeadings(markdown);
+
+				expect(result).toHaveLength(2);
+				expect(result[0].text).toBe("本文の見出し");
+				expect(result[1].text).toBe("本文の見出し2");
+			});
+
+			it("言語指定付きコードブロック内の見出しは抽出しない", () => {
+				const markdown = `# はじめに
+
+\`\`\`javascript
+// ## これはコメント
+const x = 1;
+\`\`\`
+
+## まとめ`;
+				const result = extractHeadings(markdown);
+
+				expect(result).toHaveLength(2);
+				expect(result[0].text).toBe("はじめに");
+				expect(result[1].text).toBe("まとめ");
+			});
+
+			it("複数のコードブロックがある場合も正しく処理する", () => {
+				const markdown = `## 見出しA
+
+\`\`\`
+## コードブロック1
+\`\`\`
+
+## 見出しB
+
+\`\`\`typescript
+## コードブロック2
+### コードブロック3
+\`\`\`
+
+## 見出しC`;
+				const result = extractHeadings(markdown);
+
+				expect(result).toHaveLength(3);
+				expect(result[0].text).toBe("見出しA");
+				expect(result[1].text).toBe("見出しB");
+				expect(result[2].text).toBe("見出しC");
+			});
+
+			it("閉じられていないコードブロック内の見出しは抽出しない", () => {
+				const markdown = `## 見出し1
+
+\`\`\`
+## これはコードブロック内
+### これもコードブロック内`;
+				const result = extractHeadings(markdown);
+
+				expect(result).toHaveLength(1);
+				expect(result[0].text).toBe("見出し1");
+			});
+
+			it("インラインコード内の#は見出しとして扱わない（既存動作の確認）", () => {
+				const markdown = "## `# コード内`の見出し";
+				const result = extractHeadings(markdown);
+
+				expect(result).toHaveLength(1);
+				expect(result[0].text).toBe("`# コード内`の見出し");
+			});
+		});
+
 		describe("リンク付き見出しの処理", () => {
 			it("リンク付き見出しからリンクテキストだけを抽出する", () => {
 				const markdown = "# [hoge](https://www.google.com)";

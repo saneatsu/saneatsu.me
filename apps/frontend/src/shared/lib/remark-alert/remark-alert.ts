@@ -19,7 +19,13 @@ interface AlertNode extends Node {
 	data: {
 		hName: "alert";
 		hProperties: {
-			variant: "default" | "info" | "success" | "warning" | "destructive";
+			variant:
+				| "default"
+				| "info"
+				| "success"
+				| "important"
+				| "warning"
+				| "destructive";
 			title?: string;
 		};
 	};
@@ -29,26 +35,40 @@ interface AlertNode extends Node {
 /**
  * Alertの種類を定義
  */
-type AlertType = "NOTE" | "INFO" | "SUCCESS" | "WARNING" | "DANGER";
+type AlertType =
+	| "NOTE"
+	| "TIP"
+	| "INFO"
+	| "SUCCESS"
+	| "IMPORTANT"
+	| "WARNING"
+	| "CAUTION"
+	| "DANGER";
 
 /**
  * Alertタイプをvariantにマッピングする
  *
- * @param type - Alertタイプ（NOTE, INFO, SUCCESS, WARNING, DANGER）
+ * @param type - Alertタイプ（NOTE, TIP, INFO, SUCCESS, IMPORTANT, WARNING, CAUTION, DANGER）
  * @returns 対応するvariant
  */
 function alertTypeToVariant(
 	type: AlertType
-): "default" | "info" | "success" | "warning" | "destructive" {
+): "default" | "info" | "success" | "important" | "warning" | "destructive" {
 	switch (type) {
 		case "NOTE":
-			return "default";
+			return "info";
+		case "TIP":
+			return "success";
 		case "INFO":
 			return "info";
 		case "SUCCESS":
 			return "success";
+		case "IMPORTANT":
+			return "important";
 		case "WARNING":
 			return "warning";
+		case "CAUTION":
+			return "destructive";
 		case "DANGER":
 			return "destructive";
 	}
@@ -60,11 +80,14 @@ function alertTypeToVariant(
  * @description
  * GitHub互換のAlert構文 [!TYPE] を検出する。
  * 対応する形式：
- * - [!NOTE]
- * - [!INFO]
- * - [!SUCCESS]
- * - [!WARNING]
- * - [!DANGER]
+ * - [!NOTE]（青 / info）
+ * - [!TIP]（緑 / success）
+ * - [!INFO]（青 / info）
+ * - [!SUCCESS]（緑 / success）
+ * - [!IMPORTANT]（紫 / important）
+ * - [!WARNING]（黄 / warning）
+ * - [!CAUTION]（赤 / destructive）
+ * - [!DANGER]（赤 / destructive）
  *
  * @param node - チェック対象の段落ノード
  * @returns [AlertType, 残りのテキスト] または null
@@ -97,13 +120,14 @@ function extractAlertType(node: Node): [AlertType, string] | null {
 	const textNode = firstChild as TextNode;
 	const text = textNode.value;
 
-	// [!TYPE] パターンをチェック（改行を含むテキストにも対応）
-	const alertPattern = /^\[!(NOTE|INFO|SUCCESS|WARNING|DANGER)\](.*)/;
+	// [!TYPE] パターンをチェック（改行を含むテキストにも対応、大文字小文字を区別しない）
+	const alertPattern =
+		/^\[!(NOTE|TIP|INFO|SUCCESS|IMPORTANT|WARNING|CAUTION|DANGER)\](.*)/i;
 	const match = text.match(alertPattern);
 
 	if (!match) return null;
 
-	const type = match[1] as AlertType;
+	const type = match[1].toUpperCase() as AlertType;
 	// match[2]はタイトル + 改行 + 本文の可能性がある
 	// 改行の前までをタイトルとして抽出
 	const afterPattern = match[2];
@@ -125,7 +149,7 @@ function extractAlertType(node: Node): [AlertType, string] | null {
  *
  * @features
  * 1. blockquote構文を検出
- * 2. [!NOTE], [!INFO], [!SUCCESS], [!WARNING], [!DANGER] をサポート
+ * 2. [!NOTE], [!TIP], [!INFO], [!SUCCESS], [!IMPORTANT], [!WARNING], [!CAUTION], [!DANGER] をサポート
  * 3. タイトル（[!TYPE]の後のテキスト）とコンテンツを分離
  * 4. remarkBreaksプラグインとの互換性
  *
@@ -202,10 +226,11 @@ export const remarkAlert: Plugin = () => {
 
 					if (!foundAlertPattern && child.type === "text") {
 						const textNode = child as TextNode;
-						// [!TYPE]パターンが含まれているテキストノードを見つける
-						const match = /^\[!(NOTE|INFO|SUCCESS|WARNING|DANGER)\](.*)/.exec(
-							textNode.value
-						);
+						// [!TYPE]パターンが含まれているテキストノードを見つける（大文字小文字を区別しない）
+						const match =
+							/^\[!(NOTE|TIP|INFO|SUCCESS|IMPORTANT|WARNING|CAUTION|DANGER)\](.*)/i.exec(
+								textNode.value
+							);
 						if (match) {
 							foundAlertPattern = true;
 							// match[2]はタイトル + 改行 + 本文の可能性がある

@@ -729,7 +729,7 @@ https://www.youtube.com/watch?v=jNQXAC9IVRw
 		);
 
 		// iframe（埋め込み動画）が存在することを確認
-		// YouTube埋め込みのレンダリングを待つためにwaitForを使用
+		// YouTubeEmbedはdynamic importでssr:falseのため、レンダリングに時間がかかる
 		await waitFor(
 			() => {
 				const iframe = canvasElement.querySelector("iframe");
@@ -739,7 +739,7 @@ https://www.youtube.com/watch?v=jNQXAC9IVRw
 					expect.stringContaining("jNQXAC9IVRw")
 				);
 			},
-			{ timeout: 5000 }
+			{ timeout: 10000 }
 		);
 	},
 };
@@ -1525,7 +1525,21 @@ https://ja.wikipedia.org/wiki/%E6%AD%A6%E8%80%85%E5%B0%8F%E8%B7%AF%E5%AE%9F%E7%A
 URLカードとして表示されます。`,
 		language: "ja",
 	},
-	parameters: {},
+	parameters: {
+		msw: {
+			handlers: [
+				http.get("/api/auth/session", () => HttpResponse.json({})),
+				http.get("http://localhost:8888/api/ogp", () => {
+					return HttpResponse.json({
+						title: "武者小路実篤 - Wikipedia",
+						description: "武者小路 実篤は、日本の小説家・詩人・劇作家・画家。",
+						image: "",
+						url: "https://ja.wikipedia.org/wiki/%E6%AD%A6%E8%80%85%E5%B0%8F%E8%B7%AF%E5%AE%9F%E7%AF%A4",
+					});
+				}),
+			],
+		},
+	},
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		// URLCardコンポーネントのレンダリングとOGP情報の取得を待つ
 		await waitFor(
@@ -1569,7 +1583,32 @@ https://www.mushakoji.org/
 それぞれ独立したURLカードとして表示されます。`,
 		language: "ja",
 	},
-	parameters: {},
+	parameters: {
+		msw: {
+			handlers: [
+				http.get("/api/auth/session", () => HttpResponse.json({})),
+				http.get("http://localhost:8888/api/ogp", ({ request }) => {
+					const url = new URL(request.url);
+					const targetUrl = url.searchParams.get("url");
+					if (targetUrl?.includes("wikipedia.org")) {
+						return HttpResponse.json({
+							title: "武者小路実篤 - Wikipedia",
+							description:
+								"武者小路 実篤は、日本の小説家・詩人・劇作家・画家。",
+							image: "",
+							url: targetUrl,
+						});
+					}
+					return HttpResponse.json({
+						title: "武者小路実篤記念館",
+						description: "武者小路実篤記念館の公式サイト。",
+						image: "",
+						url: targetUrl,
+					});
+				}),
+			],
+		},
+	},
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		// URLCardコンポーネントのレンダリングとOGP情報の取得を待つ
 		await waitFor(
@@ -1758,6 +1797,143 @@ export const AlertsWithBlockquote: Story = {
 	},
 };
 
+/**
+ * 見出しにアンカーリンクが付与されることを確認するテスト
+ *
+ * @description
+ * headings propを渡した場合、各見出しにアンカーリンクとリンクアイコンが
+ * 表示されることを検証する。
+ */
+export const HeadingAnchorLinks: Story = {
+	name: "見出しのアンカーリンク",
+	tags: ["validation"],
+	args: {
+		content: `## セクション1
+
+本文テキスト。
+
+### セクション2
+
+本文テキスト。
+
+#### セクション3
+
+本文テキスト。`,
+		language: "ja",
+		headings: [
+			{ id: "セクション1", text: "セクション1" },
+			{ id: "セクション2", text: "セクション2" },
+			{ id: "セクション3", text: "セクション3" },
+		],
+	},
+	parameters: {},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+
+		// Given: headings propが渡されたMarkdownPreview
+		// When: 見出しが表示される
+		// Then: 各見出し内にアンカーリンクが存在する
+
+		// h2のアンカーリンクが存在し、正しいhrefを持つことを確認
+		const h2Link = canvas.getByRole("link", {
+			name: "セクション1へのリンク",
+		});
+		expect(h2Link).toBeInTheDocument();
+		expect(h2Link).toHaveAttribute("href", "#セクション1");
+
+		// h3のアンカーリンクが存在し、正しいhrefを持つことを確認
+		const h3Link = canvas.getByRole("link", {
+			name: "セクション2へのリンク",
+		});
+		expect(h3Link).toBeInTheDocument();
+		expect(h3Link).toHaveAttribute("href", "#セクション2");
+
+		// h4のアンカーリンクが存在し、正しいhrefを持つことを確認
+		const h4Link = canvas.getByRole("link", {
+			name: "セクション3へのリンク",
+		});
+		expect(h4Link).toBeInTheDocument();
+		expect(h4Link).toHaveAttribute("href", "#セクション3");
+
+		// リンクアイコン（SVG）がすべてのアンカーリンク内に存在することを確認
+		const svgIcons = canvasElement.querySelectorAll("a > svg");
+		expect(svgIcons.length).toBe(3);
+
+		// アイコンは初期状態ではopacity-0（非表示）であることを確認
+		for (const icon of svgIcons) {
+			expect(icon).toHaveClass("opacity-0");
+		}
+	},
+};
+
+/**
+ * 見出しにホバーするとアンカーリンクアイコンが表示されることを確認するテスト
+ */
+export const HeadingAnchorLinksHover: Story = {
+	name: "見出しのアンカーリンク（ホバー時のアイコン表示）",
+	tags: ["validation"],
+	args: {
+		content: `## ホバーテスト
+
+本文テキスト。`,
+		language: "ja",
+		headings: [{ id: "ホバーテスト", text: "ホバーテスト" }],
+	},
+	parameters: {},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		// Given: headings propが渡されたMarkdownPreview
+		const heading = canvasElement.querySelector("h2");
+		expect(heading).toBeInTheDocument();
+
+		// Then: 見出しにgroup classが付与されていることを確認
+		// （group-hover:opacity-70の前提条件）
+		expect(heading).toHaveClass("group");
+
+		// アンカーリンク内にSVGアイコンが存在することを確認
+		const svgIcon = heading?.querySelector("a > svg");
+		expect(svgIcon).toBeInTheDocument();
+
+		// アイコンにgroup-hoverクラスが付与されていることを確認
+		expect(svgIcon).toHaveClass("group-hover:opacity-70");
+	},
+};
+
+/**
+ * headingsが渡されていない場合、アンカーリンクが表示されないことを確認するテスト
+ */
+export const HeadingWithoutAnchorLinks: Story = {
+	name: "見出しのアンカーリンク（headingsなし）",
+	tags: ["validation"],
+	args: {
+		content: `## アンカーなし見出し
+
+本文テキスト。`,
+		language: "ja",
+	},
+	parameters: {},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+
+		// Given: headings propが渡されていないMarkdownPreview
+		// When: 見出しが表示される
+		// Then: アンカーリンクは表示されない
+
+		const heading = canvas.getByRole("heading", {
+			level: 2,
+			name: "アンカーなし見出し",
+		});
+		expect(heading).toBeInTheDocument();
+
+		// 見出し内にアンカーリンクが存在しないことを確認
+		const linkInHeading = heading.querySelector("a");
+		expect(linkInHeading).toBeNull();
+
+		// SVGアイコンも存在しないことを確認
+		const svgInHeading = heading.querySelector("svg");
+		expect(svgInHeading).toBeNull();
+	},
+};
+
 export const GoogleMapsEmbedExample: Story = {
 	name: "Google Maps埋め込み",
 	tags: ["validation"],
@@ -1767,10 +1943,14 @@ export const GoogleMapsEmbedExample: Story = {
 		language: "ja",
 	},
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		await waitFor(() => {
-			const iframe = canvasElement.querySelector("iframe");
-			expect(iframe).toBeTruthy();
-		});
+		// Google Maps埋め込みはdynamic importのため、レンダリングに時間がかかる
+		await waitFor(
+			() => {
+				const iframe = canvasElement.querySelector("iframe");
+				expect(iframe).toBeTruthy();
+			},
+			{ timeout: 10000 }
+		);
 	},
 };
 
@@ -1782,9 +1962,13 @@ export const GoogleMapsIframeSnippet: Story = {
 		language: "ja",
 	},
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		await waitFor(() => {
-			const iframe = canvasElement.querySelector("iframe");
-			expect(iframe).toBeTruthy();
-		});
+		// iframeスニペットのレンダリングに時間がかかる場合があるためタイムアウトを設定
+		await waitFor(
+			() => {
+				const iframe = canvasElement.querySelector("iframe");
+				expect(iframe).toBeTruthy();
+			},
+			{ timeout: 10000 }
+		);
 	},
 };

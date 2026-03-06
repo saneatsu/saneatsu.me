@@ -3,7 +3,7 @@
 import { ExternalLink } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 
-import { MarkdownPreview } from "@/shared/ui";
+import { AnchorHeading, MarkdownPreview } from "@/shared/ui";
 
 /**
  * 「このブログについて」セクションを表示するコンポーネント
@@ -21,12 +21,16 @@ export function AboutBlogSection() {
 
 	return (
 		<section className="space-y-6 pb-12 border-b">
-			<h2 className="text-2xl font-bold">{t("title")}</h2>
+			<AnchorHeading level="h2" id="blog">
+				{t("title")}
+			</AnchorHeading>
 
 			<div className="space-y-6">
 				{/* ブログの目的 */}
 				<div className="space-y-2">
-					<h3 className="text-lg font-semibold">{t("purpose.title")}</h3>
+					<AnchorHeading level="h3" id="blog-purpose">
+						{t("purpose.title")}
+					</AnchorHeading>
 					<ul className="list-disc list-inside space-y-1 text-muted-foreground">
 						{purposeItems.map((item) => (
 							<li key={item}>{item}</li>
@@ -36,13 +40,17 @@ export function AboutBlogSection() {
 
 				{/* ブログの歴史 */}
 				<div className="space-y-2">
-					<h3 className="text-lg font-semibold">{t("history.title")}</h3>
+					<AnchorHeading level="h3" id="blog-history">
+						{t("history.title")}
+					</AnchorHeading>
 					<MarkdownPreview content={t("history.content")} language={locale} />
 				</div>
 
 				{/* 運営方針 */}
 				<div className="space-y-2">
-					<h3 className="text-lg font-semibold">{t("policy.title")}</h3>
+					<AnchorHeading level="h3" id="blog-policy">
+						{t("policy.title")}
+					</AnchorHeading>
 					<div className="space-y-3 text-muted-foreground">
 						<p>{t("policy.principle1")}</p>
 						<p>

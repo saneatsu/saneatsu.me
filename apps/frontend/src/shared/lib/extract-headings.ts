@@ -109,8 +109,20 @@ export function extractHeadings(markdown: string): HeadingItem[] {
 	const headings: HeadingItem[] = [];
 	const lines = markdown.split("\n");
 	const seenIds = new Set<string>();
+	let isInsideCodeBlock = false;
 
 	for (const line of lines) {
+		// コードブロックのフェンス（```）を検出してトグルする
+		if (line.trimStart().startsWith("```")) {
+			isInsideCodeBlock = !isInsideCodeBlock;
+			continue;
+		}
+
+		// コードブロック内の行はスキップ
+		if (isInsideCodeBlock) {
+			continue;
+		}
+
 		// ヘッダー記法のマッチング（# ## ### #### ##### ######）
 		const match = line.match(/^(#{1,6})\s+(.+)$/);
 

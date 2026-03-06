@@ -5,6 +5,7 @@ import { useMemo } from "react";
 
 import { cn } from "@/shared/lib";
 import {
+	AnchorHeading,
 	Button,
 	Skeleton,
 	Tooltip,
@@ -65,6 +66,8 @@ type ContributionHeatmapProps = {
 	locale?: string;
 	rangeDays?: number;
 	className?: string;
+	/** 見出しに付与するアンカーリンク用のid */
+	headingId?: string;
 };
 
 const JST_OFFSET_MS = 9 * 60 * 60 * 1000;
@@ -158,6 +161,7 @@ export function ContributionHeatmap({
 	locale = "ja-JP",
 	rangeDays,
 	className,
+	headingId,
 }: ContributionHeatmapProps) {
 	const normalizedDays = useMemo(() => {
 		if (!summary) return [];
@@ -240,7 +244,13 @@ export function ContributionHeatmap({
 		<section className={cn("space-y-6", className)}>
 			<div className="flex items-start justify-between gap-4">
 				<div>
-					<h2 className="text-2xl font-semibold">{copy.title}</h2>
+					{headingId ? (
+						<AnchorHeading level="h2" id={headingId} className="font-semibold">
+							{copy.title}
+						</AnchorHeading>
+					) : (
+						<h2 className="text-2xl font-semibold">{copy.title}</h2>
+					)}
 					{/* {copy.subtitle && (
 						<p className="text-sm text-muted-foreground">{copy.subtitle}</p>
 					)} */}
