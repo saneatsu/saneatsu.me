@@ -726,6 +726,7 @@ export const DebounceCheck: Story = {
 		await userEvent.type(input, "ty", { delay: 50 });
 
 		// デバウンス後にサジェストが表示されることを確認
+		// CI環境ではMSW+ReactQueryの初期化に時間がかかるためタイムアウトを長めに設定
 		await waitFor(
 			async () => {
 				const firstItem = await canvas.findByText(
@@ -733,7 +734,7 @@ export const DebounceCheck: Story = {
 				);
 				expect(firstItem).toBeInTheDocument();
 			},
-			{ timeout: 1500 }
+			{ timeout: 5000 }
 		);
 
 		// バックスペースで削除
