@@ -27,6 +27,7 @@ const breadcrumbMap: Record<string, string> = {
 	"/admin/tags/new": "タグ作成",
 	"/admin/gallery": "ギャラリー",
 	"/admin/gallery/new": "新規作成",
+	"/admin/markdown-guide": "Markdown記法ガイド",
 };
 
 /**
