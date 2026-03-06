@@ -15,7 +15,13 @@ interface AlertNode extends Node {
 	data: {
 		hName: string;
 		hProperties: {
-			variant: "default" | "info" | "success" | "warning" | "destructive";
+			variant:
+				| "default"
+				| "info"
+				| "success"
+				| "important"
+				| "warning"
+				| "destructive";
 			title?: string;
 		};
 	};
@@ -31,7 +37,7 @@ interface ParentNode extends Node {
 
 describe("Integration Test", () => {
 	describe("remarkAlert plugin", () => {
-		it("[!NOTE]をdefault variantのalertノードに変換する", async () => {
+		it("[!NOTE]をinfo variantのalertノードに変換する（GitHub標準の青）", async () => {
 			const markdown = "> [!NOTE]\n> これは通常のメモなのだ。";
 
 			const processor = unified()
@@ -48,7 +54,7 @@ describe("Integration Test", () => {
 
 			// プロパティの検証
 			const alert = result.children[0] as AlertNode;
-			expect(alert.data.hProperties.variant).toBe("default");
+			expect(alert.data.hProperties.variant).toBe("info");
 			expect(alert.data.hProperties.title).toBeUndefined();
 		});
 
@@ -130,6 +136,106 @@ describe("Integration Test", () => {
 			// プロパティの検証
 			const alert = result.children[0] as AlertNode;
 			expect(alert.data.hProperties.variant).toBe("destructive");
+		});
+
+		it("[!TIP]をsuccess variantのalertノードに変換する（GitHub標準の緑）", async () => {
+			const markdown = "> [!TIP]\n> これはヒントメッセージなのだ。";
+
+			const processor = unified()
+				.use(remarkParse)
+				.use(remarkGfm)
+				.use(remarkAlert);
+
+			const ast = processor.parse(markdown);
+			const result = (await processor.run(ast)) as ParentNode;
+
+			// alertノード1つのみになることを確認
+			expect(result.children).toHaveLength(1);
+			expect(result.children[0]?.type).toBe("alert");
+
+			// プロパティの検証
+			const alert = result.children[0] as AlertNode;
+			expect(alert.data.hProperties.variant).toBe("success");
+		});
+
+		it("[!IMPORTANT]をimportant variantのalertノードに変換する（GitHub標準の紫）", async () => {
+			const markdown = "> [!IMPORTANT]\n> これは重要メッセージなのだ。";
+
+			const processor = unified()
+				.use(remarkParse)
+				.use(remarkGfm)
+				.use(remarkAlert);
+
+			const ast = processor.parse(markdown);
+			const result = (await processor.run(ast)) as ParentNode;
+
+			// alertノード1つのみになることを確認
+			expect(result.children).toHaveLength(1);
+			expect(result.children[0]?.type).toBe("alert");
+
+			// プロパティの検証
+			const alert = result.children[0] as AlertNode;
+			expect(alert.data.hProperties.variant).toBe("important");
+		});
+
+		it("[!CAUTION]をdestructive variantのalertノードに変換する（GitHub標準の赤）", async () => {
+			const markdown = "> [!CAUTION]\n> これは注意メッセージなのだ。";
+
+			const processor = unified()
+				.use(remarkParse)
+				.use(remarkGfm)
+				.use(remarkAlert);
+
+			const ast = processor.parse(markdown);
+			const result = (await processor.run(ast)) as ParentNode;
+
+			// alertノード1つのみになることを確認
+			expect(result.children).toHaveLength(1);
+			expect(result.children[0]?.type).toBe("alert");
+
+			// プロパティの検証
+			const alert = result.children[0] as AlertNode;
+			expect(alert.data.hProperties.variant).toBe("destructive");
+		});
+
+		it("[!note]のように小文字でもalertノードに変換する", async () => {
+			const markdown = "> [!note]\n> 小文字でも動くのだ。";
+
+			const processor = unified()
+				.use(remarkParse)
+				.use(remarkGfm)
+				.use(remarkAlert);
+
+			const ast = processor.parse(markdown);
+			const result = (await processor.run(ast)) as ParentNode;
+
+			// alertノード1つのみになることを確認
+			expect(result.children).toHaveLength(1);
+			expect(result.children[0]?.type).toBe("alert");
+
+			// プロパティの検証（小文字でもinfo variantに変換される）
+			const alert = result.children[0] as AlertNode;
+			expect(alert.data.hProperties.variant).toBe("info");
+		});
+
+		it("[!Warning]のように混在ケースでもalertノードに変換する", async () => {
+			const markdown = "> [!Warning]\n> 大文字小文字混在でも動くのだ。";
+
+			const processor = unified()
+				.use(remarkParse)
+				.use(remarkGfm)
+				.use(remarkAlert);
+
+			const ast = processor.parse(markdown);
+			const result = (await processor.run(ast)) as ParentNode;
+
+			// alertノード1つのみになることを確認
+			expect(result.children).toHaveLength(1);
+			expect(result.children[0]?.type).toBe("alert");
+
+			// プロパティの検証（混在ケースでもwarning variantに変換される）
+			const alert = result.children[0] as AlertNode;
+			expect(alert.data.hProperties.variant).toBe("warning");
 		});
 
 		it("タイトル付きの[!INFO]を正しく変換する", async () => {
@@ -248,7 +354,7 @@ describe("Integration Test", () => {
 			// それぞれのvariantを検証
 			const alert1 = result.children[0] as AlertNode;
 			const alert2 = result.children[1] as AlertNode;
-			expect(alert1.data.hProperties.variant).toBe("default");
+			expect(alert1.data.hProperties.variant).toBe("info");
 			expect(alert2.data.hProperties.variant).toBe("warning");
 		});
 	});

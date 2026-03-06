@@ -3,7 +3,10 @@
 
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
+import { useCallback } from "react";
 import rehypeHighlight from "rehype-highlight";
+import { siMarkdown } from "simple-icons";
+import { toast } from "sonner";
 
 import { RelatedArticles } from "@/features/article-management";
 import type { Article } from "@/shared";
@@ -38,6 +41,7 @@ export function ArticleDetailView({
 }: ArticleDetailViewProps) {
 	const locale = useLocale();
 	const t = useTranslations("article");
+	const tShare = useTranslations("share");
 
 	const publishedDate = article.publishedAt
 		? new Date(article.publishedAt).toLocaleDateString(
@@ -65,6 +69,18 @@ export function ArticleDetailView({
 			? window.location.origin
 			: "https://saneatsu.me";
 	const articleUrl = `${baseUrl}/blog/${article.slug}`;
+
+	/**
+	 * 記事のMarkdownコンテンツをクリップボードにコピーする
+	 */
+	const handleCopyMarkdown = useCallback(async () => {
+		try {
+			await navigator.clipboard.writeText(article.content || "");
+			toast.success(tShare("copyMarkdown"));
+		} catch {
+			toast.error(tShare("copyMarkdownError"));
+		}
+	}, [article.content, tShare]);
 
 	return (
 		<main className="container mx-auto px-4 py-8">
@@ -155,8 +171,26 @@ export function ArticleDetailView({
 				{/* Main Content Area - 2 Column Layout */}
 				<div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8 lg:gap-12">
 					<div className="min-w-0 order-2 lg:order-1">
-						{/* シェアボタン（上部） */}
-						<div className="flex justify-end">
+						{/* Markdownコピーボタン + シェアボタン（上部） */}
+						<div className="flex justify-between items-center">
+							<button
+								type="button"
+								onClick={handleCopyMarkdown}
+								className="flex items-center gap-1.5 rounded-md pr-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
+								aria-label="Copy Markdown"
+							>
+								<svg
+									role="img"
+									viewBox="0 0 24 24"
+									className="h-4 w-4"
+									fill="currentColor"
+									aria-label={siMarkdown.title}
+								>
+									<title>{siMarkdown.title}</title>
+									<path d={siMarkdown.path} />
+								</svg>
+								{tShare("copyMarkdownTooltip")}
+							</button>
 							<ShareButtons url={articleUrl} title={article.title || ""} />
 						</div>
 

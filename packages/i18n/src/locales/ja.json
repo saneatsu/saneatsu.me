@@ -436,7 +436,10 @@
 		"copyLinkTooltip": "記事のリンクをコピー",
 		"shareOnX": "Xにポスト",
 		"shareOnFacebook": "Facebookに投稿",
-		"addToHatena": "はてなブックマークに登録"
+		"addToHatena": "はてなブックマークに登録",
+		"copyMarkdown": "Markdownをコピーしました",
+		"copyMarkdownError": "Markdownのコピーに失敗しました。もう一度お試しください",
+		"copyMarkdownTooltip": "Markdownをコピー"
 	},
 	"common": {
 		"search": "検索",

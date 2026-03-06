@@ -294,8 +294,11 @@ export const MarkdownRenderingTest: Story = {
 		const h1 = headings.find((h) => h.textContent === "見出し1");
 		expect(h1).toBeDefined();
 
-		// h2見出しの確認
-		const h2 = canvas.getByRole("heading", { level: 2, name: "見出し2" });
+		// h2見出しの確認（アンカーリンク追加により、aria-labelが「〜へのリンク」形式になる）
+		const h2 = canvas.getByRole("heading", {
+			level: 2,
+			name: /見出し2/,
+		});
 		expect(h2).toBeInTheDocument();
 
 		// リストの確認（複数のリストがあるのでgetAllByRoleを使用）

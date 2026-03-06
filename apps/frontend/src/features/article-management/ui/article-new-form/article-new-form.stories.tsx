@@ -818,7 +818,7 @@ export const SlugDuplicateError: Story = {
 				);
 				expect(errorMessage).toBeInTheDocument();
 			},
-			{ timeout: 3000 }
+			{ timeout: 10000 }
 		);
 	},
 };

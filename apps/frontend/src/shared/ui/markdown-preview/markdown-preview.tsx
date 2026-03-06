@@ -6,6 +6,8 @@ import {
 	AlertTriangle,
 	CheckCircle2,
 	Info,
+	Link as LinkIcon,
+	MessageSquareWarning,
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
@@ -310,56 +312,101 @@ export function createDefaultMarkdownComponents(
 		return matchedHeading?.id;
 	};
 
+	/**
+	 * 見出しの中身をアンカーリンクでラップする
+	 *
+	 * @description
+	 * idが取得できた場合、childrenをアンカーリンクで囲み、
+	 * ホバー時にリンクアイコンを表示する。idがない場合はchildrenをそのまま返す。
+	 */
+	const renderHeadingContent = (
+		children: React.ReactNode,
+		id: string | undefined
+	) => {
+		if (!id) return children;
+		return (
+			<a
+				href={`#${id}`}
+				className="inline-flex items-center gap-2 no-underline text-inherit hover:text-inherit"
+				aria-label={`${extractTextFromChildren(children)}へのリンク`}
+			>
+				{children}
+				<LinkIcon
+					className="size-4 opacity-0 group-hover:opacity-70 transition-opacity shrink-0"
+					aria-hidden="true"
+				/>
+			</a>
+		);
+	};
+
 	return {
 		// 見出しのカスタムレンダリング
-		h1: ({ children }) => (
-			<h1
-				id={getMatchedHeadingId(children)}
-				className="text-2xl font-semibold mt-16 mb-3 border-b-4 border-double border-border pb-2 scroll-mt-20"
-			>
-				{children}
-			</h1>
-		),
-		h2: ({ children }) => (
-			<h2
-				id={getMatchedHeadingId(children)}
-				className="text-2xl font-bold mt-16 mb-3 border-b-4 border-double border-border pb-2 scroll-mt-20"
-			>
-				{children}
-			</h2>
-		),
-		h3: ({ children }) => (
-			<h3
-				id={getMatchedHeadingId(children)}
-				className="text-xl font-semibold mt-4 mb-2 border-b border-border pb-1 scroll-mt-20"
-			>
-				{children}
-			</h3>
-		),
-		h4: ({ children }) => (
-			<h4
-				id={getMatchedHeadingId(children)}
-				className="text-lg font-semibold mt-3 mb-2 border-b border-dashed border-border pb-1 scroll-mt-20"
-			>
-				{children}
-			</h4>
-		),
-		h5: ({ children }) => (
-			<h5
-				id={getMatchedHeadingId(children)}
-				className="text-base font-semibold mt-2 mb-1 scroll-mt-20"
-			>
-				{children}
-			</h5>
-		),
-		h6: ({ children }) => (
-			<h6
-				id={getMatchedHeadingId(children)}
-				className="text-sm font-semibold mt-2 mb-1 scroll-mt-20"
-			>
-				{children}
-			</h6>
-		),
+		h1: ({ children }) => {
+			const id = getMatchedHeadingId(children);
+			return (
+				<h1
+					id={id}
+					className="text-2xl font-semibold mt-16 mb-3 border-b-4 border-double border-border pb-2 scroll-mt-20 group"
+				>
+					{renderHeadingContent(children, id)}
+				</h1>
+			);
+		},
+		h2: ({ children }) => {
+			const id = getMatchedHeadingId(children);
+			return (
+				<h2
+					id={id}
+					className="text-2xl font-bold mt-16 mb-3 border-b-4 border-double border-border pb-2 scroll-mt-20 group"
+				>
+					{renderHeadingContent(children, id)}
+				</h2>
+			);
+		},
+		h3: ({ children }) => {
+			const id = getMatchedHeadingId(children);
+			return (
+				<h3
+					id={id}
+					className="text-xl font-semibold mt-4 mb-2 border-b border-border pb-1 scroll-mt-20 group"
+				>
+					{renderHeadingContent(children, id)}
+				</h3>
+			);
+		},
+		h4: ({ children }) => {
+			const id = getMatchedHeadingId(children);
+			return (
+				<h4
+					id={id}
+					className="text-lg font-semibold mt-3 mb-2 border-b border-dashed border-border pb-1 scroll-mt-20 group"
+				>
+					{renderHeadingContent(children, id)}
+				</h4>
+			);
+		},
+		h5: ({ children }) => {
+			const id = getMatchedHeadingId(children);
+			return (
+				<h5
+					id={id}
+					className="text-base font-semibold mt-2 mb-1 scroll-mt-20 group"
+				>
+					{renderHeadingContent(children, id)}
+				</h5>
+			);
+		},
+		h6: ({ children }) => {
+			const id = getMatchedHeadingId(children);
+			return (
+				<h6
+					id={id}
+					className="text-sm font-semibold mt-2 mb-1 scroll-mt-20 group"
+				>
+					{renderHeadingContent(children, id)}
+				</h6>
+			);
+		},
 		// 段落のカスタムレンダリング
 		p: ({ children }) => {
 			// ブロック画像が含まれている場合はdivでラップ（HTMLの仕様違反を避けるため）
@@ -530,6 +577,8 @@ export function createDefaultMarkdownComponents(
 						return Info;
 					case "success":
 						return CheckCircle2;
+					case "important":
+						return MessageSquareWarning;
 					case "warning":
 						return AlertTriangle;
 					case "destructive":

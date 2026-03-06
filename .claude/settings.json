@@ -1,11 +1,14 @@
 {
 	"permissions": {
-		"defaultMode": "acceptEdits",
+		"defaultMode": "bypassPermissions",
 		"allow": ["Bash(play:*)", "Bash(git commit:*)"],
 		"deny": ["Bash(sudo:*)", "Bash(rm:*)", "Bash(rm -rf:*)", "Bash(git push:*)"]
 	},
 	"env": {
-		"MAX_THINKING_TOKENS": "31999"
+		"MAX_THINKING_TOKENS": "31999",
+		"BASH_DEFAULT_TIMEOUT_MS": "300000",
+		"BASH_MAX_TIMEOUT_MS": "1200000",
+		"CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
 	},
 	"hooks": {
 		"Notification": [

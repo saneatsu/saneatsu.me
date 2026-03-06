@@ -80,6 +80,7 @@ import {
 } from "@/features/contributions";
 import type { TimelineItem } from "@/shared/types";
 import {
+	AnchorHeading,
 	BadgeWithIcon,
 	Sheet,
 	SheetContent,
@@ -352,6 +353,7 @@ export function AboutView() {
 							copy={contributionsCopy}
 							locale={locale === "ja" ? "ja-JP" : "en-US"}
 							rangeDays={publicContributions?.days.length ?? 365}
+							headingId="contributions"
 						/>
 					</section>
 
@@ -368,7 +370,9 @@ export function AboutView() {
 
 					{/* 経歴セクション */}
 					<section className="space-y-6 pb-12 border-b">
-						<h2 className="text-2xl font-bold mb-2">{t("experience.title")}</h2>
+						<AnchorHeading level="h2" id="experience" className="mb-2">
+							{t("experience.title")}
+						</AnchorHeading>
 						<StepperTimeline
 							items={timelineItems}
 							onItemClick={handleItemClick}
@@ -378,12 +382,14 @@ export function AboutView() {
 
 					{/* 技術スタックセクション */}
 					<section className="space-y-6 pb-12 border-b">
-						<h2 className="text-2xl font-bold">{t("tech.title")}</h2>
+						<AnchorHeading level="h2" id="tech">
+							{t("tech.title")}
+						</AnchorHeading>
 						<div className="space-y-6">
 							<div>
-								<h3 className="text-lg font-semibold mb-3">
+								<AnchorHeading level="h3" id="tech-languages" className="mb-3">
 									{t("tech.languages.title")}
-								</h3>
+								</AnchorHeading>
 								<div className="flex flex-wrap gap-2">
 									{techStack.languages.map((tech) => (
 										<BadgeWithIcon
@@ -395,9 +401,9 @@ export function AboutView() {
 								</div>
 							</div>
 							<div>
-								<h3 className="text-lg font-semibold mb-3">
+								<AnchorHeading level="h3" id="tech-frameworks" className="mb-3">
 									{t("tech.frameworks.title")}
-								</h3>
+								</AnchorHeading>
 								<div className="flex flex-wrap gap-2">
 									{techStack.frameworks.map((tech) => (
 										<BadgeWithIcon
@@ -412,9 +418,9 @@ export function AboutView() {
 								</div>
 							</div>
 							<div>
-								<h3 className="text-lg font-semibold mb-3">
+								<AnchorHeading level="h3" id="tech-databases" className="mb-3">
 									{t("tech.databases.title")}
-								</h3>
+								</AnchorHeading>
 								<div className="flex flex-wrap gap-2">
 									{techStack.databases.map((tech) => (
 										<BadgeWithIcon
@@ -426,9 +432,9 @@ export function AboutView() {
 								</div>
 							</div>
 							<div>
-								<h3 className="text-lg font-semibold mb-3">
+								<AnchorHeading level="h3" id="tech-tools" className="mb-3">
 									{t("tech.tools.title")}
-								</h3>
+								</AnchorHeading>
 								<div className="flex flex-wrap gap-2">
 									{techStack.tools.map((tech) => (
 										<BadgeWithIcon
@@ -444,7 +450,9 @@ export function AboutView() {
 
 					{/* SNS・連絡先セクション */}
 					<section className="space-y-4">
-						<h2 className="text-2xl font-bold">{t("contact.title")}</h2>
+						<AnchorHeading level="h2" id="contact">
+							{t("contact.title")}
+						</AnchorHeading>
 						<div className="space-y-2">
 							{socialLinks.map((social) => {
 								// Zenn・Qiitaはブランドカラーを保持、GitHub・Xはダークモード対応
