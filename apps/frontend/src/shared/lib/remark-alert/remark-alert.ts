@@ -120,14 +120,14 @@ function extractAlertType(node: Node): [AlertType, string] | null {
 	const textNode = firstChild as TextNode;
 	const text = textNode.value;
 
-	// [!TYPE] パターンをチェック（改行を含むテキストにも対応）
+	// [!TYPE] パターンをチェック（改行を含むテキストにも対応、大文字小文字を区別しない）
 	const alertPattern =
-		/^\[!(NOTE|TIP|INFO|SUCCESS|IMPORTANT|WARNING|CAUTION|DANGER)\](.*)/;
+		/^\[!(NOTE|TIP|INFO|SUCCESS|IMPORTANT|WARNING|CAUTION|DANGER)\](.*)/i;
 	const match = text.match(alertPattern);
 
 	if (!match) return null;
 
-	const type = match[1] as AlertType;
+	const type = match[1].toUpperCase() as AlertType;
 	// match[2]はタイトル + 改行 + 本文の可能性がある
 	// 改行の前までをタイトルとして抽出
 	const afterPattern = match[2];
@@ -226,9 +226,9 @@ export const remarkAlert: Plugin = () => {
 
 					if (!foundAlertPattern && child.type === "text") {
 						const textNode = child as TextNode;
-						// [!TYPE]パターンが含まれているテキストノードを見つける
+						// [!TYPE]パターンが含まれているテキストノードを見つける（大文字小文字を区別しない）
 						const match =
-							/^\[!(NOTE|TIP|INFO|SUCCESS|IMPORTANT|WARNING|CAUTION|DANGER)\](.*)/.exec(
+							/^\[!(NOTE|TIP|INFO|SUCCESS|IMPORTANT|WARNING|CAUTION|DANGER)\](.*)/i.exec(
 								textNode.value
 							);
 						if (match) {
