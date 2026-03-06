@@ -1525,7 +1525,21 @@ https://ja.wikipedia.org/wiki/%E6%AD%A6%E8%80%85%E5%B0%8F%E8%B7%AF%E5%AE%9F%E7%A
 URLカードとして表示されます。`,
 		language: "ja",
 	},
-	parameters: {},
+	parameters: {
+		msw: {
+			handlers: [
+				http.get("/api/auth/session", () => HttpResponse.json({})),
+				http.get("http://localhost:8888/api/ogp", () => {
+					return HttpResponse.json({
+						title: "武者小路実篤 - Wikipedia",
+						description: "武者小路 実篤は、日本の小説家・詩人・劇作家・画家。",
+						image: "",
+						url: "https://ja.wikipedia.org/wiki/%E6%AD%A6%E8%80%85%E5%B0%8F%E8%B7%AF%E5%AE%9F%E7%AF%A4",
+					});
+				}),
+			],
+		},
+	},
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		// URLCardコンポーネントのレンダリングとOGP情報の取得を待つ
 		await waitFor(
@@ -1569,7 +1583,32 @@ https://www.mushakoji.org/
 それぞれ独立したURLカードとして表示されます。`,
 		language: "ja",
 	},
-	parameters: {},
+	parameters: {
+		msw: {
+			handlers: [
+				http.get("/api/auth/session", () => HttpResponse.json({})),
+				http.get("http://localhost:8888/api/ogp", ({ request }) => {
+					const url = new URL(request.url);
+					const targetUrl = url.searchParams.get("url");
+					if (targetUrl?.includes("wikipedia.org")) {
+						return HttpResponse.json({
+							title: "武者小路実篤 - Wikipedia",
+							description:
+								"武者小路 実篤は、日本の小説家・詩人・劇作家・画家。",
+							image: "",
+							url: targetUrl,
+						});
+					}
+					return HttpResponse.json({
+						title: "武者小路実篤記念館",
+						description: "武者小路実篤記念館の公式サイト。",
+						image: "",
+						url: targetUrl,
+					});
+				}),
+			],
+		},
+	},
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		// URLCardコンポーネントのレンダリングとOGP情報の取得を待つ
 		await waitFor(
