@@ -7,6 +7,7 @@ import {
 	CheckCircle2,
 	Info,
 	Link as LinkIcon,
+	MessageSquareWarning,
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
@@ -576,6 +577,8 @@ export function createDefaultMarkdownComponents(
 						return Info;
 					case "success":
 						return CheckCircle2;
+					case "important":
+						return MessageSquareWarning;
 					case "warning":
 						return AlertTriangle;
 					case "destructive":
