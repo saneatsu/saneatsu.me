@@ -21,6 +21,8 @@ export {
 	AlertDialogTitle,
 	AlertDialogTrigger,
 } from "./alert-dialog/alert-dialog";
+// Anchor Heading
+export { AnchorHeading } from "./anchor-heading/anchor-heading";
 // Article Image
 export {
 	ArticleImage,
