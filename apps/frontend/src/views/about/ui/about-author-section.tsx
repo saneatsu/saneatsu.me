@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 
 import { UrlCard } from "@/entities/article";
+import { AnchorHeading } from "@/shared/ui";
 
 /**
  * aboutページで表示するおすすめ記事のURL一覧
@@ -29,27 +30,33 @@ export function AboutAuthorSection() {
 
 	return (
 		<section className="space-y-6 pb-12 border-b">
-			<h2 className="text-2xl font-bold">{t("title")}</h2>
+			<AnchorHeading level="h2" id="author">
+				{t("title")}
+			</AnchorHeading>
 
 			<div className="space-y-6">
 				{/* プロフィール */}
 				<div className="space-y-2">
-					<h3 className="text-lg font-semibold">{t("profile.title")}</h3>
+					<AnchorHeading level="h3" id="author-profile">
+						{t("profile.title")}
+					</AnchorHeading>
 					<p className="text-muted-foreground">{t("profile.content")}</p>
 				</div>
 
 				{/* 趣味・興味関心 */}
 				<div className="space-y-2">
-					<h3 className="text-lg font-semibold">{t("interests.title")}</h3>
+					<AnchorHeading level="h3" id="author-interests">
+						{t("interests.title")}
+					</AnchorHeading>
 					<p className="text-muted-foreground">{t("interests.hobbies")}</p>
 				</div>
 
 				{/* 仕事への姿勢と考え方 */}
 				<div className="space-y-4">
 					<div className="space-y-2">
-						<h3 className="text-lg font-semibold">
+						<AnchorHeading level="h3" id="author-articles">
 							{aboutT("recommendedArticles.title")}
-						</h3>
+						</AnchorHeading>
 						<p className="text-muted-foreground">
 							{aboutT("recommendedArticles.description")}
 						</p>
