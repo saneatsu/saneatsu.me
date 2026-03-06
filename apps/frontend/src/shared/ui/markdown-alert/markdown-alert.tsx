@@ -20,6 +20,8 @@ const markdownAlertVariants = cva(
 				info: "border-l-info-foreground text-info-foreground [&>svg]:text-info-foreground",
 				success:
 					"border-l-success-foreground text-success-foreground [&>svg]:text-success-foreground",
+				important:
+					"border-l-important-foreground text-important-foreground [&>svg]:text-important-foreground",
 				warning:
 					"border-l-warning-foreground text-warning-foreground [&>svg]:text-warning-foreground",
 				destructive:
