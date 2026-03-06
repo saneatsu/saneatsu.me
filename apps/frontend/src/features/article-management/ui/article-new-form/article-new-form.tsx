@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertCircle, Loader2 } from "lucide-react";
+import { AlertCircle, ExternalLink, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -401,9 +401,20 @@ export function ArticleNewForm() {
 
 				{/* 記事内容 */}
 				<div className="space-y-2">
-					<Label htmlFor="content" className="required">
-						本文（Markdown形式）
-					</Label>
+					<div className="flex items-center justify-between">
+						<Label htmlFor="content" className="required">
+							本文（Markdown形式）
+						</Label>
+						<a
+							href="/admin/markdown-guide"
+							target="_blank"
+							rel="noopener noreferrer"
+							className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+						>
+							Markdown記法
+							<ExternalLink className="h-3.5 w-3.5" />
+						</a>
+					</div>
 					<div
 						className={
 							errors.content ? "border border-destructive rounded-md" : ""
