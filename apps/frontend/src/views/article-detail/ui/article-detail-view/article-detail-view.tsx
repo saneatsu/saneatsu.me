@@ -1,11 +1,11 @@
 // @ts-nocheck - React 19 compatibility issue with react-markdown
 "use client";
 
-import { FileText } from "lucide-react";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback } from "react";
 import rehypeHighlight from "rehype-highlight";
+import { siMarkdown } from "simple-icons";
 import { toast } from "sonner";
 
 import { RelatedArticles } from "@/features/article-management";
@@ -186,7 +186,16 @@ export function ArticleDetailView({
 											className="flex h-10 w-10 items-center justify-center bg-background rounded-md transition-colors hover:text-blue-500 cursor-pointer"
 											aria-label="Copy Markdown"
 										>
-											<FileText className="h-4 w-4" />
+											<svg
+												role="img"
+												viewBox="0 0 24 24"
+												className="h-4 w-4"
+												fill="currentColor"
+												aria-label={siMarkdown.title}
+											>
+												<title>{siMarkdown.title}</title>
+												<path d={siMarkdown.path} />
+											</svg>
 										</button>
 									</TooltipTrigger>
 									<TooltipContent>
