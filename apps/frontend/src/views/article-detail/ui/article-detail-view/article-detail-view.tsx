@@ -1,9 +1,12 @@
 // @ts-nocheck - React 19 compatibility issue with react-markdown
 "use client";
 
+import { FileText } from "lucide-react";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
+import { useCallback } from "react";
 import rehypeHighlight from "rehype-highlight";
+import { toast } from "sonner";
 
 import { RelatedArticles } from "@/features/article-management";
 import type { Article } from "@/shared";
@@ -13,6 +16,10 @@ import {
 	MarkdownPreview,
 	ShareButtons,
 	TableOfContents,
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
 } from "@/shared/ui";
 
 export interface ArticleDetailViewProps {
@@ -38,6 +45,7 @@ export function ArticleDetailView({
 }: ArticleDetailViewProps) {
 	const locale = useLocale();
 	const t = useTranslations("article");
+	const tShare = useTranslations("share");
 
 	const publishedDate = article.publishedAt
 		? new Date(article.publishedAt).toLocaleDateString(
@@ -65,6 +73,18 @@ export function ArticleDetailView({
 			? window.location.origin
 			: "https://saneatsu.me";
 	const articleUrl = `${baseUrl}/blog/${article.slug}`;
+
+	/**
+	 * 記事のMarkdownコンテンツをクリップボードにコピーする
+	 */
+	const handleCopyMarkdown = useCallback(async () => {
+		try {
+			await navigator.clipboard.writeText(article.content || "");
+			toast.success(tShare("copyMarkdown"));
+		} catch {
+			toast.error(tShare("copyMarkdownError"));
+		}
+	}, [article.content, tShare]);
 
 	return (
 		<main className="container mx-auto px-4 py-8">
@@ -155,8 +175,25 @@ export function ArticleDetailView({
 				{/* Main Content Area - 2 Column Layout */}
 				<div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8 lg:gap-12">
 					<div className="min-w-0 order-2 lg:order-1">
-						{/* シェアボタン（上部） */}
-						<div className="flex justify-end">
+						{/* Markdownコピーボタン + シェアボタン（上部） */}
+						<div className="flex justify-end items-center gap-2">
+							<TooltipProvider>
+								<Tooltip>
+									<TooltipTrigger asChild>
+										<button
+											type="button"
+											onClick={handleCopyMarkdown}
+											className="flex h-10 w-10 items-center justify-center bg-background rounded-md transition-colors hover:text-blue-500 cursor-pointer"
+											aria-label="Copy Markdown"
+										>
+											<FileText className="h-4 w-4" />
+										</button>
+									</TooltipTrigger>
+									<TooltipContent>
+										<p>{tShare("copyMarkdownTooltip")}</p>
+									</TooltipContent>
+								</Tooltip>
+							</TooltipProvider>
 							<ShareButtons url={articleUrl} title={article.title || ""} />
 						</div>
 
