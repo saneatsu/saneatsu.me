@@ -729,7 +729,7 @@ https://www.youtube.com/watch?v=jNQXAC9IVRw
 		);
 
 		// iframe（埋め込み動画）が存在することを確認
-		// YouTube埋め込みのレンダリングを待つためにwaitForを使用
+		// YouTubeEmbedはdynamic importでssr:falseのため、レンダリングに時間がかかる
 		await waitFor(
 			() => {
 				const iframe = canvasElement.querySelector("iframe");
@@ -739,7 +739,7 @@ https://www.youtube.com/watch?v=jNQXAC9IVRw
 					expect.stringContaining("jNQXAC9IVRw")
 				);
 			},
-			{ timeout: 5000 }
+			{ timeout: 10000 }
 		);
 	},
 };
@@ -1767,10 +1767,14 @@ export const GoogleMapsEmbedExample: Story = {
 		language: "ja",
 	},
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		await waitFor(() => {
-			const iframe = canvasElement.querySelector("iframe");
-			expect(iframe).toBeTruthy();
-		});
+		// Google Maps埋め込みはdynamic importのため、レンダリングに時間がかかる
+		await waitFor(
+			() => {
+				const iframe = canvasElement.querySelector("iframe");
+				expect(iframe).toBeTruthy();
+			},
+			{ timeout: 10000 }
+		);
 	},
 };
 
@@ -1782,9 +1786,13 @@ export const GoogleMapsIframeSnippet: Story = {
 		language: "ja",
 	},
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		await waitFor(() => {
-			const iframe = canvasElement.querySelector("iframe");
-			expect(iframe).toBeTruthy();
-		});
+		// iframeスニペットのレンダリングに時間がかかる場合があるためタイムアウトを設定
+		await waitFor(
+			() => {
+				const iframe = canvasElement.querySelector("iframe");
+				expect(iframe).toBeTruthy();
+			},
+			{ timeout: 10000 }
+		);
 	},
 };

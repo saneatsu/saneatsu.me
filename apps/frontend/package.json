@@ -23,8 +23,8 @@
 		"e2e:ui": "playwright test --ui",
 		"storybook": "storybook dev -p 6016",
 		"build-storybook": "storybook build",
-		"test-storybook": "test-storybook --url http://127.0.0.1:6016",
-		"test-storybook:ci": "concurrently -k -s first \"storybook dev -p 6016 --ci\" \"wait-on http://127.0.0.1:6016 && test-storybook --url http://127.0.0.1:6016\"",
+		"test-storybook": "test-storybook --url http://127.0.0.1:6016 --testTimeout 60000",
+		"test-storybook:ci": "concurrently -k -s first \"storybook dev -p 6016 --ci\" \"wait-on http://127.0.0.1:6016 && test-storybook --url http://127.0.0.1:6016 --testTimeout 60000\"",
 		"test-storybook:smart": "./test-storybook-smart.sh"
 	},
 	"dependencies": {
