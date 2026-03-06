@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertCircle, Loader2 } from "lucide-react";
+import { AlertCircle, ExternalLink, Loader2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -509,7 +509,18 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 			{/* 本文エディタ */}
 			<div className="space-y-2">
 				<div className="flex items-center justify-between">
-					<Label>本文 *</Label>
+					<div className="flex items-center gap-3">
+						<Label>本文 *</Label>
+						<a
+							href="/admin/markdown-guide"
+							target="_blank"
+							rel="noopener noreferrer"
+							className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+						>
+							Markdown記法
+							<ExternalLink className="h-3.5 w-3.5" />
+						</a>
+					</div>
 					<Tabs
 						value={previewLanguage}
 						onValueChange={(value) => setPreviewLanguage(value as "ja" | "en")}
