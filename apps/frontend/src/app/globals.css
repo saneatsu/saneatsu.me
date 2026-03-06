@@ -49,6 +49,8 @@
 	--success-foreground: hsl(143, 64%, 24%);
 	--warning: hsl(48, 96%, 89%);
 	--warning-foreground: hsl(35, 92%, 33%); /* hsl(38, 92%, 50%); */
+	--important: hsl(271, 91%, 94%);
+	--important-foreground: hsl(271, 68%, 40%);
 	--destructive: hsl(0 84.2% 60.2%);
 	--destructive-foreground: hsl(0 0% 98%);
 	--invalid: hsl(0, 72%, 44%);
@@ -103,6 +105,8 @@
 	--success-foreground: hsl(142, 69%, 58%);
 	--warning: hsl(38, 92%, 50%);
 	--warning-foreground: hsl(48, 96%, 89%);
+	--important: hsl(271, 50%, 25%);
+	--important-foreground: hsl(271, 80%, 76%);
 	--destructive: hsl(0 62.8% 30.6%);
 	--destructive-foreground: hsl(0 0% 98%);
 	--invalid: hsl(0, 96%, 68%);
@@ -156,6 +160,8 @@
 	--color-success-foreground: var(--success-foreground);
 	--color-warning: var(--warning);
 	--color-warning-foreground: var(--warning-foreground);
+	--color-important: var(--important);
+	--color-important-foreground: var(--important-foreground);
 	--color-destructive: var(--destructive);
 	--color-destructive-foreground: var(--destructive-foreground);
 	--color-invalid: var(--invalid); /* form error color */
