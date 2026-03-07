@@ -30,12 +30,5 @@ jobs:
       - name: Run Vitest tests with coverage
         run: pnpm vitest --coverage.enabled=true
 
-      - name: Copy coverage files to root directory
-        run: |
-          mkdir -p coverage
-          if [ -d "apps/backend/coverage" ]; then
-            cp -r apps/backend/coverage/* ./coverage/
-          fi
-
       - name: Report Coverage
         uses: davelosert/vitest-coverage-report-action@v2
