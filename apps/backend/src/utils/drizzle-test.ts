@@ -1,11 +1,28 @@
+import type { Mock } from "vitest";
 import { vi } from "vitest";
 import type { MockDb } from "./vitest";
+
+/** モックチェーンの型定義（@vitest/spyへの暗黙的な型参照を回避するため明示的に定義） */
+interface MockChain {
+	from: Mock;
+}
+
+/** setupDbMocksの戻り値型 */
+interface SetupDbMocksResult {
+	mockDb: MockDb;
+	createMockChain: (finalResult: unknown[]) => MockChain;
+	createSimpleMockChain: (finalResult: unknown[]) => MockChain;
+	createJoinMockChain: (finalResult: unknown[]) => MockChain;
+	createInnerJoinMockChain: (finalResult: unknown[]) => MockChain;
+	createSubqueryMock: (asResult?: unknown) => Record<string, Mock>;
+	createInsertMockChain: () => { values: Mock };
+}
 
 /**
  * データベースモックの設定を行う
  * NitoプロジェクトのsetupDbMocksを参考に実装
  */
-export function setupDbMocks() {
+export function setupDbMocks(): SetupDbMocksResult {
 	// テスト環境ではdbはvi.setup.tsでモックされているため、
 	// 直接インポートせず、グローバルなモックを使用
 	const mockDb = {} as unknown as MockDb;

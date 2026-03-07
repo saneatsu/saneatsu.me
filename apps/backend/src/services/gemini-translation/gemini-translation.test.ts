@@ -2,15 +2,19 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { GeminiTranslationService } from "./gemini-translation";
 
 // GoogleGenerativeAIのモック
-vi.mock("@google/generative-ai", () => {
-	return {
-		GoogleGenerativeAI: vi.fn().mockImplementation(() => ({
-			getGenerativeModel: vi.fn().mockReturnValue({
-				generateContent: vi.fn(),
-			}),
-		})),
-	};
+// vitest v4ではアロー関数をコンストラクタとして使えないため、classベースのモックを使用
+const { MockGoogleGenerativeAI } = vi.hoisted(() => {
+	class MockGoogleGenerativeAI {
+		getGenerativeModel = vi.fn().mockReturnValue({
+			generateContent: vi.fn(),
+		});
+	}
+	return { MockGoogleGenerativeAI };
 });
+
+vi.mock("@google/generative-ai", () => ({
+	GoogleGenerativeAI: MockGoogleGenerativeAI,
+}));
 
 describe("GeminiTranslationService", () => {
 	let service: GeminiTranslationService;

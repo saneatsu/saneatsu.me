@@ -66,9 +66,9 @@ interface ArticleEditFormProps {
 	/** 編集対象の記事データ */
 	article: {
 		id: number;
-		title: string | null;
+		title: string;
 		slug: string;
-		content: string | null;
+		content: string;
 		status: "draft" | "published" | "archived";
 		publishedAt: string | null;
 		updatedAt: string | null;
@@ -107,7 +107,7 @@ interface ArticleEditFormProps {
  * 新規作成フォームと同じ高機能MarkdownEditorを使用。
  */
 export function ArticleEditForm({ article }: ArticleEditFormProps) {
-	const [markdownValue, setMarkdownValue] = useState(article.content || "");
+	const [markdownValue, setMarkdownValue] = useState(article.content);
 	const [formError, setFormError] = useState<string>("");
 	const [thumbnailError, setThumbnailError] = useState<string>("");
 	const [warnings, setWarnings] = useState<
@@ -209,9 +209,9 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 	} = useForm<ArticleEditForm>({
 		resolver: zodResolver(articleEditSchema),
 		defaultValues: {
-			title: article.title || "",
-			slug: article.slug || "",
-			content: article.content || "",
+			title: article.title,
+			slug: article.slug,
+			content: article.content,
 			status: article.status,
 		},
 	});

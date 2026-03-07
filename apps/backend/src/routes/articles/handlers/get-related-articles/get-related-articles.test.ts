@@ -94,7 +94,7 @@ describe("GET /articles/:slug/related - 関連記事取得", () => {
 
 		const matchingArticlesMock = {
 			from: vi.fn().mockReturnValue({
-				leftJoin: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						orderBy: vi.fn().mockReturnValue({
 							limit: vi.fn().mockResolvedValue(relatedArticles),
@@ -137,7 +137,7 @@ describe("GET /articles/:slug/related - 関連記事取得", () => {
 		// 最新記事（補完用）
 		const latestArticlesMock = {
 			from: vi.fn().mockReturnValue({
-				leftJoin: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						orderBy: vi.fn().mockReturnValue({
 							limit: vi.fn().mockResolvedValue([]),
@@ -237,7 +237,7 @@ describe("GET /articles/:slug/related - 関連記事取得", () => {
 
 		const matchingArticlesMock = {
 			from: vi.fn().mockReturnValue({
-				leftJoin: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						orderBy: vi.fn().mockReturnValue({
 							limit: vi.fn().mockResolvedValue(relatedArticle),
@@ -296,7 +296,7 @@ describe("GET /articles/:slug/related - 関連記事取得", () => {
 
 		const latestArticlesMock = {
 			from: vi.fn().mockReturnValue({
-				leftJoin: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						orderBy: vi.fn().mockReturnValue({
 							limit: vi.fn().mockResolvedValue(latestArticles),
@@ -464,7 +464,7 @@ describe("GET /articles/:slug/related - 関連記事取得", () => {
 
 		const latestArticlesMock = {
 			from: vi.fn().mockReturnValue({
-				leftJoin: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						orderBy: vi.fn().mockReturnValue({
 							limit: vi.fn().mockResolvedValue(latestArticles),

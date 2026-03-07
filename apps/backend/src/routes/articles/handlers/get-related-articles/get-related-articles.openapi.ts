@@ -78,11 +78,11 @@ const ArticleSchema = z.object({
 		example: "2024-01-02T00:00:00.000Z",
 		description: "更新日時",
 	}),
-	title: z.string().nullable().openapi({
+	title: z.string().openapi({
 		example: "私の最初のブログ記事",
 		description: "記事のタイトル",
 	}),
-	content: z.string().nullable().openapi({
+	content: z.string().openapi({
 		example: "これは記事の本文です...",
 		description: "記事の本文",
 	}),

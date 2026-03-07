@@ -13,6 +13,8 @@ export default defineConfig({
 		// 以下の書き方は使用しないこと
 		// setupFiles: ["./vitest.setup.ts"],
 		setupFiles: [path.resolve(__dirname, "./vitest.setup.ts")],
+		// ビルド成果物のテストファイルを除外（src/のテストのみ実行する）
+		exclude: ["dist/**", "node_modules/**"],
 		coverage: {
 			reporter: ["text", "json-summary", "json", "html"],
 			reportsDirectory: "./coverage",

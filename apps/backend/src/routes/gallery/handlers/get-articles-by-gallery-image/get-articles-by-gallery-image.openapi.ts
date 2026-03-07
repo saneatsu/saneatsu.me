@@ -12,7 +12,7 @@ const ArticleSchema = z.object({
 		example: "my-first-article",
 		description: "記事のスラッグ",
 	}),
-	title: z.string().nullable().openapi({
+	title: z.string().openapi({
 		example: "私の最初の記事",
 		description: "記事のタイトル（日本語）",
 	}),

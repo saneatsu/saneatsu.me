@@ -12,11 +12,11 @@ type ArticleWithTags = {
 	id: number;
 	slug: string;
 	cfImageId: string | null;
-	status: string;
+	status: "draft" | "published" | "archived";
 	publishedAt: string | null;
 	updatedAt: string;
-	title: string | null;
-	content: string | null;
+	title: string;
+	content: string;
 	viewCount: number;
 	translations?: {
 		ja: {
@@ -84,10 +84,11 @@ export const useGetById = (
 			}
 
 			const result = await response.json();
-			if (onSuccess && result.data) {
-				onSuccess(result.data);
+			const data = result.data;
+			if (onSuccess && data) {
+				onSuccess(data);
 			}
-			return result.data;
+			return data;
 		},
 		enabled: enabled && id > 0,
 		retry: false,

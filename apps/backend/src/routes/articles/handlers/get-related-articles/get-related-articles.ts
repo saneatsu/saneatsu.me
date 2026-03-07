@@ -97,8 +97,8 @@ export const getRelatedArticles: Handler = async (c) => {
 			status: "draft" | "published" | "archived";
 			publishedAt: string | null;
 			updatedAt: string;
-			title: string | null;
-			content: string | null;
+			title: string;
+			content: string;
 			viewCount: number;
 			tags: Array<{
 				id: number;
@@ -139,7 +139,7 @@ export const getRelatedArticles: Handler = async (c) => {
 						viewCount: articles.viewCount,
 					})
 					.from(articles)
-					.leftJoin(
+					.innerJoin(
 						articleTranslations,
 						and(
 							eq(articles.id, articleTranslations.articleId),
@@ -283,7 +283,7 @@ export const getRelatedArticles: Handler = async (c) => {
 					viewCount: articles.viewCount,
 				})
 				.from(articles)
-				.leftJoin(
+				.innerJoin(
 					articleTranslations,
 					and(
 						eq(articles.id, articleTranslations.articleId),

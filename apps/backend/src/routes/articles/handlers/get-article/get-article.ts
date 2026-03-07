@@ -57,7 +57,7 @@ export const getArticle: Handler = async (c) => {
 				translationId: articleTranslations.id,
 			})
 			.from(articles)
-			.leftJoin(
+			.innerJoin(
 				articleTranslations,
 				and(
 					eq(articles.id, articleTranslations.articleId),

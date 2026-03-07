@@ -30,18 +30,23 @@ vi.mock("next/server", () => ({
 }));
 
 // グローバルモック設定
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-	observe: vi.fn(),
-	unobserve: vi.fn(),
-	disconnect: vi.fn(),
-}));
+// vitest v4ではアロー関数をコンストラクタとして使えないため、function構文を使用
+global.ResizeObserver = vi.fn().mockImplementation(function () {
+	return {
+		observe: vi.fn(),
+		unobserve: vi.fn(),
+		disconnect: vi.fn(),
+	};
+});
 
 // IntersectionObserverのモック
-global.IntersectionObserver = vi.fn().mockImplementation(() => ({
-	observe: vi.fn(),
-	disconnect: vi.fn(),
-	unobserve: vi.fn(),
-}));
+global.IntersectionObserver = vi.fn().mockImplementation(function () {
+	return {
+		observe: vi.fn(),
+		disconnect: vi.fn(),
+		unobserve: vi.fn(),
+	};
+});
 
 // matchMediaのモック
 Object.defineProperty(window, "matchMedia", {

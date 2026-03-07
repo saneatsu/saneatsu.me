@@ -437,7 +437,7 @@
 		"shareOnX": "Xにポスト",
 		"shareOnFacebook": "Facebookに投稿",
 		"addToHatena": "はてなブックマークに登録",
-		"copyMarkdown": "Markdownをコピーしました",
+		"copyMarkdownSuccess": "コピーしました",
 		"copyMarkdownError": "Markdownのコピーに失敗しました。もう一度お試しください",
 		"copyMarkdownTooltip": "Markdownをコピー"
 	},
