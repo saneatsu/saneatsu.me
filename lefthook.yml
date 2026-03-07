@@ -15,15 +15,9 @@ pre-commit:
       run: pnpm type-check
       # 型チェックは全体を対象にするため、staged_filesは使わない
 
-    # apps/backendのVitestを実行
-    backend-test:
-      run: cd apps/backend && pnpm test run
-      # test runでwatchモードを無効化
-
-    # apps/frontendのVitestを実行
-    frontend-test:
-      run: cd apps/frontend && pnpm test run
-      # test runでwatchモードを無効化
+    # ルートのvitest workspace設定でapps/backend, apps/frontendのテストを一括実行
+    vitest:
+      run: pnpm vitest
 
     # apps/frontendのStorybook テストを実行
     storybook-test:

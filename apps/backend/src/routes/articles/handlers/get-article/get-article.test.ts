@@ -65,7 +65,7 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 
 		const articleMock = {
 			from: vi.fn().mockReturnValue({
-				leftJoin: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						limit: vi.fn().mockResolvedValue([
 							{
@@ -189,7 +189,7 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 
 		const articleMock = {
 			from: vi.fn().mockReturnValue({
-				leftJoin: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						limit: vi.fn().mockResolvedValue([]),
 					}),
@@ -244,7 +244,7 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 
 		const articleMock = {
 			from: vi.fn().mockReturnValue({
-				leftJoin: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						limit: vi.fn().mockResolvedValue([
 							{
@@ -352,7 +352,7 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 
 		const articleMock = {
 			from: vi.fn().mockReturnValue({
-				leftJoin: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						limit: vi.fn().mockResolvedValue([mockDraftArticle]),
 					}),
@@ -405,7 +405,7 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 
 		const articleMock = {
 			from: vi.fn().mockReturnValue({
-				leftJoin: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						limit: vi.fn().mockResolvedValue([mockArchivedArticle]),
 					}),
@@ -460,7 +460,7 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 
 		const articleMock = {
 			from: vi.fn().mockReturnValue({
-				leftJoin: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						limit: vi.fn().mockResolvedValue([
 							{
@@ -594,7 +594,7 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 
 		const articleMock = {
 			from: vi.fn().mockReturnValue({
-				leftJoin: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						limit: vi.fn().mockResolvedValue([
 							{
@@ -679,7 +679,7 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 
 				const articleMock = {
 					from: vi.fn().mockReturnValue({
-						leftJoin: vi.fn().mockReturnValue({
+						innerJoin: vi.fn().mockReturnValue({
 							where: vi.fn().mockReturnValue({
 								limit: vi.fn().mockResolvedValue([
 									{
@@ -765,7 +765,7 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 
 				const articleMock = {
 					from: vi.fn().mockReturnValue({
-						leftJoin: vi.fn().mockReturnValue({
+						innerJoin: vi.fn().mockReturnValue({
 							where: vi.fn().mockReturnValue({
 								limit: vi
 									.fn()
@@ -847,7 +847,7 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 
 				const articleMock = {
 					from: vi.fn().mockReturnValue({
-						leftJoin: vi.fn().mockReturnValue({
+						innerJoin: vi.fn().mockReturnValue({
 							where: vi.fn().mockReturnValue({
 								limit: vi
 									.fn()
@@ -926,7 +926,7 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 
 				const articleMock = {
 					from: vi.fn().mockReturnValue({
-						leftJoin: vi.fn().mockReturnValue({
+						innerJoin: vi.fn().mockReturnValue({
 							where: vi.fn().mockReturnValue({
 								limit: vi
 									.fn()
@@ -1007,7 +1007,7 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 
 				const articleMock = {
 					from: vi.fn().mockReturnValue({
-						leftJoin: vi.fn().mockReturnValue({
+						innerJoin: vi.fn().mockReturnValue({
 							where: vi.fn().mockReturnValue({
 								limit: vi
 									.fn()
@@ -1089,7 +1089,7 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 
 				const articleMock = {
 					from: vi.fn().mockReturnValue({
-						leftJoin: vi.fn().mockReturnValue({
+						innerJoin: vi.fn().mockReturnValue({
 							where: vi.fn().mockReturnValue({
 								limit: vi.fn().mockResolvedValue([mockArticle]),
 							}),
@@ -1160,7 +1160,7 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 
 				const articleMock = {
 					from: vi.fn().mockReturnValue({
-						leftJoin: vi.fn().mockReturnValue({
+						innerJoin: vi.fn().mockReturnValue({
 							where: vi.fn().mockReturnValue({
 								limit: vi
 									.fn()
@@ -1233,7 +1233,7 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 
 				const articleMock = {
 					from: vi.fn().mockReturnValue({
-						leftJoin: vi.fn().mockReturnValue({
+						innerJoin: vi.fn().mockReturnValue({
 							where: vi.fn().mockReturnValue({
 								limit: vi
 									.fn()

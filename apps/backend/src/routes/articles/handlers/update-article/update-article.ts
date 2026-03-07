@@ -289,7 +289,7 @@ export const updateArticle: Handler = async (c) => {
 				viewCount: articles.viewCount,
 			})
 			.from(articles)
-			.leftJoin(
+			.innerJoin(
 				articleTranslations,
 				and(
 					eq(articles.id, articleTranslations.articleId),

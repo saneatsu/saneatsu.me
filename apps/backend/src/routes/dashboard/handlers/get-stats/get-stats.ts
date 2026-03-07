@@ -56,9 +56,7 @@ export const getDashboardStats: Handler = async (c) => {
 			thisMonthArticlesResult,
 		] = await Promise.all([
 			// 総記事数
-			db
-				.select({ count: count() })
-				.from(articles),
+			db.select({ count: count() }).from(articles),
 			// 公開済み記事数
 			db
 				.select({ count: count() })

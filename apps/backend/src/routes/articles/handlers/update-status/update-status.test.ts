@@ -55,7 +55,7 @@ describe("PATCH /articles/:id/status - 記事ステータス更新", () => {
 		// 更新後の記事取得のモック
 		const updatedArticleMock = {
 			from: vi.fn().mockReturnValue({
-				leftJoin: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						limit: vi.fn().mockResolvedValue([
 							{
@@ -189,7 +189,7 @@ describe("PATCH /articles/:id/status - 記事ステータス更新", () => {
 		// 更新後の記事取得のモック（publishedAtがnull）
 		const updatedArticleMock = {
 			from: vi.fn().mockReturnValue({
-				leftJoin: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						limit: vi.fn().mockResolvedValue([
 							{

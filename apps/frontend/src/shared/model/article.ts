@@ -29,9 +29,9 @@ export interface Article {
 	/** 更新日時 */
 	updatedAt?: string | null;
 	/** 記事のタイトル */
-	title: string | null;
+	title: string;
 	/** 記事の本文 */
-	content: string | null;
+	content: string;
 	/** 記事の閲覧数（記事全体） */
 	viewCount: number;
 	/** 記事に関連付けられたタグ */
