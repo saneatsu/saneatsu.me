@@ -11,7 +11,9 @@ describe("useBracketCompletion", () => {
 		let textarea: HTMLTextAreaElement;
 		let textareaRef: React.RefObject<HTMLTextAreaElement | null>;
 		let mockSetMarkdownValue: ReturnType<typeof vi.fn<(value: string) => void>>;
-		let mockSetValue: ReturnType<typeof vi.fn<(name: string, value: string) => void>>;
+		let mockSetValue: ReturnType<
+			typeof vi.fn<(name: string, value: string) => void>
+		>;
 
 		beforeEach(() => {
 			// textareaを作成

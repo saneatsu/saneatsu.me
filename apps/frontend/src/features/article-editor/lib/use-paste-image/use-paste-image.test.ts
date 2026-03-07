@@ -7,7 +7,9 @@ import { usePasteImage } from "./use-paste-image";
 describe("Unit Test", () => {
 	describe("usePasteImage", () => {
 		let editorRef: React.RefObject<HTMLDivElement | null>;
-		let mockUploadImage: ReturnType<typeof vi.fn<(file: File) => Promise<ImageUploadResult | null>>>;
+		let mockUploadImage: ReturnType<
+			typeof vi.fn<(file: File) => Promise<ImageUploadResult | null>>
+		>;
 		let mockOnChange: ReturnType<typeof vi.fn<(value: string) => void>>;
 		let mockTextarea: HTMLTextAreaElement;
 
@@ -24,7 +26,8 @@ describe("Unit Test", () => {
 			editorRef = { current: mockEditor };
 
 			// uploadImageのモックを作成
-			mockUploadImage = vi.fn<(file: File) => Promise<ImageUploadResult | null>>();
+			mockUploadImage =
+				vi.fn<(file: File) => Promise<ImageUploadResult | null>>();
 
 			// onChangeのモックを作成
 			mockOnChange = vi.fn<(value: string) => void>();
