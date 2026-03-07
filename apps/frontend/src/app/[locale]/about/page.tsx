@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 import { AboutView } from "@/views";
 
@@ -44,7 +45,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  *
  * @description
  * Saneatsuの技術スタック、経歴、連絡先情報を表示するページ。
+ *
+ * AboutViewはuseSearchParams()を使用するクライアントコンポーネントのため、
+ * Suspenseでラップしないと本番ビルドでページ全体が動的レンダリングに強制され、
+ * ハイドレーション完了前にブラウザがハッシュスクロール（例: #experience）を試みて失敗する。
  */
 export default function AboutPage() {
-	return <AboutView />;
+	return (
+		<Suspense>
+			<AboutView />
+		</Suspense>
+	);
 }
