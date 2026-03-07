@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 
 import { RelatedArticles } from "@/features/article-management";
 import type { Article } from "@/shared";
-import { extractHeadings, formatRelativeDate } from "@/shared/lib";
+import { extractHeadings } from "@/shared/lib";
 
 import { ArticleContent } from "./article-content";
 import { ArticleHeader } from "./article-header";
@@ -34,25 +34,8 @@ export function ArticleDetailView({
 	const locale = useLocale();
 	const t = useTranslations("article");
 
-	const publishedDate = article.publishedAt
-		? new Date(article.publishedAt).toLocaleDateString(
-				locale === "ja" ? "ja-JP" : "en-US",
-				{
-					year: "numeric",
-					month: "long",
-					day: "numeric",
-				}
-			)
-		: null;
-
-	// 更新日の相対日付フォーマット
-	const updatedDateInfo = formatRelativeDate(
-		article.updatedAt ?? null,
-		locale as "ja" | "en"
-	);
-
 	// Markdownから見出しを抽出
-	const headings = extractHeadings(article.content || "");
+	const headings = extractHeadings(article.content);
 
 	// 記事のURLを生成（SSR時はフォールバック、CSR時はwindow.location.originを使用）
 	const baseUrl =
@@ -64,20 +47,14 @@ export function ArticleDetailView({
 	return (
 		<main className="container mx-auto px-4 py-6">
 			<article className="max-w-6xl mx-auto space-y-8">
-				<ArticleHeader
-					article={article}
-					locale={locale as "ja" | "en"}
-					publishedDate={publishedDate}
-					updatedDateInfo={updatedDateInfo}
-					t={t}
-				/>
+				<ArticleHeader article={article} />
 
 				<ArticleContent
 					article={article}
 					locale={locale as "ja" | "en"}
 					articleUrl={articleUrl}
 					headings={headings}
-					articleContent={article.content || ""}
+					articleContent={article.content}
 				/>
 
 				{/* 関連記事セクション */}

@@ -38,7 +38,7 @@ export async function generateMetadata({
 		const article = articleResponse.data;
 
 		// 記事本文から説明文を抽出
-		const description = extractDescription(article.content || "", 160);
+		const description = extractDescription(article.content, 160);
 
 		// リクエストヘッダーからホスト情報を取得
 		// ngrok経由でのテスト時に正しいURLを生成するため
@@ -59,7 +59,7 @@ export async function generateMetadata({
 			title: `${article.title} - saneatsu.me`,
 			description,
 			openGraph: {
-				title: article.title || "",
+				title: article.title,
 				description,
 				type: "article",
 				publishedTime: article.publishedAt || undefined,
@@ -69,7 +69,7 @@ export async function generateMetadata({
 						url: ogImageUrl,
 						width: 1200,
 						height: 630,
-						alt: article.title || "",
+						alt: article.title,
 					},
 				],
 				locale: locale === "ja" ? "ja_JP" : "en_US",
@@ -78,7 +78,7 @@ export async function generateMetadata({
 				card: "summary_large_image",
 				site: "@saneatsu_wakana",
 				creator: "@saneatsu_wakana",
-				title: article.title || "",
+				title: article.title,
 				description,
 				images: [ogImageUrl],
 			},

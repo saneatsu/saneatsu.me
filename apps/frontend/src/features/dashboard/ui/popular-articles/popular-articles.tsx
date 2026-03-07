@@ -180,7 +180,7 @@ export function PopularArticles({
 											{article.cfImageId ? (
 												<Image
 													src={getImageUrl(article.cfImageId, "small")}
-													alt={article.title || "記事のサムネイル"}
+													alt={article.title}
 													fill
 													className="object-cover"
 													sizes="80px"

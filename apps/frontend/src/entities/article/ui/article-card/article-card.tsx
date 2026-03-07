@@ -25,7 +25,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
 	);
 
 	// コンテンツから本文の抜粋を生成
-	const excerpt = (article.content || "")
+	const excerpt = article.content
 		.replace(/^#.*$/gm, "") // ヘッダーを削除
 		.replace(/```[\s\S]*?```/g, "") // コードブロックを削除
 		.replace(/[#*`]/g, "") // マークダウン記法を削除
@@ -40,7 +40,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
 					{article.cfImageId ? (
 						<Image
 							src={getCloudflareImageUrl(article.cfImageId, "medium") ?? ""}
-							alt={article.title ?? ""}
+							alt={article.title}
 							fill
 							className="object-cover transition-transform group-hover:scale-105"
 							sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

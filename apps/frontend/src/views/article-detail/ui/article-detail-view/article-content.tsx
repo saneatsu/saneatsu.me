@@ -21,7 +21,7 @@ interface ArticleContentProps {
 	/** Markdownから抽出した見出し一覧 */
 	headings: HeadingItem[];
 	/** 記事のMarkdownコンテンツ */
-	articleContent: string;
+	articleContent: Article["content"];
 }
 
 /**
@@ -100,7 +100,7 @@ export function ArticleContent({
 							? tShare("copyMarkdownSuccess")
 							: tShare("copyMarkdownTooltip")}
 					</button>
-					<ShareButtons url={articleUrl} title={article.title || ""} />
+					<ShareButtons url={articleUrl} title={article.title} />
 				</div>
 
 				{/* 記事本文 */}
@@ -115,7 +115,7 @@ export function ArticleContent({
 
 				{/* シェアボタン（下部） */}
 				<div className="flex justify-end">
-					<ShareButtons url={articleUrl} title={article.title || ""} />
+					<ShareButtons url={articleUrl} title={article.title} />
 				</div>
 			</div>
 

@@ -64,7 +64,7 @@ export function ArticleActions({ article, onAction }: ArticleActionsProps) {
 	const executeDelete = async () => {
 		try {
 			await deleteArticleMutation.mutateAsync(article.id);
-			toast.success(`記事「${article.title || article.slug}」を削除しました`);
+			toast.success(`記事「${article.title}」を削除しました`);
 			onAction?.();
 			setDeleteConfirmDialog(false);
 		} catch (error) {
@@ -139,7 +139,7 @@ export function ArticleActions({ article, onAction }: ArticleActionsProps) {
 					<AlertDialogHeader>
 						<AlertDialogTitle>記事の削除</AlertDialogTitle>
 						<AlertDialogDescription>
-							記事「{article.title || article.slug}
+							記事「{article.title}
 							」を削除しますか？この操作は取り消せません。
 						</AlertDialogDescription>
 					</AlertDialogHeader>
