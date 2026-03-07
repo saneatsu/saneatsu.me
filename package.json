@@ -22,6 +22,7 @@
 		"setup:env:prod": "./scripts/setup-cloudflare-env.sh production",
 		"lint": "turbo lint",
 		"test": "turbo test",
+		"vitest": "vitest --run",
 		"clean": "turbo clean",
 		"type-check": "turbo run type-check",
 		"check": "biome check .",
