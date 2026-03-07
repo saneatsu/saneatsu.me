@@ -428,7 +428,7 @@
 		"shareOnX": "Post to X",
 		"shareOnFacebook": "Post to Facebook",
 		"addToHatena": "Add to Hatena Bookmark",
-		"copyMarkdown": "Markdown copied",
+		"copyMarkdownSuccess": "Copied!",
 		"copyMarkdownError": "Failed to copy Markdown. Please try again",
 		"copyMarkdownTooltip": "Copy Markdown"
 	},

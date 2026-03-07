@@ -2,8 +2,6 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { useCallback } from "react";
-import { toast } from "sonner";
 
 import { RelatedArticles } from "@/features/article-management";
 import type { Article } from "@/shared";
@@ -35,7 +33,6 @@ export function ArticleDetailView({
 }: ArticleDetailViewProps) {
 	const locale = useLocale();
 	const t = useTranslations("article");
-	const tShare = useTranslations("share");
 
 	const publishedDate = article.publishedAt
 		? new Date(article.publishedAt).toLocaleDateString(
@@ -64,18 +61,6 @@ export function ArticleDetailView({
 			: "https://saneatsu.me";
 	const articleUrl = `${baseUrl}/blog/${article.slug}`;
 
-	/**
-	 * 記事のMarkdownコンテンツをクリップボードにコピーする
-	 */
-	const handleCopyMarkdown = useCallback(async () => {
-		try {
-			await navigator.clipboard.writeText(article.content || "");
-			toast.success(tShare("copyMarkdown"));
-		} catch {
-			toast.error(tShare("copyMarkdownError"));
-		}
-	}, [article.content, tShare]);
-
 	return (
 		<main className="container mx-auto px-4 py-6">
 			<article className="max-w-6xl mx-auto space-y-8">
@@ -92,8 +77,7 @@ export function ArticleDetailView({
 					locale={locale as "ja" | "en"}
 					articleUrl={articleUrl}
 					headings={headings}
-					onCopyMarkdown={handleCopyMarkdown}
-					tShare={tShare}
+					articleContent={article.content || ""}
 					t={t}
 				/>
 
