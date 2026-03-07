@@ -4,7 +4,7 @@
 	"private": true,
 	"description": "My portfolio",
 	"type": "module",
-	"packageManager": "pnpm@9.0.0",
+	"packageManager": "pnpm@10.30.3",
 	"scripts": {
 		"build": "turbo build",
 		"build:cloudflare": "turbo build:cloudflare",
@@ -36,7 +36,7 @@
 		"@types/node": "^25.3.5",
 		"@vitest/coverage-v8": "^4.0.18",
 		"@vitest/ui": "^4.0.18",
-		"concurrently": "^9.1.2",
+		"concurrently": "^9.2.1",
 		"identity-obj-proxy": "^3.0.0",
 		"lefthook": "^2.1.2",
 		"turbo": "^2.8.14",
@@ -46,9 +46,14 @@
 	},
 	"engines": {
 		"node": ">=18.0.0",
-		"pnpm": ">=8.0.0"
+		"pnpm": ">=10.0.0"
 	},
 	"pnpm": {
+		"onlyBuiltDependencies": [
+			"@playwright/test",
+			"@swc/core",
+			"lefthook"
+		],
 		"overrides": {
 			"playwright": "1.57.0",
 			"playwright-core": "1.57.0"

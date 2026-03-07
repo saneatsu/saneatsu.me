@@ -104,7 +104,7 @@ export function StepperTimeline({
 
 	return (
 		<div className="relative">
-			{stepper.all.map((step, index, array) => {
+			{stepper.lookup.getAll().map((step, index, array) => {
 				const item = step.data as TimelineItemType;
 
 				// 共通のコンテンツを変数として抽出
