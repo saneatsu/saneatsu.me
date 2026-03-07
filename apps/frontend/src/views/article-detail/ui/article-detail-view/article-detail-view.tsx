@@ -78,7 +78,6 @@ export function ArticleDetailView({
 					articleUrl={articleUrl}
 					headings={headings}
 					articleContent={article.content || ""}
-					t={t}
 				/>
 
 				{/* 関連記事セクション */}
