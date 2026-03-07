@@ -151,9 +151,9 @@ export function AddressSearch({
 			{/* 検索結果リスト */}
 			{data && data.features.length > 0 && (
 				<ul className="mt-2 space-y-1 border rounded-md p-2 bg-card">
-					{data.features.map((feature, index) => (
+					{data.features.map((feature) => (
 						<li
-							key={`${feature.coordinates.latitude}-${feature.coordinates.longitude}-${index}`}
+							key={`${feature.coordinates.latitude}-${feature.coordinates.longitude}-${feature.fullAddress}`}
 						>
 							<button
 								type="button"
