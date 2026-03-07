@@ -91,11 +91,9 @@ export async function GET(
 	const items = (articlesResponse.data || [])
 		.filter((article) => article.publishedAt)
 		.map((article) => {
-			const title = article.title || article.slug;
+			const title = article.title;
 			const link = `${baseUrl}/${locale}/blog/${article.slug}`;
-			const description = article.content
-				? extractDescription(article.content, 280)
-				: "";
+			const description = extractDescription(article.content, 280);
 			const publishedAt =
 				article.publishedAt || article.updatedAt || new Date().toISOString();
 

@@ -1,22 +1,15 @@
+"use client";
+
 import Image from "next/image";
-import type { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import type { Article } from "@/shared";
-import type { RelativeDateResult } from "@/shared/lib";
-import { getImageUrl } from "@/shared/lib";
+import { formatRelativeDate, getImageUrl } from "@/shared/lib";
 import { Badge } from "@/shared/ui";
 
 interface ArticleHeaderProps {
 	/** 記事データ */
 	article: Article;
-	/** 現在のロケール */
-	locale: "ja" | "en";
-	/** フォーマット済みの公開日 */
-	publishedDate: string | null;
-	/** 相対日付情報 */
-	updatedDateInfo: RelativeDateResult | undefined;
-	/** 記事翻訳関数 */
-	t: ReturnType<typeof useTranslations<"article">>;
 }
 
 /**
@@ -24,14 +17,26 @@ interface ArticleHeaderProps {
  *
  * @description
  * 記事のタイトル、タグ、公開日・更新日、サムネイル画像を表示する。
+ * ロケールや翻訳、日付フォーマットは内部で取得・計算する。
  */
-export function ArticleHeader({
-	article,
-	locale,
-	publishedDate,
-	updatedDateInfo,
-	t,
-}: ArticleHeaderProps) {
+export function ArticleHeader({ article }: ArticleHeaderProps) {
+	const locale = useLocale() as "ja" | "en";
+	const t = useTranslations("article");
+
+	const publishedDate = article.publishedAt
+		? new Date(article.publishedAt).toLocaleDateString(
+				locale === "ja" ? "ja-JP" : "en-US",
+				{
+					year: "numeric",
+					month: "long",
+					day: "numeric",
+				}
+			)
+		: null;
+
+	// 更新日の相対日付フォーマット
+	const updatedDateInfo = formatRelativeDate(article.updatedAt ?? null, locale);
+
 	return (
 		<header className="space-y-4">
 			<h1 className="text-2xl font-bold tracking-tight">{article.title}</h1>
@@ -74,7 +79,7 @@ export function ArticleHeader({
 				<div className="relative max-w-lg aspect-video rounded-lg overflow-hidden bg-muted">
 					<Image
 						src={getImageUrl(article.cfImageId, "large")}
-						alt={article.title || "記事のサムネイル"}
+						alt={article.title}
 						fill
 						className="object-cover"
 						sizes="(max-width: 768px) 100vw, (max-width: 1200px) 800px, 1200px"

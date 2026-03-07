@@ -103,7 +103,7 @@ export const columns: ColumnDef<Article>[] = [
 					{article.cfImageId ? (
 						<Image
 							src={getImageUrl(article.cfImageId, "small")}
-							alt={article.title || "記事のサムネイル"}
+							alt={article.title}
 							fill
 							className="object-cover"
 							sizes="80px"
@@ -138,7 +138,7 @@ export const columns: ColumnDef<Article>[] = [
 						href={`/admin/articles/${article.id}/edit`}
 						className="font-medium hover:text-primary hover:underline transition-colors inline-block"
 					>
-						{article.title || "タイトルなし"}
+						{article.title}
 					</Link>
 					<div className="text-sm text-muted-foreground">{article.slug}</div>
 				</div>

@@ -43,8 +43,7 @@ export default async function Image({ params }: OgImageProps) {
 		});
 		const article = articleResponse.data;
 
-		// FIXME: titleはnullableじゃなくする
-		const title = article.title || "Untitled";
+		const title = article.title;
 
 		// Cloudflare ImagesのURLを取得（largeバリアント）
 		const backgroundImageUrl = getCloudflareImageUrl(
