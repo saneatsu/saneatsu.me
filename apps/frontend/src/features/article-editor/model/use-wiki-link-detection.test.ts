@@ -12,8 +12,12 @@ describe("useWikiLinkDetection", () => {
 		let textareaRef: React.RefObject<HTMLTextAreaElement | null>;
 		let setShowSuggestions: ReturnType<typeof vi.fn<(show: boolean) => void>>;
 		let setSuggestionQuery: ReturnType<typeof vi.fn<(query: string) => void>>;
-		let setCursorPosition: ReturnType<typeof vi.fn<(position: { top: number; left: number }) => void>>;
-		let setIsHeadingSuggestion: ReturnType<typeof vi.fn<(isHeading: boolean) => void>>;
+		let setCursorPosition: ReturnType<
+			typeof vi.fn<(position: { top: number; left: number }) => void>
+		>;
+		let setIsHeadingSuggestion: ReturnType<
+			typeof vi.fn<(isHeading: boolean) => void>
+		>;
 		let setTargetArticleSlug: ReturnType<typeof vi.fn<(slug: string) => void>>;
 
 		beforeEach(() => {
@@ -27,7 +31,8 @@ describe("useWikiLinkDetection", () => {
 			// モック関数を作成
 			setShowSuggestions = vi.fn<(show: boolean) => void>();
 			setSuggestionQuery = vi.fn<(query: string) => void>();
-			setCursorPosition = vi.fn<(position: { top: number; left: number }) => void>();
+			setCursorPosition =
+				vi.fn<(position: { top: number; left: number }) => void>();
 			setIsHeadingSuggestion = vi.fn<(isHeading: boolean) => void>();
 			setTargetArticleSlug = vi.fn<(slug: string) => void>();
 		});

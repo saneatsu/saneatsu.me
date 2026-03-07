@@ -6,7 +6,9 @@ import { useDropImage } from "./use-drop-image";
 describe("Unit Test", () => {
 	describe("useDropImage", () => {
 		let editorRef: React.RefObject<HTMLDivElement | null>;
-		let mockUploadImage: ReturnType<typeof vi.fn<(file: File) => Promise<ImageUploadResult | null>>>;
+		let mockUploadImage: ReturnType<
+			typeof vi.fn<(file: File) => Promise<ImageUploadResult | null>>
+		>;
 		let mockOnChange: ReturnType<typeof vi.fn<(value: string) => void>>;
 		let mockTextarea: HTMLTextAreaElement;
 		let mockEditor: HTMLDivElement;
@@ -24,7 +26,8 @@ describe("Unit Test", () => {
 			editorRef = { current: mockEditor };
 
 			// uploadImageのモックを作成
-			mockUploadImage = vi.fn<(file: File) => Promise<ImageUploadResult | null>>();
+			mockUploadImage =
+				vi.fn<(file: File) => Promise<ImageUploadResult | null>>();
 
 			// onChangeのモックを作成
 			mockOnChange = vi.fn<(value: string) => void>();

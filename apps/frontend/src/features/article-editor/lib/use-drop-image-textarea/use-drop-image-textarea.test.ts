@@ -7,7 +7,9 @@ import { useDropImageTextarea } from "./use-drop-image-textarea";
 describe("Unit Test", () => {
 	describe("useDropImageTextarea", () => {
 		let textareaRef: React.RefObject<HTMLTextAreaElement | null>;
-		let mockUploadImage: ReturnType<typeof vi.fn<(file: File) => Promise<ImageUploadResult | null>>>;
+		let mockUploadImage: ReturnType<
+			typeof vi.fn<(file: File) => Promise<ImageUploadResult | null>>
+		>;
 		let mockOnChange: ReturnType<typeof vi.fn<(value: string) => void>>;
 		let mockTextarea: HTMLTextAreaElement;
 
@@ -22,7 +24,8 @@ describe("Unit Test", () => {
 			textareaRef = { current: mockTextarea };
 
 			// uploadImageのモックを作成
-			mockUploadImage = vi.fn<(file: File) => Promise<ImageUploadResult | null>>();
+			mockUploadImage =
+				vi.fn<(file: File) => Promise<ImageUploadResult | null>>();
 
 			// onChangeのモックを作成
 			mockOnChange = vi.fn<(value: string) => void>();

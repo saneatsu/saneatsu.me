@@ -7,7 +7,9 @@ import { useImageUploadFile } from "./use-image-upload-file";
 describe("Unit Test", () => {
 	describe("useImageUploadFile", () => {
 		let textareaRef: React.RefObject<HTMLTextAreaElement | null>;
-		let mockUploadImage: ReturnType<typeof vi.fn<(file: File) => Promise<ImageUploadResult | null>>>;
+		let mockUploadImage: ReturnType<
+			typeof vi.fn<(file: File) => Promise<ImageUploadResult | null>>
+		>;
 		let mockOnChange: ReturnType<typeof vi.fn<(value: string) => void>>;
 		let mockTextarea: HTMLTextAreaElement;
 		let mockFileInput: HTMLInputElement;
@@ -23,7 +25,8 @@ describe("Unit Test", () => {
 			textareaRef = { current: mockTextarea };
 
 			// uploadImageのモックを作成
-			mockUploadImage = vi.fn<(file: File) => Promise<ImageUploadResult | null>>();
+			mockUploadImage =
+				vi.fn<(file: File) => Promise<ImageUploadResult | null>>();
 
 			// onChangeのモックを作成
 			mockOnChange = vi.fn<(value: string) => void>();
