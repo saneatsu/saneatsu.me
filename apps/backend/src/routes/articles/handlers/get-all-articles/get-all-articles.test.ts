@@ -68,7 +68,7 @@ describe("GET /articles - 記事一覧取得", () => {
 		// 記事一覧取得のモック（正しいチェーン構造）
 		const articleListMock = {
 			from: vi.fn().mockReturnValue({
-				leftJoin: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						orderBy: vi.fn().mockReturnValue({
 							limit: vi.fn().mockReturnValue({
@@ -94,7 +94,7 @@ describe("GET /articles - 記事一覧取得", () => {
 		// 総記事数取得のモック
 		const countMock = {
 			from: vi.fn().mockReturnValue({
-				leftJoin: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockResolvedValue(mockTotalCount),
 				}),
 			}),
@@ -147,7 +147,7 @@ describe("GET /articles - 記事一覧取得", () => {
 
 		const articleListMock = {
 			from: vi.fn().mockReturnValue({
-				leftJoin: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						orderBy: vi.fn().mockReturnValue({
 							limit: vi.fn().mockReturnValue({
@@ -172,7 +172,7 @@ describe("GET /articles - 記事一覧取得", () => {
 
 		const countMock = {
 			from: vi.fn().mockReturnValue({
-				leftJoin: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockResolvedValue(mockTotalCount),
 				}),
 			}),
@@ -230,7 +230,7 @@ describe("GET /articles - 記事一覧取得", () => {
 
 		const articleListMock = {
 			from: vi.fn().mockReturnValue({
-				leftJoin: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						orderBy: vi.fn().mockReturnValue({
 							limit: vi.fn().mockReturnValue({
@@ -255,7 +255,7 @@ describe("GET /articles - 記事一覧取得", () => {
 
 		const countMock = {
 			from: vi.fn().mockReturnValue({
-				leftJoin: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockResolvedValue(mockTotalCount),
 				}),
 			}),
@@ -294,7 +294,7 @@ describe("GET /articles - 記事一覧取得", () => {
 
 		const articleListMock = {
 			from: vi.fn().mockReturnValue({
-				leftJoin: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						orderBy: vi.fn().mockReturnValue({
 							limit: vi.fn().mockReturnValue({
@@ -308,7 +308,7 @@ describe("GET /articles - 記事一覧取得", () => {
 
 		const countMock = {
 			from: vi.fn().mockReturnValue({
-				leftJoin: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockResolvedValue([]),
 				}),
 			}),
@@ -371,7 +371,7 @@ describe("GET /articles - 記事一覧取得", () => {
 
 			const articleListMock = {
 				from: vi.fn().mockReturnValue({
-					leftJoin: vi.fn().mockReturnValue({
+					innerJoin: vi.fn().mockReturnValue({
 						where: vi.fn().mockReturnValue({
 							orderBy: vi.fn().mockReturnValue({
 								limit: vi.fn().mockReturnValue({
@@ -397,7 +397,7 @@ describe("GET /articles - 記事一覧取得", () => {
 			// 総記事数取得のモック（修正後：count()を使用）
 			const countMock = {
 				from: vi.fn().mockReturnValue({
-					leftJoin: vi.fn().mockReturnValue({
+					innerJoin: vi.fn().mockReturnValue({
 						where: vi.fn().mockResolvedValue(mockTotalCountResult),
 					}),
 				}),
@@ -469,7 +469,7 @@ describe("GET /articles - 記事一覧取得", () => {
 
 			const articleListMock = {
 				from: vi.fn().mockReturnValue({
-					leftJoin: vi.fn().mockReturnValue({
+					innerJoin: vi.fn().mockReturnValue({
 						where: vi.fn().mockReturnValue({
 							orderBy: vi.fn().mockReturnValue({
 								limit: vi.fn().mockReturnValue({
@@ -494,7 +494,7 @@ describe("GET /articles - 記事一覧取得", () => {
 
 			const countMock = {
 				from: vi.fn().mockReturnValue({
-					leftJoin: vi.fn().mockReturnValue({
+					innerJoin: vi.fn().mockReturnValue({
 						where: vi.fn().mockResolvedValue([{ count: 2 }]),
 					}),
 				}),
@@ -522,7 +522,7 @@ describe("GET /articles - 記事一覧取得", () => {
 			const data = await res.json();
 			expect(data.data).toHaveLength(2);
 			expect(
-				articleListMock.from().leftJoin().where().orderBy
+				articleListMock.from().innerJoin().where().orderBy
 			).toHaveBeenCalled();
 		});
 
@@ -563,7 +563,7 @@ describe("GET /articles - 記事一覧取得", () => {
 
 			const articleListMock = {
 				from: vi.fn().mockReturnValue({
-					leftJoin: vi.fn().mockReturnValue({
+					innerJoin: vi.fn().mockReturnValue({
 						where: vi.fn().mockReturnValue({
 							orderBy: vi.fn().mockReturnValue({
 								limit: vi.fn().mockReturnValue({
@@ -588,7 +588,7 @@ describe("GET /articles - 記事一覧取得", () => {
 
 			const countMock = {
 				from: vi.fn().mockReturnValue({
-					leftJoin: vi.fn().mockReturnValue({
+					innerJoin: vi.fn().mockReturnValue({
 						where: vi.fn().mockResolvedValue([{ count: 2 }]),
 					}),
 				}),
@@ -618,7 +618,7 @@ describe("GET /articles - 記事一覧取得", () => {
 			expect(data.data[0].viewCount).toBe(0);
 			expect(data.data[1].viewCount).toBe(0);
 			expect(
-				articleListMock.from().leftJoin().where().orderBy
+				articleListMock.from().innerJoin().where().orderBy
 			).toHaveBeenCalled();
 		});
 
@@ -661,7 +661,7 @@ describe("GET /articles - 記事一覧取得", () => {
 
 			const articleListMock = {
 				from: vi.fn().mockReturnValue({
-					leftJoin: vi.fn().mockReturnValue({
+					innerJoin: vi.fn().mockReturnValue({
 						where: vi.fn().mockReturnValue({
 							orderBy: vi.fn().mockReturnValue({
 								limit: vi.fn().mockReturnValue({
@@ -686,7 +686,7 @@ describe("GET /articles - 記事一覧取得", () => {
 
 			const countMock = {
 				from: vi.fn().mockReturnValue({
-					leftJoin: vi.fn().mockReturnValue({
+					innerJoin: vi.fn().mockReturnValue({
 						where: vi.fn().mockResolvedValue([{ count: 2 }]),
 					}),
 				}),
@@ -714,7 +714,7 @@ describe("GET /articles - 記事一覧取得", () => {
 			const data = await res.json();
 			expect(data.data).toHaveLength(2);
 			expect(
-				articleListMock.from().leftJoin().where().orderBy
+				articleListMock.from().innerJoin().where().orderBy
 			).toHaveBeenCalled();
 		});
 
@@ -755,7 +755,7 @@ describe("GET /articles - 記事一覧取得", () => {
 
 			const articleListMock = {
 				from: vi.fn().mockReturnValue({
-					leftJoin: vi.fn().mockReturnValue({
+					innerJoin: vi.fn().mockReturnValue({
 						where: vi.fn().mockReturnValue({
 							orderBy: vi.fn().mockReturnValue({
 								limit: vi.fn().mockReturnValue({
@@ -780,7 +780,7 @@ describe("GET /articles - 記事一覧取得", () => {
 
 			const countMock = {
 				from: vi.fn().mockReturnValue({
-					leftJoin: vi.fn().mockReturnValue({
+					innerJoin: vi.fn().mockReturnValue({
 						where: vi.fn().mockResolvedValue([{ count: 2 }]),
 					}),
 				}),
@@ -808,7 +808,7 @@ describe("GET /articles - 記事一覧取得", () => {
 			const data = await res.json();
 			expect(data.data).toHaveLength(2);
 			expect(
-				articleListMock.from().leftJoin().where().orderBy
+				articleListMock.from().innerJoin().where().orderBy
 			).toHaveBeenCalled();
 		});
 
@@ -849,7 +849,7 @@ describe("GET /articles - 記事一覧取得", () => {
 
 			const articleListMock = {
 				from: vi.fn().mockReturnValue({
-					leftJoin: vi.fn().mockReturnValue({
+					innerJoin: vi.fn().mockReturnValue({
 						where: vi.fn().mockReturnValue({
 							orderBy: vi.fn().mockReturnValue({
 								limit: vi.fn().mockReturnValue({
@@ -874,7 +874,7 @@ describe("GET /articles - 記事一覧取得", () => {
 
 			const countMock = {
 				from: vi.fn().mockReturnValue({
-					leftJoin: vi.fn().mockReturnValue({
+					innerJoin: vi.fn().mockReturnValue({
 						where: vi.fn().mockResolvedValue([{ count: 2 }]),
 					}),
 				}),
@@ -902,7 +902,7 @@ describe("GET /articles - 記事一覧取得", () => {
 			const data = await res.json();
 			expect(data.data).toHaveLength(2);
 			expect(
-				articleListMock.from().leftJoin().where().orderBy
+				articleListMock.from().innerJoin().where().orderBy
 			).toHaveBeenCalled();
 		});
 
@@ -931,7 +931,7 @@ describe("GET /articles - 記事一覧取得", () => {
 
 			const articleListMock = {
 				from: vi.fn().mockReturnValue({
-					leftJoin: vi.fn().mockReturnValue({
+					innerJoin: vi.fn().mockReturnValue({
 						where: vi.fn().mockReturnValue({
 							orderBy: vi.fn().mockReturnValue({
 								limit: vi.fn().mockReturnValue({
@@ -956,7 +956,7 @@ describe("GET /articles - 記事一覧取得", () => {
 
 			const countMock = {
 				from: vi.fn().mockReturnValue({
-					leftJoin: vi.fn().mockReturnValue({
+					innerJoin: vi.fn().mockReturnValue({
 						where: vi.fn().mockResolvedValue([{ count: 1 }]),
 					}),
 				}),
