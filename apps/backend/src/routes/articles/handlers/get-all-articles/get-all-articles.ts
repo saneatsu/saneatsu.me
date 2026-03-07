@@ -126,7 +126,7 @@ export const getAllArticles: Handler = async (c) => {
 				viewCount: articles.viewCount,
 			})
 			.from(articles)
-			.leftJoin(
+			.innerJoin(
 				articleTranslations,
 				and(
 					eq(articles.id, articleTranslations.articleId),
@@ -218,7 +218,7 @@ export const getAllArticles: Handler = async (c) => {
 		const totalCountResult = await db
 			.select({ count: sql<number>`COUNT(DISTINCT ${articles.id})` })
 			.from(articles)
-			.leftJoin(
+			.innerJoin(
 				articleTranslations,
 				and(
 					eq(articles.id, articleTranslations.articleId),

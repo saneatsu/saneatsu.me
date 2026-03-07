@@ -85,7 +85,7 @@ export const getArticlesByGalleryImageHandler: Handler = async (c) => {
 			})
 			.from(articleGalleryImages)
 			.innerJoin(articles, eq(articleGalleryImages.articleId, articles.id))
-			.leftJoin(
+			.innerJoin(
 				articleTranslations,
 				and(
 					eq(articles.id, articleTranslations.articleId),
