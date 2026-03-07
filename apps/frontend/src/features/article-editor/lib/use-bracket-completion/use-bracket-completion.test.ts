@@ -10,8 +10,8 @@ describe("useBracketCompletion", () => {
 	describe("Unit Test", () => {
 		let textarea: HTMLTextAreaElement;
 		let textareaRef: React.RefObject<HTMLTextAreaElement | null>;
-		let mockSetMarkdownValue: ReturnType<typeof vi.fn>;
-		let mockSetValue: ReturnType<typeof vi.fn>;
+		let mockSetMarkdownValue: ReturnType<typeof vi.fn<(value: string) => void>>;
+		let mockSetValue: ReturnType<typeof vi.fn<(name: string, value: string) => void>>;
 
 		beforeEach(() => {
 			// textareaを作成
@@ -22,8 +22,8 @@ describe("useBracketCompletion", () => {
 			textareaRef = { current: textarea };
 
 			// モック関数を作成
-			mockSetMarkdownValue = vi.fn();
-			mockSetValue = vi.fn();
+			mockSetMarkdownValue = vi.fn<(value: string) => void>();
+			mockSetValue = vi.fn<(name: string, value: string) => void>();
 		});
 
 		it("should not auto-complete brackets during IME composition", () => {

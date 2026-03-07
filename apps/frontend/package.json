@@ -120,7 +120,7 @@
 		"storybook": "^10.2.16",
 		"tailwindcss-animate": "^1.0.7",
 		"typescript": "^5.9.3",
-		"vitest": "^3.2.4",
+		"vitest": "^4.0.18",
 		"wait-on": "^9.0.4"
 	},
 	"msw": {
