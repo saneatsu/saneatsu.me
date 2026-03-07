@@ -1,6 +1,11 @@
-import type { useTranslations } from "next-intl";
+"use client";
+
+import { Check, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useCallback, useState } from "react";
 import rehypeHighlight from "rehype-highlight";
 import { siMarkdown } from "simple-icons";
+import { toast } from "sonner";
 
 import type { Article } from "@/shared";
 import type { HeadingItem } from "@/shared/lib";
@@ -15,10 +20,8 @@ interface ArticleContentProps {
 	articleUrl: string;
 	/** Markdownから抽出した見出し一覧 */
 	headings: HeadingItem[];
-	/** Markdownコンテンツをクリップボードにコピーするハンドラ */
-	onCopyMarkdown: () => Promise<void>;
-	/** シェア翻訳関数 */
-	tShare: ReturnType<typeof useTranslations<"share">>;
+	/** 記事のMarkdownコンテンツ */
+	articleContent: string;
 	/** 記事翻訳関数 */
 	t: ReturnType<typeof useTranslations<"article">>;
 }
@@ -28,16 +31,45 @@ interface ArticleContentProps {
  *
  * @description
  * Markdownコピーボタン、シェアボタン、Markdown本文、目次サイドバーの2カラムレイアウトを表示する。
+ * コピーボタンはインラインフィードバック（ローディング → 成功表示2秒）を持つ。
  */
 export function ArticleContent({
 	article,
 	locale,
 	articleUrl,
 	headings,
-	onCopyMarkdown,
-	tShare,
+	articleContent,
 	t,
 }: ArticleContentProps) {
+	const tShare = useTranslations("share");
+	const [isCopying, setIsCopying] = useState(false);
+	const [isCopied, setIsCopied] = useState(false);
+
+	/**
+	 * 記事のMarkdownコンテンツをクリップボードにコピーする
+	 *
+	 * 1. ローディング状態に遷移
+	 * 2. クリップボードにコピー
+	 * 3. 成功時: Checkアイコン + 「コピーしました」を2秒間表示
+	 * 4. 失敗時: toast.errorを表示
+	 */
+	const handleCopyMarkdown = useCallback(async () => {
+		setIsCopying(true);
+		try {
+			await navigator.clipboard.writeText(articleContent);
+			setIsCopying(false);
+			setIsCopied(true);
+
+			// 2秒後に通常状態に戻す
+			setTimeout(() => {
+				setIsCopied(false);
+			}, 2000);
+		} catch {
+			setIsCopying(false);
+			toast.error(tShare("copyMarkdownError"));
+		}
+	}, [articleContent, tShare]);
+
 	return (
 		<div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8 lg:gap-12">
 			<div className="min-w-0 space-y-8 order-2 lg:order-1">
@@ -45,28 +77,37 @@ export function ArticleContent({
 				<div className="flex justify-between items-center">
 					<button
 						type="button"
-						onClick={onCopyMarkdown}
-						className="flex items-center gap-1.5 rounded-md pr-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
+						onClick={handleCopyMarkdown}
+						disabled={isCopying}
+						className="flex items-center gap-1.5 rounded-md pr-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
 						aria-label="Copy Markdown"
 					>
-						<svg
-							role="img"
-							viewBox="0 0 24 24"
-							className="h-4 w-4"
-							fill="currentColor"
-							aria-label={siMarkdown.title}
-						>
-							<title>{siMarkdown.title}</title>
-							<path d={siMarkdown.path} />
-						</svg>
-						{tShare("copyMarkdownTooltip")}
+						{isCopying ? (
+							<Loader2 className="h-4 w-4 animate-spin" />
+						) : isCopied ? (
+							<Check className="h-4 w-4 text-success-foreground" />
+						) : (
+							<svg
+								role="img"
+								viewBox="0 0 24 24"
+								className="h-4 w-4"
+								fill="currentColor"
+								aria-label={siMarkdown.title}
+							>
+								<title>{siMarkdown.title}</title>
+								<path d={siMarkdown.path} />
+							</svg>
+						)}
+						{isCopied
+							? tShare("copyMarkdownSuccess")
+							: tShare("copyMarkdownTooltip")}
 					</button>
 					<ShareButtons url={articleUrl} title={article.title || ""} />
 				</div>
 
 				{/* 記事本文 */}
 				<MarkdownPreview
-					content={article.content || ""}
+					content={articleContent}
 					language={locale}
 					className="prose-neutral"
 					rehypePlugins={[rehypeHighlight]}
