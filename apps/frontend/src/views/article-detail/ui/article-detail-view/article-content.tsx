@@ -22,8 +22,6 @@ interface ArticleContentProps {
 	headings: HeadingItem[];
 	/** 記事のMarkdownコンテンツ */
 	articleContent: string;
-	/** 記事翻訳関数 */
-	t: ReturnType<typeof useTranslations<"article">>;
 }
 
 /**
@@ -39,8 +37,8 @@ export function ArticleContent({
 	articleUrl,
 	headings,
 	articleContent,
-	t,
 }: ArticleContentProps) {
+	const t = useTranslations("article");
 	const tShare = useTranslations("share");
 	const [isCopying, setIsCopying] = useState(false);
 	const [isCopied, setIsCopied] = useState(false);
