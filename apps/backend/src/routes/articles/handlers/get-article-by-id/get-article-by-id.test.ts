@@ -88,7 +88,7 @@ describe("GET /articles/admin/:id - 管理画面用記事詳細取得", () => {
 		// 記事取得のモック
 		const articleMock = {
 			from: vi.fn().mockReturnValue({
-				leftJoin: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						limit: vi.fn().mockResolvedValue([mockArticle]),
 					}),
@@ -160,7 +160,7 @@ describe("GET /articles/admin/:id - 管理画面用記事詳細取得", () => {
 
 		const articleMock = {
 			from: vi.fn().mockReturnValue({
-				leftJoin: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						limit: vi.fn().mockResolvedValue([]),
 					}),
@@ -245,7 +245,7 @@ describe("GET /articles/admin/:id - 管理画面用記事詳細取得", () => {
 		// 記事取得のモック
 		const articleMock = {
 			from: vi.fn().mockReturnValue({
-				leftJoin: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						limit: vi.fn().mockResolvedValue([mockDraftArticle]),
 					}),
@@ -323,7 +323,7 @@ describe("GET /articles/admin/:id - 管理画面用記事詳細取得", () => {
 		// 記事取得のモック
 		const articleMock = {
 			from: vi.fn().mockReturnValue({
-				leftJoin: vi.fn().mockReturnValue({
+				innerJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						limit: vi.fn().mockResolvedValue([mockArticle]),
 					}),
