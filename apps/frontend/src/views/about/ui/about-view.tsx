@@ -329,6 +329,36 @@ export function AboutView() {
 		setIsSheetOpen(true);
 	}, [searchParams, timelineItems]);
 
+	/**
+	 * ハイドレーション完了後にURLハッシュへ手動スクロール
+	 *
+	 * @description
+	 * 本番環境でのみ発生するアンカースクロールの不具合を修正するためのワークアラウンド。
+	 *
+	 * 【なぜ本番でだけ発生するか】
+	 * - 本番: Next.jsが静的HTMLを事前生成する。このコンポーネントはuseSearchParams()を使う
+	 *   クライアントコンポーネントでSuspense内にあるため、静的HTMLにはSuspenseの
+	 *   フォールバック（空）のみが含まれ、実際のコンテンツ（#author-interests等）は
+	 *   JSバンドルのロード・ハイドレーション後に初めてDOMに追加される。
+	 *   ブラウザのネイティブなハッシュスクロールはHTML解析時に1度だけ実行されるが、
+	 *   この時点では対象要素がまだ存在しないため失敗し、ハイドレーション後に再試行もされない。
+	 * - localhost: devモードでは毎リクエスト動的にサーバーレンダリングされ、
+	 *   Suspenseも同期的に解決されるため、フルHTMLが返り要素が最初から存在する。
+	 *   そのためブラウザのネイティブなハッシュスクロールが正常に動作する。
+	 */
+	useEffect(() => {
+		const hash = window.location.hash;
+		if (!hash) {
+			return;
+		}
+
+		const id = hash.slice(1);
+		const element = document.getElementById(id);
+		if (element) {
+			element.scrollIntoView({ behavior: "instant" });
+		}
+	}, []);
+
 	return (
 		<main className="container mx-auto px-4 py-8">
 			<div className="max-w-4xl mx-auto space-y-16">
