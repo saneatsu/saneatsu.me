@@ -26,9 +26,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # Vitestテストを実行（カバレッジ含む）
+      # ルートのvitest workspace設定でテストを一括実行（カバレッジ含む）
       - name: Run Vitest tests with coverage
-        run: pnpm test -- -- --coverage.enabled=true
+        run: pnpm vitest --coverage.enabled=true
 
       - name: Copy coverage files to root directory
         run: |
