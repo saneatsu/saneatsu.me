@@ -4,7 +4,7 @@
 	"private": true,
 	"description": "My portfolio",
 	"type": "module",
-	"packageManager": "pnpm@9.0.0",
+	"packageManager": "pnpm@10.30.3",
 	"scripts": {
 		"build": "turbo build",
 		"build:cloudflare": "turbo build:cloudflare",
@@ -46,9 +46,13 @@
 	},
 	"engines": {
 		"node": ">=18.0.0",
-		"pnpm": ">=8.0.0"
+		"pnpm": ">=10.0.0"
 	},
 	"pnpm": {
+		"onlyBuiltDependencies": [
+			"lefthook",
+			"@playwright/test"
+		],
 		"overrides": {
 			"playwright": "1.57.0",
 			"playwright-core": "1.57.0"
