@@ -10,11 +10,12 @@ import { AnchorHeading } from "@/shared/ui";
  * 自分の思想や仕事観を伝える記事を厳選している
  */
 const RECOMMENDED_ARTICLE_URLS = [
+	"https://saneatsu.me/ja/blog/my-credo",
+	"https://saneatsu.me/ja/blog/ideal-company-team-characteristics",
 	"https://saneatsu.me/ja/blog/3-keys-to-growth-and-achievement",
 	"https://saneatsu.me/ja/blog/face-the-task-dont-skip",
 	"https://saneatsu.me/ja/blog/writing-is-thinking",
 	"https://saneatsu.me/ja/blog/scrum-and-painting",
-	"https://saneatsu.me/ja/blog/my-credo",
 ] as const;
 
 /**
