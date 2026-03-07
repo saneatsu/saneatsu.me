@@ -32,7 +32,7 @@ Personal portfolio and blog site.
 ### Prerequisites
 
 - Node.js 18+
-- pnpm 8+
+- pnpm 10+
 
 ### Installation
 
