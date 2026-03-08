@@ -1,6 +1,5 @@
 "use client";
 
-import { Mail } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -77,7 +76,6 @@ import {
 	siZod,
 } from "simple-icons";
 
-import { ContactForm } from "@/features/contact-form";
 import type { ContributionCopy } from "@/features/contributions";
 import {
 	ContributionHeatmap,
@@ -520,37 +518,12 @@ export function AboutView() {
 											</svg>
 											<span>
 												{social.name}: {social.username}
-												{social.name === "X (Twitter)" && (
-													<span className="ml-1 text-sm text-muted-foreground">
-														{t("contact.dmNote")}
-													</span>
-												)}
 											</span>
 										</a>
 									</div>
 								);
 							})}
-							<div>
-								<a
-									href="mailto:saneatsu.wakana@gmail.com"
-									className="inline-flex items-center gap-2 text-foreground hover:underline"
-								>
-									<Mail className="h-4 w-4" />
-									<span>Email: saneatsu.wakana@gmail.com</span>
-								</a>
-							</div>
 						</div>
-					</section>
-
-					{/* お問い合わせフォームセクション */}
-					<section className="space-y-4">
-						<AnchorHeading level="h2" id="contact-form">
-							{t("contactForm.title")}
-						</AnchorHeading>
-						<p className="text-muted-foreground">
-							{t("contactForm.description")}
-						</p>
-						<ContactForm />
 					</section>
 				</div>
 			</div>
