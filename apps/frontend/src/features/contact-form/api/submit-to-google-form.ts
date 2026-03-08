@@ -10,6 +10,8 @@ import type { ContactFormValues } from "../model/contact-form-schema";
  */
 const GOOGLE_FORM_ENTRY_IDS = {
 	name: "entry.XXXXXXXXX",
+	company: "entry.XXXXXXXXX",
+	jobTitle: "entry.XXXXXXXXX",
 	email: "entry.XXXXXXXXX",
 	subject: "entry.XXXXXXXXX",
 	category: "entry.XXXXXXXXX",
@@ -27,8 +29,9 @@ const GOOGLE_FORM_URL =
 /**
  * お問い合わせ内容をGoogle Formsに送信する
  *
- * 1. フォームデータをURLSearchParamsに変換
- * 2. Google FormsのformResponseエンドポイントにPOST
+ * 1. 件名に「【saneatsu.me】」プレフィックスを付与
+ * 2. フォームデータをURLSearchParamsに変換
+ * 3. Google FormsのformResponseエンドポイントにPOST
  *    - CORSの制約上、レスポンスは読めないがリクエスト自体は成功する
  *
  * @param values - バリデーション済みのフォーム値
@@ -37,10 +40,18 @@ const GOOGLE_FORM_URL =
 export async function fetchSubmitContactForm(
 	values: ContactFormValues
 ): Promise<void> {
+	// 1. 件名にプレフィックスを付与（フォーム上には表示されない）
+	const subjectWithPrefix = `【saneatsu.me】${values.subject}`;
+
+	// 2. フォームデータをURLSearchParamsに変換
 	const formData = new URLSearchParams();
 	formData.append(GOOGLE_FORM_ENTRY_IDS.name, values.name);
+	formData.append(GOOGLE_FORM_ENTRY_IDS.company, values.company);
+	if (values.jobTitle) {
+		formData.append(GOOGLE_FORM_ENTRY_IDS.jobTitle, values.jobTitle);
+	}
 	formData.append(GOOGLE_FORM_ENTRY_IDS.email, values.email);
-	formData.append(GOOGLE_FORM_ENTRY_IDS.subject, values.subject);
+	formData.append(GOOGLE_FORM_ENTRY_IDS.subject, subjectWithPrefix);
 	formData.append(GOOGLE_FORM_ENTRY_IDS.category, values.category);
 	formData.append(GOOGLE_FORM_ENTRY_IDS.message, values.message);
 

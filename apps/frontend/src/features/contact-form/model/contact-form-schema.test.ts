@@ -14,12 +14,18 @@ import {
  * | 正常系     | 全フィールドに有効な値            | success          |
  * | 正常系     | 名前1文字（最小値）              | success          |
  * | 正常系     | 名前100文字（最大値）            | success          |
+ * | 正常系     | 会社名1文字（最小値）            | success          |
+ * | 正常系     | 会社名100文字（最大値）           | success          |
+ * | 正常系     | 役職なし（オプション）            | success          |
+ * | 正常系     | 役職あり                        | success          |
+ * | 正常系     | 役職空文字                      | success          |
  * | 正常系     | 件名200文字（最大値）            | success          |
  * | 正常系     | メッセージ5000文字（最大値）       | success          |
  * | 正常系     | 全カテゴリ値                    | success          |
  * | 正常系     | ハニーポット空文字               | success          |
  * | 正常系     | ハニーポットundefined            | success          |
  * | 異常系     | 名前空文字                      | error            |
+ * | 異常系     | 会社名空文字                    | error            |
  * | 異常系     | メール空文字                    | error            |
  * | 異常系     | メール形式不正                   | error            |
  * | 異常系     | 件名空文字                      | error            |
@@ -27,6 +33,8 @@ import {
  * | 異常系     | メッセージ空文字                 | error            |
  * | 異常系     | ハニーポットに値あり              | error            |
  * | 境界値     | 名前101文字                     | error            |
+ * | 境界値     | 会社名101文字                   | error            |
+ * | 境界値     | 役職101文字                     | error            |
  * | 境界値     | 件名201文字                     | error            |
  * | 境界値     | メッセージ5001文字               | error            |
  */
@@ -34,6 +42,8 @@ import {
 /** 有効なフォームデータのベース */
 const validFormData: ContactFormValues = {
 	name: "テスト太郎",
+	company: "テスト株式会社",
+	jobTitle: "",
 	email: "test@example.com",
 	subject: "テスト件名",
 	category: "general",
@@ -67,6 +77,61 @@ describe("contactFormSchema", () => {
 		it("should accept name with 100 characters (maximum boundary)", () => {
 			// Given: 名前が100文字
 			const data = { ...validFormData, name: "あ".repeat(100) };
+
+			// When: バリデーション
+			const result = contactFormSchema.safeParse(data);
+
+			// Then: 成功する
+			expect(result.success).toBe(true);
+		});
+
+		it("should accept company with 1 character (minimum boundary)", () => {
+			// Given: 会社名が1文字
+			const data = { ...validFormData, company: "あ" };
+
+			// When: バリデーション
+			const result = contactFormSchema.safeParse(data);
+
+			// Then: 成功する
+			expect(result.success).toBe(true);
+		});
+
+		it("should accept company with 100 characters (maximum boundary)", () => {
+			// Given: 会社名が100文字
+			const data = { ...validFormData, company: "あ".repeat(100) };
+
+			// When: バリデーション
+			const result = contactFormSchema.safeParse(data);
+
+			// Then: 成功する
+			expect(result.success).toBe(true);
+		});
+
+		it("should accept empty job title (optional field)", () => {
+			// Given: 役職が空文字
+			const data = { ...validFormData, jobTitle: "" };
+
+			// When: バリデーション
+			const result = contactFormSchema.safeParse(data);
+
+			// Then: 成功する
+			expect(result.success).toBe(true);
+		});
+
+		it("should accept undefined job title (optional field)", () => {
+			// Given: 役職がundefined
+			const data = { ...validFormData, jobTitle: undefined };
+
+			// When: バリデーション
+			const result = contactFormSchema.safeParse(data);
+
+			// Then: 成功する
+			expect(result.success).toBe(true);
+		});
+
+		it("should accept job title with value", () => {
+			// Given: 役職に値がある
+			const data = { ...validFormData, jobTitle: "エンジニア" };
 
 			// When: バリデーション
 			const result = contactFormSchema.safeParse(data);
@@ -144,6 +209,20 @@ describe("contactFormSchema", () => {
 			expect(result.success).toBe(false);
 			if (!result.success) {
 				expect(result.error.issues[0].message).toBe("お名前を入力してください");
+			}
+		});
+
+		it("should reject empty company", () => {
+			// Given: 会社名が空文字
+			const data = { ...validFormData, company: "" };
+
+			// When: バリデーション
+			const result = contactFormSchema.safeParse(data);
+
+			// Then: 失敗する
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				expect(result.error.issues[0].message).toBe("会社名を入力してください");
 			}
 		});
 
@@ -249,6 +328,38 @@ describe("contactFormSchema", () => {
 			if (!result.success) {
 				expect(result.error.issues[0].message).toBe(
 					"お名前は100文字以内で入力してください"
+				);
+			}
+		});
+
+		it("should reject company with 101 characters (exceeds maximum)", () => {
+			// Given: 会社名が101文字
+			const data = { ...validFormData, company: "あ".repeat(101) };
+
+			// When: バリデーション
+			const result = contactFormSchema.safeParse(data);
+
+			// Then: 失敗する
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				expect(result.error.issues[0].message).toBe(
+					"会社名は100文字以内で入力してください"
+				);
+			}
+		});
+
+		it("should reject job title with 101 characters (exceeds maximum)", () => {
+			// Given: 役職が101文字
+			const data = { ...validFormData, jobTitle: "あ".repeat(101) };
+
+			// When: バリデーション
+			const result = contactFormSchema.safeParse(data);
+
+			// Then: 失敗する
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				expect(result.error.issues[0].message).toBe(
+					"役職は100文字以内で入力してください"
 				);
 			}
 		});

@@ -11,6 +11,10 @@ vi.mock("next-intl", () => ({
 		const translations: Record<string, string> = {
 			"name.label": "お名前",
 			"name.placeholder": "山田太郎",
+			"company.label": "会社名",
+			"company.placeholder": "株式会社サンプル",
+			"jobTitle.label": "役職",
+			"jobTitle.placeholder": "エンジニア（任意）",
 			"email.label": "メールアドレス",
 			"email.placeholder": "example@email.com",
 			"subject.label": "件名",
@@ -26,6 +30,7 @@ vi.mock("next-intl", () => ({
 			"message.placeholder": "お問い合わせ内容をご記入ください",
 			submit: "送信する",
 			submitting: "送信中...",
+			submitted: "送信しました",
 			"success.title": "送信完了",
 			"success.message":
 				"お問い合わせありがとうございます。内容を確認次第、ご連絡いたします。",
@@ -59,48 +64,23 @@ vi.mock("../../api/submit-to-google-form", () => ({
  *
  * | 分類       | テストケース                             | 期待値                                   |
  * |-----------|----------------------------------------|------------------------------------------|
- * | 正常系     | 全フィールドに有効な値を入力して送信         | 送信成功、サンキューメッセージ表示           |
- * | 正常系     | 送信成功後に「新しいお問い合わせ」ボタン押下  | フォームがリセットされる                    |
+ * | 正常系     | 全フィールドに有効な値を入力して送信         | 送信成功、フォームリセット、ボタン変更        |
  * | 異常系     | 名前を空で送信                            | バリデーションエラー「お名前を入力してください」 |
+ * | 異常系     | 会社名を空で送信                          | バリデーションエラー「会社名を入力してください」 |
  * | 異常系     | メール形式不正で送信                       | バリデーションエラー                        |
  * | 異常系     | 件名を空で送信                            | バリデーションエラー                        |
  * | 異常系     | メッセージを空で送信                       | バリデーションエラー                        |
  * | 異常系     | fetch失敗時                              | toast.errorが呼ばれる                     |
  * | 境界値     | 名前101文字                              | バリデーションエラー                        |
- * | 境界値     | 名前100文字                              | バリデーション通過                          |
+ * | 境界値     | 会社名101文字                             | バリデーションエラー                        |
  * | 境界値     | メッセージ5001文字                        | バリデーションエラー                        |
  * | UI        | 初期表示時にフォームが表示される             | フォーム要素が全て存在                      |
  * | UI        | 送信ボタンのテキストが正しい                | 「送信する」と表示                          |
+ * | UI        | 送信ボタンが右寄せ                         | ボタンの親がflex justify-end               |
  */
 
 describe("ContactForm", () => {
 	const user = userEvent.setup();
-
-	/**
-	 * フォームに全フィールドを入力するヘルパー関数
-	 * カテゴリはRadixのSelectでDOMを直接操作できないため、除外する
-	 */
-	const fillForm = async (overrides?: {
-		name?: string;
-		email?: string;
-		subject?: string;
-		message?: string;
-	}) => {
-		// Given: フォームが表示されている
-		const nameInput = screen.getByLabelText("お名前");
-		const emailInput = screen.getByLabelText("メールアドレス");
-		const subjectInput = screen.getByLabelText("件名");
-		const messageInput = screen.getByLabelText("メッセージ");
-
-		// When: フォームに値を入力する
-		await user.type(nameInput, overrides?.name ?? "テスト太郎");
-		await user.type(emailInput, overrides?.email ?? "test@example.com");
-		await user.type(subjectInput, overrides?.subject ?? "テストの件名");
-		await user.type(
-			messageInput,
-			overrides?.message ?? "テストメッセージです。"
-		);
-	};
 
 	describe("Unit Test", () => {
 		it("should render all form fields on initial load", () => {
@@ -109,6 +89,8 @@ describe("ContactForm", () => {
 
 			// Then: 全てのフォーム要素が表示される
 			expect(screen.getByLabelText("お名前")).toBeInTheDocument();
+			expect(screen.getByLabelText("会社名")).toBeInTheDocument();
+			expect(screen.getByLabelText("役職")).toBeInTheDocument();
 			expect(screen.getByLabelText("メールアドレス")).toBeInTheDocument();
 			expect(screen.getByLabelText("件名")).toBeInTheDocument();
 			expect(screen.getByLabelText("カテゴリ")).toBeInTheDocument();
@@ -141,6 +123,22 @@ describe("ContactForm", () => {
 			});
 		});
 
+		it("should show validation error when company is empty", async () => {
+			// Given: ContactFormをレンダリング
+			render(<ContactForm />);
+
+			// When: 会社名を入力せずに送信
+			const submitButton = screen.getByRole("button", { name: /送信する/ });
+			await user.click(submitButton);
+
+			// Then: バリデーションエラーが表示される
+			await waitFor(() => {
+				expect(
+					screen.getByText("会社名を入力してください")
+				).toBeInTheDocument();
+			});
+		});
+
 		it("should show validation error when email format is invalid", async () => {
 			// Given: ContactFormをレンダリング
 			render(<ContactForm />);
@@ -151,7 +149,6 @@ describe("ContactForm", () => {
 
 			// Then: メール形式のバリデーションエラーが表示される
 			await waitFor(() => {
-				// FormMessageはp要素としてレンダリングされる
 				expect(
 					screen.getByText((content) => content.includes("メールアドレス"))
 				).toBeInTheDocument();
@@ -207,6 +204,25 @@ describe("ContactForm", () => {
 			});
 		});
 
+		it("should show validation error when company exceeds 100 characters", async () => {
+			// Given: ContactFormをレンダリング
+			render(<ContactForm />);
+
+			// When: 101文字の会社名を入力して送信（fireEventで高速に設定）
+			const longCompany = "あ".repeat(101);
+			const companyInput = screen.getByLabelText("会社名");
+			fireEvent.change(companyInput, { target: { value: longCompany } });
+			const submitButton = screen.getByRole("button", { name: /送信する/ });
+			await user.click(submitButton);
+
+			// Then: バリデーションエラーが表示される
+			await waitFor(() => {
+				expect(
+					screen.getByText("会社名は100文字以内で入力してください")
+				).toBeInTheDocument();
+			});
+		});
+
 		it("should show validation error when message exceeds 5000 characters", async () => {
 			// Given: ContactFormをレンダリング
 			render(<ContactForm />);
@@ -235,20 +251,8 @@ describe("ContactForm", () => {
 			);
 			render(<ContactForm />);
 
-			// When: フォームに入力して送信（カテゴリ未選択のためバリデーションエラーになるが、
-			// ここではfetchSubmitContactFormの失敗テストなのでスキーマを直接テスト）
-			await fillForm();
-
-			// カテゴリのバリデーションをバイパスするために直接送信をテストする必要があるが、
-			// RadixのSelectはjsdomで完全に動作しないため、別のアプローチでテスト
-			// → fetchSubmitContactFormが例外を投げた場合のtoast.errorを確認
-
-			// fetchSubmitContactFormが呼ばれた場合のエラーハンドリングを検証するため、
-			// contactFormSchemaのユニットテストで境界値を検証し、
-			// ここではモックの呼び出しを確認
-
 			// Note: RadixのSelectコンポーネントはjsdomでは完全にサポートされないため、
-			// このテストはStorybookのplay関数で補完する
+			// カテゴリ選択を含む完全な送信フローはStorybookのplay関数で検証する
 			expect(mockFetchSubmitContactForm).not.toHaveBeenCalled();
 		});
 	});
