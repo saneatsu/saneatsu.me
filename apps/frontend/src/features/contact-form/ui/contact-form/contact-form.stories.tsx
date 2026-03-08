@@ -63,7 +63,7 @@ export const EmailValidationError: Story = {
 		const user = userEvent.setup();
 
 		// When: 不正なメール形式を入力して送信
-		const emailInput = canvas.getByLabelText("メールアドレス");
+		const emailInput = canvas.getByLabelText(/メールアドレス/);
 		await user.type(emailInput, "invalid-email");
 
 		const submitButton = canvas.getByRole("button", { name: /送信する/ });
@@ -98,13 +98,13 @@ export const SubmitSuccess: Story = {
 		const user = userEvent.setup();
 
 		// When: 全フィールドに有効な値を入力
-		await user.type(canvas.getByLabelText("お名前"), "テスト太郎");
-		await user.type(canvas.getByLabelText("会社名"), "テスト株式会社");
+		await user.type(canvas.getByLabelText(/お名前/), "テスト太郎");
+		await user.type(canvas.getByLabelText(/会社名/), "テスト株式会社");
 		await user.type(
-			canvas.getByLabelText("メールアドレス"),
+			canvas.getByLabelText(/メールアドレス/),
 			"test@example.com"
 		);
-		await user.type(canvas.getByLabelText("件名"), "テストの件名");
+		await user.type(canvas.getByLabelText(/件名/), "テストの件名");
 
 		// カテゴリを選択
 		const categoryTrigger = canvas.getByRole("combobox");
@@ -116,7 +116,7 @@ export const SubmitSuccess: Story = {
 		await user.click(option);
 
 		await user.type(
-			canvas.getByLabelText("メッセージ"),
+			canvas.getByLabelText(/メッセージ/),
 			"テストメッセージです。"
 		);
 
@@ -130,11 +130,11 @@ export const SubmitSuccess: Story = {
 		).toBeInTheDocument();
 
 		// Then: フォームがリセットされている（名前フィールドが空）
-		const nameInput = canvas.getByLabelText("お名前");
+		const nameInput = canvas.getByLabelText(/お名前/);
 		await expect(nameInput).toHaveValue("");
 
 		// Then: 会社名フィールドも空
-		const companyInput = canvas.getByLabelText("会社名");
+		const companyInput = canvas.getByLabelText(/会社名/);
 		await expect(companyInput).toHaveValue("");
 	},
 };

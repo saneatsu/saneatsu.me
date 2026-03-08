@@ -294,8 +294,9 @@
 		}
 	},
 	"contact": {
-		"title": "お問い合わせ",
+		"title": "Contact",
 		"description": "ご質問やご要望がございましたら、以下のフォームからお気軽にお問い合わせください。",
+		"required": "必須",
 		"name": {
 			"label": "お名前",
 			"placeholder": "山田太郎"

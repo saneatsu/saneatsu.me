@@ -88,13 +88,13 @@ describe("ContactForm", () => {
 			render(<ContactForm />);
 
 			// Then: 全てのフォーム要素が表示される
-			expect(screen.getByLabelText("お名前")).toBeInTheDocument();
-			expect(screen.getByLabelText("会社名")).toBeInTheDocument();
-			expect(screen.getByLabelText("役職")).toBeInTheDocument();
-			expect(screen.getByLabelText("メールアドレス")).toBeInTheDocument();
-			expect(screen.getByLabelText("件名")).toBeInTheDocument();
-			expect(screen.getByLabelText("カテゴリ")).toBeInTheDocument();
-			expect(screen.getByLabelText("メッセージ")).toBeInTheDocument();
+			expect(screen.getByLabelText(/お名前/)).toBeInTheDocument();
+			expect(screen.getByLabelText(/会社名/)).toBeInTheDocument();
+			expect(screen.getByLabelText(/役職/)).toBeInTheDocument();
+			expect(screen.getByLabelText(/メールアドレス/)).toBeInTheDocument();
+			expect(screen.getByLabelText(/件名/)).toBeInTheDocument();
+			expect(screen.getByLabelText(/カテゴリ/)).toBeInTheDocument();
+			expect(screen.getByLabelText(/メッセージ/)).toBeInTheDocument();
 		});
 
 		it("should display submit button with correct text", () => {
@@ -144,7 +144,7 @@ describe("ContactForm", () => {
 			render(<ContactForm />);
 
 			// When: 不正なメール形式を入力して送信
-			await user.type(screen.getByLabelText("メールアドレス"), "invalid-email");
+			await user.type(screen.getByLabelText(/メールアドレス/), "invalid-email");
 			await user.click(screen.getByRole("button", { name: /送信する/ }));
 
 			// Then: メール形式のバリデーションエラーが表示される
@@ -191,7 +191,7 @@ describe("ContactForm", () => {
 
 			// When: 101文字の名前を入力して送信（fireEventで高速に設定）
 			const longName = "あ".repeat(101);
-			const nameInput = screen.getByLabelText("お名前");
+			const nameInput = screen.getByLabelText(/お名前/);
 			fireEvent.change(nameInput, { target: { value: longName } });
 			const submitButton = screen.getByRole("button", { name: /送信する/ });
 			await user.click(submitButton);
@@ -210,7 +210,7 @@ describe("ContactForm", () => {
 
 			// When: 101文字の会社名を入力して送信（fireEventで高速に設定）
 			const longCompany = "あ".repeat(101);
-			const companyInput = screen.getByLabelText("会社名");
+			const companyInput = screen.getByLabelText(/会社名/);
 			fireEvent.change(companyInput, { target: { value: longCompany } });
 			const submitButton = screen.getByRole("button", { name: /送信する/ });
 			await user.click(submitButton);
@@ -229,7 +229,7 @@ describe("ContactForm", () => {
 
 			// When: 5001文字のメッセージを入力して送信（fireEventで高速に設定）
 			const longMessage = "あ".repeat(5001);
-			const messageInput = screen.getByLabelText("メッセージ");
+			const messageInput = screen.getByLabelText(/メッセージ/);
 			fireEvent.change(messageInput, { target: { value: longMessage } });
 			const submitButton = screen.getByRole("button", { name: /送信する/ });
 			await user.click(submitButton);
