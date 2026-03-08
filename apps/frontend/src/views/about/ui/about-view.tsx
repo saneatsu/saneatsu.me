@@ -6,7 +6,9 @@ import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import type { SimpleIcon } from "simple-icons";
 import {
+	siAnaconda,
 	siAsana,
+	siBetterauth,
 	siBiome,
 	siCloudflare,
 	siCss,
@@ -24,6 +26,7 @@ import {
 	siGithub,
 	siGithubactions,
 	siGooglebigquery,
+	siGooglecloud,
 	siHono,
 	siHtml5,
 	siJavascript,
@@ -211,6 +214,7 @@ export function AboutView() {
 			{ name: "Kysely" },
 			{ name: "Drizzle ORM", icon: siDrizzle },
 			{ name: "Prisma", icon: siPrisma },
+			{ name: "Better Auth", icon: siBetterauth },
 			{ name: "Zod", icon: siZod },
 			{ name: "React Hook Form", icon: siReacthookform },
 			{ name: "React Flow", icon: siXyflow },
@@ -233,7 +237,9 @@ export function AboutView() {
 			{ name: "Vercel", icon: siVercel },
 			{ name: "Cloudflare", icon: siCloudflare },
 			{ name: "AWS" },
+			{ name: "Google Cloud", icon: siGooglecloud },
 			{ name: "Docker", icon: siDocker },
+			{ name: "Anaconda", icon: siAnaconda },
 			{ name: "Notion", icon: siNotion },
 			{ name: "Slack" },
 			{ name: "Stripe", icon: siStripe },
