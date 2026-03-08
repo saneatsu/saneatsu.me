@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 	const metadata = {
 		ja: {
-			title: "お問い合わせ - saneatsu.me",
+			title: "Contact - saneatsu.me",
 		},
 		en: {
 			title: "Contact - saneatsu.me",
