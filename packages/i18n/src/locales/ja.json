@@ -290,6 +290,47 @@
 		"contact": {
 			"title": "SNS・Webサイト",
 			"dmNote": "（一番気づきやすいです！）"
+		},
+		"contactForm": {
+			"title": "お問い合わせ",
+			"description": "ご質問やご要望がございましたら、以下のフォームからお気軽にお問い合わせください。",
+			"name": {
+				"label": "お名前",
+				"placeholder": "山田太郎"
+			},
+			"email": {
+				"label": "メールアドレス",
+				"placeholder": "example@email.com"
+			},
+			"subject": {
+				"label": "件名",
+				"placeholder": "お問い合わせの件名"
+			},
+			"category": {
+				"label": "カテゴリ",
+				"placeholder": "カテゴリを選択してください",
+				"options": {
+					"general": "一般的なお問い合わせ",
+					"business": "お仕事のご依頼・ご相談",
+					"feedback": "フィードバック・ご感想",
+					"bug-report": "不具合の報告",
+					"other": "その他"
+				}
+			},
+			"message": {
+				"label": "メッセージ",
+				"placeholder": "お問い合わせ内容をご記入ください"
+			},
+			"submit": "送信する",
+			"submitting": "送信中...",
+			"success": {
+				"title": "送信完了",
+				"message": "お問い合わせありがとうございます。内容を確認次第、ご連絡いたします。",
+				"sendAnother": "新しいお問い合わせを送信する"
+			},
+			"error": {
+				"submitFailed": "送信に失敗しました。時間をおいて再度お試しください。"
+			}
 		}
 	},
 	"contributions": {

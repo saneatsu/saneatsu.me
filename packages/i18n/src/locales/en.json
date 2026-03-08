@@ -281,6 +281,47 @@
 		"contact": {
 			"title": "SNS & Websites",
 			"dmNote": "(Quickest way to reach me!)"
+		},
+		"contactForm": {
+			"title": "Contact",
+			"description": "Feel free to reach out using the form below for any questions or inquiries.",
+			"name": {
+				"label": "Name",
+				"placeholder": "John Doe"
+			},
+			"email": {
+				"label": "Email",
+				"placeholder": "example@email.com"
+			},
+			"subject": {
+				"label": "Subject",
+				"placeholder": "Subject of your inquiry"
+			},
+			"category": {
+				"label": "Category",
+				"placeholder": "Select a category",
+				"options": {
+					"general": "General Inquiry",
+					"business": "Business / Collaboration",
+					"feedback": "Feedback",
+					"bug-report": "Bug Report",
+					"other": "Other"
+				}
+			},
+			"message": {
+				"label": "Message",
+				"placeholder": "Please enter your message"
+			},
+			"submit": "Send",
+			"submitting": "Sending...",
+			"success": {
+				"title": "Sent Successfully",
+				"message": "Thank you for your inquiry. I will get back to you as soon as possible.",
+				"sendAnother": "Send another inquiry"
+			},
+			"error": {
+				"submitFailed": "Failed to send. Please try again later."
+			}
 		}
 	},
 	"contributions": {
