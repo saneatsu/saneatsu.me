@@ -77,6 +77,7 @@ import {
 	siZod,
 } from "simple-icons";
 
+import { ContactForm } from "@/features/contact-form";
 import type { ContributionCopy } from "@/features/contributions";
 import {
 	ContributionHeatmap,
@@ -539,6 +540,17 @@ export function AboutView() {
 								</a>
 							</div>
 						</div>
+					</section>
+
+					{/* お問い合わせフォームセクション */}
+					<section className="space-y-4">
+						<AnchorHeading level="h2" id="contact-form">
+							{t("contactForm.title")}
+						</AnchorHeading>
+						<p className="text-muted-foreground">
+							{t("contactForm.description")}
+						</p>
+						<ContactForm />
 					</section>
 				</div>
 			</div>
