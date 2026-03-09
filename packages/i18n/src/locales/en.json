@@ -312,7 +312,6 @@
 			"label": "Category",
 			"placeholder": "Select a category",
 			"options": {
-				"general": "General Inquiry",
 				"business": "Business / Collaboration",
 				"feedback": "Feedback",
 				"bug-report": "Bug Report",

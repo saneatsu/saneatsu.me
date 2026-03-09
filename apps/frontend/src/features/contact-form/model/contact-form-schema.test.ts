@@ -46,7 +46,7 @@ const validFormData: ContactFormValues = {
 	jobTitle: "",
 	email: "test@example.com",
 	subject: "テスト件名",
-	category: "general",
+	category: "business",
 	message: "テストメッセージです。",
 	honeypot: "",
 };

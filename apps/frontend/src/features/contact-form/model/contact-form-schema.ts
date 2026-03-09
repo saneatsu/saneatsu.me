@@ -2,7 +2,6 @@ import { z } from "zod";
 
 /** お問い合わせフォームのカテゴリ値 */
 export const CONTACT_CATEGORIES = [
-	"general",
 	"business",
 	"feedback",
 	"bug-report",

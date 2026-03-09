@@ -21,7 +21,6 @@ vi.mock("next-intl", () => ({
 			"subject.placeholder": "お問い合わせの件名",
 			"category.label": "カテゴリ",
 			"category.placeholder": "カテゴリを選択してください",
-			"category.options.general": "一般的なお問い合わせ",
 			"category.options.business": "お仕事のご依頼・ご相談",
 			"category.options.feedback": "フィードバック・ご感想",
 			"category.options.bug-report": "不具合の報告",

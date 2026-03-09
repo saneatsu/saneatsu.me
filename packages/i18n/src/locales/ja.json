@@ -321,7 +321,6 @@
 			"label": "カテゴリ",
 			"placeholder": "カテゴリを選択してください",
 			"options": {
-				"general": "一般的なお問い合わせ",
 				"business": "お仕事のご依頼・ご相談",
 				"feedback": "フィードバック・ご感想",
 				"bug-report": "不具合の報告",

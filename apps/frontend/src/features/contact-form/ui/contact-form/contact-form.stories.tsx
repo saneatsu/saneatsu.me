@@ -111,7 +111,7 @@ export const SubmitSuccess: Story = {
 		await user.click(categoryTrigger);
 		// SelectContentはPortalで描画されるためdocument.bodyからrole="option"で取得
 		const option = await within(document.body).findByRole("option", {
-			name: "一般的なお問い合わせ",
+			name: "お仕事のご依頼・ご相談",
 		});
 		await user.click(option);
 
