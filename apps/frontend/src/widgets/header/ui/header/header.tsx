@@ -1,32 +1,15 @@
 "use client";
 
 import { Rss } from "lucide-react";
-import { useLocale } from "next-intl";
 import { siGithub, siX } from "simple-icons";
 
 import { LanguageSwitcher } from "@/features/lang";
 import { navigationItems } from "@/shared/config";
-import { cn, Link, usePathname } from "@/shared/lib";
+import { cn, isActivePath, Link, usePathname } from "@/shared/lib";
 import { ThemeSelector } from "@/shared/ui";
 
 export function Header() {
-	const locale = useLocale();
 	const pathname = usePathname();
-
-	/**
-	 * 指定されたパスがアクティブかどうかを判定する
-	 *
-	 * @param path - ロケールを含まない相対パス（例: "/", "/blog", "/about"）
-	 */
-	const isActivePath = (path: string) => {
-		if (path === "/") {
-			// ホームページの場合は完全一致（ロケールのみのパス）
-			return pathname === `/${locale}`;
-		}
-		// その他のページは前方一致（サブページも含む）
-		// path に locale を追加してチェック
-		return pathname.startsWith(`/${locale}${path}`);
-	};
 
 	/**
 	 * ナビゲーションリンクのスタイルを生成する
@@ -34,7 +17,9 @@ export function Header() {
 	const getNavLinkClassName = (path: string) => {
 		return cn(
 			"transition-colors hover:text-foreground/80",
-			isActivePath(path) ? "text-foreground font-medium" : "text-foreground/60"
+			isActivePath(pathname, path)
+				? "text-primary font-medium"
+				: "text-foreground/60"
 		);
 	};
 
@@ -47,7 +32,9 @@ export function Header() {
 							href="/"
 							className={cn(
 								"mr-6 flex items-center space-x-2 transition-colors hover:text-foreground/80",
-								isActivePath("/") ? "text-foreground" : "text-foreground/90"
+								isActivePath(pathname, "/")
+									? "text-primary"
+									: "text-foreground/90"
 							)}
 						>
 							<span className="font-bold">saneatsu.me</span>

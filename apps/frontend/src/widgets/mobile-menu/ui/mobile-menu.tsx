@@ -1,11 +1,10 @@
 "use client";
 
 import { Menu, X } from "lucide-react";
-import { useLocale } from "next-intl";
 import { useState } from "react";
 
 import { navigationItems } from "@/shared/config";
-import { cn, Link, usePathname } from "@/shared/lib";
+import { cn, isActivePath, Link, usePathname } from "@/shared/lib";
 import { Button, Popover, PopoverContent, PopoverTrigger } from "@/shared/ui";
 
 /**
@@ -18,24 +17,8 @@ import { Button, Popover, PopoverContent, PopoverTrigger } from "@/shared/ui";
  * 4. 全ナビゲーションアイテム（Home, Blog, About, Gallery）へのリンクを提供
  */
 export function MobileMenu() {
-	const locale = useLocale();
 	const pathname = usePathname();
 	const [isOpen, setIsOpen] = useState(false);
-
-	/**
-	 * 指定されたパスがアクティブかどうかを判定する
-	 *
-	 * @param path - ロケールを含まない相対パス（例: "/", "/blog", "/about"）
-	 */
-	const isActivePath = (path: string) => {
-		if (path === "/") {
-			// ホームページの場合は完全一致（ロケールのみのパス）
-			return pathname === `/${locale}`;
-		}
-		// その他のページは前方一致（サブページも含む）
-		// path に locale を追加してチェック
-		return pathname.startsWith(`/${locale}${path}`);
-	};
 
 	return (
 		<Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -66,8 +49,8 @@ export function MobileMenu() {
 							href={item.path}
 							className={cn(
 								"text-base transition-colors hover:text-foreground/80",
-								isActivePath(item.path)
-									? "text-foreground font-semibold"
+								isActivePath(pathname, item.path)
+									? "text-primary font-semibold"
 									: "text-foreground/70"
 							)}
 							onClick={() => setIsOpen(false)}

@@ -46,6 +46,8 @@ export { getTechIcon } from "./get-tech-icon";
 // Hono Hook
 export { type HonoClient, useHonoClient } from "./hono/use-client";
 export { usePersistentQueryStates } from "./hooks";
+// Is Active Path
+export { isActivePath } from "./is-active-path/is-active-path";
 // Locale
 export { getUserLocale, setUserLocale } from "./locale";
 // Markdown to Text
