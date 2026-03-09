@@ -42,8 +42,9 @@ const GOOGLE_FORM_ENTRY_IDS = {
  * 1. リクエストボディからフォームデータを取得
  * 2. URLSearchParamsに変換してGoogle Formsに送信
  *    - サーバーサイドからのfetchのためCORS制約なし
- *    - Google Formsは送信成功時に302リダイレクトを返すため `redirect: "manual"` を使用
- * 3. レスポンスステータスで成功/失敗を判定（200または302が成功）
+ *    - Google Formsは送信成功時に302リダイレクトを返す
+ *    - リダイレクトを自動追従し、最終的な200レスポンスで成功を判定する
+ * 3. レスポンスステータスで成功/失敗を判定（200が成功）
  */
 export const submitContact: Handler = async (c) => {
 	try {
@@ -73,12 +74,11 @@ export const submitContact: Handler = async (c) => {
 				"Content-Type": "application/x-www-form-urlencoded",
 			},
 			body: formData.toString(),
-			redirect: "manual",
 		});
 
 		// 3. レスポンスステータスで成功/失敗を判定
-		// Google Formsは成功時に200または302を返す
-		if (response.status === 200 || response.status === 302) {
+		// Google Formsは302リダイレクト後、200のHTMLページを返す
+		if (response.ok) {
 			return c.json({ success: true }, 200);
 		}
 
