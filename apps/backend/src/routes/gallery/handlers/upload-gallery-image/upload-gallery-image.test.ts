@@ -2,22 +2,9 @@ import { Hono } from "hono";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import type { Env } from "@/env";
+import { mockEnv } from "@/lib/test-helpers/mock-env";
 
 import { uploadGalleryImageHandler } from "./upload-gallery-image";
-
-// テスト用のモックEnv
-const mockEnv: Env = {
-	NODE_ENV: "test" as "development",
-	TURSO_DATABASE_URL: "test-db-url",
-	TURSO_AUTH_TOKEN: "test-auth-token",
-	CLOUDFLARE_ACCOUNT_ID: "test-account-id",
-	CLOUDFLARE_API_TOKEN: "test-token",
-	CLOUDFLARE_ACCOUNT_HASH: "test-hash",
-	GEMINI_API_KEY: "test-gemini-key",
-	MAPBOX_ACCESS_TOKEN: "test-mapbox-token",
-	GOOGLE_FORM_URL:
-		"https://docs.google.com/forms/d/e/test-form-id/formResponse",
-};
 
 // モック関数の定義
 const { mockUploadImage, mockTranslateGalleryImage, mockGetImageUrl } =

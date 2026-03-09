@@ -2,6 +2,7 @@ import { OpenAPIHono } from "@hono/zod-openapi";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { Env } from "@/env";
+import { mockEnv } from "@/lib/test-helpers/mock-env";
 
 import { searchGeocodingHandler } from "./search-geocoding";
 import { searchGeocodingRoute } from "./search-geocoding.openapi";
@@ -9,19 +10,6 @@ import { searchGeocodingRoute } from "./search-geocoding.openapi";
 // グローバルfetchをモック
 const mockFetch = vi.fn();
 global.fetch = mockFetch as any;
-
-const mockEnv: Env = {
-	TURSO_DATABASE_URL: "test-db-url",
-	TURSO_AUTH_TOKEN: "test-auth-token",
-	CLOUDFLARE_ACCOUNT_ID: "test-account-id",
-	CLOUDFLARE_API_TOKEN: "test-token",
-	CLOUDFLARE_ACCOUNT_HASH: "test-hash",
-	GEMINI_API_KEY: "AItest-gemini-api-key-for-testing-purposes-only",
-	MAPBOX_ACCESS_TOKEN: "test-mapbox-token",
-	GOOGLE_FORM_URL:
-		"https://docs.google.com/forms/d/e/test-form-id/formResponse",
-	NODE_ENV: "development",
-};
 
 describe("Unit Test", () => {
 	beforeEach(() => {
