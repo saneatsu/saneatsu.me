@@ -45,7 +45,7 @@ export const contactFormSchema = z.object({
 		.min(1, { message: "件名を入力してください" })
 		.max(200, { message: "件名は200文字以内で入力してください" }),
 	category: z.enum(CONTACT_CATEGORIES, {
-		message: "カテゴリを選択してください",
+		message: "カテゴリーを選択してください",
 	}),
 	message: z
 		.string()

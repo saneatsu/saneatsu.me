@@ -19,8 +19,8 @@ vi.mock("next-intl", () => ({
 			"email.placeholder": "example@email.com",
 			"subject.label": "件名",
 			"subject.placeholder": "お問い合わせの件名",
-			"category.label": "カテゴリ",
-			"category.placeholder": "カテゴリを選択してください",
+			"category.label": "カテゴリー",
+			"category.placeholder": "カテゴリーを選択してください",
 			"category.options.business": "お仕事のご依頼・ご相談",
 			"category.options.feedback": "フィードバック・ご感想",
 			"category.options.bug-report": "不具合の報告",
@@ -92,7 +92,7 @@ describe("ContactForm", () => {
 			expect(screen.getByLabelText(/役職/)).toBeInTheDocument();
 			expect(screen.getByLabelText(/メールアドレス/)).toBeInTheDocument();
 			expect(screen.getByLabelText(/件名/)).toBeInTheDocument();
-			expect(screen.getByLabelText(/カテゴリ/)).toBeInTheDocument();
+			expect(screen.getByLabelText(/カテゴリー/)).toBeInTheDocument();
 			expect(screen.getByLabelText(/メッセージ/)).toBeInTheDocument();
 		});
 

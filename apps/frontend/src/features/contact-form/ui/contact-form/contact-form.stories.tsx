@@ -46,7 +46,7 @@ export const ValidationErrors: Story = {
 		).toBeInTheDocument();
 		// カテゴリのエラーメッセージはplaceholderと同じテキストのため、
 		// 複数存在することを検証する
-		const categoryErrors = canvas.getAllByText("カテゴリを選択してください");
+		const categoryErrors = canvas.getAllByText("カテゴリーを選択してください");
 		await expect(categoryErrors.length).toBeGreaterThanOrEqual(2);
 		await expect(
 			canvas.getByText("メッセージを入力してください")

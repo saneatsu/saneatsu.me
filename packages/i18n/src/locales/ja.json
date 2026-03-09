@@ -109,7 +109,7 @@
 				"period": "期間",
 				"employmentType": "雇用形態",
 				"role": "役職",
-				"category": "カテゴリ",
+				"category": "カテゴリー",
 				"description": "説明",
 				"content": "業務内容",
 				"techStack": "技術スタック",
@@ -318,8 +318,8 @@
 			"placeholder": "お問い合わせの件名"
 		},
 		"category": {
-			"label": "カテゴリ",
-			"placeholder": "カテゴリを選択してください",
+			"label": "カテゴリー",
+			"placeholder": "カテゴリーを選択してください",
 			"options": {
 				"business": "お仕事のご依頼・ご相談",
 				"feedback": "フィードバック・ご感想",

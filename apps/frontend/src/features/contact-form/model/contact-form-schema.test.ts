@@ -283,7 +283,7 @@ describe("contactFormSchema", () => {
 			expect(result.success).toBe(false);
 			if (!result.success) {
 				expect(result.error.issues[0].message).toBe(
-					"カテゴリを選択してください"
+					"カテゴリーを選択してください"
 				);
 			}
 		});
