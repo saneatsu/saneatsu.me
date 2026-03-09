@@ -16,6 +16,8 @@ const mockEnv: Env = {
 	CLOUDFLARE_ACCOUNT_HASH: "test-hash",
 	GEMINI_API_KEY: "test-gemini-key",
 	MAPBOX_ACCESS_TOKEN: "test-mapbox-token",
+	GOOGLE_FORM_URL:
+		"https://docs.google.com/forms/d/e/test-form-id/formResponse",
 };
 
 // モック用のテストデータ
