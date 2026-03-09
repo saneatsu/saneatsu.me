@@ -87,6 +87,7 @@ export const submitContact: Handler = async (c) => {
 			return c.json({ success: true }, 200);
 		}
 
+		const responseBody = await response.text();
 		console.error("Google Forms submission failed:", {
 			status: response.status,
 			statusText: response.statusText,
@@ -94,6 +95,9 @@ export const submitContact: Handler = async (c) => {
 			urlPrefix: googleFormUrl.substring(0, 40),
 			urlSuffix: googleFormUrl.slice(-20),
 			urlLength: googleFormUrl.length,
+			formDataKeys: Array.from(formData.keys()),
+			formDataBody: formData.toString().substring(0, 200),
+			responseBodyPrefix: responseBody.substring(0, 500),
 		});
 
 		return c.json(
