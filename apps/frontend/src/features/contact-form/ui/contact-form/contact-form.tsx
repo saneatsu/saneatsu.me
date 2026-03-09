@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle2, Loader2, Send } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -61,6 +61,17 @@ export function ContactForm() {
 	});
 
 	const isSubmitting = form.formState.isSubmitting;
+
+	// 送信成功後3秒でフォームをリセットして再送信可能にする
+	useEffect(() => {
+		if (!isSubmitted) return;
+
+		const timer = setTimeout(() => {
+			setIsSubmitted(false);
+		}, 3000);
+
+		return () => clearTimeout(timer);
+	}, [isSubmitted]);
 
 	/**
 	 * フォーム送信ハンドラー
@@ -275,7 +286,7 @@ export function ContactForm() {
 							</>
 						) : isSubmitted ? (
 							<>
-								<CheckCircle2 className="mr-2 h-4 w-4" />
+								<CheckCircle2 className="mr-2 h-4 w-4 text-success-foreground" />
 								{t("submitted")}
 							</>
 						) : (
