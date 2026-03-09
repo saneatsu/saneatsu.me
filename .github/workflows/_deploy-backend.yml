@@ -12,6 +12,8 @@ on:
         required: true
       CLOUDFLARE_API_TOKEN:
         required: true
+      GOOGLE_FORM_URL:
+        required: true
 
 env:
   ENV: ${{ inputs.ENV }}
@@ -63,6 +65,15 @@ jobs:
       - name: Build backend
         run: pnpm --filter @saneatsu/backend build
 
+      - name: Set GOOGLE_FORM_URL as Cloudflare secret
+        run: |
+          cd apps/backend
+          echo "$GOOGLE_FORM_URL" | npx wrangler secret put GOOGLE_FORM_URL --env ${{ env.ENV }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          GOOGLE_FORM_URL: ${{ secrets.GOOGLE_FORM_URL }}
+
       - name: Deploy to Cloudflare Workers with environment variables
         id: cloudflare-wrangler
         run: |
@@ -79,16 +90,14 @@ jobs:
               --var TURSO_AUTH_TOKEN:"$TURSO_AUTH_TOKEN" \
               --var CORS_ORIGIN:"$CORS_ORIGIN" \
               --var ADMIN_EMAILS:"$ADMIN_EMAILS" \
-              --var GEMINI_API_KEY:"$GEMINI_API_KEY" \
-              --var GOOGLE_FORM_URL:"$GOOGLE_FORM_URL"
+              --var GEMINI_API_KEY:"$GEMINI_API_KEY"
           else
             # GEMINI_API_KEYが設定されていない場合
             npx wrangler deploy --env ${{ env.ENV }} \
               --var TURSO_DATABASE_URL:"$TURSO_DATABASE_URL" \
               --var TURSO_AUTH_TOKEN:"$TURSO_AUTH_TOKEN" \
               --var CORS_ORIGIN:"$CORS_ORIGIN" \
-              --var ADMIN_EMAILS:"$ADMIN_EMAILS" \
-              --var GOOGLE_FORM_URL:"$GOOGLE_FORM_URL"
+              --var ADMIN_EMAILS:"$ADMIN_EMAILS"
           fi
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
