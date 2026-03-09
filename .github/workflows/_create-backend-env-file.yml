@@ -19,8 +19,6 @@ on:
         required: true
       GEMINI_API_KEY:
         required: false # オプショナル（翻訳機能を使わない場合もある）
-      GOOGLE_FORM_URL:
-        required: true
 
 env:
   ENV: ${{ inputs.ENV }}
@@ -37,7 +35,6 @@ jobs:
           CORS_ORIGIN: ${{ secrets.CORS_ORIGIN }}
           ADMIN_EMAILS: ${{ secrets.ADMIN_EMAILS }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GOOGLE_FORM_URL: ${{ secrets.GOOGLE_FORM_URL }}
         run: |
           ENV_FILE=".env"
           echo "Creating Backend $ENV_FILE for ${{ env.ENV }} environment..."
@@ -46,7 +43,6 @@ jobs:
           echo "TURSO_AUTH_TOKEN=$TURSO_AUTH_TOKEN" >> $ENV_FILE
           echo "CORS_ORIGIN=$CORS_ORIGIN" >> $ENV_FILE
           echo "ADMIN_EMAILS=$ADMIN_EMAILS" >> $ENV_FILE
-          echo "GOOGLE_FORM_URL=$GOOGLE_FORM_URL" >> $ENV_FILE
 
           # GEMINI_API_KEYが設定されている場合のみ追加
           if [ ! -z "$GEMINI_API_KEY" ]; then

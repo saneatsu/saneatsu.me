@@ -59,7 +59,6 @@ jobs:
       CORS_ORIGIN: ${{ needs.set-environment.outputs.environment == 'production' && secrets.CORS_ORIGIN_PROD || secrets.CORS_ORIGIN_PREVIEW }}
       ADMIN_EMAILS: ${{ secrets.ADMIN_EMAILS }}
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }} # 共通のAPIキーを使用
-      GOOGLE_FORM_URL: ${{ secrets.GOOGLE_FORM_URL }}
 
   # バックエンドをデプロイ
   backend-deploy:

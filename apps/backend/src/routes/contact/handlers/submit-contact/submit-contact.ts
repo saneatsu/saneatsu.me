@@ -66,7 +66,8 @@ export const submitContact: Handler = async (c) => {
 		);
 		formData.append(GOOGLE_FORM_ENTRY_IDS.message, body.message);
 
-		const googleFormUrl = c.env.GOOGLE_FORM_URL;
+		// 末尾の空白やCR/LFを除去（環境変数に余分な文字が混入する場合の安全策）
+		const googleFormUrl = c.env.GOOGLE_FORM_URL.trim();
 
 		// リダイレクトを手動で制御し、302を成功として扱う
 		// Google Formsは送信成功時に302リダイレクトを返す
