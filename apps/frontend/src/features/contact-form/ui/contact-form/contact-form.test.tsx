@@ -149,7 +149,7 @@ describe("ContactForm", () => {
 			// Then: メール形式のバリデーションエラーが表示される
 			await waitFor(() => {
 				expect(
-					screen.getByText((content) => content.includes("メールアドレス"))
+					screen.getByText("正しいメールアドレスの形式で入力してください")
 				).toBeInTheDocument();
 			});
 		});

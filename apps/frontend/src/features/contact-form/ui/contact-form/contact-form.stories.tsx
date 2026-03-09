@@ -69,9 +69,9 @@ export const EmailValidationError: Story = {
 		const submitButton = canvas.getByRole("button", { name: /送信する/ });
 		await user.click(submitButton);
 
-		// Then: メール関連のバリデーションエラーが表示される
+		// Then: メール形式のバリデーションエラーが表示される
 		await expect(
-			canvas.getByText((content) => content.includes("メールアドレス"))
+			canvas.getByText("正しいメールアドレスの形式で入力してください")
 		).toBeInTheDocument();
 	},
 };
