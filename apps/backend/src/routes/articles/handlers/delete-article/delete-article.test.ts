@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { Env } from "@/env";
+import { mockEnv } from "@/lib/test-helpers/mock-env";
 import { articlesRoute } from "@/routes/articles";
 import { setupDbMocks } from "@/utils/drizzle-test";
 
@@ -42,17 +42,6 @@ vi.mock("@saneatsu/db", () => ({
 	users: {},
 	createDatabaseClient: vi.fn(),
 }));
-
-const mockEnv: Env = {
-	TURSO_DATABASE_URL: "test-db-url",
-	TURSO_AUTH_TOKEN: "test-auth-token",
-	CLOUDFLARE_ACCOUNT_ID: "test-account-id",
-	CLOUDFLARE_API_TOKEN: "test-token",
-	CLOUDFLARE_ACCOUNT_HASH: "test-hash",
-	GEMINI_API_KEY: "AItest-gemini-api-key-for-testing-purposes-only",
-	MAPBOX_ACCESS_TOKEN: "test-mapbox-token",
-	NODE_ENV: "development",
-};
 
 describe("ユニットテスト", () => {
 	describe("DELETE /articles/:id - 記事削除", () => {

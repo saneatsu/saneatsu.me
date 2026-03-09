@@ -2,21 +2,10 @@ import { OpenAPIHono } from "@hono/zod-openapi";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import type { Env } from "@/env";
+import { mockEnv } from "@/lib/test-helpers/mock-env";
 
 import { getGalleryImagesHandler } from "./get-gallery-images";
 import { getGalleryImagesRoute } from "./get-gallery-images.openapi";
-
-// テスト用のモックEnv
-const mockEnv: Env = {
-	NODE_ENV: "test" as "development",
-	TURSO_DATABASE_URL: "test-db-url",
-	TURSO_AUTH_TOKEN: "test-auth-token",
-	CLOUDFLARE_ACCOUNT_ID: "test-account-id",
-	CLOUDFLARE_API_TOKEN: "test-token",
-	CLOUDFLARE_ACCOUNT_HASH: "test-hash",
-	GEMINI_API_KEY: "test-gemini-key",
-	MAPBOX_ACCESS_TOKEN: "test-mapbox-token",
-};
 
 // モック用のテストデータ
 const mockGalleryImages = [

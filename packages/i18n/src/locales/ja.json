@@ -4,6 +4,7 @@
 		"blog": "ブログ",
 		"about": "About",
 		"gallery": "Gallery",
+		"contact": "お問い合わせ",
 		"top": "トップ"
 	},
 	"theme": {
@@ -108,7 +109,7 @@
 				"period": "期間",
 				"employmentType": "雇用形態",
 				"role": "役職",
-				"category": "カテゴリ",
+				"category": "カテゴリー",
 				"description": "説明",
 				"content": "業務内容",
 				"techStack": "技術スタック",
@@ -290,6 +291,56 @@
 		"contact": {
 			"title": "SNS・Webサイト",
 			"dmNote": "（一番気づきやすいです！）"
+		}
+	},
+	"contact": {
+		"title": "Contact",
+		"description": "ご質問やご要望がございましたら、以下のフォームからお気軽にお問い合わせください。",
+		"required": "必須",
+		"name": {
+			"label": "お名前",
+			"placeholder": "山田太郎"
+		},
+		"company": {
+			"label": "会社名",
+			"placeholder": "株式会社サンプル"
+		},
+		"jobTitle": {
+			"label": "役職",
+			"placeholder": "エンジニア（任意）"
+		},
+		"email": {
+			"label": "メールアドレス",
+			"placeholder": "example@email.com"
+		},
+		"subject": {
+			"label": "件名",
+			"placeholder": "お問い合わせの件名"
+		},
+		"category": {
+			"label": "カテゴリー",
+			"placeholder": "カテゴリーを選択してください",
+			"options": {
+				"business": "お仕事のご依頼・ご相談",
+				"feedback": "フィードバック・ご感想",
+				"bug-report": "不具合の報告",
+				"other": "その他"
+			}
+		},
+		"message": {
+			"label": "メッセージ",
+			"placeholder": "お問い合わせ内容をご記入ください"
+		},
+		"submit": "送信する",
+		"submitting": "送信中...",
+		"submitted": "送信しました",
+		"success": {
+			"title": "送信完了",
+			"message": "お問い合わせありがとうございます。内容を確認次第、ご連絡いたします。",
+			"sendAnother": "新しいお問い合わせを送信する"
+		},
+		"error": {
+			"submitFailed": "送信に失敗しました。時間をおいて再度お試しください。"
 		}
 	},
 	"contributions": {

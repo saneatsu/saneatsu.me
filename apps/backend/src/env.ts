@@ -90,6 +90,12 @@ export const envSchema = z.object({
 	MAPBOX_ACCESS_TOKEN: z.string().min(1),
 
 	/**
+	 * Google FormsのformResponse URL
+	 * お問い合わせフォームの送信先として使用
+	 */
+	GOOGLE_FORM_URL: z.string().url(),
+
+	/**
 	 * CORS許可オリジン（オプショナル）
 	 */
 	CORS_ORIGIN: z.string().optional(),

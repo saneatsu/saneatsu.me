@@ -7,6 +7,7 @@ import type { Env } from "@/env";
 
 import { articlesRoute } from "./routes/articles";
 import { authRoute } from "./routes/auth/worker/worker";
+import { contactRoute } from "./routes/contact";
 import { dashboardRoute } from "./routes/dashboard";
 import { galleryRoute } from "./routes/gallery";
 import { geocodingRoute } from "./routes/geocoding";
@@ -88,6 +89,7 @@ export function createApp(options?: { isDevelopment?: boolean }) {
 		// APIルートをマウント
 		.route("/api/articles", articlesRoute)
 		.route("/api/auth", authRoute)
+		.route("/api/contact", contactRoute)
 		.route("/api/dashboard", dashboardRoute)
 		.route("/api/gallery", galleryRoute)
 		.route("/api", geocodingRoute)

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Env } from "@/env";
+import { mockEnv } from "@/lib/test-helpers/mock-env";
 import { imagesRoute } from "@/routes/images";
 
 // Cloudflare Imagesモジュールのモック
@@ -12,17 +12,6 @@ vi.mock("@/lib/cloudflare-images/cloudflare-images", () => ({
 	uploadImage: mockUploadImage,
 	getImageUrl: mockGetImageUrl,
 }));
-
-const mockEnv: Env = {
-	TURSO_DATABASE_URL: "test-db-url",
-	TURSO_AUTH_TOKEN: "test-auth-token",
-	CLOUDFLARE_ACCOUNT_ID: "test-account-id",
-	CLOUDFLARE_API_TOKEN: "test-token",
-	CLOUDFLARE_ACCOUNT_HASH: "test-hash",
-	GEMINI_API_KEY: "AItest-gemini-api-key-for-testing-purposes-only",
-	MAPBOX_ACCESS_TOKEN: "test-mapbox-token",
-	NODE_ENV: "development",
-};
 
 describe("ユニットテスト", () => {
 	describe("POST /images - 汎用画像アップロード", () => {

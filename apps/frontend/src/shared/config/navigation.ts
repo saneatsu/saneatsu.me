@@ -21,4 +21,5 @@ export const navigationItems: NavigationItem[] = [
 	{ path: "/blog", label: "Blog" },
 	{ path: "/about", label: "About" },
 	{ path: "/gallery", label: "Gallery" },
+	{ path: "/contact", label: "Contact" },
 ];
