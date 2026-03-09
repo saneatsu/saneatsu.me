@@ -68,17 +68,22 @@ export const submitContact: Handler = async (c) => {
 
 		const googleFormUrl = c.env.GOOGLE_FORM_URL;
 
+		// リダイレクトを手動で制御し、302を成功として扱う
+		// Google Formsは送信成功時に302リダイレクトを返す
+		// CF Workersがリダイレクト先を follow すると予期しないステータスが返る場合がある
 		const response = await fetch(googleFormUrl, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/x-www-form-urlencoded",
 			},
 			body: formData.toString(),
+			redirect: "manual",
 		});
 
 		// 3. レスポンスステータスで成功/失敗を判定
-		// Google Formsは302リダイレクト後、200のHTMLページを返す
-		if (response.ok && response.redirected) {
+		// Google Formsは送信成功時に302リダイレクトを返す
+		const isRedirect = response.status >= 300 && response.status < 400;
+		if (response.ok || isRedirect) {
 			return c.json({ success: true }, 200);
 		}
 
