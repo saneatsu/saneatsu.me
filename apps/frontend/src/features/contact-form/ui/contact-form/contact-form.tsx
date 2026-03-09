@@ -258,6 +258,7 @@ export function ContactForm() {
 									<Textarea
 										placeholder={t("message.placeholder")}
 										rows={6}
+										className="field-sizing-content min-h-[150px] resize-none"
 										{...field}
 									/>
 								</FormControl>
