@@ -85,6 +85,10 @@ export const submitContact: Handler = async (c) => {
 		console.error("Google Forms submission failed:", {
 			status: response.status,
 			statusText: response.statusText,
+			redirected: response.redirected,
+			urlPrefix: googleFormUrl.substring(0, 40),
+			urlSuffix: googleFormUrl.slice(-20),
+			urlLength: googleFormUrl.length,
 		});
 
 		return c.json(
