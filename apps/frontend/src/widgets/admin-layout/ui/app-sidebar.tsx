@@ -1,6 +1,13 @@
 "use client";
 
-import { FileText, Image, LayoutDashboard, Tag } from "lucide-react";
+import {
+	ExternalLink,
+	FileText,
+	Image,
+	LayoutDashboard,
+	MessageCircleQuestion,
+	Tag,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -18,9 +25,26 @@ import {
 import { UserInfo } from "@/widgets/user-info";
 
 /**
+ * Google Form回答ページのURL
+ * 環境変数のベースURLに回答確認用のパスを付加する
+ */
+const GOOGLE_FORM_RESPONSES_URL = process.env
+	.NEXT_PUBLIC_GOOGLE_FORM_RESPONSES_URL
+	? `${process.env.NEXT_PUBLIC_GOOGLE_FORM_RESPONSES_URL}/edit?hl=ja#responses`
+	: undefined;
+
+type MenuItem = {
+	title: string;
+	url: string;
+	icon: typeof LayoutDashboard;
+	/** 外部リンクの場合trueにする */
+	isExternal?: boolean;
+};
+
+/**
  * 管理画面用のメニュー項目定義
  */
-const menuItems = [
+const menuItems: MenuItem[] = [
 	{
 		title: "ダッシュボード",
 		url: "/admin",
@@ -41,6 +65,16 @@ const menuItems = [
 		url: "/admin/gallery",
 		icon: Image,
 	},
+	...(GOOGLE_FORM_RESPONSES_URL
+		? [
+				{
+					title: "お問い合わせ",
+					url: GOOGLE_FORM_RESPONSES_URL,
+					icon: MessageCircleQuestion,
+					isExternal: true,
+				} satisfies MenuItem,
+			]
+		: []),
 ];
 
 interface AppSidebarProps {
@@ -117,12 +151,26 @@ export function AppSidebar({ user }: AppSidebarProps) {
 								<SidebarMenuItem key={item.title}>
 									<SidebarMenuButton
 										asChild
-										isActive={getIsMenuActive(item.url)}
+										isActive={
+											item.isExternal ? false : getIsMenuActive(item.url)
+										}
 									>
-										<Link href={item.url}>
-											<item.icon />
-											<span>{item.title}</span>
-										</Link>
+										{item.isExternal ? (
+											<a
+												href={item.url}
+												target="_blank"
+												rel="noopener noreferrer"
+											>
+												<item.icon />
+												<span>{item.title}</span>
+												<ExternalLink className="ml-auto h-3.5 w-3.5 text-muted-foreground" />
+											</a>
+										) : (
+											<Link href={item.url}>
+												<item.icon />
+												<span>{item.title}</span>
+											</Link>
+										)}
 									</SidebarMenuButton>
 								</SidebarMenuItem>
 							))}
