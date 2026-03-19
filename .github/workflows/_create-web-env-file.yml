@@ -34,6 +34,9 @@ on:
         required: true
       BASIC_AUTH_PASSWORD:
         required: true
+      # Google Form
+      NEXT_PUBLIC_GOOGLE_FORM_RESPONSES_URL:
+        required: false
 
 env:
   ENV: ${{ inputs.ENV }}
@@ -56,6 +59,7 @@ jobs:
           ADMIN_EMAILS: ${{ secrets.ADMIN_EMAILS }}
           BASIC_AUTH_USER: ${{ secrets.BASIC_AUTH_USER }}
           BASIC_AUTH_PASSWORD: ${{ secrets.BASIC_AUTH_PASSWORD }}
+          NEXT_PUBLIC_GOOGLE_FORM_RESPONSES_URL: ${{ secrets.NEXT_PUBLIC_GOOGLE_FORM_RESPONSES_URL }}
         run: |
           ENV_FILE=".env"
           echo "Creating Web $ENV_FILE for ${{ env.ENV }} environment..."
@@ -84,6 +88,11 @@ jobs:
           # Basic認証設定
           echo "BASIC_AUTH_USER=$BASIC_AUTH_USER" >> $ENV_FILE
           echo "BASIC_AUTH_PASSWORD=$BASIC_AUTH_PASSWORD" >> $ENV_FILE
+
+          # Google Form（オプション）
+          if [ -n "$NEXT_PUBLIC_GOOGLE_FORM_RESPONSES_URL" ]; then
+            echo "NEXT_PUBLIC_GOOGLE_FORM_RESPONSES_URL=$NEXT_PUBLIC_GOOGLE_FORM_RESPONSES_URL" >> $ENV_FILE
+          fi
 
           echo "✅ Created Web $ENV_FILE with ${{ env.ENV }} configuration"
 
