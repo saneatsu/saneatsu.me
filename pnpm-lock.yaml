@@ -276,8 +276,8 @@ importers:
         specifier: ^0.577.0
         version: 0.577.0(react@19.2.4)
       mapbox-gl:
-        specifier: ^3.19.1
-        version: 3.19.1
+        specifier: ^3.20.0
+        version: 3.20.0
       next:
         specifier: 16.1.6
         version: 16.1.6(@babel/core@7.29.0)(@playwright/test@1.58.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -310,7 +310,7 @@ importers:
         version: 7.71.2(react@19.2.4)
       react-map-gl:
         specifier: ^8.1.0
-        version: 8.1.0(mapbox-gl@3.19.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 8.1.0(mapbox-gl@3.20.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react-markdown:
         specifier: ^10.1.0
         version: 10.1.0(@types/react@19.2.14)(react@19.2.4)
@@ -9438,8 +9438,8 @@ packages:
   makeerror@1.0.12:
     resolution: {integrity: sha512-JmqCvUhmt43madlpFzG4BQzG2Z3m6tvQDNKdClZnO3VbIudJYmxsT0FNJMeiB2+JTSlTQTSbU8QdesVmwJcmLg==}
 
-  mapbox-gl@3.19.1:
-    resolution: {integrity: sha512-p1/nJ85IqpjKk7IKNDnH9AB4qE/MXbR5ToagNurofTpUgnXX9NXcOzm8WsRnrovQIwiefC4MiEWUK6Sa2HfWtg==}
+  mapbox-gl@3.20.0:
+    resolution: {integrity: sha512-+rVQkf6ymUlAEJiQBZy0OiamJvQN4Uk15mRHI98PRUSmRS40GOoLJyEZEG39LEUtvmzc7qGh+4ygZfJ//O5VnQ==}
 
   markdown-extensions@2.0.0:
     resolution: {integrity: sha512-o5vL7aDWatOTX8LzaS1WMoaoxIiLRQJuIKKe2wAw6IeULDHaqbiqiggmx+pKvZDb1Sj+pE46Sn1T7lCqfFtg1Q==}
@@ -19419,12 +19419,12 @@ snapshots:
   '@unrs/resolver-binding-win32-x64-msvc@1.11.1':
     optional: true
 
-  '@vis.gl/react-mapbox@8.1.0(mapbox-gl@3.19.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+  '@vis.gl/react-mapbox@8.1.0(mapbox-gl@3.20.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
     optionalDependencies:
-      mapbox-gl: 3.19.1
+      mapbox-gl: 3.20.0
 
   '@vis.gl/react-maplibre@8.1.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
@@ -23415,7 +23415,7 @@ snapshots:
     dependencies:
       tmpl: 1.0.5
 
-  mapbox-gl@3.19.1:
+  mapbox-gl@3.20.0:
     dependencies:
       '@mapbox/jsonlint-lines-primitives': 2.0.2
       '@mapbox/mapbox-gl-supported': 3.0.0
@@ -25340,14 +25340,14 @@ snapshots:
       react-loadable: '@docusaurus/react-loadable@6.0.0(react@19.2.4)'
       webpack: 5.102.1
 
-  react-map-gl@8.1.0(mapbox-gl@3.19.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+  react-map-gl@8.1.0(mapbox-gl@3.20.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
     dependencies:
-      '@vis.gl/react-mapbox': 8.1.0(mapbox-gl@3.19.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@vis.gl/react-mapbox': 8.1.0(mapbox-gl@3.20.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@vis.gl/react-maplibre': 8.1.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
     optionalDependencies:
-      mapbox-gl: 3.19.1
+      mapbox-gl: 3.20.0
 
   react-markdown@10.1.0(@types/react@19.2.14)(react@19.2.4):
     dependencies:
