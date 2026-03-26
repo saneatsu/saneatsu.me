@@ -354,7 +354,8 @@ export {
 
 // Tweet Embed
 export { TweetEmbed, type TweetEmbedProps } from "./tweet-embed/tweet-embed";
-
+// Unsaved Changes Dialog
+export { UnsavedChangesDialog } from "./unsaved-changes-dialog/unsaved-changes-dialog";
 // YouTube Embed
 export {
 	YouTubeEmbed,
