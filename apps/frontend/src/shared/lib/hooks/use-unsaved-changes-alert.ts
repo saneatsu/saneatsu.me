@@ -25,10 +25,12 @@ interface UseUnsavedChangesAlertReturn {
  *
  * @description
  * 1. `isDirty && enabled` のとき `beforeunload` イベントを登録（リロード・タブ閉じ対応）
+ *    - ブラウザのセキュリティ制約により、カスタムダイアログは表示できない
+ *    - `event.preventDefault()` でブラウザネイティブの確認ダイアログのみ表示可能
  * 2. `isDirty && enabled` のとき `popstate` イベントを監視（ブラウザ戻るボタン対応）
- *    - ダミーのhistoryエントリを追加し、戻るボタン押下時にURLを復元してダイアログ表示
+ *    - ダミーのhistoryエントリを追加し、戻るボタン押下時にURLを復元してカスタムダイアログ表示
  *    - 「離脱する」→ history.go(-1) で実際に戻る、「キャンセル」→ そのまま留まる
- * 3. `guardNavigation(fn)` で dirty なら fn を保留してダイアログ表示、dirty でなければ即実行
+ * 3. `guardNavigation(fn)` で dirty なら fn を保留してカスタムダイアログ表示、dirty でなければ即実行
  * 4. `handleConfirm` で保留中の fn を実行、`handleCancel` で保留をクリア
  */
 export function useUnsavedChangesAlert({
@@ -40,7 +42,9 @@ export function useUnsavedChangesAlert({
 
 	const isActive = isDirty && enabled;
 
-	// 1. beforeunload イベントの登録・解除
+	// 1. beforeunload イベントの登録・解除（リロード・タブ閉じ対応）
+	// ブラウザのセキュリティ制約により、beforeunload ではカスタムダイアログを表示できない。
+	// event.preventDefault() でブラウザネイティブの確認ダイアログのみ表示される。
 	useEffect(() => {
 		if (!isActive) {
 			return;
@@ -101,7 +105,7 @@ export function useUnsavedChangesAlert({
 		[isActive]
 	);
 
-	// 3. ダイアログで離脱を確認したときのハンドラー
+	// 4. ダイアログで離脱を確認したときのハンドラー
 	const handleConfirm = useCallback(() => {
 		const pendingFn = pendingNavigationRef.current;
 		pendingNavigationRef.current = null;
@@ -112,7 +116,7 @@ export function useUnsavedChangesAlert({
 		}
 	}, []);
 
-	// 4. ダイアログでキャンセルしたときのハンドラー
+	// 5. ダイアログでキャンセルしたときのハンドラー
 	const handleCancel = useCallback(() => {
 		pendingNavigationRef.current = null;
 		setShowDialog(false);
