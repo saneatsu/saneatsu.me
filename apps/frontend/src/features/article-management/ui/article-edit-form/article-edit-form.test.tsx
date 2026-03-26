@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ArticleEditForm } from "./article-edit-form";
 
@@ -138,10 +139,39 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 	</QueryClientProvider>
 );
 
+/** テスト用の記事データ */
+const createMockArticle = (overrides = {}) => ({
+	id: 1,
+	title: "Test Article",
+	slug: "test-article",
+	content: "Test content",
+	status: "published" as const,
+	publishedAt: "2024-01-15T10:30:00.000Z",
+	updatedAt: "2024-01-15T10:30:00.000Z",
+	cfImageId: null,
+	tags: [],
+	...overrides,
+});
+
+const mockHistoryBack = vi.fn();
+
 describe("ArticleEditForm", () => {
+	beforeEach(() => {
+		mockHistoryBack.mockClear();
+		Object.defineProperty(window, "history", {
+			value: {
+				...window.history,
+				back: mockHistoryBack,
+				pushState: vi.fn(),
+				go: vi.fn(),
+			},
+			writable: true,
+		});
+	});
+
 	describe("Unit Test", () => {
-		describe("publishedAt field handling", () => {
-			it("should display publishedAt value when article has publishedAt in ISO 8601 format", async () => {
+		describe("publishedAt フィールドの処理", () => {
+			it("ISO 8601形式の publishedAt を持つ記事で正しい値が表示される", async () => {
 				// Arrange: ISO 8601形式の公開日時を持つ記事データを用意
 				const article = {
 					id: 1,
@@ -170,7 +200,7 @@ describe("ArticleEditForm", () => {
 				});
 			});
 
-			it("should keep DateTimePicker field empty when article has null publishedAt", async () => {
+			it("publishedAt が null の記事で DateTimePicker が空になる", async () => {
 				// Arrange: publishedAtがnullの記事データを用意
 				const article = {
 					id: 1,
@@ -193,6 +223,123 @@ describe("ArticleEditForm", () => {
 						"公開日時"
 					) as HTMLInputElement;
 					expect(publishedAtInput.value).toBe("");
+				});
+			});
+		});
+	});
+
+	describe("Integration Test", () => {
+		describe("未保存変更アラート", () => {
+			it("変更なしでキャンセルするとアラートなしでナビゲーションが実行される", async () => {
+				// Given: 変更なしのフォーム
+				const user = userEvent.setup();
+				render(<ArticleEditForm article={createMockArticle()} />, {
+					wrapper,
+				});
+
+				// When: キャンセルボタンをクリック
+				const cancelButton = screen.getByRole("button", {
+					name: "キャンセル",
+				});
+				await user.click(cancelButton);
+
+				// Then: アラートなしでナビゲーションが実行される
+				expect(mockHistoryBack).toHaveBeenCalledTimes(1);
+			});
+
+			it("タイトルを変更してキャンセルするとアラートダイアログが表示される", async () => {
+				// Given: タイトルを変更した状態
+				const user = userEvent.setup();
+				render(<ArticleEditForm article={createMockArticle()} />, {
+					wrapper,
+				});
+
+				const titleInput = screen.getByDisplayValue("Test Article");
+				await user.clear(titleInput);
+				await user.type(titleInput, "Modified Title");
+
+				// When: キャンセルボタンをクリック
+				const cancelButton = screen.getByRole("button", {
+					name: "キャンセル",
+				});
+				await user.click(cancelButton);
+
+				// Then: アラートダイアログが表示される
+				await waitFor(() => {
+					expect(
+						screen.getByText("変更が保存されていません")
+					).toBeInTheDocument();
+				});
+			});
+
+			it("アラートダイアログで「離脱する」をクリックするとナビゲーションが実行される", async () => {
+				// Given: タイトルを変更してアラートダイアログを表示
+				const user = userEvent.setup();
+				render(<ArticleEditForm article={createMockArticle()} />, {
+					wrapper,
+				});
+
+				const titleInput = screen.getByDisplayValue("Test Article");
+				await user.clear(titleInput);
+				await user.type(titleInput, "Modified Title");
+
+				const cancelButton = screen.getByRole("button", {
+					name: "キャンセル",
+				});
+				await user.click(cancelButton);
+
+				await waitFor(() => {
+					expect(
+						screen.getByText("変更が保存されていません")
+					).toBeInTheDocument();
+				});
+
+				// When: 離脱ボタンをクリック
+				const confirmButton = screen.getByRole("button", {
+					name: "離脱する",
+				});
+				await user.click(confirmButton);
+
+				// Then: ナビゲーションが実行される
+				await waitFor(() => {
+					expect(mockHistoryBack).toHaveBeenCalledTimes(1);
+				});
+			});
+
+			it("アラートダイアログで「キャンセル」をクリックするとフォームに戻る", async () => {
+				// Given: タイトルを変更してアラートダイアログを表示
+				const user = userEvent.setup();
+				render(<ArticleEditForm article={createMockArticle()} />, {
+					wrapper,
+				});
+
+				const titleInput = screen.getByDisplayValue("Test Article");
+				await user.clear(titleInput);
+				await user.type(titleInput, "Modified Title");
+
+				const cancelButton = screen.getByRole("button", {
+					name: "キャンセル",
+				});
+				await user.click(cancelButton);
+
+				await waitFor(() => {
+					expect(
+						screen.getByText("変更が保存されていません")
+					).toBeInTheDocument();
+				});
+
+				// When: ダイアログのキャンセルボタンをクリック
+				const dialogCancelButton = screen.getByRole("button", {
+					name: "キャンセル",
+				});
+				await user.click(dialogCancelButton);
+
+				// Then: ナビゲーションが実行されず、フォームに戻る
+				expect(mockHistoryBack).not.toHaveBeenCalled();
+				await waitFor(() => {
+					expect(
+						screen.queryByText("変更が保存されていません")
+					).not.toBeInTheDocument();
 				});
 			});
 		});

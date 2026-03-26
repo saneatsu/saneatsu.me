@@ -15,6 +15,7 @@ import {
 	formatRelativeDate,
 	getImageUrl,
 	useDebounce,
+	useUnsavedChangesAlert,
 } from "@/shared/lib";
 import type { Option } from "@/shared/ui";
 import {
@@ -29,6 +30,7 @@ import {
 	Tabs,
 	TabsList,
 	TabsTrigger,
+	UnsavedChangesDialog,
 } from "@/shared/ui";
 
 import { ArticleStatusSelector } from "../article-status-selector/article-status-selector";
@@ -205,7 +207,8 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 		handleSubmit,
 		watch,
 		setValue,
-		formState: { errors },
+		reset,
+		formState: { errors, isDirty: isFormDirty },
 	} = useForm<ArticleEditForm>({
 		resolver: zodResolver(articleEditSchema),
 		defaultValues: {
@@ -215,6 +218,51 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 			status: article.status,
 		},
 	});
+
+	/**
+	 * フォーム全体のdirty判定
+	 *
+	 * @description
+	 * react-hook-formのisDirtyに加えて、useState管理の値（マークダウン、タグ、公開日時）
+	 * も初期値と比較した総合的なdirty判定。
+	 */
+	const isAnyFieldDirty = useMemo(() => {
+		// マークダウンの変更
+		const isContentDirty = markdownValue !== article.content;
+
+		// タグの変更
+		const initialTagIds = article.tags
+			.map((tag) => String(tag.id))
+			.sort()
+			.join(",");
+		const currentTagIds = selectedTags
+			.map((tag) => tag.value)
+			.sort()
+			.join(",");
+		const isTagsDirty = initialTagIds !== currentTagIds;
+
+		// 公開日時の変更
+		const initialPublishedAt = article.publishedAt
+			? new Date(article.publishedAt).toISOString()
+			: undefined;
+		const currentPublishedAt = publishedAtDate?.toISOString();
+		const isPublishedAtDirty = initialPublishedAt !== currentPublishedAt;
+
+		return isFormDirty || isContentDirty || isTagsDirty || isPublishedAtDirty;
+	}, [
+		isFormDirty,
+		markdownValue,
+		article.content,
+		article.tags,
+		article.publishedAt,
+		selectedTags,
+		publishedAtDate,
+	]);
+
+	const { showDialog, handleCancel, handleConfirm, guardNavigation } =
+		useUnsavedChangesAlert({
+			isDirty: isAnyFieldDirty,
+		});
 
 	// 記事更新フック
 	const updateMutation = useUpdate();
@@ -291,6 +339,9 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 							}
 						}
 
+						// 保存成功後にフォームのdirty状態をリセット
+						reset(data);
+
 						if (data.status === "draft") {
 							return "下書きとして更新されました（翻訳はスキップされました）";
 						}
@@ -332,251 +383,262 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 	};
 
 	return (
-		<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-			{/* フォームエラー表示 */}
-			{formError && (
-				<Alert variant="destructive" className="max-w-7xl">
-					<AlertCircle className="h-4 w-4" />
-					<AlertTitle>エラーが発生しました</AlertTitle>
-					<AlertDescription>{formError}</AlertDescription>
-				</Alert>
-			)}
+		<>
+			<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+				{/* フォームエラー表示 */}
+				{formError && (
+					<Alert variant="destructive" className="max-w-7xl">
+						<AlertCircle className="h-4 w-4" />
+						<AlertTitle>エラーが発生しました</AlertTitle>
+						<AlertDescription>{formError}</AlertDescription>
+					</Alert>
+				)}
 
-			{/* サムネイルエラー表示 */}
-			{thumbnailError && (
-				<Alert variant="destructive" className="max-w-7xl">
-					<AlertCircle className="h-4 w-4" />
-					<AlertTitle>サムネイル画像エラー</AlertTitle>
-					<AlertDescription>{thumbnailError}</AlertDescription>
-				</Alert>
-			)}
+				{/* サムネイルエラー表示 */}
+				{thumbnailError && (
+					<Alert variant="destructive" className="max-w-7xl">
+						<AlertCircle className="h-4 w-4" />
+						<AlertTitle>サムネイル画像エラー</AlertTitle>
+						<AlertDescription>{thumbnailError}</AlertDescription>
+					</Alert>
+				)}
 
-			{/* 警告メッセージ表示 */}
-			{warnings.length > 0 && (
-				<Alert variant="warning" className="max-w-7xl">
-					<AlertCircle className="h-4 w-4" />
-					<AlertTitle>警告</AlertTitle>
-					<AlertDescription>
-						{warnings.map((warning) => (
-							<p key={warning.code}>{warning.message}</p>
-						))}
-					</AlertDescription>
-				</Alert>
-			)}
+				{/* 警告メッセージ表示 */}
+				{warnings.length > 0 && (
+					<Alert variant="warning" className="max-w-7xl">
+						<AlertCircle className="h-4 w-4" />
+						<AlertTitle>警告</AlertTitle>
+						<AlertDescription>
+							{warnings.map((warning) => (
+								<p key={warning.code}>{warning.message}</p>
+							))}
+						</AlertDescription>
+					</Alert>
+				)}
 
-			{/* サムネイル画像 */}
-			<div className="max-w-7xl">
-				<ArticleThumbnailUploader
-					articleId={article.id}
-					thumbnailUrl={thumbnailUrl}
-					onError={setThumbnailError}
-				/>
-			</div>
-
-			{/* タイトル */}
-			<div className="space-y-2 max-w-7xl">
-				<div className="flex items-center justify-between">
-					<Label htmlFor="title">タイトル *</Label>
-					<Tabs
-						value={titleLanguage}
-						onValueChange={(value) => setTitleLanguage(value as "ja" | "en")}
-					>
-						<TabsList className="h-8">
-							<TabsTrigger value="ja" className="text-xs">
-								日本語
-							</TabsTrigger>
-							<TabsTrigger value="en" className="text-xs">
-								English
-							</TabsTrigger>
-						</TabsList>
-					</Tabs>
+				{/* サムネイル画像 */}
+				<div className="max-w-7xl">
+					<ArticleThumbnailUploader
+						articleId={article.id}
+						thumbnailUrl={thumbnailUrl}
+						onError={setThumbnailError}
+					/>
 				</div>
-				{titleLanguage === "ja" ? (
-					<Input
-						key="title-ja"
-						id="title"
-						{...register("title")}
-						placeholder="記事のタイトルを入力"
-					/>
-				) : (
-					<Input
-						key="title-en"
-						value={article.translations?.en?.title ?? "(未設定)"}
-						readOnly
-						className="bg-muted"
-					/>
-				)}
-				{titleLanguage === "ja" && errors.title && (
-					<p className="text-sm text-destructive">{errors.title.message}</p>
-				)}
-			</div>
 
-			{/* スラッグ */}
-			<div className="space-y-2 max-w-7xl">
-				<Label htmlFor="slug">スラッグ *</Label>
-				<div className="relative">
-					<Input
-						id="slug"
-						{...register("slug")}
-						placeholder="article-slug"
-						className={
-							checkingSlug
-								? ""
-								: slugAvailable?.available === false &&
-										watchSlug !== article.slug
-									? "border-destructive"
-									: ""
-						}
-					/>
-					{checkingSlug && (
-						<div className="absolute right-3 top-3">
-							<Loader2 className="h-4 w-4 animate-spin" />
-						</div>
-					)}
-				</div>
-				{errors.slug && (
-					<p className="text-sm text-destructive">{errors.slug.message}</p>
-				)}
-				{!checkingSlug &&
-					slugAvailable?.available === false &&
-					watchSlug !== article.slug && (
-						<p className="text-sm text-destructive">
-							このスラッグは既に使用されています
-						</p>
-					)}
-			</div>
-
-			{/* ステータス */}
-			<div className="max-w-7xl">
-				<ArticleStatusSelector
-					value={watchStatus}
-					onValueChange={(value) =>
-						setValue("status", value as "draft" | "published" | "archived")
-					}
-					statuses={["draft", "published", "archived"]}
-					label="ステータス"
-					required
-					error={errors.status?.message}
-				/>
-			</div>
-
-			{/* 公開日時 */}
-			{watchStatus === "published" && (
+				{/* タイトル */}
 				<div className="space-y-2 max-w-7xl">
-					<Label htmlFor="publishedAt">公開日時</Label>
-					<DateTimePicker
-						value={publishedAtDate}
-						onChange={setPublishedAtDate}
-						placeholder="公開日時を選択してください"
+					<div className="flex items-center justify-between">
+						<Label htmlFor="title">タイトル *</Label>
+						<Tabs
+							value={titleLanguage}
+							onValueChange={(value) => setTitleLanguage(value as "ja" | "en")}
+						>
+							<TabsList className="h-8">
+								<TabsTrigger value="ja" className="text-xs">
+									日本語
+								</TabsTrigger>
+								<TabsTrigger value="en" className="text-xs">
+									English
+								</TabsTrigger>
+							</TabsList>
+						</Tabs>
+					</div>
+					{titleLanguage === "ja" ? (
+						<Input
+							key="title-ja"
+							id="title"
+							{...register("title")}
+							placeholder="記事のタイトルを入力"
+						/>
+					) : (
+						<Input
+							key="title-en"
+							value={article.translations?.en?.title ?? "(未設定)"}
+							readOnly
+							className="bg-muted"
+						/>
+					)}
+					{titleLanguage === "ja" && errors.title && (
+						<p className="text-sm text-destructive">{errors.title.message}</p>
+					)}
+				</div>
+
+				{/* スラッグ */}
+				<div className="space-y-2 max-w-7xl">
+					<Label htmlFor="slug">スラッグ *</Label>
+					<div className="relative">
+						<Input
+							id="slug"
+							{...register("slug")}
+							placeholder="article-slug"
+							className={
+								checkingSlug
+									? ""
+									: slugAvailable?.available === false &&
+											watchSlug !== article.slug
+										? "border-destructive"
+										: ""
+							}
+						/>
+						{checkingSlug && (
+							<div className="absolute right-3 top-3">
+								<Loader2 className="h-4 w-4 animate-spin" />
+							</div>
+						)}
+					</div>
+					{errors.slug && (
+						<p className="text-sm text-destructive">{errors.slug.message}</p>
+					)}
+					{!checkingSlug &&
+						slugAvailable?.available === false &&
+						watchSlug !== article.slug && (
+							<p className="text-sm text-destructive">
+								このスラッグは既に使用されています
+							</p>
+						)}
+				</div>
+
+				{/* ステータス */}
+				<div className="max-w-7xl">
+					<ArticleStatusSelector
+						value={watchStatus}
+						onValueChange={(value) =>
+							setValue("status", value as "draft" | "published" | "archived")
+						}
+						statuses={["draft", "published", "archived"]}
+						label="ステータス"
+						required
+						error={errors.status?.message}
+					/>
+				</div>
+
+				{/* 公開日時 */}
+				{watchStatus === "published" && (
+					<div className="space-y-2 max-w-7xl">
+						<Label htmlFor="publishedAt">公開日時</Label>
+						<DateTimePicker
+							value={publishedAtDate}
+							onChange={setPublishedAtDate}
+							placeholder="公開日時を選択してください"
+						/>
+						<p className="text-sm text-muted-foreground">
+							空欄の場合は現在時刻が設定されます
+						</p>
+					</div>
+				)}
+
+				{/* 更新日 */}
+				<div className="space-y-2 max-w-7xl">
+					<Label htmlFor="updatedAt">更新日</Label>
+					<Input id="updatedAt" value={formattedUpdatedAt} disabled />
+				</div>
+
+				{/* タグ選択 */}
+				<div className="space-y-2 max-w-7xl">
+					<Label>タグ</Label>
+					<MultipleSelector
+						value={selectedTags}
+						onChange={setSelectedTags}
+						options={
+							tagsData?.data.map((tag) => ({
+								value: String(tag.id),
+								label: tag.translations.ja || tag.slug,
+							})) || []
+						}
+						placeholder="タグを選択してください"
+						emptyIndicator={
+							<p className="text-center text-sm text-muted-foreground">
+								{tagsLoading ? "読み込み中..." : "タグが見つかりません"}
+							</p>
+						}
+						disabled={tagsLoading}
 					/>
 					<p className="text-sm text-muted-foreground">
-						空欄の場合は現在時刻が設定されます
+						記事に関連するタグを選択してください
 					</p>
 				</div>
-			)}
 
-			{/* 更新日 */}
-			<div className="space-y-2 max-w-7xl">
-				<Label htmlFor="updatedAt">更新日</Label>
-				<Input id="updatedAt" value={formattedUpdatedAt} disabled />
-			</div>
-
-			{/* タグ選択 */}
-			<div className="space-y-2 max-w-7xl">
-				<Label>タグ</Label>
-				<MultipleSelector
-					value={selectedTags}
-					onChange={setSelectedTags}
-					options={
-						tagsData?.data.map((tag) => ({
-							value: String(tag.id),
-							label: tag.translations.ja || tag.slug,
-						})) || []
-					}
-					placeholder="タグを選択してください"
-					emptyIndicator={
-						<p className="text-center text-sm text-muted-foreground">
-							{tagsLoading ? "読み込み中..." : "タグが見つかりません"}
-						</p>
-					}
-					disabled={tagsLoading}
-				/>
-				<p className="text-sm text-muted-foreground">
-					記事に関連するタグを選択してください
-				</p>
-			</div>
-
-			{/* 本文エディタ */}
-			<div className="space-y-2">
-				<div className="flex items-center justify-between">
-					<div className="flex items-center gap-3">
-						<Label>本文 *</Label>
-						<a
-							href="/admin/markdown-guide"
-							target="_blank"
-							rel="noopener noreferrer"
-							className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+				{/* 本文エディタ */}
+				<div className="space-y-2">
+					<div className="flex items-center justify-between">
+						<div className="flex items-center gap-3">
+							<Label>本文 *</Label>
+							<a
+								href="/admin/markdown-guide"
+								target="_blank"
+								rel="noopener noreferrer"
+								className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+							>
+								Markdown記法
+								<ExternalLink className="h-3.5 w-3.5" />
+							</a>
+						</div>
+						<Tabs
+							value={previewLanguage}
+							onValueChange={(value) =>
+								setPreviewLanguage(value as "ja" | "en")
+							}
 						>
-							Markdown記法
-							<ExternalLink className="h-3.5 w-3.5" />
-						</a>
+							<TabsList className="h-8">
+								<TabsTrigger value="ja" className="text-xs">
+									日本語
+								</TabsTrigger>
+								<TabsTrigger value="en" className="text-xs">
+									English
+								</TabsTrigger>
+							</TabsList>
+						</Tabs>
 					</div>
-					<Tabs
-						value={previewLanguage}
-						onValueChange={(value) => setPreviewLanguage(value as "ja" | "en")}
+					<div
+						className={
+							errors.content ? "border border-destructive rounded-md" : ""
+						}
 					>
-						<TabsList className="h-8">
-							<TabsTrigger value="ja" className="text-xs">
-								日本語
-							</TabsTrigger>
-							<TabsTrigger value="en" className="text-xs">
-								English
-							</TabsTrigger>
-						</TabsList>
-					</Tabs>
-				</div>
-				<div
-					className={
-						errors.content ? "border border-destructive rounded-md" : ""
-					}
-				>
-					<CustomMarkdownEditor
-						value={markdownValue}
-						onChange={handleEditorChange}
-						setValue={setValue as (name: string, value: string) => void}
-						height={800}
-						language={previewLanguage}
-						enContent={enContent}
-					/>
-				</div>
-				{errors.content && (
-					<p className="text-sm text-destructive">{errors.content.message}</p>
-				)}
-				<p className="text-sm text-muted-foreground">
-					日本語で入力してください。[[で他の記事へのリンクを挿入できます。#でタグを挿入できます。
-				</p>
-			</div>
-
-			{/* 送信ボタン */}
-			<div className="flex justify-end space-x-4">
-				<Button
-					type="button"
-					variant="outline"
-					onClick={() => window.history.back()}
-				>
-					キャンセル
-				</Button>
-				<Button type="submit" disabled={updateMutation.isPending}>
-					{updateMutation.isPending ? (
-						<>
-							<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-							更新中...
-						</>
-					) : (
-						"更新"
+						<CustomMarkdownEditor
+							value={markdownValue}
+							onChange={handleEditorChange}
+							setValue={setValue as (name: string, value: string) => void}
+							height={800}
+							language={previewLanguage}
+							enContent={enContent}
+						/>
+					</div>
+					{errors.content && (
+						<p className="text-sm text-destructive">{errors.content.message}</p>
 					)}
-				</Button>
-			</div>
-		</form>
+					<p className="text-sm text-muted-foreground">
+						日本語で入力してください。[[で他の記事へのリンクを挿入できます。#でタグを挿入できます。
+					</p>
+				</div>
+
+				{/* 送信ボタン */}
+				<div className="flex justify-end space-x-4">
+					<Button
+						type="button"
+						variant="outline"
+						onClick={() => guardNavigation(() => window.history.back())}
+					>
+						キャンセル
+					</Button>
+					<Button type="submit" disabled={updateMutation.isPending}>
+						{updateMutation.isPending ? (
+							<>
+								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+								更新中...
+							</>
+						) : (
+							"更新"
+						)}
+					</Button>
+				</div>
+			</form>
+
+			{/* 未保存変更アラートダイアログ */}
+			<UnsavedChangesDialog
+				open={showDialog}
+				onCancel={handleCancel}
+				onConfirm={handleConfirm}
+			/>
+		</>
 	);
 }
