@@ -30,7 +30,7 @@
 		"seed": "cd packages/db && pnpm db:seed"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.4.6",
+		"@biomejs/biome": "^2.4.9",
 		"@commitlint/cli": "^20.5.0",
 		"@commitlint/config-conventional": "^20.5.0",
 		"@types/node": "^25.3.5",
