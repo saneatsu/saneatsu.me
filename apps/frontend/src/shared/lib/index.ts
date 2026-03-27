@@ -45,7 +45,7 @@ export { extractImageId, getImageUrl } from "./get-image-url";
 export { getTechIcon } from "./get-tech-icon";
 // Hono Hook
 export { type HonoClient, useHonoClient } from "./hono/use-client";
-export { usePersistentQueryStates } from "./hooks";
+export { usePersistentQueryStates, useUnsavedChangesAlert } from "./hooks";
 // Is Active Path
 export { isActivePath } from "./is-active-path/is-active-path";
 // Locale

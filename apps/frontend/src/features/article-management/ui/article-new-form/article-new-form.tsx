@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle, ExternalLink, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -16,7 +16,11 @@ import {
 } from "@/entities/article";
 import { useGetAllTags } from "@/entities/tag";
 import { CustomMarkdownEditor } from "@/features/article-editor";
-import { extractGalleryImageIds, useDebounce } from "@/shared/lib";
+import {
+	extractGalleryImageIds,
+	useDebounce,
+	useUnsavedChangesAlert,
+} from "@/shared/lib";
 import {
 	Alert,
 	AlertDescription,
@@ -34,6 +38,7 @@ import {
 	Label,
 	MultipleSelector,
 	type Option,
+	UnsavedChangesDialog,
 } from "@/shared/ui";
 
 import { ArticleStatusSelector } from "../article-status-selector/article-status-selector";
@@ -83,18 +88,49 @@ export function ArticleNewForm() {
 	const [validationError, setValidationError] = useState<string>("");
 	const router = useRouter();
 
+	const [isNavigatingAfterSave, setIsNavigatingAfterSave] = useState(false);
+
 	const {
 		register,
 		handleSubmit,
 		watch,
 		setValue,
-		formState: { errors },
+		formState: { errors, isDirty: isFormDirty },
 	} = useForm<ArticleNewForm>({
 		resolver: zodResolver(articleNewSchema),
 		defaultValues: {
 			status: "draft",
 		},
 	});
+
+	/**
+	 * フォーム全体のdirty判定
+	 *
+	 * @description
+	 * react-hook-formのisDirtyに加えて、useState管理の値（マークダウン、タグ、公開日時、サムネイル）
+	 * も考慮した総合的なdirty判定。いずれかに入力があればdirtyとみなす。
+	 */
+	const isAnyFieldDirty = useMemo(() => {
+		return (
+			isFormDirty ||
+			markdownValue !== "" ||
+			selectedTags.length > 0 ||
+			publishedAtDate !== undefined ||
+			thumbnailFile !== null
+		);
+	}, [
+		isFormDirty,
+		markdownValue,
+		selectedTags,
+		publishedAtDate,
+		thumbnailFile,
+	]);
+
+	const { showDialog, handleCancel, handleConfirm, guardNavigation } =
+		useUnsavedChangesAlert({
+			isDirty: isAnyFieldDirty,
+			enabled: !isNavigatingAfterSave,
+		});
 
 	// スラッグの値を監視
 	const slugValue = watch("slug");
@@ -224,7 +260,8 @@ export function ArticleNewForm() {
 				}
 			);
 
-			// 記事一覧ページにリダイレクト
+			// 保存成功後にアラートを無効化してからリダイレクト
+			setIsNavigatingAfterSave(true);
 			router.push("/admin/articles");
 		} catch (error) {
 			console.error("記事作成エラー:", error);
@@ -442,7 +479,9 @@ export function ArticleNewForm() {
 					<Button
 						type="button"
 						variant="outline"
-						onClick={() => router.push("/admin/articles")}
+						onClick={() =>
+							guardNavigation(() => router.push("/admin/articles"))
+						}
 					>
 						キャンセル
 					</Button>
@@ -484,6 +523,13 @@ export function ArticleNewForm() {
 					</AlertDialogFooter>
 				</AlertDialogContent>
 			</AlertDialog>
+
+			{/* 未保存変更アラートダイアログ */}
+			<UnsavedChangesDialog
+				open={showDialog}
+				onCancel={handleCancel}
+				onConfirm={handleConfirm}
+			/>
 		</>
 	);
 }
