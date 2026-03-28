@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { useUpdateTag } from "@/entities/tag";
@@ -97,6 +98,8 @@ export function TagUpdateForm({ tag }: TagUpdateFormProps) {
 				enName: data.enName || undefined,
 				slug: data.slug,
 			});
+
+			toast.success("タグを更新しました");
 		} catch (error) {
 			// エラーメッセージをフォーム上部に表示
 			if (error instanceof Error) {

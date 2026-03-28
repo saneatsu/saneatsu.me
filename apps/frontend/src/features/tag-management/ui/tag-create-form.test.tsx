@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { toast } from "sonner";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { TagCreateForm } from "./tag-create-form";
@@ -22,12 +23,27 @@ vi.mock("next/navigation", async (importOriginal) => {
 	};
 });
 
+const { mockCreateMutateAsync } = vi.hoisted(() => ({
+	mockCreateMutateAsync: vi.fn().mockResolvedValue(undefined),
+}));
+
 vi.mock("@/entities/tag", () => ({
 	useCreateTag: vi.fn(() => ({
-		mutateAsync: vi.fn(),
+		mutateAsync: mockCreateMutateAsync,
 		isPending: false,
 	})),
 }));
+
+vi.mock("sonner", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("sonner")>();
+	return {
+		...actual,
+		toast: {
+			...actual.toast,
+			success: vi.fn(),
+		},
+	};
+});
 
 /**
  * テスト用のQueryClientを作成するヘルパー関数
@@ -52,6 +68,8 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 describe("TagCreateForm", () => {
 	beforeEach(() => {
 		mockPush.mockClear();
+		mockCreateMutateAsync.mockClear();
+		vi.mocked(toast.success).mockClear();
 	});
 
 	describe("Integration Test", () => {
@@ -156,6 +174,29 @@ describe("TagCreateForm", () => {
 						screen.queryByText("変更が保存されていません")
 					).not.toBeInTheDocument();
 				});
+			});
+		});
+
+		describe("成功トースト", () => {
+			it("作成成功後に成功トーストが表示される", async () => {
+				// Given: フォームに値を入力
+				const user = userEvent.setup();
+				render(<TagCreateForm />, { wrapper });
+
+				const nameInput = screen.getByPlaceholderText("タイプスクリプト");
+				const slugInput = screen.getByPlaceholderText("typescript");
+				await user.type(nameInput, "テストタグ");
+				await user.type(slugInput, "test-tag");
+
+				// When: フォームを送信
+				const submitButton = screen.getByRole("button", { name: "作成" });
+				await user.click(submitButton);
+
+				// Then: 成功トーストが表示される
+				await waitFor(() => {
+					expect(mockCreateMutateAsync).toHaveBeenCalled();
+				});
+				expect(toast.success).toHaveBeenCalled();
 			});
 		});
 	});

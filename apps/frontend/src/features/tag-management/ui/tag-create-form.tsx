@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { useCreateTag } from "@/entities/tag";
@@ -82,6 +83,8 @@ export function TagCreateForm() {
 				name: data.name,
 				slug: data.slug,
 			});
+
+			toast.success("タグを作成しました");
 
 			// 保存成功後のリダイレクトではアラートを無効化
 			setIsNavigatingAfterSave(true);

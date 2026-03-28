@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { toast } from "sonner";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { Tag } from "@/shared/model";
@@ -34,6 +35,17 @@ vi.mock("@/entities/tag", () => ({
 		isPending: false,
 	})),
 }));
+
+vi.mock("sonner", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("sonner")>();
+	return {
+		...actual,
+		toast: {
+			...actual.toast,
+			success: vi.fn(),
+		},
+	};
+});
 
 /** テスト用のタグデータ */
 const mockTag: Tag = {
@@ -69,6 +81,7 @@ describe("TagUpdateForm", () => {
 	beforeEach(() => {
 		mockPush.mockClear();
 		mockMutateAsync.mockClear();
+		vi.mocked(toast.success).mockClear();
 	});
 
 	describe("Integration Test", () => {
@@ -194,6 +207,24 @@ describe("TagUpdateForm", () => {
 					expect(mockMutateAsync).toHaveBeenCalled();
 				});
 				expect(mockPush).not.toHaveBeenCalled();
+			});
+		});
+
+		describe("成功トースト", () => {
+			it("更新成功後に成功トーストが表示される", async () => {
+				// Given: フォームをレンダリング
+				const user = userEvent.setup();
+				render(<TagUpdateForm tag={mockTag} />, { wrapper });
+
+				// When: フォームを送信
+				const submitButton = screen.getByRole("button", { name: "更新" });
+				await user.click(submitButton);
+
+				// Then: 成功トーストが表示される
+				await waitFor(() => {
+					expect(mockMutateAsync).toHaveBeenCalled();
+				});
+				expect(toast.success).toHaveBeenCalled();
 			});
 		});
 	});
