@@ -24,9 +24,13 @@ vi.mock("next/navigation", async (importOriginal) => {
 	};
 });
 
+const { mockMutateAsync } = vi.hoisted(() => ({
+	mockMutateAsync: vi.fn().mockResolvedValue(undefined),
+}));
+
 vi.mock("@/entities/tag", () => ({
 	useUpdateTag: vi.fn(() => ({
-		mutateAsync: vi.fn(),
+		mutateAsync: mockMutateAsync,
 		isPending: false,
 	})),
 }));
@@ -64,6 +68,7 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 describe("TagUpdateForm", () => {
 	beforeEach(() => {
 		mockPush.mockClear();
+		mockMutateAsync.mockClear();
 	});
 
 	describe("Integration Test", () => {
@@ -171,6 +176,24 @@ describe("TagUpdateForm", () => {
 						screen.queryByText("変更が保存されていません")
 					).not.toBeInTheDocument();
 				});
+			});
+		});
+
+		describe("更新後のリダイレクト", () => {
+			it("更新成功後にリダイレクトせず現在のページに留まる", async () => {
+				// Given: フォームをレンダリング
+				const user = userEvent.setup();
+				render(<TagUpdateForm tag={mockTag} />, { wrapper });
+
+				// When: フォームを送信
+				const submitButton = screen.getByRole("button", { name: "更新" });
+				await user.click(submitButton);
+
+				// Then: mutation は呼ばれるがリダイレクトは発生しない
+				await waitFor(() => {
+					expect(mockMutateAsync).toHaveBeenCalled();
+				});
+				expect(mockPush).not.toHaveBeenCalled();
 			});
 		});
 	});

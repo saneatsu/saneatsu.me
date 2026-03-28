@@ -272,9 +272,10 @@ export function GalleryForm({ mode = "create", imageId }: GalleryFormProps) {
 				});
 
 				toast.success("ギャラリー画像をアップロードしました");
-			}
 
-			router.push("/admin/gallery");
+				// 作成後はギャラリー一覧にリダイレクト
+				router.push("/admin/gallery");
+			}
 		} catch (error) {
 			const errorMessage =
 				mode === "edit"

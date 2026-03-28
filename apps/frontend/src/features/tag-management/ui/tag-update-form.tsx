@@ -52,12 +52,11 @@ interface TagUpdateFormProps {
  * @description
  * 既存のタグを更新するためのフォーム。
  * 日本語タグ名、英語タグ名、スラッグフィールドを持つ。
- * 更新成功時にタグ一覧ページにリダイレクトする。
+ * 更新成功後もページに留まり、リダイレクトしない。
  */
 export function TagUpdateForm({ tag }: TagUpdateFormProps) {
 	const router = useRouter();
 	const [formError, setFormError] = useState<string>("");
-	const [isNavigatingAfterSave, setIsNavigatingAfterSave] = useState(false);
 
 	const {
 		register,
@@ -78,7 +77,6 @@ export function TagUpdateForm({ tag }: TagUpdateFormProps) {
 	const { showDialog, handleCancel, handleConfirm, guardNavigation } =
 		useUnsavedChangesAlert({
 			isDirty,
-			enabled: !isNavigatingAfterSave,
 			onNavigate: router.push,
 		});
 
@@ -87,8 +85,7 @@ export function TagUpdateForm({ tag }: TagUpdateFormProps) {
 	 *
 	 * 1. エラーメッセージをクリア
 	 * 2. タグを更新（日本語名、英語名、スラッグ）
-	 * 3. 成功時にタグ一覧ページにリダイレクト
-	 * 4. エラー時にエラーメッセージを表示
+	 * 3. エラー時にエラーメッセージを表示
 	 */
 	const onSubmit = async (data: TagUpdateForm) => {
 		try {
@@ -100,10 +97,6 @@ export function TagUpdateForm({ tag }: TagUpdateFormProps) {
 				enName: data.enName || undefined,
 				slug: data.slug,
 			});
-
-			// 保存成功後のリダイレクトではアラートを無効化
-			setIsNavigatingAfterSave(true);
-			router.push("/admin/tags");
 		} catch (error) {
 			// エラーメッセージをフォーム上部に表示
 			if (error instanceof Error) {
