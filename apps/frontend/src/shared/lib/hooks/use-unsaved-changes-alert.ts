@@ -31,7 +31,7 @@ interface UseUnsavedChangesAlertReturn {
  *    - `event.preventDefault()` でブラウザネイティブの確認ダイアログのみ表示可能
  * 2. `isDirty && enabled` のとき `popstate` イベントを監視（ブラウザ戻るボタン対応）
  *    - ダミーのhistoryエントリを追加し、戻るボタン押下時にURLを復元してカスタムダイアログ表示
- *    - 「離脱する」→ history.go(-1) で実際に戻る、「キャンセル」→ そのまま留まる
+ *    - 「離脱する」→ history.go(-2) で実際に戻る（復元用pushState分 + 元のエントリ分）、「キャンセル」→ そのまま留まる
  * 3. `isDirty && enabled` のとき document の click イベントをキャプチャフェーズで監視（Next.js Link 対応）
  *    - Next.js の `<Link>` によるクライアントサイドナビゲーションは beforeunload/popstate が発火しない
  *    - クリック対象が同一オリジンの内部リンクかつ異なるURLの場合、preventDefault でナビゲーションを阻止
@@ -91,9 +91,9 @@ export function useUnsavedChangesAlert({
 		const handlePopState = () => {
 			// 現在のURLを復元してページ遷移を阻止
 			window.history.pushState(null, "", window.location.href);
-			// 確認後に history.go(-1) を実行するようセット
+			// pushState で復元した分（-1）+ 実際の前のページへの遷移（-1）= -2
 			pendingNavigationRef.current = () => {
-				window.history.go(-1);
+				window.history.go(-2);
 			};
 			setShowDialog(true);
 		};
@@ -189,7 +189,7 @@ export function useUnsavedChangesAlert({
 	// 5. ダイアログで離脱を確認したときのハンドラー
 	// pendingFn の実行前に beforeunload / popstate リスナーを解除する。
 	// 解除しないと pendingFn 内の window.location.href で beforeunload が再発火し
-	// ナビゲーションがブロックされる。また history.go(-1) で popstate が再発火し
+	// ナビゲーションがブロックされる。また history.go(-2) で popstate が再発火し
 	// ダイアログが無限に再表示される。
 	const handleConfirm = useCallback(() => {
 		// ナビゲーション実行前にリスナーを解除

@@ -390,7 +390,7 @@ describe("useUnsavedChangesAlert", () => {
 				expect(pushStateSpy).toHaveBeenCalledTimes(2);
 			});
 
-			it("popstate 後に「離脱する」を押すと history.go(-1) が呼ばれる", () => {
+			it("popstate 後に「離脱する」を押すと history.go(-2) が呼ばれる", () => {
 				// Given: isDirty=true でフックをレンダリングし、popstate を発火
 				const { result } = renderHook(() =>
 					useUnsavedChangesAlert({ isDirty: true })
@@ -410,8 +410,9 @@ describe("useUnsavedChangesAlert", () => {
 					result.current.handleConfirm();
 				});
 
-				// Then: history.go(-1) が呼ばれてナビゲーションが実行される
-				expect(goSpy).toHaveBeenCalledWith(-1);
+				// Then: history.go(-2) が呼ばれてナビゲーションが実行される
+				// pushState で復元した分（-1）+ 実際の前のページへの遷移（-1）= -2
+				expect(goSpy).toHaveBeenCalledWith(-2);
 				expect(result.current.showDialog).toBe(false);
 			});
 
