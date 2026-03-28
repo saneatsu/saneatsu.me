@@ -10,13 +10,14 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle,
 } from "../alert-dialog/alert-dialog";
+import { buttonVariants } from "../button/button";
 
 interface UnsavedChangesDialogProps {
 	/** ダイアログの表示状態 */
 	open: boolean;
 	/** キャンセルボタンを押したときのハンドラー */
 	onCancel: () => void;
-	/** 離脱ボタンを押したときのハンドラー */
+	/** 変更を破棄ボタンを押したときのハンドラー */
 	onConfirm: () => void;
 }
 
@@ -43,7 +44,12 @@ export function UnsavedChangesDialog({
 				</AlertDialogHeader>
 				<AlertDialogFooter>
 					<AlertDialogCancel onClick={onCancel}>キャンセル</AlertDialogCancel>
-					<AlertDialogAction onClick={onConfirm}>離脱する</AlertDialogAction>
+					<AlertDialogAction
+						onClick={onConfirm}
+						className={buttonVariants({ variant: "destructive" })}
+					>
+						変更を破棄
+					</AlertDialogAction>
 				</AlertDialogFooter>
 			</AlertDialogContent>
 		</AlertDialog>

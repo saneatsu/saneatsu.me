@@ -62,9 +62,9 @@ export const Open: Story = {
 			).toBeInTheDocument();
 		});
 
-		await step("キャンセルボタンと離脱ボタンが表示される", async () => {
+		await step("キャンセルボタンと変更を破棄ボタンが表示される", async () => {
 			expect(screen.getByText("キャンセル")).toBeInTheDocument();
-			expect(screen.getByText("離脱する")).toBeInTheDocument();
+			expect(screen.getByText("変更を破棄")).toBeInTheDocument();
 		});
 	},
 };
@@ -94,10 +94,10 @@ export const CancelClick: Story = {
 };
 
 /**
- * 離脱ボタンのクリック
+ * 変更を破棄ボタンのクリック
  */
 export const ConfirmClick: Story = {
-	name: "離脱ボタンクリック",
+	name: "変更を破棄ボタンクリック",
 	tags: ["validation"],
 	args: {
 		open: true,
@@ -107,9 +107,12 @@ export const ConfirmClick: Story = {
 			await screen.findByRole("alertdialog");
 		});
 
-		await step("離脱ボタンをクリックすると onConfirm が呼ばれる", async () => {
-			await userEvent.click(screen.getByText("離脱する"));
-			expect(args.onConfirm).toHaveBeenCalled();
-		});
+		await step(
+			"変更を破棄ボタンをクリックすると onConfirm が呼ばれる",
+			async () => {
+				await userEvent.click(screen.getByText("変更を破棄"));
+				expect(args.onConfirm).toHaveBeenCalled();
+			}
+		);
 	},
 };

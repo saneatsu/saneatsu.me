@@ -7,6 +7,8 @@ interface UseUnsavedChangesAlertOptions {
 	isDirty: boolean;
 	/** アラート機能を有効にするか（保存成功後の一時無効化に使用） */
 	enabled?: boolean;
+	/** 内部リンクインターセプト時のナビゲーション関数（デフォルト: window.location.href 代入） */
+	onNavigate?: (href: string) => void;
 }
 
 interface UseUnsavedChangesAlertReturn {
@@ -14,7 +16,7 @@ interface UseUnsavedChangesAlertReturn {
 	showDialog: boolean;
 	/** ダイアログでキャンセルを押したときのハンドラー */
 	handleCancel: () => void;
-	/** ダイアログで離脱を押したときのハンドラー */
+	/** ダイアログで変更を破棄を押したときのハンドラー */
 	handleConfirm: () => void;
 	/** ナビゲーションをガードする関数。dirty状態なら確認ダイアログを表示する */
 	guardNavigation: (navigateFn: () => void) => void;
@@ -29,7 +31,7 @@ interface UseUnsavedChangesAlertReturn {
  *    - `event.preventDefault()` でブラウザネイティブの確認ダイアログのみ表示可能
  * 2. `isDirty && enabled` のとき `popstate` イベントを監視（ブラウザ戻るボタン対応）
  *    - ダミーのhistoryエントリを追加し、戻るボタン押下時にURLを復元してカスタムダイアログ表示
- *    - 「離脱する」→ history.go(-1) で実際に戻る、「キャンセル」→ そのまま留まる
+ *    - 「変更を破棄」→ history.go(-2) で実際に戻る（復元用pushState分 + 元のエントリ分）、「キャンセル」→ そのまま留まる
  * 3. `isDirty && enabled` のとき document の click イベントをキャプチャフェーズで監視（Next.js Link 対応）
  *    - Next.js の `<Link>` によるクライアントサイドナビゲーションは beforeunload/popstate が発火しない
  *    - クリック対象が同一オリジンの内部リンクかつ異なるURLの場合、preventDefault でナビゲーションを阻止
@@ -40,9 +42,18 @@ interface UseUnsavedChangesAlertReturn {
 export function useUnsavedChangesAlert({
 	isDirty,
 	enabled = true,
+	onNavigate,
 }: UseUnsavedChangesAlertOptions): UseUnsavedChangesAlertReturn {
 	const [showDialog, setShowDialog] = useState(false);
 	const pendingNavigationRef = useRef<(() => void) | null>(null);
+	/** handleConfirm 時にリスナーを解除するため、ハンドラの参照を保持する */
+	const beforeUnloadHandlerRef = useRef<
+		((e: BeforeUnloadEvent) => void) | null
+	>(null);
+	const popStateHandlerRef = useRef<(() => void) | null>(null);
+	/** useEffect の依存配列に入れず再実行を防ぐため、ref で保持する */
+	const onNavigateRef = useRef(onNavigate);
+	onNavigateRef.current = onNavigate;
 
 	const isActive = isDirty && enabled;
 
@@ -57,10 +68,12 @@ export function useUnsavedChangesAlert({
 		const handleBeforeUnload = (event: BeforeUnloadEvent) => {
 			event.preventDefault();
 		};
+		beforeUnloadHandlerRef.current = handleBeforeUnload;
 
 		window.addEventListener("beforeunload", handleBeforeUnload);
 		return () => {
 			window.removeEventListener("beforeunload", handleBeforeUnload);
+			beforeUnloadHandlerRef.current = null;
 		};
 	}, [isActive]);
 
@@ -78,16 +91,18 @@ export function useUnsavedChangesAlert({
 		const handlePopState = () => {
 			// 現在のURLを復元してページ遷移を阻止
 			window.history.pushState(null, "", window.location.href);
-			// 確認後に history.go(-1) を実行するようセット
+			// pushState で復元した分（-1）+ 実際の前のページへの遷移（-1）= -2
 			pendingNavigationRef.current = () => {
-				window.history.go(-1);
+				window.history.go(-2);
 			};
 			setShowDialog(true);
 		};
+		popStateHandlerRef.current = handlePopState;
 
 		window.addEventListener("popstate", handlePopState);
 		return () => {
 			window.removeEventListener("popstate", handlePopState);
+			popStateHandlerRef.current = null;
 		};
 	}, [isActive]);
 
@@ -134,7 +149,11 @@ export function useUnsavedChangesAlert({
 
 				const targetHref = url.href;
 				pendingNavigationRef.current = () => {
-					window.location.href = targetHref;
+					if (onNavigateRef.current) {
+						onNavigateRef.current(targetHref);
+					} else {
+						window.location.href = targetHref;
+					}
 				};
 				setShowDialog(true);
 			} catch {
@@ -168,7 +187,24 @@ export function useUnsavedChangesAlert({
 	);
 
 	// 5. ダイアログで離脱を確認したときのハンドラー
+	// pendingFn の実行前に beforeunload / popstate リスナーを解除する。
+	// 解除しないと pendingFn 内の window.location.href で beforeunload が再発火し
+	// ナビゲーションがブロックされる。また history.go(-2) で popstate が再発火し
+	// ダイアログが無限に再表示される。
 	const handleConfirm = useCallback(() => {
+		// ナビゲーション実行前にリスナーを解除
+		if (beforeUnloadHandlerRef.current) {
+			window.removeEventListener(
+				"beforeunload",
+				beforeUnloadHandlerRef.current
+			);
+			beforeUnloadHandlerRef.current = null;
+		}
+		if (popStateHandlerRef.current) {
+			window.removeEventListener("popstate", popStateHandlerRef.current);
+			popStateHandlerRef.current = null;
+		}
+
 		const pendingFn = pendingNavigationRef.current;
 		pendingNavigationRef.current = null;
 		setShowDialog(false);
@@ -179,8 +215,10 @@ export function useUnsavedChangesAlert({
 	}, []);
 
 	// 6. ダイアログでキャンセルしたときのハンドラー
+	// pendingNavigationRef のクリアは handleConfirm のみが行う。
+	// Radix AlertDialogAction クリック時に onOpenChange 経由で handleCancel が
+	// handleConfirm より先に呼ばれた場合、ここでクリアするとナビゲーション関数を失う。
 	const handleCancel = useCallback(() => {
-		pendingNavigationRef.current = null;
 		setShowDialog(false);
 	}, []);
 
