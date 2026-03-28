@@ -8,8 +8,9 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { useUpdateTag } from "@/entities/tag";
+import { useUnsavedChangesAlert } from "@/shared/lib";
 import type { Tag } from "@/shared/model";
-import { Button, Input, Label } from "@/shared/ui";
+import { Button, Input, Label, UnsavedChangesDialog } from "@/shared/ui";
 
 /**
  * タグ更新フォームのスキーマ
@@ -56,11 +57,12 @@ interface TagUpdateFormProps {
 export function TagUpdateForm({ tag }: TagUpdateFormProps) {
 	const router = useRouter();
 	const [formError, setFormError] = useState<string>("");
+	const [isNavigatingAfterSave, setIsNavigatingAfterSave] = useState(false);
 
 	const {
 		register,
 		handleSubmit,
-		formState: { errors },
+		formState: { errors, isDirty },
 	} = useForm<TagUpdateForm>({
 		resolver: zodResolver(tagUpdateSchema),
 		defaultValues: {
@@ -72,6 +74,13 @@ export function TagUpdateForm({ tag }: TagUpdateFormProps) {
 
 	// タグ更新フック
 	const updateMutation = useUpdateTag();
+
+	const { showDialog, handleCancel, handleConfirm, guardNavigation } =
+		useUnsavedChangesAlert({
+			isDirty,
+			enabled: !isNavigatingAfterSave,
+			onNavigate: router.push,
+		});
 
 	/**
 	 * フォーム送信処理
@@ -92,7 +101,8 @@ export function TagUpdateForm({ tag }: TagUpdateFormProps) {
 				slug: data.slug,
 			});
 
-			// 成功時にタグ一覧ページにリダイレクト
+			// 保存成功後のリダイレクトではアラートを無効化
+			setIsNavigatingAfterSave(true);
 			router.push("/admin/tags");
 		} catch (error) {
 			// エラーメッセージをフォーム上部に表示
@@ -105,89 +115,97 @@ export function TagUpdateForm({ tag }: TagUpdateFormProps) {
 	};
 
 	return (
-		<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-			{/* エラーメッセージ */}
-			{formError && (
-				<div className="p-4 border border-destructive/50 bg-destructive/10 rounded-md">
-					<p className="text-sm text-destructive font-medium">
-						エラーが発生しました
-					</p>
-					<p className="text-sm text-destructive mt-1">{formError}</p>
-				</div>
-			)}
-
-			{/* タグ名（日本語） */}
-			<div className="space-y-2">
-				<Label htmlFor="name">タグ名（日本語） *</Label>
-				<Input
-					id="name"
-					{...register("name")}
-					placeholder="タイプスクリプト"
-					className="max-w-md"
-				/>
-				{errors.name && (
-					<p className="text-sm text-destructive">{errors.name.message}</p>
+		<>
+			<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+				{/* エラーメッセージ */}
+				{formError && (
+					<div className="p-4 border border-destructive/50 bg-destructive/10 rounded-md">
+						<p className="text-sm text-destructive font-medium">
+							エラーが発生しました
+						</p>
+						<p className="text-sm text-destructive mt-1">{formError}</p>
+					</div>
 				)}
-				<p className="text-sm text-muted-foreground">
-					タグの表示名を日本語で入力してください
-				</p>
-			</div>
 
-			{/* タグ名（英語） */}
-			<div className="space-y-2">
-				<Label htmlFor="enName">タグ名（英語）</Label>
-				<Input
-					id="enName"
-					{...register("enName")}
-					placeholder="TypeScript"
-					className="max-w-md"
-				/>
-				{errors.enName && (
-					<p className="text-sm text-destructive">{errors.enName.message}</p>
-				)}
-				<p className="text-sm text-muted-foreground">
-					英語のタグ名を入力してください。未入力の場合は自動翻訳されます。
-				</p>
-			</div>
-
-			{/* スラッグ */}
-			<div className="space-y-2">
-				<Label htmlFor="slug">スラッグ *</Label>
-				<Input
-					id="slug"
-					{...register("slug")}
-					placeholder="typescript"
-					className="max-w-md"
-				/>
-				{errors.slug && (
-					<p className="text-sm text-destructive">{errors.slug.message}</p>
-				)}
-				<p className="text-sm text-muted-foreground">
-					小文字の英数字とハイフンのみ使用できます（例: typescript,
-					web-development）
-				</p>
-			</div>
-
-			{/* 送信ボタン */}
-			<div className="flex justify-end space-x-4">
-				<Button
-					type="button"
-					variant="outline"
-					onClick={() => router.push("/admin/tags")}
-				>
-					キャンセル
-				</Button>
-				<Button type="submit" disabled={updateMutation.isPending}>
-					{updateMutation.isPending ? (
-						<>
-							<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-							更新中...
-						</>
-					) : (
-						"更新"
+				{/* タグ名（日本語） */}
+				<div className="space-y-2">
+					<Label htmlFor="name">タグ名（日本語） *</Label>
+					<Input
+						id="name"
+						{...register("name")}
+						placeholder="タイプスクリプト"
+						className="max-w-md"
+					/>
+					{errors.name && (
+						<p className="text-sm text-destructive">{errors.name.message}</p>
 					)}
-				</Button>
-			</div>
-		</form>
+					<p className="text-sm text-muted-foreground">
+						タグの表示名を日本語で入力してください
+					</p>
+				</div>
+
+				{/* タグ名（英語） */}
+				<div className="space-y-2">
+					<Label htmlFor="enName">タグ名（英語）</Label>
+					<Input
+						id="enName"
+						{...register("enName")}
+						placeholder="TypeScript"
+						className="max-w-md"
+					/>
+					{errors.enName && (
+						<p className="text-sm text-destructive">{errors.enName.message}</p>
+					)}
+					<p className="text-sm text-muted-foreground">
+						英語のタグ名を入力してください。未入力の場合は自動翻訳されます。
+					</p>
+				</div>
+
+				{/* スラッグ */}
+				<div className="space-y-2">
+					<Label htmlFor="slug">スラッグ *</Label>
+					<Input
+						id="slug"
+						{...register("slug")}
+						placeholder="typescript"
+						className="max-w-md"
+					/>
+					{errors.slug && (
+						<p className="text-sm text-destructive">{errors.slug.message}</p>
+					)}
+					<p className="text-sm text-muted-foreground">
+						小文字の英数字とハイフンのみ使用できます（例: typescript,
+						web-development）
+					</p>
+				</div>
+
+				{/* 送信ボタン */}
+				<div className="flex justify-end space-x-4">
+					<Button
+						type="button"
+						variant="outline"
+						onClick={() => guardNavigation(() => router.push("/admin/tags"))}
+					>
+						キャンセル
+					</Button>
+					<Button type="submit" disabled={updateMutation.isPending}>
+						{updateMutation.isPending ? (
+							<>
+								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+								更新中...
+							</>
+						) : (
+							"更新"
+						)}
+					</Button>
+				</div>
+			</form>
+
+			<UnsavedChangesDialog
+				open={showDialog}
+				onCancel={handleCancel}
+				onConfirm={handleConfirm}
+			/>
+		</>
 	);
 }

@@ -1,0 +1,162 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import { TagCreateForm } from "./tag-create-form";
+
+// Mock dependencies
+const mockPush = vi.fn();
+vi.mock("next/navigation", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("next/navigation")>();
+	return {
+		...actual,
+		useRouter: vi.fn(() => ({
+			push: mockPush,
+			replace: vi.fn(),
+			back: vi.fn(),
+			forward: vi.fn(),
+			refresh: vi.fn(),
+			prefetch: vi.fn(),
+		})),
+	};
+});
+
+vi.mock("@/entities/tag", () => ({
+	useCreateTag: vi.fn(() => ({
+		mutateAsync: vi.fn(),
+		isPending: false,
+	})),
+}));
+
+/**
+ * テスト用のQueryClientを作成するヘルパー関数
+ */
+const createTestQueryClient = () =>
+	new QueryClient({
+		defaultOptions: {
+			queries: { retry: false },
+			mutations: { retry: false },
+		},
+	});
+
+/**
+ * テスト用のラッパーコンポーネント
+ */
+const wrapper = ({ children }: { children: React.ReactNode }) => (
+	<QueryClientProvider client={createTestQueryClient()}>
+		{children}
+	</QueryClientProvider>
+);
+
+describe("TagCreateForm", () => {
+	beforeEach(() => {
+		mockPush.mockClear();
+	});
+
+	describe("Integration Test", () => {
+		describe("未保存変更アラート", () => {
+			it("未入力でキャンセルするとアラートなしでナビゲーションが実行される", async () => {
+				// Given: フォームをレンダリング
+				const user = userEvent.setup();
+				render(<TagCreateForm />, { wrapper });
+
+				// When: キャンセルボタンをクリック
+				const cancelButton = screen.getByRole("button", {
+					name: "キャンセル",
+				});
+				await user.click(cancelButton);
+
+				// Then: アラートなしでナビゲーションが実行される
+				expect(mockPush).toHaveBeenCalledWith("/admin/tags");
+			});
+
+			it("タグ名を入力してキャンセルするとアラートダイアログが表示される", async () => {
+				// Given: タグ名を入力した状態
+				const user = userEvent.setup();
+				render(<TagCreateForm />, { wrapper });
+
+				const nameInput = screen.getByPlaceholderText("タイプスクリプト");
+				await user.type(nameInput, "テストタグ");
+
+				// When: キャンセルボタンをクリック
+				const cancelButton = screen.getByRole("button", {
+					name: "キャンセル",
+				});
+				await user.click(cancelButton);
+
+				// Then: アラートダイアログが表示される
+				await waitFor(() => {
+					expect(
+						screen.getByText("変更が保存されていません")
+					).toBeInTheDocument();
+				});
+			});
+
+			it("アラートダイアログで「離脱する」をクリックするとナビゲーションが実行される", async () => {
+				// Given: タグ名を入力してキャンセルし、アラートダイアログが表示されている状態
+				const user = userEvent.setup();
+				render(<TagCreateForm />, { wrapper });
+
+				const nameInput = screen.getByPlaceholderText("タイプスクリプト");
+				await user.type(nameInput, "テストタグ");
+
+				const cancelButton = screen.getByRole("button", {
+					name: "キャンセル",
+				});
+				await user.click(cancelButton);
+
+				await waitFor(() => {
+					expect(
+						screen.getByText("変更が保存されていません")
+					).toBeInTheDocument();
+				});
+
+				// When: 離脱ボタンをクリック
+				const confirmButton = screen.getByRole("button", {
+					name: "離脱する",
+				});
+				await user.click(confirmButton);
+
+				// Then: ナビゲーションが実行される
+				await waitFor(() => {
+					expect(mockPush).toHaveBeenCalledWith("/admin/tags");
+				});
+			});
+
+			it("アラートダイアログで「キャンセル」をクリックするとフォームに戻る", async () => {
+				// Given: タグ名を入力してキャンセルし、アラートダイアログが表示されている状態
+				const user = userEvent.setup();
+				render(<TagCreateForm />, { wrapper });
+
+				const nameInput = screen.getByPlaceholderText("タイプスクリプト");
+				await user.type(nameInput, "テストタグ");
+
+				const cancelButton = screen.getByRole("button", {
+					name: "キャンセル",
+				});
+				await user.click(cancelButton);
+
+				await waitFor(() => {
+					expect(
+						screen.getByText("変更が保存されていません")
+					).toBeInTheDocument();
+				});
+
+				// When: ダイアログのキャンセルボタンをクリック
+				const dialogCancelButton = screen.getByRole("button", {
+					name: "キャンセル",
+				});
+				await user.click(dialogCancelButton);
+
+				// Then: ナビゲーションが実行されず、フォームに戻る
+				expect(mockPush).not.toHaveBeenCalled();
+				await waitFor(() => {
+					expect(
+						screen.queryByText("変更が保存されていません")
+					).not.toBeInTheDocument();
+				});
+			});
+		});
+	});
+});

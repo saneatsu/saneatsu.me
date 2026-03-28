@@ -8,7 +8,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { useCreateTag } from "@/entities/tag";
-import { Button, Input, Label } from "@/shared/ui";
+import { useUnsavedChangesAlert } from "@/shared/lib";
+import { Button, Input, Label, UnsavedChangesDialog } from "@/shared/ui";
 
 /**
  * タグ作成フォームのスキーマ
@@ -41,11 +42,12 @@ type TagCreateForm = z.infer<typeof tagCreateSchema>;
 export function TagCreateForm() {
 	const router = useRouter();
 	const [formError, setFormError] = useState<string>("");
+	const [isNavigatingAfterSave, setIsNavigatingAfterSave] = useState(false);
 
 	const {
 		register,
 		handleSubmit,
-		formState: { errors },
+		formState: { errors, isDirty },
 	} = useForm<TagCreateForm>({
 		resolver: zodResolver(tagCreateSchema),
 		defaultValues: {
@@ -56,6 +58,13 @@ export function TagCreateForm() {
 
 	// タグ作成フック
 	const createMutation = useCreateTag();
+
+	const { showDialog, handleCancel, handleConfirm, guardNavigation } =
+		useUnsavedChangesAlert({
+			isDirty,
+			enabled: !isNavigatingAfterSave,
+			onNavigate: router.push,
+		});
 
 	/**
 	 * フォーム送信処理
@@ -74,7 +83,8 @@ export function TagCreateForm() {
 				slug: data.slug,
 			});
 
-			// 成功時にタグ一覧ページにリダイレクト
+			// 保存成功後のリダイレクトではアラートを無効化
+			setIsNavigatingAfterSave(true);
 			router.push("/admin/tags");
 		} catch (error) {
 			// エラーメッセージをフォーム上部に表示
@@ -87,72 +97,80 @@ export function TagCreateForm() {
 	};
 
 	return (
-		<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-			{/* エラーメッセージ */}
-			{formError && (
-				<div className="p-4 border border-destructive/50 bg-destructive/10 rounded-md">
-					<p className="text-sm text-destructive font-medium">
-						エラーが発生しました
-					</p>
-					<p className="text-sm text-destructive mt-1">{formError}</p>
-				</div>
-			)}
-
-			{/* タグ名（日本語） */}
-			<div className="space-y-2">
-				<Label htmlFor="name">タグ名（日本語） *</Label>
-				<Input
-					id="name"
-					{...register("name")}
-					placeholder="タイプスクリプト"
-					className="max-w-md"
-				/>
-				{errors.name && (
-					<p className="text-sm text-destructive">{errors.name.message}</p>
+		<>
+			<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+				{/* エラーメッセージ */}
+				{formError && (
+					<div className="p-4 border border-destructive/50 bg-destructive/10 rounded-md">
+						<p className="text-sm text-destructive font-medium">
+							エラーが発生しました
+						</p>
+						<p className="text-sm text-destructive mt-1">{formError}</p>
+					</div>
 				)}
-				<p className="text-sm text-muted-foreground">
-					タグの表示名を日本語で入力してください
-				</p>
-			</div>
 
-			{/* スラッグ */}
-			<div className="space-y-2">
-				<Label htmlFor="slug">スラッグ *</Label>
-				<Input
-					id="slug"
-					{...register("slug")}
-					placeholder="typescript"
-					className="max-w-md"
-				/>
-				{errors.slug && (
-					<p className="text-sm text-destructive">{errors.slug.message}</p>
-				)}
-				<p className="text-sm text-muted-foreground">
-					小文字の英数字とハイフンのみ使用できます（例: typescript,
-					web-development）
-				</p>
-			</div>
-
-			{/* 送信ボタン */}
-			<div className="flex justify-end space-x-4">
-				<Button
-					type="button"
-					variant="outline"
-					onClick={() => router.push("/admin/tags")}
-				>
-					キャンセル
-				</Button>
-				<Button type="submit" disabled={createMutation.isPending}>
-					{createMutation.isPending ? (
-						<>
-							<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-							作成中...
-						</>
-					) : (
-						"作成"
+				{/* タグ名（日本語） */}
+				<div className="space-y-2">
+					<Label htmlFor="name">タグ名（日本語） *</Label>
+					<Input
+						id="name"
+						{...register("name")}
+						placeholder="タイプスクリプト"
+						className="max-w-md"
+					/>
+					{errors.name && (
+						<p className="text-sm text-destructive">{errors.name.message}</p>
 					)}
-				</Button>
-			</div>
-		</form>
+					<p className="text-sm text-muted-foreground">
+						タグの表示名を日本語で入力してください
+					</p>
+				</div>
+
+				{/* スラッグ */}
+				<div className="space-y-2">
+					<Label htmlFor="slug">スラッグ *</Label>
+					<Input
+						id="slug"
+						{...register("slug")}
+						placeholder="typescript"
+						className="max-w-md"
+					/>
+					{errors.slug && (
+						<p className="text-sm text-destructive">{errors.slug.message}</p>
+					)}
+					<p className="text-sm text-muted-foreground">
+						小文字の英数字とハイフンのみ使用できます（例: typescript,
+						web-development）
+					</p>
+				</div>
+
+				{/* 送信ボタン */}
+				<div className="flex justify-end space-x-4">
+					<Button
+						type="button"
+						variant="outline"
+						onClick={() => guardNavigation(() => router.push("/admin/tags"))}
+					>
+						キャンセル
+					</Button>
+					<Button type="submit" disabled={createMutation.isPending}>
+						{createMutation.isPending ? (
+							<>
+								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+								作成中...
+							</>
+						) : (
+							"作成"
+						)}
+					</Button>
+				</div>
+			</form>
+
+			<UnsavedChangesDialog
+				open={showDialog}
+				onCancel={handleCancel}
+				onConfirm={handleConfirm}
+			/>
+		</>
 	);
 }
