@@ -214,7 +214,7 @@ describe("ArticleNewForm", () => {
 				});
 			});
 
-			it("アラートダイアログで「離脱する」をクリックするとナビゲーションが実行される", async () => {
+			it("アラートダイアログで「変更を破棄」をクリックするとナビゲーションが実行される", async () => {
 				// Given: タイトルを入力してキャンセルし、アラートダイアログが表示されている状態
 				const user = userEvent.setup();
 				render(<ArticleNewForm />, { wrapper });
@@ -235,9 +235,9 @@ describe("ArticleNewForm", () => {
 					).toBeInTheDocument();
 				});
 
-				// When: 離脱ボタンをクリック
+				// When: 変更を破棄ボタンをクリック
 				const confirmButton = screen.getByRole("button", {
-					name: "離脱する",
+					name: "変更を破棄",
 				});
 				await user.click(confirmButton);
 

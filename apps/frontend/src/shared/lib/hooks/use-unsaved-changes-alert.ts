@@ -16,7 +16,7 @@ interface UseUnsavedChangesAlertReturn {
 	showDialog: boolean;
 	/** ダイアログでキャンセルを押したときのハンドラー */
 	handleCancel: () => void;
-	/** ダイアログで離脱を押したときのハンドラー */
+	/** ダイアログで変更を破棄を押したときのハンドラー */
 	handleConfirm: () => void;
 	/** ナビゲーションをガードする関数。dirty状態なら確認ダイアログを表示する */
 	guardNavigation: (navigateFn: () => void) => void;
@@ -31,7 +31,7 @@ interface UseUnsavedChangesAlertReturn {
  *    - `event.preventDefault()` でブラウザネイティブの確認ダイアログのみ表示可能
  * 2. `isDirty && enabled` のとき `popstate` イベントを監視（ブラウザ戻るボタン対応）
  *    - ダミーのhistoryエントリを追加し、戻るボタン押下時にURLを復元してカスタムダイアログ表示
- *    - 「離脱する」→ history.go(-2) で実際に戻る（復元用pushState分 + 元のエントリ分）、「キャンセル」→ そのまま留まる
+ *    - 「変更を破棄」→ history.go(-2) で実際に戻る（復元用pushState分 + 元のエントリ分）、「キャンセル」→ そのまま留まる
  * 3. `isDirty && enabled` のとき document の click イベントをキャプチャフェーズで監視（Next.js Link 対応）
  *    - Next.js の `<Link>` によるクライアントサイドナビゲーションは beforeunload/popstate が発火しない
  *    - クリック対象が同一オリジンの内部リンクかつ異なるURLの場合、preventDefault でナビゲーションを阻止

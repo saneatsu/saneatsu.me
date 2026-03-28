@@ -272,7 +272,7 @@ describe("ArticleEditForm", () => {
 				});
 			});
 
-			it("アラートダイアログで「離脱する」をクリックするとナビゲーションが実行される", async () => {
+			it("アラートダイアログで「変更を破棄」をクリックするとナビゲーションが実行される", async () => {
 				// Given: タイトルを変更してアラートダイアログを表示
 				const user = userEvent.setup();
 				render(<ArticleEditForm article={createMockArticle()} />, {
@@ -294,9 +294,9 @@ describe("ArticleEditForm", () => {
 					).toBeInTheDocument();
 				});
 
-				// When: 離脱ボタンをクリック
+				// When: 変更を破棄ボタンをクリック
 				const confirmButton = screen.getByRole("button", {
-					name: "離脱する",
+					name: "変更を破棄",
 				});
 				await user.click(confirmButton);
 

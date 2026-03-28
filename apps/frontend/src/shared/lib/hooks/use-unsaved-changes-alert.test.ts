@@ -390,7 +390,7 @@ describe("useUnsavedChangesAlert", () => {
 				expect(pushStateSpy).toHaveBeenCalledTimes(2);
 			});
 
-			it("popstate 後に「離脱する」を押すと history.go(-2) が呼ばれる", () => {
+			it("popstate 後に「変更を破棄」を押すと history.go(-2) が呼ばれる", () => {
 				// Given: isDirty=true でフックをレンダリングし、popstate を発火
 				const { result } = renderHook(() =>
 					useUnsavedChangesAlert({ isDirty: true })
