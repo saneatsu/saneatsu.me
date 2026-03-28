@@ -7,6 +7,8 @@ interface UseUnsavedChangesAlertOptions {
 	isDirty: boolean;
 	/** アラート機能を有効にするか（保存成功後の一時無効化に使用） */
 	enabled?: boolean;
+	/** 内部リンクインターセプト時のナビゲーション関数（デフォルト: window.location.href 代入） */
+	onNavigate?: (href: string) => void;
 }
 
 interface UseUnsavedChangesAlertReturn {
@@ -40,9 +42,18 @@ interface UseUnsavedChangesAlertReturn {
 export function useUnsavedChangesAlert({
 	isDirty,
 	enabled = true,
+	onNavigate,
 }: UseUnsavedChangesAlertOptions): UseUnsavedChangesAlertReturn {
 	const [showDialog, setShowDialog] = useState(false);
 	const pendingNavigationRef = useRef<(() => void) | null>(null);
+	/** handleConfirm 時にリスナーを解除するため、ハンドラの参照を保持する */
+	const beforeUnloadHandlerRef = useRef<
+		((e: BeforeUnloadEvent) => void) | null
+	>(null);
+	const popStateHandlerRef = useRef<(() => void) | null>(null);
+	/** useEffect の依存配列に入れず再実行を防ぐため、ref で保持する */
+	const onNavigateRef = useRef(onNavigate);
+	onNavigateRef.current = onNavigate;
 
 	const isActive = isDirty && enabled;
 
@@ -57,10 +68,12 @@ export function useUnsavedChangesAlert({
 		const handleBeforeUnload = (event: BeforeUnloadEvent) => {
 			event.preventDefault();
 		};
+		beforeUnloadHandlerRef.current = handleBeforeUnload;
 
 		window.addEventListener("beforeunload", handleBeforeUnload);
 		return () => {
 			window.removeEventListener("beforeunload", handleBeforeUnload);
+			beforeUnloadHandlerRef.current = null;
 		};
 	}, [isActive]);
 
@@ -84,10 +97,12 @@ export function useUnsavedChangesAlert({
 			};
 			setShowDialog(true);
 		};
+		popStateHandlerRef.current = handlePopState;
 
 		window.addEventListener("popstate", handlePopState);
 		return () => {
 			window.removeEventListener("popstate", handlePopState);
+			popStateHandlerRef.current = null;
 		};
 	}, [isActive]);
 
@@ -134,7 +149,11 @@ export function useUnsavedChangesAlert({
 
 				const targetHref = url.href;
 				pendingNavigationRef.current = () => {
-					window.location.href = targetHref;
+					if (onNavigateRef.current) {
+						onNavigateRef.current(targetHref);
+					} else {
+						window.location.href = targetHref;
+					}
 				};
 				setShowDialog(true);
 			} catch {
@@ -168,7 +187,24 @@ export function useUnsavedChangesAlert({
 	);
 
 	// 5. ダイアログで離脱を確認したときのハンドラー
+	// pendingFn の実行前に beforeunload / popstate リスナーを解除する。
+	// 解除しないと pendingFn 内の window.location.href で beforeunload が再発火し
+	// ナビゲーションがブロックされる。また history.go(-1) で popstate が再発火し
+	// ダイアログが無限に再表示される。
 	const handleConfirm = useCallback(() => {
+		// ナビゲーション実行前にリスナーを解除
+		if (beforeUnloadHandlerRef.current) {
+			window.removeEventListener(
+				"beforeunload",
+				beforeUnloadHandlerRef.current
+			);
+			beforeUnloadHandlerRef.current = null;
+		}
+		if (popStateHandlerRef.current) {
+			window.removeEventListener("popstate", popStateHandlerRef.current);
+			popStateHandlerRef.current = null;
+		}
+
 		const pendingFn = pendingNavigationRef.current;
 		pendingNavigationRef.current = null;
 		setShowDialog(false);
@@ -179,8 +215,10 @@ export function useUnsavedChangesAlert({
 	}, []);
 
 	// 6. ダイアログでキャンセルしたときのハンドラー
+	// pendingNavigationRef のクリアは handleConfirm のみが行う。
+	// Radix AlertDialogAction クリック時に onOpenChange 経由で handleCancel が
+	// handleConfirm より先に呼ばれた場合、ここでクリアするとナビゲーション関数を失う。
 	const handleCancel = useCallback(() => {
-		pendingNavigationRef.current = null;
 		setShowDialog(false);
 	}, []);
 

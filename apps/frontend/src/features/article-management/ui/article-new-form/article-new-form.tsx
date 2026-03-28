@@ -130,6 +130,7 @@ export function ArticleNewForm() {
 		useUnsavedChangesAlert({
 			isDirty: isAnyFieldDirty,
 			enabled: !isNavigatingAfterSave,
+			onNavigate: router.push,
 		});
 
 	// スラッグの値を監視

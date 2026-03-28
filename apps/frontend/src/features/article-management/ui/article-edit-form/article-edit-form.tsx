@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle, ExternalLink, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -226,6 +227,8 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 	 * react-hook-formのisDirtyに加えて、useState管理の値（マークダウン、タグ、公開日時）
 	 * も初期値と比較した総合的なdirty判定。
 	 */
+	const router = useRouter();
+
 	const isAnyFieldDirty = useMemo(() => {
 		// マークダウンの変更
 		const isContentDirty = markdownValue !== article.content;
@@ -262,6 +265,7 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 	const { showDialog, handleCancel, handleConfirm, guardNavigation } =
 		useUnsavedChangesAlert({
 			isDirty: isAnyFieldDirty,
+			onNavigate: router.push,
 		});
 
 	// 記事更新フック

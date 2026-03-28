@@ -136,6 +136,111 @@ describe("useUnsavedChangesAlert", () => {
 			});
 		});
 
+		describe("handleConfirm のリスナー解除", () => {
+			it("handleConfirm 後に beforeunload リスナーが解除される", () => {
+				// Given: isDirty=true でダイアログを表示
+				const { result } = renderHook(() =>
+					useUnsavedChangesAlert({ isDirty: true })
+				);
+				const navigateFn = vi.fn();
+
+				act(() => {
+					result.current.guardNavigation(navigateFn);
+				});
+
+				// handleConfirm 前の removeEventListener 呼び出し数を記録
+				const removeBefore = removeEventListenerSpy.mock.calls.filter(
+					([event]: [string, ...unknown[]]) => event === "beforeunload"
+				).length;
+
+				// When: handleConfirm を呼ぶ
+				act(() => {
+					result.current.handleConfirm();
+				});
+
+				// Then: beforeunload リスナーが解除される
+				const removeAfter = removeEventListenerSpy.mock.calls.filter(
+					([event]: [string, ...unknown[]]) => event === "beforeunload"
+				).length;
+				expect(removeAfter).toBeGreaterThan(removeBefore);
+			});
+
+			it("handleConfirm 後に popstate が発火してもダイアログが再表示されない", () => {
+				// Given: isDirty=true でフックをレンダリングし、popstate でダイアログを表示
+				const { result } = renderHook(() =>
+					useUnsavedChangesAlert({ isDirty: true })
+				);
+
+				act(() => {
+					window.dispatchEvent(new Event("popstate"));
+				});
+				expect(result.current.showDialog).toBe(true);
+
+				// When: handleConfirm を呼んだ後、再度 popstate を発火
+				act(() => {
+					result.current.handleConfirm();
+				});
+				expect(result.current.showDialog).toBe(false);
+
+				act(() => {
+					window.dispatchEvent(new Event("popstate"));
+				});
+
+				// Then: popstate リスナーが解除されているのでダイアログが再表示されない
+				expect(result.current.showDialog).toBe(false);
+			});
+		});
+
+		describe("handleConfirm と handleCancel の競合（AlertDialogAction + onOpenChange）", () => {
+			it("handleCancel が handleConfirm の前に呼ばれてもナビゲーション関数が実行される", () => {
+				// Given: isDirty=true でダイアログが表示されている状態
+				// Radix AlertDialog では onOpenChange(false) が onClick より先に
+				// 呼ばれる可能性がある。その場合 handleCancel → handleConfirm の順になる。
+				const { result } = renderHook(() =>
+					useUnsavedChangesAlert({ isDirty: true })
+				);
+				const navigateFn = vi.fn();
+
+				act(() => {
+					result.current.guardNavigation(navigateFn);
+				});
+				expect(result.current.showDialog).toBe(true);
+
+				// When: handleCancel → handleConfirm の順で呼ぶ
+				act(() => {
+					result.current.handleCancel();
+					result.current.handleConfirm();
+				});
+
+				// Then: ナビゲーション関数が実行される
+				expect(navigateFn).toHaveBeenCalledTimes(1);
+				expect(result.current.showDialog).toBe(false);
+			});
+
+			it("handleConfirm が handleCancel の前に呼ばれてもナビゲーション関数が実行される", () => {
+				// Given: isDirty=true でダイアログが表示されている状態
+				const { result } = renderHook(() =>
+					useUnsavedChangesAlert({ isDirty: true })
+				);
+				const navigateFn = vi.fn();
+
+				act(() => {
+					result.current.guardNavigation(navigateFn);
+				});
+				expect(result.current.showDialog).toBe(true);
+
+				// When: handleConfirm → handleCancel の順で呼ぶ
+				act(() => {
+					result.current.handleConfirm();
+					result.current.handleCancel();
+				});
+
+				// Then: ナビゲーション関数が実行される
+				expect(navigateFn).toHaveBeenCalledTimes(1);
+				expect(result.current.showDialog).toBe(false);
+			});
+		});
+
 		describe("handleCancel", () => {
 			it("ナビゲーション関数を実行せずにダイアログが閉じる", () => {
 				// Given: isDirty=true でダイアログが表示されている状態
@@ -558,6 +663,65 @@ describe("useUnsavedChangesAlert", () => {
 				expect(result.current.showDialog).toBe(false);
 
 				div.remove();
+			});
+
+			it("onNavigate が指定されているとき、内部リンククリック後の handleConfirm で onNavigate が呼ばれる", () => {
+				// Given: isDirty=true, onNavigate を指定してフックをレンダリング
+				const onNavigate = vi.fn();
+				const { result } = renderHook(() =>
+					useUnsavedChangesAlert({ isDirty: true, onNavigate })
+				);
+
+				const targetHref = `${window.location.origin}/other-page`;
+				const anchor = createAnchorElement(targetHref);
+
+				// 内部リンクをクリックしてダイアログを表示
+				const clickEvent = new MouseEvent("click", {
+					bubbles: true,
+					cancelable: true,
+				});
+				act(() => {
+					anchor.dispatchEvent(clickEvent);
+				});
+				expect(result.current.showDialog).toBe(true);
+
+				// When: handleConfirm を呼ぶ
+				act(() => {
+					result.current.handleConfirm();
+				});
+
+				// Then: onNavigate が targetHref で呼ばれる
+				expect(onNavigate).toHaveBeenCalledWith(targetHref);
+				expect(result.current.showDialog).toBe(false);
+			});
+
+			it("onNavigate が未指定のとき、従来通り window.location.href による遷移が試みられる", () => {
+				// Given: isDirty=true, onNavigate 未指定でフックをレンダリング
+				const { result } = renderHook(() =>
+					useUnsavedChangesAlert({ isDirty: true })
+				);
+
+				const targetHref = `${window.location.origin}/other-page`;
+				const anchor = createAnchorElement(targetHref);
+
+				// 内部リンクをクリックしてダイアログを表示
+				const clickEvent = new MouseEvent("click", {
+					bubbles: true,
+					cancelable: true,
+				});
+				act(() => {
+					anchor.dispatchEvent(clickEvent);
+				});
+				expect(result.current.showDialog).toBe(true);
+
+				// When: handleConfirm を呼ぶ
+				act(() => {
+					result.current.handleConfirm();
+				});
+
+				// Then: ダイアログが閉じ、pendingNavigation が実行される（window.location.href への代入）
+				// jsdom では location.href への代入テストが難しいため、ダイアログが閉じることで実行を確認
+				expect(result.current.showDialog).toBe(false);
 			});
 
 			it("アンカーの子要素をクリックしても closest でインターセプトされる", () => {
