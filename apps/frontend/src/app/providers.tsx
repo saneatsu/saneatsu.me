@@ -23,7 +23,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
 				<SessionProvider>
 					<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
 						{children}
-						<Toaster expand={true} />
+						<Toaster expand={true} position="top-right" />
 					</ThemeProvider>
 				</SessionProvider>
 			</QueryClientProvider>
