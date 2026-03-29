@@ -183,6 +183,8 @@
 	--color-brand-google: var(--brand-google);
 	--color-brand-google-foreground: var(--brand-google-foreground);
 	--color-brand-google-gradient: var(--brand-google-gradient);
+	--text-xxs: 0.625rem;
+	--text-xxs--line-height: 0.875rem;
 	--radius-sm: calc(var(--radius) - 4px);
 	--radius-md: calc(var(--radius) - 2px);
 	--radius-lg: var(--radius);
