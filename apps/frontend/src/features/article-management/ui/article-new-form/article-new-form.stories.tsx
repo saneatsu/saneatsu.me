@@ -807,7 +807,8 @@ export const SlugDuplicateError: Story = {
 		const canvas = within(canvasElement);
 
 		// スラッグフィールドに既存のスラッグを入力
-		const slugInput = canvas.getByLabelText("スラッグ");
+		// 必須バッジのテキストも含まれるため exact: false で部分一致検索する
+		const slugInput = canvas.getByLabelText("スラッグ", { exact: false });
 		await userEvent.type(slugInput, "existing-slug");
 
 		// エラーメッセージが表示されるまで待つ
