@@ -1,5 +1,7 @@
 import { z } from "zod";
+
 import { i18nMessage } from "./i18n";
+import { SLUG_REGEX } from "./slug";
 
 /**
  * 共通のバリデーション定義
@@ -20,7 +22,7 @@ export const slugSchema = z
 	.string()
 	.min(1, i18nMessage("validation.custom.common.slugRequired"))
 	.max(100, i18nMessage("validation.custom.common.slugTooLong"))
-	.regex(/^[a-z0-9-]+$/, i18nMessage("validation.custom.common.slugInvalid"));
+	.regex(SLUG_REGEX, i18nMessage("validation.custom.common.slugInvalid"));
 
 /** メールアドレス */
 export const emailSchema = z
