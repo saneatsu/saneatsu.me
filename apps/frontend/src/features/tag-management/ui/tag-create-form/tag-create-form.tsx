@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { SLUG_REGEX } from "@saneatsu/schemas";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -36,8 +37,8 @@ const tagCreateSchema = z.object({
 		.min(1, "スラッグは必須です")
 		.max(100, "スラッグは100文字以内で入力してください")
 		.regex(
-			/^[a-z0-9-]+$/,
-			"スラッグは小文字の英数字とハイフンのみ使用できます"
+			SLUG_REGEX,
+			"スラッグは小文字英数字で始まり、単語をハイフンで区切る形式で入力してください"
 		),
 });
 
@@ -153,8 +154,8 @@ export function TagCreateForm() {
 									/>
 								</FormControl>
 								<FormDescription>
-									小文字の英数字とハイフンのみ使用できます（例: typescript,
-									web-development）
+									小文字英数字で始まり、単語をハイフンで区切る形式（例:
+									typescript, web-development）
 								</FormDescription>
 								<FormMessage />
 							</FormItem>
