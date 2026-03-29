@@ -88,8 +88,11 @@ FormItem.displayName = "FormItem";
 
 const FormLabel = React.forwardRef<
 	React.ElementRef<typeof LabelPrimitive.Root>,
-	React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>
->(({ className, ...props }, ref) => {
+	React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root> & {
+		/** trueの場合、ラベルの右側に「必須」バッジを表示する */
+		required?: boolean;
+	}
+>(({ className, required, ...props }, ref) => {
 	const { error, formItemId } = useFormField();
 
 	return (
@@ -97,6 +100,7 @@ const FormLabel = React.forwardRef<
 			ref={ref}
 			className={cn(error && "text-destructive", className)}
 			htmlFor={formItemId}
+			required={required}
 			{...props}
 		/>
 	);

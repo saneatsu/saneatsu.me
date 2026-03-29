@@ -21,7 +21,7 @@ import { useGetAllTags } from "@/entities/tag";
 import { usePersistentQueryStates } from "@/shared/lib";
 import { Button, DataTable, DataTableSkeleton, Input } from "@/shared/ui";
 
-import { columns } from "../model/columns";
+import { columns } from "../../model/columns";
 
 /**
  * タグ一覧テーブルコンポーネント

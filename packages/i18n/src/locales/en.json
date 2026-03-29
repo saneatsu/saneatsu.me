@@ -484,6 +484,7 @@
 		"copyMarkdownTooltip": "Copy Markdown"
 	},
 	"common": {
+		"required": "Required",
 		"search": "Search",
 		"filterByStatus": "Filter by Status",
 		"allStatus": "All",

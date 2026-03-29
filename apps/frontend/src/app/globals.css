@@ -222,11 +222,6 @@
 	animation-delay: 200ms;
 }
 
-/* 必須フィールドのスタイル */
-.required::after {
-	content: " *";
-	color: hsl(var(--destructive));
-}
 
 /* タグのスタイル */
 .tag-link {

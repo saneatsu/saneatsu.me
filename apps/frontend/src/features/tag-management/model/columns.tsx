@@ -7,7 +7,7 @@ import Link from "next/link";
 import type { Tag } from "@/shared/model";
 import { Button } from "@/shared/ui";
 
-import { TagActions } from "../ui/tag-actions";
+import { TagActions } from "../ui/tag-actions/tag-actions";
 
 /**
  * 日付フォーマット関数

@@ -6,6 +6,18 @@ process.env.NEXT_PUBLIC_API_URL = "http://localhost:8888/api";
 process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH = "test-account-hash";
 process.env.NEXT_PUBLIC_MAPBOX_TOKEN = "mock-mapbox-token-for-vitest";
 
+// next-intlのモック（LabelコンポーネントなどがuseTranslationsを使用するため）
+vi.mock("next-intl", async (importOriginal) => {
+	const actual =
+		await importOriginal<typeof import("next-intl")>();
+	return {
+		...actual,
+		useTranslations: () => (key: string) => key,
+		useLocale: () => "ja",
+		useMessages: () => ({}),
+	};
+});
+
 // next-authのモック
 vi.mock("next-auth", () => ({
 	default: vi.fn(() => ({

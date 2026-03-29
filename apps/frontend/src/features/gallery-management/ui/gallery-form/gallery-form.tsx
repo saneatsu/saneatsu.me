@@ -272,9 +272,10 @@ export function GalleryForm({ mode = "create", imageId }: GalleryFormProps) {
 				});
 
 				toast.success("ギャラリー画像をアップロードしました");
-			}
 
-			router.push("/admin/gallery");
+				// 作成後はギャラリー一覧にリダイレクト
+				router.push("/admin/gallery");
+			}
 		} catch (error) {
 			const errorMessage =
 				mode === "edit"
@@ -345,7 +346,7 @@ export function GalleryForm({ mode = "create", imageId }: GalleryFormProps) {
 								name="titleJa"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel className="required">タイトル</FormLabel>
+										<FormLabel required>タイトル</FormLabel>
 										<FormControl>
 											<Input {...field} placeholder="例: 東京タワーの夕景" />
 										</FormControl>
@@ -488,7 +489,8 @@ export function GalleryForm({ mode = "create", imageId }: GalleryFormProps) {
 						disabled={
 							uploadImage.isPending ||
 							updateImage.isPending ||
-							(mode === "edit" && isLoadingImage)
+							(mode === "edit" && isLoadingImage) ||
+							(mode === "edit" && !form.formState.isDirty)
 						}
 					>
 						{mode === "edit"

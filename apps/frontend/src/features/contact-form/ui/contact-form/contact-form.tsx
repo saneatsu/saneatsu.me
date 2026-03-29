@@ -118,12 +118,7 @@ export function ContactForm() {
 						name="name"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>
-									{t("name.label")}
-									<span className="ml-2 text-xs text-destructive font-medium">
-										{t("required")}
-									</span>
-								</FormLabel>
+								<FormLabel required>{t("name.label")}</FormLabel>
 								<FormControl>
 									<Input placeholder={t("name.placeholder")} {...field} />
 								</FormControl>
@@ -138,12 +133,7 @@ export function ContactForm() {
 						name="company"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>
-									{t("company.label")}
-									<span className="ml-2 text-xs text-destructive font-medium">
-										{t("required")}
-									</span>
-								</FormLabel>
+								<FormLabel required>{t("company.label")}</FormLabel>
 								<FormControl>
 									<Input placeholder={t("company.placeholder")} {...field} />
 								</FormControl>
@@ -173,12 +163,7 @@ export function ContactForm() {
 						name="email"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>
-									{t("email.label")}
-									<span className="ml-2 text-xs text-destructive font-medium">
-										{t("required")}
-									</span>
-								</FormLabel>
+								<FormLabel required>{t("email.label")}</FormLabel>
 								<FormControl>
 									<Input
 										type="email"
@@ -197,12 +182,7 @@ export function ContactForm() {
 						name="subject"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>
-									{t("subject.label")}
-									<span className="ml-2 text-xs text-destructive font-medium">
-										{t("required")}
-									</span>
-								</FormLabel>
+								<FormLabel required>{t("subject.label")}</FormLabel>
 								<FormControl>
 									<Input placeholder={t("subject.placeholder")} {...field} />
 								</FormControl>
@@ -217,12 +197,7 @@ export function ContactForm() {
 						name="category"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>
-									{t("category.label")}
-									<span className="ml-2 text-xs text-destructive font-medium">
-										{t("required")}
-									</span>
-								</FormLabel>
+								<FormLabel required>{t("category.label")}</FormLabel>
 								<Select onValueChange={field.onChange} value={field.value}>
 									<FormControl>
 										<SelectTrigger>
@@ -248,12 +223,7 @@ export function ContactForm() {
 						name="message"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>
-									{t("message.label")}
-									<span className="ml-2 text-xs text-destructive font-medium">
-										{t("required")}
-									</span>
-								</FormLabel>
+								<FormLabel required>{t("message.label")}</FormLabel>
 								<FormControl>
 									<Textarea
 										placeholder={t("message.placeholder")}

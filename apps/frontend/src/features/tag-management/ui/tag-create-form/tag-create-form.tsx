@@ -5,11 +5,23 @@ import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { useCreateTag } from "@/entities/tag";
 import { useUnsavedChangesAlert } from "@/shared/lib";
-import { Button, Input, Label, UnsavedChangesDialog } from "@/shared/ui";
+import {
+	Button,
+	Form,
+	FormControl,
+	FormDescription,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+	Input,
+	UnsavedChangesDialog,
+} from "@/shared/ui";
 
 /**
  * タグ作成フォームのスキーマ
@@ -42,13 +54,8 @@ type TagCreateForm = z.infer<typeof tagCreateSchema>;
 export function TagCreateForm() {
 	const router = useRouter();
 	const [formError, setFormError] = useState<string>("");
-	const [isNavigatingAfterSave, setIsNavigatingAfterSave] = useState(false);
 
-	const {
-		register,
-		handleSubmit,
-		formState: { errors, isDirty },
-	} = useForm<TagCreateForm>({
+	const form = useForm<TagCreateForm>({
 		resolver: zodResolver(tagCreateSchema),
 		defaultValues: {
 			name: "",
@@ -61,8 +68,7 @@ export function TagCreateForm() {
 
 	const { showDialog, handleCancel, handleConfirm, guardNavigation } =
 		useUnsavedChangesAlert({
-			isDirty,
-			enabled: !isNavigatingAfterSave,
+			isDirty: form.formState.isDirty,
 			onNavigate: router.push,
 		});
 
@@ -83,8 +89,8 @@ export function TagCreateForm() {
 				slug: data.slug,
 			});
 
-			// 保存成功後のリダイレクトではアラートを無効化
-			setIsNavigatingAfterSave(true);
+			toast.success("タグを作成しました");
+
 			router.push("/admin/tags");
 		} catch (error) {
 			// エラーメッセージをフォーム上部に表示
@@ -98,73 +104,85 @@ export function TagCreateForm() {
 
 	return (
 		<>
-			<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-				{/* エラーメッセージ */}
-				{formError && (
-					<div className="p-4 border border-destructive/50 bg-destructive/10 rounded-md">
-						<p className="text-sm text-destructive font-medium">
-							エラーが発生しました
-						</p>
-						<p className="text-sm text-destructive mt-1">{formError}</p>
-					</div>
-				)}
-
-				{/* タグ名（日本語） */}
-				<div className="space-y-2">
-					<Label htmlFor="name">タグ名（日本語） *</Label>
-					<Input
-						id="name"
-						{...register("name")}
-						placeholder="タイプスクリプト"
-						className="max-w-md"
-					/>
-					{errors.name && (
-						<p className="text-sm text-destructive">{errors.name.message}</p>
+			<Form {...form}>
+				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+					{/* エラーメッセージ */}
+					{formError && (
+						<div className="p-4 border border-destructive/50 bg-destructive/10 rounded-md">
+							<p className="text-sm text-destructive font-medium">
+								エラーが発生しました
+							</p>
+							<p className="text-sm text-destructive mt-1">{formError}</p>
+						</div>
 					)}
-					<p className="text-sm text-muted-foreground">
-						タグの表示名を日本語で入力してください
-					</p>
-				</div>
 
-				{/* スラッグ */}
-				<div className="space-y-2">
-					<Label htmlFor="slug">スラッグ *</Label>
-					<Input
-						id="slug"
-						{...register("slug")}
-						placeholder="typescript"
-						className="max-w-md"
-					/>
-					{errors.slug && (
-						<p className="text-sm text-destructive">{errors.slug.message}</p>
-					)}
-					<p className="text-sm text-muted-foreground">
-						小文字の英数字とハイフンのみ使用できます（例: typescript,
-						web-development）
-					</p>
-				</div>
-
-				{/* 送信ボタン */}
-				<div className="flex justify-end space-x-4">
-					<Button
-						type="button"
-						variant="outline"
-						onClick={() => guardNavigation(() => router.push("/admin/tags"))}
-					>
-						キャンセル
-					</Button>
-					<Button type="submit" disabled={createMutation.isPending}>
-						{createMutation.isPending ? (
-							<>
-								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-								作成中...
-							</>
-						) : (
-							"作成"
+					{/* タグ名（日本語） */}
+					<FormField
+						control={form.control}
+						name="name"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel required>タグ名（日本語）</FormLabel>
+								<FormControl>
+									<Input
+										placeholder="タイプスクリプト"
+										className="max-w-md"
+										{...field}
+									/>
+								</FormControl>
+								<FormDescription>
+									タグの表示名を日本語で入力してください
+								</FormDescription>
+								<FormMessage />
+							</FormItem>
 						)}
-					</Button>
-				</div>
-			</form>
+					/>
+
+					{/* スラッグ */}
+					<FormField
+						control={form.control}
+						name="slug"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel required>スラッグ</FormLabel>
+								<FormControl>
+									<Input
+										placeholder="typescript"
+										className="max-w-md"
+										{...field}
+									/>
+								</FormControl>
+								<FormDescription>
+									小文字の英数字とハイフンのみ使用できます（例: typescript,
+									web-development）
+								</FormDescription>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					{/* 送信ボタン */}
+					<div className="flex justify-end space-x-4">
+						<Button
+							type="button"
+							variant="outline"
+							onClick={() => guardNavigation(() => router.push("/admin/tags"))}
+						>
+							キャンセル
+						</Button>
+						<Button type="submit" disabled={createMutation.isPending}>
+							{createMutation.isPending ? (
+								<>
+									<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+									作成中...
+								</>
+							) : (
+								"作成"
+							)}
+						</Button>
+					</div>
+				</form>
+			</Form>
 
 			<UnsavedChangesDialog
 				open={showDialog}
