@@ -276,7 +276,7 @@ export function GalleryImageUploadDialog({
 							name="titleJa"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>タイトル（必須）</FormLabel>
+									<FormLabel required>タイトル</FormLabel>
 									<FormControl>
 										<Input placeholder="例: 東京タワーの夜景" {...field} />
 									</FormControl>

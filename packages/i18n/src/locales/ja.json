@@ -493,6 +493,7 @@
 		"copyMarkdownTooltip": "Markdownをコピー"
 	},
 	"common": {
+		"required": "必須",
 		"search": "検索",
 		"filterByStatus": "ステータスで絞り込み",
 		"allStatus": "すべて",

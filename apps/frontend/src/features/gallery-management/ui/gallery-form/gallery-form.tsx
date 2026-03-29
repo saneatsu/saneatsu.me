@@ -346,7 +346,7 @@ export function GalleryForm({ mode = "create", imageId }: GalleryFormProps) {
 								name="titleJa"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel className="required">タイトル</FormLabel>
+										<FormLabel required>タイトル</FormLabel>
 										<FormControl>
 											<Input {...field} placeholder="例: 東京タワーの夕景" />
 										</FormControl>

@@ -110,7 +110,9 @@ export function TagCreateForm() {
 
 				{/* タグ名（日本語） */}
 				<div className="space-y-2">
-					<Label htmlFor="name">タグ名（日本語） *</Label>
+					<Label htmlFor="name" required>
+						タグ名（日本語）
+					</Label>
 					<Input
 						id="name"
 						{...register("name")}
@@ -127,7 +129,9 @@ export function TagCreateForm() {
 
 				{/* スラッグ */}
 				<div className="space-y-2">
-					<Label htmlFor="slug">スラッグ *</Label>
+					<Label htmlFor="slug" required>
+						スラッグ
+					</Label>
 					<Input
 						id="slug"
 						{...register("slug")}

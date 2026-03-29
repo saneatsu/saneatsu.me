@@ -323,7 +323,7 @@ export function ArticleNewForm() {
 
 				{/* タイトル */}
 				<div className="space-y-2 max-w-7xl">
-					<Label htmlFor="title" className="required">
+					<Label htmlFor="title" required>
 						タイトル
 					</Label>
 					<Input
@@ -339,7 +339,7 @@ export function ArticleNewForm() {
 
 				{/* スラッグ */}
 				<div className="space-y-2 max-w-7xl">
-					<Label htmlFor="slug" className="required">
+					<Label htmlFor="slug" required>
 						スラッグ
 						{slugChecking && (
 							<span className="ml-2 text-sm text-muted-foreground">
@@ -435,7 +435,7 @@ export function ArticleNewForm() {
 				{/* 記事内容 */}
 				<div className="space-y-2">
 					<div className="flex items-center justify-between">
-						<Label htmlFor="content" className="required">
+						<Label htmlFor="content" required>
 							本文（Markdown形式）
 						</Label>
 						<a

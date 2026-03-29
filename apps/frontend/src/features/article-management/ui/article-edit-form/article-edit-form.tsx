@@ -432,7 +432,9 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 				{/* タイトル */}
 				<div className="space-y-2 max-w-7xl">
 					<div className="flex items-center justify-between">
-						<Label htmlFor="title">タイトル *</Label>
+						<Label htmlFor="title" required>
+							タイトル
+						</Label>
 						<Tabs
 							value={titleLanguage}
 							onValueChange={(value) => setTitleLanguage(value as "ja" | "en")}
@@ -469,7 +471,9 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 
 				{/* スラッグ */}
 				<div className="space-y-2 max-w-7xl">
-					<Label htmlFor="slug">スラッグ *</Label>
+					<Label htmlFor="slug" required>
+						スラッグ
+					</Label>
 					<div className="relative">
 						<Input
 							id="slug"
@@ -566,7 +570,7 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 				<div className="space-y-2">
 					<div className="flex items-center justify-between">
 						<div className="flex items-center gap-3">
-							<Label>本文 *</Label>
+							<Label required>本文</Label>
 							<a
 								href="/admin/markdown-guide"
 								target="_blank"
