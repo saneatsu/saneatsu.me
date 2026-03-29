@@ -578,7 +578,7 @@
 				"contentRequired": "本文を入力してください",
 				"contentTooLong": "本文は50000文字以内で入力してください",
 				"slugRequired": "スラッグを入力してください",
-				"slugInvalid": "スラッグは半角英数字とハイフンのみ使用できます",
+				"slugInvalid": "スラッグは小文字英数字で始まり、単語をハイフンで区切る形式で入力してください",
 				"atLeastOneTranslation": "少なくとも1つの言語で記事を作成してください",
 				"maxTranslations": "最大2言語まで対応しています"
 			},
@@ -606,7 +606,7 @@
 				"statusInvalid": "無効なステータスです",
 				"slugRequired": "スラッグを入力してください",
 				"slugTooLong": "スラッグは100文字以内で入力してください",
-				"slugInvalid": "スラッグは小文字の英数字とハイフンのみ使用できます",
+				"slugInvalid": "スラッグは小文字英数字で始まり、単語をハイフンで区切る形式で入力してください",
 				"emailInvalid": "正しいメールアドレスを入力してください",
 				"datetimeInvalid": "正しい日時形式で入力してください",
 				"idPositive": "IDは正の整数である必要があります"
