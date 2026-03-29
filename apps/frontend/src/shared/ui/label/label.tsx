@@ -35,7 +35,7 @@ const Label = React.forwardRef<
 		>
 			{children}
 			{required && (
-				<span className="ml-2 text-xs text-destructive font-medium">
+				<span className="ml-2 text-xs text-destructive font-medium border border-destructive rounded px-1">
 					{t("required")}
 				</span>
 			)}
