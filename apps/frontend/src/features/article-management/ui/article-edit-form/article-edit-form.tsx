@@ -624,7 +624,10 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 					>
 						キャンセル
 					</Button>
-					<Button type="submit" disabled={updateMutation.isPending}>
+					<Button
+						type="submit"
+						disabled={!isAnyFieldDirty || updateMutation.isPending}
+					>
 						{updateMutation.isPending ? (
 							<>
 								<Loader2 className="mr-2 h-4 w-4 animate-spin" />

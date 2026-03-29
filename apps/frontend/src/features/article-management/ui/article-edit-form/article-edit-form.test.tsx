@@ -343,5 +343,35 @@ describe("ArticleEditForm", () => {
 				});
 			});
 		});
+
+		describe("更新ボタンの無効化", () => {
+			it("フォーム未変更時は更新ボタンが無効になっている", async () => {
+				// Given: フォームをレンダリング（初期値が設定済み）
+				render(<ArticleEditForm article={createMockArticle()} />, {
+					wrapper,
+				});
+
+				// Then: 更新ボタンが無効
+				const submitButton = screen.getByRole("button", { name: "更新" });
+				expect(submitButton).toBeDisabled();
+			});
+
+			it("フォーム変更後は更新ボタンが有効になる", async () => {
+				// Given: フォームをレンダリング
+				const user = userEvent.setup();
+				render(<ArticleEditForm article={createMockArticle()} />, {
+					wrapper,
+				});
+
+				// When: タイトルを変更
+				const titleInput = screen.getByDisplayValue("Test Article");
+				await user.clear(titleInput);
+				await user.type(titleInput, "変更されたタイトル");
+
+				// Then: 更新ボタンが有効
+				const submitButton = screen.getByRole("button", { name: "更新" });
+				expect(submitButton).toBeEnabled();
+			});
+		});
 	});
 });
