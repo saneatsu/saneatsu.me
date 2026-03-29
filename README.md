@@ -1,3 +1,5 @@
+[![ja](https://img.shields.io/badge/lang-日本語-red.svg)](./README.ja.md)
+
 # saneatsu.me
 
 Personal portfolio and blog site.
