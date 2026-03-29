@@ -1,5 +1,7 @@
 import { z } from "@hono/zod-openapi";
 
+import { SLUG_REGEX } from "@saneatsu/schemas";
+
 /**
  * エラーレスポンスのスキーマ
  */
@@ -104,7 +106,7 @@ export const ArticleSuggestionsResponseSchema = z.object({
 export const CreateArticleRequestSchema = z
 	.object({
 		title: z.string().min(1).max(200),
-		slug: z.string().regex(/^[a-z0-9-]+$/),
+		slug: z.string().regex(SLUG_REGEX),
 		content: z.string().min(1),
 		status: z.enum(["draft", "published"]),
 		publishedAt: z.string().optional(),
@@ -138,13 +140,10 @@ export const CreateArticleResponseSchema = z.object({
  * 記事スラッグチェックのクエリパラメータスキーマ
  */
 export const ArticleCheckSlugQuerySchema = z.object({
-	slug: z
-		.string()
-		.regex(/^[a-z0-9-]+$/)
-		.openapi({
-			example: "nextjs-basics",
-			description: "チェックするスラッグ",
-		}),
+	slug: z.string().regex(SLUG_REGEX).openapi({
+		example: "nextjs-basics",
+		description: "チェックするスラッグ",
+	}),
 });
 
 /**

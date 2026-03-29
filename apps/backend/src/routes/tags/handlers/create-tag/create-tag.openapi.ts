@@ -1,5 +1,7 @@
 import { createRoute, z } from "@hono/zod-openapi";
 
+import { SLUG_REGEX } from "@saneatsu/schemas";
+
 /**
  * タグ作成リクエストスキーマ
  */
@@ -16,10 +18,14 @@ const TagCreateSchema = z.object({
 		.string()
 		.min(1, "スラッグは必須です")
 		.max(100, "スラッグは100文字以内で入力してください")
-		.regex(/^[a-z0-9-]+$/, "スラッグは小文字の英数字とハイフンのみ使用できます")
+		.regex(
+			SLUG_REGEX,
+			"スラッグは小文字英数字で始まり、単語をハイフンで区切る形式で入力してください"
+		)
 		.openapi({
 			example: "typescript",
-			description: "タグのスラッグ（小文字の英数字とハイフンのみ、1-100文字）",
+			description:
+				"タグのスラッグ（小文字英数字で始まり、単語をハイフンで区切る形式、1-100文字）",
 		}),
 });
 

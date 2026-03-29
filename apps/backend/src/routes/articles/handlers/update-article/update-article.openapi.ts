@@ -1,5 +1,7 @@
 import { createRoute, z } from "@hono/zod-openapi";
 
+import { SLUG_REGEX } from "@saneatsu/schemas";
+
 /**
  * 記事更新リクエストスキーマ
  */
@@ -8,15 +10,11 @@ const ArticleUpdateSchema = z.object({
 		example: "更新された記事のタイトル",
 		description: "記事のタイトル（1-200文字）",
 	}),
-	slug: z
-		.string()
-		.min(1)
-		.max(100)
-		.regex(/^[a-z0-9-]+$/)
-		.openapi({
-			example: "updated-article-slug",
-			description: "記事のスラッグ（小文字の英数字とハイフンのみ、1-100文字）",
-		}),
+	slug: z.string().min(1).max(100).regex(SLUG_REGEX).openapi({
+		example: "updated-article-slug",
+		description:
+			"記事のスラッグ（小文字英数字で始まり、単語をハイフンで区切る形式、1-100文字）",
+	}),
 	content: z
 		.string()
 		.min(1)

@@ -569,7 +569,7 @@
 				"contentRequired": "Please enter content",
 				"contentTooLong": "Content must be 50000 characters or less",
 				"slugRequired": "Please enter a slug",
-				"slugInvalid": "Slug can only contain alphanumeric characters and hyphens",
+				"slugInvalid": "Slug must start with a lowercase letter or number, with single hyphens between words",
 				"atLeastOneTranslation": "Please create an article in at least one language",
 				"maxTranslations": "Supports up to 2 languages"
 			},
@@ -597,7 +597,7 @@
 				"statusInvalid": "Invalid status",
 				"slugRequired": "Please enter a slug",
 				"slugTooLong": "Slug must be 100 characters or less",
-				"slugInvalid": "Slug can only contain lowercase alphanumeric characters and hyphens",
+				"slugInvalid": "Slug must start with a lowercase letter or number, with single hyphens between words",
 				"emailInvalid": "Please enter a valid email address",
 				"datetimeInvalid": "Please enter a valid datetime format",
 				"idPositive": "ID must be a positive integer"

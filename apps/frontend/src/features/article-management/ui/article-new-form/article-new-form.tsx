@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { SLUG_REGEX } from "@saneatsu/schemas";
 import { AlertCircle, ExternalLink, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
@@ -63,8 +64,8 @@ const articleNewSchema = z.object({
 		.min(1, "スラッグは必須です")
 		.max(100, "スラッグは100文字以内で入力してください")
 		.regex(
-			/^[a-z0-9-]+$/,
-			"スラッグは小文字の英数字とハイフンのみ使用できます"
+			SLUG_REGEX,
+			"スラッグは小文字英数字で始まり、単語をハイフンで区切る形式で入力してください"
 		),
 	content: z.string().min(1, "本文は必須です"),
 	status: z.enum(["draft", "published"], {
@@ -385,7 +386,7 @@ export function ArticleNewForm() {
 										</p>
 									)}
 								<FormDescription>
-									記事のURLに使用されます（小文字の英数字とハイフンのみ）
+									記事のURLに使用されます（小文字英数字で始まり、単語をハイフンで区切る形式）
 								</FormDescription>
 							</FormItem>
 						)}
