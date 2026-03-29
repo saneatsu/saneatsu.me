@@ -34,8 +34,14 @@ import {
 	AlertTitle,
 	Button,
 	DateTimePicker,
+	Form,
+	FormControl,
+	FormDescription,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
 	Input,
-	Label,
 	MultipleSelector,
 	type Option,
 	UnsavedChangesDialog,
@@ -88,13 +94,7 @@ export function ArticleNewForm() {
 	const [validationError, setValidationError] = useState<string>("");
 	const router = useRouter();
 
-	const {
-		register,
-		handleSubmit,
-		watch,
-		setValue,
-		formState: { errors, isDirty: isFormDirty },
-	} = useForm<ArticleNewForm>({
+	const form = useForm<ArticleNewForm>({
 		resolver: zodResolver(articleNewSchema),
 		defaultValues: {
 			status: "draft",
@@ -110,14 +110,14 @@ export function ArticleNewForm() {
 	 */
 	const isAnyFieldDirty = useMemo(() => {
 		return (
-			isFormDirty ||
+			form.formState.isDirty ||
 			markdownValue !== "" ||
 			selectedTags.length > 0 ||
 			publishedAtDate !== undefined ||
 			thumbnailFile !== null
 		);
 	}, [
-		isFormDirty,
+		form.formState.isDirty,
 		markdownValue,
 		selectedTags,
 		publishedAtDate,
@@ -131,7 +131,7 @@ export function ArticleNewForm() {
 		});
 
 	// スラッグの値を監視
-	const slugValue = watch("slug");
+	const slugValue = form.watch("slug");
 
 	// スラッグをデバウンス（500ms遅延）
 	const debouncedSlug = useDebounce(slugValue, 500);
@@ -163,7 +163,7 @@ export function ArticleNewForm() {
 			: null;
 
 	// ステータスの監視
-	const watchStatus = watch("status");
+	const watchStatus = form.watch("status");
 
 	/**
 	 * フォーム送信処理
@@ -288,217 +288,235 @@ export function ArticleNewForm() {
 	 */
 	const handleEditorChange = (val: string) => {
 		setMarkdownValue(val);
-		setValue("content", val);
+		form.setValue("content", val);
 	};
 
 	return (
 		<>
-			<form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-				{/* バリデーションエラー表示 */}
-				{validationError && (
-					<Alert variant="destructive" className="max-w-7xl">
-						<AlertCircle className="h-4 w-4" />
-						<AlertTitle>エラーが発生しました</AlertTitle>
-						<AlertDescription>{validationError}</AlertDescription>
-					</Alert>
-				)}
-
-				{/* サムネイルエラー表示 */}
-				{thumbnailError && (
-					<Alert variant="destructive" className="max-w-7xl">
-						<AlertCircle className="h-4 w-4" />
-						<AlertTitle>サムネイル画像エラー</AlertTitle>
-						<AlertDescription>{thumbnailError}</AlertDescription>
-					</Alert>
-				)}
-
-				{/* サムネイル画像 */}
-				<div className="max-w-7xl">
-					<ArticleThumbnailUploader
-						mode="create"
-						onFileSelect={setThumbnailFile}
-						onError={setThumbnailError}
-					/>
-				</div>
-
-				{/* タイトル */}
-				<div className="space-y-2 max-w-7xl">
-					<Label htmlFor="title" required>
-						タイトル
-					</Label>
-					<Input
-						id="title"
-						{...register("title")}
-						placeholder="記事のタイトルを入力してください"
-						className={errors.title ? "border-destructive" : ""}
-					/>
-					{errors.title && (
-						<p className="text-sm text-destructive">{errors.title.message}</p>
+			<Form {...form}>
+				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+					{/* バリデーションエラー表示 */}
+					{validationError && (
+						<Alert variant="destructive" className="max-w-7xl">
+							<AlertCircle className="h-4 w-4" />
+							<AlertTitle>エラーが発生しました</AlertTitle>
+							<AlertDescription>{validationError}</AlertDescription>
+						</Alert>
 					)}
-				</div>
 
-				{/* スラッグ */}
-				<div className="space-y-2 max-w-7xl">
-					<Label htmlFor="slug" required>
-						スラッグ
-						{slugChecking && (
-							<span className="ml-2 text-sm text-muted-foreground">
-								確認中...
-							</span>
+					{/* サムネイルエラー表示 */}
+					{thumbnailError && (
+						<Alert variant="destructive" className="max-w-7xl">
+							<AlertCircle className="h-4 w-4" />
+							<AlertTitle>サムネイル画像エラー</AlertTitle>
+							<AlertDescription>{thumbnailError}</AlertDescription>
+						</Alert>
+					)}
+
+					{/* サムネイル画像 */}
+					<div className="max-w-7xl">
+						<ArticleThumbnailUploader
+							mode="create"
+							onFileSelect={setThumbnailFile}
+							onError={setThumbnailError}
+						/>
+					</div>
+
+					{/* タイトル */}
+					<FormField
+						control={form.control}
+						name="title"
+						render={({ field }) => (
+							<FormItem className="max-w-7xl">
+								<FormLabel required>タイトル</FormLabel>
+								<FormControl>
+									<Input
+										placeholder="記事のタイトルを入力してください"
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
 						)}
-					</Label>
-					<div className="relative">
-						<Input
-							id="slug"
-							{...register("slug")}
-							placeholder="url-friendly-slug"
-							className={
-								errors.slug || slugError
-									? "border-destructive"
-									: slugChecking
-										? "border-primary/30"
-										: ""
+					/>
+
+					{/* スラッグ */}
+					<FormField
+						control={form.control}
+						name="slug"
+						render={({ field }) => (
+							<FormItem className="max-w-7xl">
+								<FormLabel required>
+									スラッグ
+									{slugChecking && (
+										<span className="ml-2 text-sm text-muted-foreground">
+											確認中...
+										</span>
+									)}
+								</FormLabel>
+								<div className="relative">
+									<FormControl>
+										<Input
+											placeholder="url-friendly-slug"
+											className={
+												slugError
+													? "border-destructive"
+													: slugChecking
+														? "border-primary/30"
+														: ""
+											}
+											{...field}
+										/>
+									</FormControl>
+									{slugChecking && (
+										<Loader2 className="absolute right-3 top-3 h-4 w-4 animate-spin text-muted-foreground" />
+									)}
+								</div>
+								<FormMessage />
+								{slugError && (
+									<p className="text-sm text-destructive">{slugError}</p>
+								)}
+								{!form.formState.errors.slug &&
+									!slugError &&
+									debouncedSlug &&
+									!slugChecking && (
+										<p className="text-sm text-emerald-600">
+											✓ このスラッグは利用可能です
+										</p>
+									)}
+								<FormDescription>
+									記事のURLに使用されます（小文字の英数字とハイフンのみ）
+								</FormDescription>
+							</FormItem>
+						)}
+					/>
+
+					{/* ステータス */}
+					<div className="max-w-7xl">
+						<ArticleStatusSelector
+							value={watchStatus}
+							onValueChange={(value) =>
+								form.setValue("status", value as "draft" | "published")
 							}
+							statuses={["draft", "published"]}
+							label="公開ステータス"
+							required
+							error={form.formState.errors.status?.message}
 						/>
-						{slugChecking && (
-							<Loader2 className="absolute right-3 top-3 h-4 w-4 animate-spin text-muted-foreground" />
-						)}
 					</div>
-					{errors.slug && (
-						<p className="text-sm text-destructive">{errors.slug.message}</p>
-					)}
-					{slugError && <p className="text-sm text-destructive">{slugError}</p>}
-					{!errors.slug && !slugError && debouncedSlug && !slugChecking && (
-						<p className="text-sm text-emerald-600">
-							✓ このスラッグは利用可能です
-						</p>
-					)}
-					<p className="text-sm text-muted-foreground">
-						記事のURLに使用されます（小文字の英数字とハイフンのみ）
-					</p>
-				</div>
 
-				{/* ステータス */}
-				<div className="max-w-7xl">
-					<ArticleStatusSelector
-						value={watchStatus}
-						onValueChange={(value) =>
-							setValue("status", value as "draft" | "published")
-						}
-						statuses={["draft", "published"]}
-						label="公開ステータス"
-						required
-						error={errors.status?.message}
-					/>
-				</div>
-
-				{/* タグ選択 */}
-				<div className="space-y-2 max-w-7xl">
-					<Label htmlFor="tags">タグ</Label>
-					<MultipleSelector
-						value={selectedTags}
-						onChange={setSelectedTags}
-						options={
-							tagsData?.data.map((tag) => ({
-								value: String(tag.id),
-								label: tag.translations.ja || tag.slug, // FIXME:
-							})) || []
-						}
-						placeholder="タグを選択してください"
-						emptyIndicator={
-							<p className="text-center text-sm text-muted-foreground">
-								{tagsLoading ? "読み込み中..." : "タグが見つかりません"}
-							</p>
-						}
-						disabled={tagsLoading}
-					/>
-					<p className="text-sm text-muted-foreground">
-						記事に関連するタグを選択してください
-					</p>
-				</div>
-
-				{/* 公開日時（公開時のみ表示） */}
-				{watch("status") === "published" && (
-					<div className="space-y-2 max-w-7xl">
-						<Label htmlFor="publishedAt">公開日時</Label>
-						<DateTimePicker
-							value={publishedAtDate}
-							onChange={setPublishedAtDate}
-							placeholder="公開日時を選択してください"
+					{/* タグ選択 */}
+					<FormItem className="max-w-7xl">
+						<FormLabel>タグ</FormLabel>
+						<MultipleSelector
+							value={selectedTags}
+							onChange={setSelectedTags}
+							options={
+								tagsData?.data.map((tag) => ({
+									value: String(tag.id),
+									label: tag.translations.ja || tag.slug, // FIXME:
+								})) || []
+							}
+							placeholder="タグを選択してください"
+							emptyIndicator={
+								<p className="text-center text-sm text-muted-foreground">
+									{tagsLoading ? "読み込み中..." : "タグが見つかりません"}
+								</p>
+							}
+							disabled={tagsLoading}
 						/>
-						<p className="text-sm text-muted-foreground">
-							空欄の場合は現在時刻が設定されます
-						</p>
-					</div>
-				)}
+						<FormDescription>
+							記事に関連するタグを選択してください
+						</FormDescription>
+					</FormItem>
 
-				{/* 記事内容 */}
-				<div className="space-y-2">
-					<div className="flex items-center justify-between">
-						<Label htmlFor="content" required>
-							本文（Markdown形式）
-						</Label>
-						<a
-							href="/admin/markdown-guide"
-							target="_blank"
-							rel="noopener noreferrer"
-							className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+					{/* 公開日時（公開時のみ表示） */}
+					{form.watch("status") === "published" && (
+						<FormItem className="max-w-7xl">
+							<FormLabel>公開日時</FormLabel>
+							<DateTimePicker
+								value={publishedAtDate}
+								onChange={setPublishedAtDate}
+								placeholder="公開日時を選択してください"
+							/>
+							<FormDescription>
+								空欄の場合は現在時刻が設定されます
+							</FormDescription>
+						</FormItem>
+					)}
+
+					{/* 記事内容 */}
+					<FormItem>
+						<div className="flex items-center justify-between">
+							<FormLabel required>本文（Markdown形式）</FormLabel>
+							<a
+								href="/admin/markdown-guide"
+								target="_blank"
+								rel="noopener noreferrer"
+								className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+							>
+								Markdown記法
+								<ExternalLink className="h-3.5 w-3.5" />
+							</a>
+						</div>
+						<div
+							className={
+								form.formState.errors.content
+									? "border border-destructive rounded-md"
+									: ""
+							}
 						>
-							Markdown記法
-							<ExternalLink className="h-3.5 w-3.5" />
-						</a>
-					</div>
-					<div
-						className={
-							errors.content ? "border border-destructive rounded-md" : ""
-						}
-					>
-						<CustomMarkdownEditor
-							value={markdownValue}
-							onChange={handleEditorChange}
-							setValue={setValue as (name: string, value: string) => void}
-							height={800}
-							language="ja"
-						/>
-					</div>
-					{errors.content && (
-						<p className="text-sm text-destructive">{errors.content.message}</p>
-					)}
-					<p className="text-sm text-muted-foreground">
-						日本語で入力してください。保存時に自動的に他の言語に翻訳されます。Ctrl+Shift+P（Mac:
-						Cmd+Shift+P）でプレビューモードを切り替えできます。[[で他の記事へのリンクを挿入できます。
-					</p>
-				</div>
-
-				{/* 送信ボタン */}
-				<div className="flex justify-end space-x-4">
-					<Button
-						type="button"
-						variant="outline"
-						onClick={() =>
-							guardNavigation(() => router.push("/admin/articles"))
-						}
-					>
-						キャンセル
-					</Button>
-					<Button
-						type="submit"
-						disabled={
-							createArticleMutation.isPending || uploadImageMutation.isPending
-						}
-					>
-						{(createArticleMutation.isPending ||
-							uploadImageMutation.isPending) && (
-							<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+							<CustomMarkdownEditor
+								value={markdownValue}
+								onChange={handleEditorChange}
+								setValue={
+									form.setValue as (name: string, value: string) => void
+								}
+								height={800}
+								language="ja"
+							/>
+						</div>
+						{form.formState.errors.content && (
+							<p className="text-sm text-destructive">
+								{form.formState.errors.content.message}
+							</p>
 						)}
-						{uploadImageMutation.isPending
-							? "画像アップロード中..."
-							: createArticleMutation.isPending
-								? "作成中..."
-								: "作成"}
-					</Button>
-				</div>
-			</form>
+						<FormDescription>
+							日本語で入力してください。保存時に自動的に他の言語に翻訳されます。Ctrl+Shift+P（Mac:
+							Cmd+Shift+P）でプレビューモードを切り替えできます。[[で他の記事へのリンクを挿入できます。
+						</FormDescription>
+					</FormItem>
+
+					{/* 送信ボタン */}
+					<div className="flex justify-end space-x-4">
+						<Button
+							type="button"
+							variant="outline"
+							onClick={() =>
+								guardNavigation(() => router.push("/admin/articles"))
+							}
+						>
+							キャンセル
+						</Button>
+						<Button
+							type="submit"
+							disabled={
+								createArticleMutation.isPending || uploadImageMutation.isPending
+							}
+						>
+							{(createArticleMutation.isPending ||
+								uploadImageMutation.isPending) && (
+								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+							)}
+							{uploadImageMutation.isPending
+								? "画像アップロード中..."
+								: createArticleMutation.isPending
+									? "作成中..."
+									: "作成"}
+						</Button>
+					</div>
+				</form>
+			</Form>
 
 			{/* スラッグエラーダイアログ */}
 			<AlertDialog
