@@ -184,7 +184,7 @@ export function TagUpdateForm({ tag }: TagUpdateFormProps) {
 					>
 						キャンセル
 					</Button>
-					<Button type="submit" disabled={updateMutation.isPending}>
+					<Button type="submit" disabled={!isDirty || updateMutation.isPending}>
 						{updateMutation.isPending ? (
 							<>
 								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
