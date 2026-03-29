@@ -43,7 +43,6 @@ type TagCreateForm = z.infer<typeof tagCreateSchema>;
 export function TagCreateForm() {
 	const router = useRouter();
 	const [formError, setFormError] = useState<string>("");
-	const [isNavigatingAfterSave, setIsNavigatingAfterSave] = useState(false);
 
 	const {
 		register,
@@ -63,7 +62,6 @@ export function TagCreateForm() {
 	const { showDialog, handleCancel, handleConfirm, guardNavigation } =
 		useUnsavedChangesAlert({
 			isDirty,
-			enabled: !isNavigatingAfterSave,
 			onNavigate: router.push,
 		});
 
@@ -86,8 +84,6 @@ export function TagCreateForm() {
 
 			toast.success("タグを作成しました");
 
-			// 保存成功後のリダイレクトではアラートを無効化
-			setIsNavigatingAfterSave(true);
 			router.push("/admin/tags");
 		} catch (error) {
 			// エラーメッセージをフォーム上部に表示

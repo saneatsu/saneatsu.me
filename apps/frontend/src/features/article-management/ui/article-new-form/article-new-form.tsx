@@ -88,8 +88,6 @@ export function ArticleNewForm() {
 	const [validationError, setValidationError] = useState<string>("");
 	const router = useRouter();
 
-	const [isNavigatingAfterSave, setIsNavigatingAfterSave] = useState(false);
-
 	const {
 		register,
 		handleSubmit,
@@ -129,7 +127,6 @@ export function ArticleNewForm() {
 	const { showDialog, handleCancel, handleConfirm, guardNavigation } =
 		useUnsavedChangesAlert({
 			isDirty: isAnyFieldDirty,
-			enabled: !isNavigatingAfterSave,
 			onNavigate: router.push,
 		});
 
@@ -261,8 +258,6 @@ export function ArticleNewForm() {
 				}
 			);
 
-			// 保存成功後にアラートを無効化してからリダイレクト
-			setIsNavigatingAfterSave(true);
 			router.push("/admin/articles");
 		} catch (error) {
 			console.error("記事作成エラー:", error);
