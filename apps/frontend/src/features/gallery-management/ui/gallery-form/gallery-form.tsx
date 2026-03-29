@@ -489,7 +489,8 @@ export function GalleryForm({ mode = "create", imageId }: GalleryFormProps) {
 						disabled={
 							uploadImage.isPending ||
 							updateImage.isPending ||
-							(mode === "edit" && isLoadingImage)
+							(mode === "edit" && isLoadingImage) ||
+							(mode === "edit" && !form.formState.isDirty)
 						}
 					>
 						{mode === "edit"
