@@ -2,36 +2,66 @@ import type { AnchorPoint } from "./extract-anchor-points";
 import type { AnchorMapping } from "./interpolate-scroll";
 
 /**
- * プレビュー要素のスクロール同期用オフセットを計算する
+ * アンカーポイントに対応するマッピング（1つまたは2つ）を生成する
  *
  * @description
  * 画像やembed（Amazon商品カード等）はプレビューで高さが大きいが、
- * エディタでは1行しか占めない。そのまま要素のTOP位置をアンカーにすると、
- * embed前後でスクロール比率が極端になり「一気にスキップ」される。
+ * エディタでは1行（URLが折り返される場合は数ビジュアル行）しか占めない。
+ * そのまま要素のTOP位置だけをアンカーにすると、少しスクロールしただけで
+ * プレビューの画像全体が一気にスキップされる。
  *
- * 画像・embedの場合のみ要素の**中央位置**をアンカーにすることで、
- * 要素の高さを前後セグメントに均等分散し、スクロール比率を平滑化する。
+ * 画像・embedの場合は **TOP + BOTTOM の2つのアンカー** を生成する：
+ * - TOP: sourceOffset（line N開始位置） → 要素のtop
+ * - BOTTOM: nextLineSourceOffset（line N+1開始位置） → 要素のbottom
  *
+ * これにより、折り返しURL部分をスクロールする間に画像が
+ * top→bottomと段階的にスクロールされる。
+ *
+ * nextLineSourceOffsetが利用不可（末尾行や同じ値）の場合は、
+ * 要素の中央位置を使う単一マッピングにフォールバックする。
+ *
+ * @param params.type - アンカーの種類
+ * @param params.sourceOffset - エディタ側のビジュアルY位置（line N）
+ * @param params.nextLineSourceOffset - 次の行のビジュアルY位置（line N+1）
  * @param params.elementTop - プレビュー要素のoffsetTop
  * @param params.containerTop - プレビューコンテナのoffsetTop
  * @param params.elementHeight - プレビュー要素のoffsetHeight
- * @param params.type - アンカーの種類
- * @returns プレビューコンテナからの相対オフセット（0以上）
+ * @returns AnchorMappingの配列（1つまたは2つ）
  */
-export function computePreviewOffset(params: {
+export function createMappingsForAnchor(params: {
+	type: "heading" | "image" | "codeblock" | "embed" | "hr";
+	sourceOffset: number;
+	nextLineSourceOffset: number | undefined;
 	elementTop: number;
 	containerTop: number;
 	elementHeight: number;
-	type: "heading" | "image" | "codeblock" | "embed" | "hr";
-}): number {
-	const baseOffset = params.elementTop - params.containerTop;
+}): AnchorMapping[] {
+	const baseOffset = Math.max(0, params.elementTop - params.containerTop);
 
-	// 画像・embedは要素の中央位置を使い、前後セグメントの比率を均等化する
-	if (params.type === "image" || params.type === "embed") {
-		return Math.max(0, baseOffset + params.elementHeight / 2);
+	// 画像・embed以外はTOP位置の単一マッピング
+	if (params.type !== "image" && params.type !== "embed") {
+		return [{ sourceOffset: params.sourceOffset, previewOffset: baseOffset }];
 	}
 
-	return Math.max(0, baseOffset);
+	// 画像・embed: nextLineSourceOffsetが利用可能でsourceOffsetと異なる場合、
+	// TOP + BOTTOMの2アンカーを生成
+	if (
+		params.nextLineSourceOffset !== undefined &&
+		params.nextLineSourceOffset > params.sourceOffset
+	) {
+		const bottomOffset = Math.max(0, baseOffset + params.elementHeight);
+		return [
+			{ sourceOffset: params.sourceOffset, previewOffset: baseOffset },
+			{
+				sourceOffset: params.nextLineSourceOffset,
+				previewOffset: bottomOffset,
+			},
+		];
+	}
+
+	// フォールバック: 中央位置の単一マッピング
+	const centerOffset = Math.max(0, baseOffset + params.elementHeight / 2);
+	return [{ sourceOffset: params.sourceOffset, previewOffset: centerOffset }];
 }
 
 /**
@@ -133,13 +163,16 @@ function measureSourceLineOffsets(
  *
  * 処理の流れ：
  * 1. ミラー要素を使って各アンカー行のビジュアルY位置を計測（word-wrap対応）
+ *    - 画像・embedの場合はline N+1もBOTTOMアンカー用に計測
  * 2. 各アンカーポイントに対応するプレビューDOM要素を検索
  *    - heading: CSS.escapeで見出しIDから検索
  *    - image: img要素の出現順インデックスで対応
  *    - codeblock: pre要素の出現順インデックスで対応
  *    - hr: hr要素の出現順インデックスで対応
  *    - embed: 動的インポートのため存在しない場合はスキップ
- * 3. DOM要素のoffsetTopをプレビューコンテナからの相対位置として計算
+ * 3. createMappingsForAnchorでマッピングを生成
+ *    - 画像・embed: TOP+BOTTOMの2アンカーで段階的スクロールを実現
+ *    - その他: TOP位置の単一アンカー
  *
  * @param anchorPoints - extractAnchorPointsから取得したアンカーポイント配列
  * @param textarea - エディタのtextarea要素
@@ -152,7 +185,14 @@ export function buildAnchorMappings(
 	previewContainer: HTMLDivElement
 ): AnchorMapping[] {
 	// word-wrapを考慮した各行の実際のビジュアル位置を計測
-	const targetLines = new Set(anchorPoints.map((a) => a.sourceLine));
+	// 画像・embedの場合は次の行（line N+1）もBOTTOMアンカー用に取得する
+	const targetLines = new Set<number>();
+	for (const a of anchorPoints) {
+		targetLines.add(a.sourceLine);
+		if (a.type === "image" || a.type === "embed") {
+			targetLines.add(a.sourceLine + 1);
+		}
+	}
 	const lineOffsets = measureSourceLineOffsets(textarea, targetLines);
 
 	// 各タイプの出現カウンター（出現順インデックスで対応付けるため）
@@ -211,17 +251,15 @@ export function buildAnchorMappings(
 		}
 
 		if (previewElement && previewElement instanceof HTMLElement) {
-			const previewOffset = computePreviewOffset({
+			const newMappings = createMappingsForAnchor({
+				type: anchor.type,
+				sourceOffset,
+				nextLineSourceOffset: lineOffsets.get(anchor.sourceLine + 1),
 				elementTop: previewElement.offsetTop,
 				containerTop: previewContainer.offsetTop,
 				elementHeight: previewElement.offsetHeight,
-				type: anchor.type,
 			});
-
-			mappings.push({
-				sourceOffset,
-				previewOffset,
-			});
+			mappings.push(...newMappings);
 		}
 	}
 
