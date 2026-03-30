@@ -905,3 +905,275 @@ export const IMEInputBracketCompletion: Story = {
 		});
 	},
 };
+
+/**
+ * スクロール同期テスト用のMarkdownコンテンツ
+ *
+ * @description
+ * 見出し・画像・Amazon埋め込みなどプレビュー側の高さが大きくなる要素を含む。
+ * ユーザーが提示した実際の記事コンテンツに基づく。
+ */
+const scrollSyncTestMarkdown = `### ものは基本的に外に出さない
+
+これが一番大事。
+
+### ものを買わない
+
+例えば
+
+カップボードが備え付けであるし、大きめのSIC/WICが備え付けのところにした。
+
+炭酸水を作れるやつとかあるがあの類のものも自分は買わないほうが良いと思った。
+最初だけしか使わない。
+
+
+因みにジモティーでは10点ほど出品し、残った8点ほどは粗大ごみを出したが6,000円もかかっている。
+
+### 一定期間不要になったものは積極的に捨てる
+
+ジモティーにガンガン放出してしまった方が良い。
+
+### 消耗品は勿体ぶらないでガンガン使う
+
+もらったものとか、単価が高いものを買った場合もったいぶって使わない、ないし使うのをかなりケチる傾向にある。
+
+香水
+
+### 床のケアをちゃんとする
+
+次の家ではフロアタイルを敷くことにした。
+多くのものが3〜5mm程度の厚さがあるが、これは2.5mmと薄め。つまり重量が軽い。
+またお試しセットを100円程度で取り寄せて数週間貼ってみたが何度もはがせるしベタつかなさそうでかなり感触は良かった。
+
+色はかなり悩んだが、不動産のサイトで自分の部屋の画像をダウンロードしてきてAIに床に貼らせて一番良さげなものを選んだ。
+
+https://amzn.to/4uJgJKv
+
+
+### スリッパは履かない
+
+
+
+
+### 長く愛着を持てるものを買う
+
+例えば爪切りとかは今まで100均の適当なものを使っていたが1,600円くらいするものを買ってみた。
+
+
+## その他
+
+### バスタオルはミニバスタオルサイズ（100x50cm）が良い
+
+![image](https://imagedelivery.net/pQeNXC1P5ZVO1IiycNeISQ/saneatsu-me_content_750ba7a6-bd8b-44ee-9e78-a64ec5550b60/original)
+
+ref: [タオル研究所](https://amzn.to/4sVYiAA)
+
+バスタオルのサイズは大きいため収納、洗濯機の幅を撮ってしまう。
+
+夏は朝ジム行ってシャワー浴びて、夜もお風呂に入ることもあるので数も確保しておきたい。
+
+
+https://amzn.to/40NBkQ7`;
+
+/**
+ * スクロール同期テスト: 見出しの対応位置が正しいことを検証
+ *
+ * @description
+ * textareaを特定の見出し位置までスクロールしたとき、
+ * プレビュー側でも対応する見出しが表示されていることを確認する。
+ * 画像やAmazon埋め込みでプレビュー側の高さが大きくなる場合でも、
+ * アンカーマッピングによる補間で正しく同期される。
+ */
+export const ScrollSyncHeadingAlignment: Story = {
+	name: "スクロール同期: 見出し位置の対応",
+	tags: ["validation"],
+	render: () => {
+		const [value, setValue] = useState(scrollSyncTestMarkdown);
+
+		return (
+			<div className="p-4">
+				<CustomMarkdownEditor
+					value={value}
+					onChange={setValue}
+					setValue={(_, val) => setValue(val)}
+					height={400}
+				/>
+			</div>
+		);
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+
+		// Given: エディタとプレビューが表示されている
+		const textarea = canvas.getByRole("textbox", {
+			name: /markdown editor/i,
+		}) as HTMLTextAreaElement;
+
+		// プレビューコンテナを取得（overflow-y-autoが設定されているdiv）
+		const previewContainer = canvasElement.querySelector(
+			".overflow-y-auto"
+		) as HTMLDivElement;
+		expect(previewContainer).toBeTruthy();
+
+		// DOMレンダリングとマッピング構築を待つ
+		await new Promise((resolve) => setTimeout(resolve, 500));
+
+		// 「床のケアをちゃんとする」の行番号を計算（Markdownソース内）
+		const lines = scrollSyncTestMarkdown.split("\n");
+		const targetLineIndex = lines.findIndex((line) =>
+			line.includes("### 床のケアをちゃんとする")
+		);
+		expect(targetLineIndex).toBeGreaterThan(0);
+
+		// When: textareaを「床のケアをちゃんとする」の位置までスクロール
+		const lineHeight = Number.parseFloat(getComputedStyle(textarea).lineHeight);
+		const paddingTop = Number.parseFloat(getComputedStyle(textarea).paddingTop);
+		const targetScrollTop = paddingTop + targetLineIndex * lineHeight;
+
+		textarea.scrollTop = targetScrollTop;
+		textarea.dispatchEvent(new Event("scroll"));
+
+		// スクロール同期のrequestAnimationFrameを待つ
+		await new Promise((resolve) => setTimeout(resolve, 200));
+
+		// Then: プレビュー側で「床のケアをちゃんとする」の見出しが表示範囲内にあることを確認
+		const targetHeading = previewContainer.querySelector(
+			`#${CSS.escape("床のケアをちゃんとする")}`
+		) as HTMLElement;
+		expect(targetHeading).toBeTruthy();
+
+		const headingTop = targetHeading.offsetTop - previewContainer.offsetTop;
+		const visibleTop = previewContainer.scrollTop;
+		const visibleBottom =
+			previewContainer.scrollTop + previewContainer.clientHeight;
+
+		// 見出しがプレビューの表示範囲内にあること
+		expect(headingTop).toBeGreaterThanOrEqual(visibleTop - 50);
+		expect(headingTop).toBeLessThanOrEqual(visibleBottom);
+	},
+};
+
+/**
+ * スクロール同期テスト: 末尾の見出しの対応位置が正しいことを検証
+ *
+ * @description
+ * textareaを末尾近くの「バスタオルはミニバスタオルサイズ」までスクロールしたとき、
+ * プレビュー側でも対応する見出しが表示範囲内にあることを確認する。
+ * 画像埋め込み後の見出しなので、プレビュー側の高さオフセットが大きい。
+ */
+export const ScrollSyncBottomHeadingAlignment: Story = {
+	name: "スクロール同期: 末尾見出しの対応",
+	tags: ["validation"],
+	render: () => {
+		const [value, setValue] = useState(scrollSyncTestMarkdown);
+
+		return (
+			<div className="p-4">
+				<CustomMarkdownEditor
+					value={value}
+					onChange={setValue}
+					setValue={(_, val) => setValue(val)}
+					height={400}
+				/>
+			</div>
+		);
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+
+		// Given: エディタとプレビューが表示されている
+		const textarea = canvas.getByRole("textbox", {
+			name: /markdown editor/i,
+		}) as HTMLTextAreaElement;
+
+		const previewContainer = canvasElement.querySelector(
+			".overflow-y-auto"
+		) as HTMLDivElement;
+		expect(previewContainer).toBeTruthy();
+
+		// DOMレンダリングとマッピング構築を待つ
+		await new Promise((resolve) => setTimeout(resolve, 500));
+
+		// 「## その他」の行番号を計算
+		const lines = scrollSyncTestMarkdown.split("\n");
+		const targetLineIndex = lines.findIndex((line) =>
+			line.includes("## その他")
+		);
+		expect(targetLineIndex).toBeGreaterThan(0);
+
+		// When: textareaを「## その他」の位置までスクロール
+		const lineHeight = Number.parseFloat(getComputedStyle(textarea).lineHeight);
+		const paddingTop = Number.parseFloat(getComputedStyle(textarea).paddingTop);
+		const targetScrollTop = paddingTop + targetLineIndex * lineHeight;
+
+		textarea.scrollTop = targetScrollTop;
+		textarea.dispatchEvent(new Event("scroll"));
+
+		// スクロール同期のrequestAnimationFrameを待つ
+		await new Promise((resolve) => setTimeout(resolve, 200));
+
+		// Then: プレビュー側で「その他」の見出しが表示範囲内にあることを確認
+		const targetHeading = previewContainer.querySelector(
+			`#${CSS.escape("その他")}`
+		) as HTMLElement;
+		expect(targetHeading).toBeTruthy();
+
+		const headingTop = targetHeading.offsetTop - previewContainer.offsetTop;
+		const visibleTop = previewContainer.scrollTop;
+		const visibleBottom =
+			previewContainer.scrollTop + previewContainer.clientHeight;
+
+		// 見出しがプレビューの表示範囲内にあること
+		expect(headingTop).toBeGreaterThanOrEqual(visibleTop - 50);
+		expect(headingTop).toBeLessThanOrEqual(visibleBottom);
+	},
+};
+
+/**
+ * スクロール同期テスト: 先頭位置の対応が正しいことを検証
+ *
+ * @description
+ * textareaが先頭にある場合、プレビューも先頭にあることを確認する。
+ */
+export const ScrollSyncTopAlignment: Story = {
+	name: "スクロール同期: 先頭位置の対応",
+	tags: ["validation"],
+	render: () => {
+		const [value, setValue] = useState(scrollSyncTestMarkdown);
+
+		return (
+			<div className="p-4">
+				<CustomMarkdownEditor
+					value={value}
+					onChange={setValue}
+					setValue={(_, val) => setValue(val)}
+					height={400}
+				/>
+			</div>
+		);
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+
+		// Given: エディタとプレビューが表示されている
+		const textarea = canvas.getByRole("textbox", {
+			name: /markdown editor/i,
+		}) as HTMLTextAreaElement;
+
+		const previewContainer = canvasElement.querySelector(
+			".overflow-y-auto"
+		) as HTMLDivElement;
+		expect(previewContainer).toBeTruthy();
+
+		// DOMレンダリングとマッピング構築を待つ
+		await new Promise((resolve) => setTimeout(resolve, 500));
+
+		// When: textareaが先頭にある
+		textarea.scrollTop = 0;
+		textarea.dispatchEvent(new Event("scroll"));
+		await new Promise((resolve) => setTimeout(resolve, 200));
+
+		// Then: プレビューも先頭にある
+		expect(previewContainer.scrollTop).toBeLessThanOrEqual(5);
+	},
+};

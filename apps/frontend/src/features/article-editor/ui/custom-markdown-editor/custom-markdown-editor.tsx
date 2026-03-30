@@ -1,7 +1,7 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 import {
 	ArticleSuggestionsPopover,
@@ -24,6 +24,7 @@ import { useImageUploadFile } from "../../lib/use-image-upload-file/use-image-up
 import { useListAutoContinuation } from "../../lib/use-list-auto-continuation/use-list-auto-continuation";
 import { useMarkdownFormatting } from "../../lib/use-markdown-formatting/use-markdown-formatting";
 import { usePasteImageTextarea } from "../../lib/use-paste-image-textarea/use-paste-image-textarea";
+import { useScrollSync } from "../../lib/use-scroll-sync/use-scroll-sync";
 import { useTagDetection } from "../../lib/use-tag-detection/use-tag-detection";
 import { useUnixKeybindings } from "../../lib/use-unix-keybindings/use-unix-keybindings";
 import { useWikiLinkDetection } from "../../model/use-wiki-link-detection";
@@ -154,58 +155,11 @@ export function CustomMarkdownEditor({
 	});
 
 	// スクロール同期（エディタ → プレビュー）
-	useEffect(() => {
-		// DOM要素のマウントを待つ
-		const timer = setTimeout(() => {
-			const textareaElement = textareaRef.current;
-			const previewElement = previewRef.current;
-
-			if (!textareaElement || !previewElement) return;
-
-			let rafId: number | null = null;
-
-			const handleScroll = (event: Event) => {
-				const target = event.target as HTMLElement;
-
-				// 既存のrequestAnimationFrameをキャンセル
-				if (rafId !== null) {
-					cancelAnimationFrame(rafId);
-				}
-
-				// 次のフレームでスクロール同期を実行
-				rafId = requestAnimationFrame(() => {
-					// エディタとプレビューのスクロール可能な高さを計算
-					const editorScrollableHeight =
-						target.scrollHeight - target.offsetHeight;
-					const previewScrollableHeight =
-						previewElement.scrollHeight - previewElement.offsetHeight;
-
-					if (editorScrollableHeight > 0 && previewScrollableHeight > 0) {
-						const scale = editorScrollableHeight / previewScrollableHeight;
-						const newPreviewScrollTop = target.scrollTop / scale;
-
-						previewElement.scrollTop = newPreviewScrollTop;
-					}
-				});
-			};
-
-			// textareaのスクロールイベントをリッスン
-			textareaElement.addEventListener("scroll", handleScroll);
-
-			// クリーンアップ関数を返す
-			return () => {
-				if (rafId !== null) {
-					cancelAnimationFrame(rafId);
-				}
-				textareaElement.removeEventListener("scroll", handleScroll);
-			};
-		}, 100);
-
-		// タイマーのクリーンアップ
-		return () => {
-			clearTimeout(timer);
-		};
-	}, []);
+	useScrollSync({
+		textareaRef,
+		previewRef,
+		markdown: value,
+	});
 
 	/**
 	 * テキストエリアの値変更ハンドラ
