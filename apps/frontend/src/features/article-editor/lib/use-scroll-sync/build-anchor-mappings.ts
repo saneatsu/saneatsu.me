@@ -2,6 +2,39 @@ import type { AnchorPoint } from "./extract-anchor-points";
 import type { AnchorMapping } from "./interpolate-scroll";
 
 /**
+ * プレビュー要素のスクロール同期用オフセットを計算する
+ *
+ * @description
+ * 画像やembed（Amazon商品カード等）はプレビューで高さが大きいが、
+ * エディタでは1行しか占めない。そのまま要素のTOP位置をアンカーにすると、
+ * embed前後でスクロール比率が極端になり「一気にスキップ」される。
+ *
+ * 画像・embedの場合のみ要素の**中央位置**をアンカーにすることで、
+ * 要素の高さを前後セグメントに均等分散し、スクロール比率を平滑化する。
+ *
+ * @param params.elementTop - プレビュー要素のoffsetTop
+ * @param params.containerTop - プレビューコンテナのoffsetTop
+ * @param params.elementHeight - プレビュー要素のoffsetHeight
+ * @param params.type - アンカーの種類
+ * @returns プレビューコンテナからの相対オフセット（0以上）
+ */
+export function computePreviewOffset(params: {
+	elementTop: number;
+	containerTop: number;
+	elementHeight: number;
+	type: "heading" | "image" | "codeblock" | "embed" | "hr";
+}): number {
+	const baseOffset = params.elementTop - params.containerTop;
+
+	// 画像・embedは要素の中央位置を使い、前後セグメントの比率を均等化する
+	if (params.type === "image" || params.type === "embed") {
+		return Math.max(0, baseOffset + params.elementHeight / 2);
+	}
+
+	return Math.max(0, baseOffset);
+}
+
+/**
  * textareaのword-wrapを考慮した各行の実際のビジュアルY位置を計測する
  *
  * @description
@@ -178,13 +211,16 @@ export function buildAnchorMappings(
 		}
 
 		if (previewElement && previewElement instanceof HTMLElement) {
-			// プレビューコンテナからの相対位置を計算
-			const previewOffset =
-				previewElement.offsetTop - previewContainer.offsetTop;
+			const previewOffset = computePreviewOffset({
+				elementTop: previewElement.offsetTop,
+				containerTop: previewContainer.offsetTop,
+				elementHeight: previewElement.offsetHeight,
+				type: anchor.type,
+			});
 
 			mappings.push({
 				sourceOffset,
-				previewOffset: Math.max(0, previewOffset),
+				previewOffset,
 			});
 		}
 	}
