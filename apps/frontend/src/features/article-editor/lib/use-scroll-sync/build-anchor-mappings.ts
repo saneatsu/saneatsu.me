@@ -12,6 +12,12 @@ import type { AnchorMapping } from "./interpolate-scroll";
  * 正確な座標を返さないため、collapsed Rangeによるキャレット位置計測を使用する。
  * これにより、長い画像URLなどが折り返される場合でも正確な位置が得られる。
  *
+ * ミラー要素の幅はtextareaのスクロールバーを除いた実テキスト領域幅に合わせる。
+ * `getComputedStyle().width` にはスクロールバー幅が含まれるため、
+ * そのまま使うとミラーが実際より広くなり、折り返しが少なくなることで
+ * sourceOffsetが過小評価される。`offsetWidth - clientWidth` でスクロールバー幅を算出し、
+ * CSS幅から差し引くことで正確な幅にする。
+ *
  * `sourceLine * lineHeight` では折り返しを考慮できないため、
  * この関数で実際のレイアウト後の位置を取得する。
  */
@@ -31,7 +37,15 @@ function measureSourceLineOffsets(
 	mirror.style.visibility = "hidden";
 	mirror.style.height = "auto";
 	mirror.style.overflow = "hidden";
-	mirror.style.width = style.width;
+
+	// スクロールバー幅を差し引いてtextareaの実テキスト領域幅に合わせる
+	// offsetWidthはborder+padding+content+scrollbar、clientWidthはpadding+content
+	// 差分がスクロールバー幅（+ border）なので、CSS幅からborderを除いた分を引く
+	const scrollbarWidth = textarea.offsetWidth - textarea.clientWidth;
+	const cssWidth = Number.parseFloat(style.width);
+	const adjustedWidth = cssWidth - scrollbarWidth;
+	mirror.style.width = `${adjustedWidth}px`;
+
 	mirror.style.font = style.font;
 	mirror.style.letterSpacing = style.letterSpacing;
 	mirror.style.whiteSpace = "pre-wrap";

@@ -206,6 +206,75 @@ describe("Unit Test", () => {
 				// Then: previewScrollableHeightを超えない
 				expect(result).toBeLessThanOrEqual(1000);
 			});
+
+			it("should keep preview before image when editor is before image section", () => {
+				// Given: 実記事に近いアンカーマッピング（見出し3つ → 画像embed → 見出し1つ）
+				// sourceOffsetはword-wrapを考慮した正確なビジュアル位置
+				// 見出し間のテキスト行がword-wrapで複数行に折り返されるため、
+				// sourceOffsetの間隔はpreviewOffsetの間隔より相対的に大きい
+				const mappings: AnchorMapping[] = [
+					{ sourceOffset: 0, previewOffset: 0 }, // ### ものは基本的に外に出さない
+					{ sourceOffset: 120, previewOffset: 200 }, // ### ものを買わない
+					{ sourceOffset: 260, previewOffset: 400 }, // ### 床のケアをちゃんとする
+					{ sourceOffset: 380, previewOffset: 900 }, // embed: amzn.to（プレビューでは画像が大きい）
+					{ sourceOffset: 400, previewOffset: 1100 }, // ### スリッパは履かない
+				];
+				const editorScrollableHeight = 500;
+				const previewScrollableHeight = 1400;
+
+				// When: エディタが「床のケアをちゃんとする」の少し下（画像embedの手前）にいる
+				const scrollTop = 300;
+				const result = interpolateScrollPosition(
+					scrollTop,
+					mappings,
+					editorScrollableHeight,
+					previewScrollableHeight
+				);
+
+				// Then: プレビューも画像embed（900）の手前にあるべき
+				// 260〜380の間で補間: t = (300-260)/(380-260) = 0.333
+				// result = 400 + 0.333 * (900-400) = 566.7
+				expect(result).toBeLessThan(900);
+				expect(result).toBeGreaterThan(400);
+			});
+
+			it("should not overshoot preview when sourceOffsets are correctly spread", () => {
+				// Given: sourceOffsetが正確に計測された場合のマッピング
+				// スクロールバー幅を差し引いた正しいミラー幅で計測すると、
+				// 折り返しが増えてsourceOffset間隔が広がる
+				const correctMappings: AnchorMapping[] = [
+					{ sourceOffset: 0, previewOffset: 0 },
+					{ sourceOffset: 150, previewOffset: 300 },
+					{ sourceOffset: 350, previewOffset: 800 },
+				];
+
+				// 同じ内容でスクロールバー幅を考慮しなかった場合のマッピング
+				// ミラーが広いためword-wrapが少なく、sourceOffsetが過小評価される
+				const incorrectMappings: AnchorMapping[] = [
+					{ sourceOffset: 0, previewOffset: 0 },
+					{ sourceOffset: 120, previewOffset: 300 },
+					{ sourceOffset: 280, previewOffset: 800 },
+				];
+
+				// When: エディタが中間位置にいる
+				const scrollTop = 200;
+				const correctResult = interpolateScrollPosition(
+					scrollTop,
+					correctMappings,
+					500,
+					1200
+				);
+				const incorrectResult = interpolateScrollPosition(
+					scrollTop,
+					incorrectMappings,
+					500,
+					1200
+				);
+
+				// Then: 正しいマッピングの方がプレビュースクロールが控えめになる
+				// （sourceOffsetが大きいため、同じscrollTopでも進行率が低い）
+				expect(correctResult).toBeLessThan(incorrectResult);
+			});
 		});
 	});
 });
