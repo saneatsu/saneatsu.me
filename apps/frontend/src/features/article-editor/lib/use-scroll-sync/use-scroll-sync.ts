@@ -4,6 +4,7 @@ import { buildAnchorMappings } from "./build-anchor-mappings";
 import { extractAnchorPoints } from "./extract-anchor-points";
 import type { AnchorMapping } from "./interpolate-scroll";
 import { interpolateScrollPosition } from "./interpolate-scroll";
+import { computeSmoothScrollTop } from "./smooth-scroll";
 
 /**
  * スクロール同期フックの設定
@@ -82,15 +83,18 @@ export function useScrollSync({
 		 * textareaのスクロールイベントハンドラ
 		 *
 		 * @description
-		 * requestAnimationFrameで処理を最適化し、
-		 * アンカーマッピングを使った区分線形補間でプレビューのスクロール位置を計算する
+		 * 1. 補間計算で目標のプレビューscrollTopを算出
+		 * 2. computeSmoothScrollTopで現在位置から目標へ段階的に移動
+		 *    - 差分が小さい（通常テキスト）場合は即座に移動
+		 *    - 差分が大きい（画像セグメント等）場合はlerpでスムージング
+		 * 3. 目標に到達するまでrequestAnimationFrameループを継続
 		 */
 		const handleScroll = () => {
 			if (rafId !== null) {
 				cancelAnimationFrame(rafId);
 			}
 
-			rafId = requestAnimationFrame(() => {
+			const animateScroll = () => {
 				if (!textarea || !preview) return;
 
 				const editorScrollableHeight =
@@ -98,17 +102,33 @@ export function useScrollSync({
 				const previewScrollableHeight =
 					preview.scrollHeight - preview.offsetHeight;
 
-				if (editorScrollableHeight > 0 && previewScrollableHeight > 0) {
-					const newScrollTop = interpolateScrollPosition(
-						textarea.scrollTop,
-						mappingsRef.current,
-						editorScrollableHeight,
-						previewScrollableHeight
-					);
+				if (editorScrollableHeight <= 0 || previewScrollableHeight <= 0) return;
 
-					preview.scrollTop = newScrollTop;
+				// 1. 補間計算で目標位置を算出
+				const targetScrollTop = interpolateScrollPosition(
+					textarea.scrollTop,
+					mappingsRef.current,
+					editorScrollableHeight,
+					previewScrollableHeight
+				);
+
+				// 2. スムーズスクロールで次フレームの位置を計算
+				const nextScrollTop = computeSmoothScrollTop(
+					preview.scrollTop,
+					targetScrollTop
+				);
+
+				preview.scrollTop = nextScrollTop;
+
+				// 3. 目標に到達していなければ次フレームも継続
+				if (Math.abs(nextScrollTop - targetScrollTop) >= 1) {
+					rafId = requestAnimationFrame(animateScroll);
+				} else {
+					rafId = null;
 				}
-			});
+			};
+
+			rafId = requestAnimationFrame(animateScroll);
 		};
 
 		// 初回マッピング構築（DOMレンダリング完了を待つ）
