@@ -10,7 +10,14 @@ import {
 	useState,
 } from "react";
 
-import { Button, Textarea, useChatPanelPortal } from "@/shared/ui";
+import {
+	Button,
+	Textarea,
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+	useChatPanelPortal,
+} from "@/shared/ui";
 
 import { useArticleChat } from "../../api/use-article-chat/use-article-chat";
 import { MessageContent } from "../message-content/message-content";
@@ -108,30 +115,42 @@ export function ArticleChatPanel({
 						<span className="text-sm font-medium">{t("title")}</span>
 					</div>
 					<div className="flex items-center gap-0.5">
-						<Button
-							type="button"
-							variant="ghost"
-							size="icon"
-							className="h-7 w-7"
-							onClick={isChatExpanded ? onCollapseChat : onExpandChat}
-							aria-label={t(isChatExpanded ? "collapse" : "expand")}
-						>
-							{isChatExpanded ? (
-								<Minimize2 className="h-4 w-4" />
-							) : (
-								<Maximize2 className="h-4 w-4" />
-							)}
-						</Button>
-						<Button
-							type="button"
-							variant="ghost"
-							size="icon"
-							className="h-7 w-7"
-							onClick={onClose}
-							aria-label={t("close")}
-						>
-							<X className="h-4 w-4" />
-						</Button>
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<Button
+									type="button"
+									variant="ghost"
+									size="icon"
+									className="h-7 w-7"
+									onClick={isChatExpanded ? onCollapseChat : onExpandChat}
+									aria-label={t(isChatExpanded ? "collapse" : "expand")}
+								>
+									{isChatExpanded ? (
+										<Minimize2 className="h-4 w-4" />
+									) : (
+										<Maximize2 className="h-4 w-4" />
+									)}
+								</Button>
+							</TooltipTrigger>
+							<TooltipContent side="bottom">
+								{t(isChatExpanded ? "collapse" : "expand")}
+							</TooltipContent>
+						</Tooltip>
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<Button
+									type="button"
+									variant="ghost"
+									size="icon"
+									className="h-7 w-7"
+									onClick={onClose}
+									aria-label={t("close")}
+								>
+									<X className="h-4 w-4" />
+								</Button>
+							</TooltipTrigger>
+							<TooltipContent side="bottom">{t("close")}</TooltipContent>
+						</Tooltip>
 					</div>
 				</div>
 			</div>
