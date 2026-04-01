@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowUp, Bot, X } from "lucide-react";
+import { ArrowUp, Sparkles, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
 	type ChangeEvent,
@@ -103,7 +103,7 @@ export function ArticleChatPanel({
 			<div className="border-b bg-muted/30">
 				<div className="flex items-center justify-between h-14 px-3">
 					<div className="flex items-center gap-2">
-						<Bot className="h-4 w-4 text-primary" />
+						<Sparkles className="h-4 w-4 text-primary" />
 						<span className="text-sm font-medium">{t("title")}</span>
 					</div>
 					<Button

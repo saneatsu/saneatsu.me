@@ -29,7 +29,7 @@ vi.mock("../../api/use-article-chat/use-article-chat", () => ({
 // --- 翻訳メッセージ ---
 const messages = {
 	articleChat: {
-		title: "記事について質問",
+		title: "AIチャット",
 		close: "チャットを閉じる",
 		description: "この記事の内容について質問できます",
 		openChat: "記事について質問",

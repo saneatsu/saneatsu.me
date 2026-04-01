@@ -484,7 +484,7 @@
 		"copyMarkdownTooltip": "Copy Markdown"
 	},
 	"articleChat": {
-		"title": "Ask about this article",
+		"title": "AI Chat",
 		"close": "Close chat",
 		"description": "You can ask questions about the content of this article",
 		"openChat": "Ask about article",
