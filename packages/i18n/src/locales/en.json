@@ -483,6 +483,24 @@
 		"copyMarkdownError": "Failed to copy Markdown. Please try again",
 		"copyMarkdownTooltip": "Copy Markdown"
 	},
+	"articleChat": {
+		"title": "Ask about this article",
+		"close": "Close chat",
+		"description": "You can ask questions about the content of this article",
+		"openChat": "Ask about article",
+		"inputPlaceholder": "Type your question (Shift+Enter for new line)",
+		"inputLabel": "Question input",
+		"send": "Send",
+		"hint": "Enter to send, Shift+Enter for new line",
+		"quickAction": {
+			"summarize": "Please summarize this article",
+			"summarizeLabel": "Summarize article"
+		},
+		"error": {
+			"fetchFailed": "Failed to get response. Please try again",
+			"unknown": "An unexpected error occurred. Please try again"
+		}
+	},
 	"common": {
 		"required": "Required",
 		"search": "Search",

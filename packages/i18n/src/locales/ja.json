@@ -492,6 +492,24 @@
 		"copyMarkdownError": "Markdownのコピーに失敗しました。もう一度お試しください",
 		"copyMarkdownTooltip": "Markdownをコピー"
 	},
+	"articleChat": {
+		"title": "記事について質問",
+		"close": "チャットを閉じる",
+		"description": "この記事の内容について質問できます",
+		"openChat": "記事について質問",
+		"inputPlaceholder": "質問を入力してください（Shift+Enterで改行）",
+		"inputLabel": "質問入力",
+		"send": "送信",
+		"hint": "Enterで送信、Shift+Enterで改行",
+		"quickAction": {
+			"summarize": "この記事の内容を要約してください",
+			"summarizeLabel": "記事を要約する"
+		},
+		"error": {
+			"fetchFailed": "回答の取得に失敗しました。もう一度お試しください",
+			"unknown": "予期しないエラーが発生しました。もう一度お試しください"
+		}
+	},
 	"common": {
 		"required": "必須",
 		"search": "検索",
