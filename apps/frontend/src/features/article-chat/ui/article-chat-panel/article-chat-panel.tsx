@@ -112,8 +112,11 @@ export function ArticleChatPanel({
 				</div>
 			</div>
 
-			{/* メッセージ履歴 */}
-			<div className="flex-1 overflow-y-auto p-3 space-y-3 min-h-0">
+			{/* メッセージ履歴: overscroll-containでスクロールチェイニングを防止し、記事本文への伝播を防ぐ */}
+			<div
+				role="log"
+				className="flex-1 overflow-y-auto overscroll-contain p-3 space-y-3 min-h-0"
+			>
 				{/* メッセージ一覧 */}
 				{messages.map((message) => (
 					<div

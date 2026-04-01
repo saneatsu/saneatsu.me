@@ -130,6 +130,19 @@ describe("ArticleChatPanel", () => {
 			});
 		});
 
+		describe("スクロールの独立性", () => {
+			it("メッセージ領域のスクロールが記事本文に伝播しない（overscroll-contain）", () => {
+				// Given: チャットパネルをレンダリング
+				renderPanel();
+
+				// When: メッセージ履歴のログ領域を取得
+				const messageLog = screen.getByRole("log");
+
+				// Then: overscroll-containクラスが適用されている
+				expect(messageLog.className).toContain("overscroll-contain");
+			});
+		});
+
 		describe("ヒントテキストの表示", () => {
 			it("Mac環境では「⌘+Enterで送信」と表示される", () => {
 				// Given: Mac環境
