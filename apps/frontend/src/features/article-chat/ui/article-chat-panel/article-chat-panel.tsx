@@ -2,7 +2,13 @@
 
 import { Bot, Send, X } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useRef, useState } from "react";
+import {
+	type ChangeEvent,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 
 import { Button, Textarea } from "@/shared/ui";
 
@@ -36,6 +42,20 @@ export function ArticleChatPanel({
 	});
 	const [inputValue, setInputValue] = useState("");
 	const messagesEndRef = useRef<HTMLDivElement>(null);
+	const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+	/** テキストエリアの高さを内容に合わせて自動調整する（最大10行） */
+	const adjustTextareaHeight = useCallback(() => {
+		const textarea = textareaRef.current;
+		if (!textarea) return;
+		textarea.style.height = "auto";
+		textarea.style.height = `${textarea.scrollHeight}px`;
+	}, []);
+
+	const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+		setInputValue(e.target.value);
+		adjustTextareaHeight();
+	};
 
 	// メッセージが追加・更新されるたびに末尾にスクロール
 	const lastMessage = messages[messages.length - 1];
@@ -52,6 +72,10 @@ export function ArticleChatPanel({
 		if (!inputValue.trim() || isLoading) return;
 		const message = inputValue;
 		setInputValue("");
+		// 送信後にテキストエリアの高さをリセット
+		if (textareaRef.current) {
+			textareaRef.current.style.height = "auto";
+		}
 		await sendMessage(message);
 	};
 
@@ -119,11 +143,13 @@ export function ArticleChatPanel({
 			<div className="p-3 border-t">
 				<div className="flex gap-2">
 					<Textarea
+						ref={textareaRef}
 						value={inputValue}
-						onChange={(e) => setInputValue(e.target.value)}
+						onChange={handleInputChange}
 						onKeyDown={handleKeyDown}
 						placeholder={t("inputPlaceholder")}
-						className="min-h-[60px] max-h-[120px] text-sm resize-none"
+						className="min-h-[40px] max-h-[240px] text-sm resize-none overflow-y-auto"
+						rows={1}
 						disabled={isLoading}
 						aria-label={t("inputLabel")}
 					/>
