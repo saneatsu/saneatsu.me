@@ -71,8 +71,6 @@ export async function POST(request: NextRequest) {
 	}
 
 	const genAI = new GoogleGenerativeAI(apiKey);
-	const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-
 	const systemPrompt = `あなたは以下の記事の内容についての質問に答えるアシスタントです。
 記事の内容に関係のない質問には答えず、「この記事の内容についてのご質問にのみお答えできます」と返してください。
 回答はユーザーの質問の言語に合わせてください。
@@ -81,10 +79,15 @@ export async function POST(request: NextRequest) {
 ${articleContent}
 --- 記事の内容ここまで ---`;
 
+	const model = genAI.getGenerativeModel({
+		model: "gemini-2.5-flash",
+		systemInstruction: systemPrompt,
+	});
+
 	// 4. Gemini APIにリクエストを送信し、エラーはHTTPレスポンスとして返す
 	let result: Awaited<ReturnType<typeof model.generateContentStream>>;
 	try {
-		result = await model.generateContentStream([systemPrompt, message]);
+		result = await model.generateContentStream(message);
 	} catch (error) {
 		console.error("Gemini API error:", error);
 		const isRateLimit = error instanceof Error && error.message.includes("429");
