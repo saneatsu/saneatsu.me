@@ -2,7 +2,7 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ArticleChatPanel } from "@/features/article-chat";
 import { RelatedArticles } from "@/features/article-management";
@@ -41,6 +41,16 @@ export function ArticleDetailView({
 	const t = useTranslations("article");
 	const [isChatOpen, setIsChatOpen] = useState(false);
 
+	// チャットパネル開閉時にbodyのmargin-rightを変更し、ヘッダー含むページ全体を左にずらす
+	useEffect(() => {
+		document.body.style.marginRight = isChatOpen ? `${CHAT_PANEL_WIDTH}px` : "";
+		document.body.style.transition = "margin-right 300ms";
+		return () => {
+			document.body.style.marginRight = "";
+			document.body.style.transition = "";
+		};
+	}, [isChatOpen]);
+
 	// Markdownから見出しを抽出
 	const headings = extractHeadings(article.content);
 
@@ -53,10 +63,7 @@ export function ArticleDetailView({
 
 	return (
 		<>
-			<main
-				className="container mx-auto px-4 py-6 transition-[margin] duration-300"
-				style={isChatOpen ? { marginRight: CHAT_PANEL_WIDTH } : undefined}
-			>
+			<main className="container mx-auto px-4 py-6">
 				<article className="max-w-6xl mx-auto space-y-8">
 					<ArticleHeader article={article} />
 
@@ -85,7 +92,7 @@ export function ArticleDetailView({
 			{/* AIチャットパネル（画面右端に固定表示） */}
 			{isChatOpen && (
 				<div
-					className="fixed top-0 right-0 z-40 h-dvh border-l bg-background shadow-lg"
+					className="fixed top-0 right-0 z-50 h-dvh border-l bg-background shadow-lg"
 					style={{ width: CHAT_PANEL_WIDTH }}
 				>
 					<ArticleChatPanel
