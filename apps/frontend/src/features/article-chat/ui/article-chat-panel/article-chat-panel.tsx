@@ -84,23 +84,6 @@ export function ArticleChatPanel({
 
 			{/* メッセージ履歴 */}
 			<div className="flex-1 overflow-y-auto p-3 space-y-3 min-h-0">
-				{/* 初期状態: クイックアクションボタン */}
-				{messages.length === 0 && (
-					<div className="space-y-2">
-						<p className="text-xs text-muted-foreground">{t("description")}</p>
-						<Button
-							type="button"
-							variant="outline"
-							size="sm"
-							className="w-full justify-start text-xs h-auto py-2 px-3"
-							onClick={() => sendMessage(t("quickAction.summarize"))}
-							disabled={isLoading}
-						>
-							{t("quickAction.summarizeLabel")}
-						</Button>
-					</div>
-				)}
-
 				{/* メッセージ一覧 */}
 				{messages.map((message) => (
 					<div
