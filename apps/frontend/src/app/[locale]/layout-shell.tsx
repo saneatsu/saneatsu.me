@@ -24,7 +24,10 @@ interface LayoutShellProps {
  * 個別のmarginRight調整やCSS変数ハックが不要になる。
  *
  * 1. xl(1280px)以上: Flexカラム（コンテンツ flex-1 + チャット w-[400px]）
- * 2. xl未満: チャットをfixedフルスクリーンオーバーレイとして表示
+ * 2. xl未満: Flexカラム（コンテンツ flex-1 + チャット w-[320px]）
+ *
+ * すべての画面幅でstaticなFlexカラムとして表示することで、
+ * チャット開閉時にTOCが常に表示される状態を保証する。
  */
 export function LayoutShell({
 	header,
@@ -44,10 +47,10 @@ export function LayoutShell({
 				{mobileMenu}
 			</div>
 
-			{/* チャット列: xl以上はフロー内カラム、xl未満はfixedオーバーレイ */}
+			{/* チャット列: すべての画面幅でstaticなFlexカラムとして表示 */}
 			{isChatOpen && chatNode && (
-				<div className="fixed inset-0 z-50 bg-background xl:static xl:inset-auto xl:z-auto xl:w-[400px] xl:shrink-0">
-					<div className="h-dvh xl:sticky xl:top-0 xl:border-l">{chatNode}</div>
+				<div className="w-[320px] shrink-0 xl:w-[400px]">
+					<div className="sticky top-0 h-dvh border-l">{chatNode}</div>
 				</div>
 			)}
 		</div>
