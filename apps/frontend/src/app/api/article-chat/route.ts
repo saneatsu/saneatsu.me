@@ -12,13 +12,14 @@ const MAX_MESSAGE_LENGTH = 2_000;
  * 記事のMarkdownコンテンツをコンテキストとして、Gemini APIにストリーミングリクエストを送信する。
  *
  * 1. リクエストボディから message と articleContent を取得・バリデーション
- * 2. Gemini API でシステムプロンプト付きストリーミング生成
+ * 2. Gemini API でシステムプロンプト付きストリーミング生成（エラー時はHTTPレスポンスとして返す）
  * 3. ReadableStream でクライアントにチャンクを転送
  *
  * エラーケース:
  * - GEMINI_API_KEY 未設定: 500
  * - message/articleContent 未指定または文字数超過: 400
- * - Gemini API エラー: 500
+ * - Gemini API レート制限: 429
+ * - Gemini API その他のエラー: 500
  */
 export async function POST(request: NextRequest) {
 	// 1. リクエストボディのパース
@@ -70,7 +71,7 @@ export async function POST(request: NextRequest) {
 	}
 
 	const genAI = new GoogleGenerativeAI(apiKey);
-	const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+	const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
 	const systemPrompt = `あなたは以下の記事の内容についての質問に答えるアシスタントです。
 記事の内容に関係のない質問には答えず、「この記事の内容についてのご質問にのみお答えできます」と返してください。
@@ -80,14 +81,27 @@ export async function POST(request: NextRequest) {
 ${articleContent}
 --- 記事の内容ここまで ---`;
 
-	// 4. ReadableStreamでクライアントにチャンクを転送
+	// 4. Gemini APIにリクエストを送信し、エラーはHTTPレスポンスとして返す
+	let result: Awaited<ReturnType<typeof model.generateContentStream>>;
+	try {
+		result = await model.generateContentStream([systemPrompt, message]);
+	} catch (error) {
+		console.error("Gemini API error:", error);
+		const isRateLimit = error instanceof Error && error.message.includes("429");
+		return NextResponse.json(
+			{
+				error: isRateLimit
+					? "APIのリクエスト制限に達しました。しばらく時間をおいてから再度お試しください。"
+					: "AI応答の生成中にエラーが発生しました。もう一度お試しください。",
+			},
+			{ status: isRateLimit ? 429 : 500 }
+		);
+	}
+
+	// 5. ReadableStreamでクライアントにチャンクを転送
 	const stream = new ReadableStream({
 		async start(controller) {
 			try {
-				const result = await model.generateContentStream([
-					systemPrompt,
-					message,
-				]);
 				for await (const chunk of result.stream) {
 					const text = chunk.text();
 					if (text) {
@@ -95,7 +109,8 @@ ${articleContent}
 					}
 				}
 				controller.close();
-			} catch {
+			} catch (error) {
+				console.error("Gemini stream error:", error);
 				controller.error(new Error("AI応答の生成中にエラーが発生しました。"));
 			}
 		},
