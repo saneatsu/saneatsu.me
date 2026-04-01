@@ -7,6 +7,8 @@ import { Footer } from "@/widgets/footer";
 import { Header } from "@/widgets/header";
 import { MobileMenu } from "@/widgets/mobile-menu";
 
+import { LayoutShell } from "./layout-shell";
+
 // サポートされているロケール
 const locales = ["ja", "en"] as const;
 type Locale = (typeof locales)[number];
@@ -73,12 +75,13 @@ export default async function LocaleLayout({ children, params }: Props) {
 
 	return (
 		<NextIntlClientProvider messages={messages} locale={locale}>
-			<div className="relative flex min-h-screen flex-col">
-				<Header />
-				<main className="flex-1">{children}</main>
-				<Footer />
-				<MobileMenu />
-			</div>
+			<LayoutShell
+				header={<Header />}
+				footer={<Footer />}
+				mobileMenu={<MobileMenu />}
+			>
+				{children}
+			</LayoutShell>
 		</NextIntlClientProvider>
 	);
 }

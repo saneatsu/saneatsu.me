@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Loader2 } from "lucide-react";
+import { Check, Loader2, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
 import rehypeHighlight from "rehype-highlight";
@@ -9,6 +9,7 @@ import { toast } from "sonner";
 
 import type { Article } from "@/shared";
 import type { HeadingItem } from "@/shared/lib";
+import { cn } from "@/shared/lib/utils";
 import { MarkdownPreview, ShareButtons, TableOfContents } from "@/shared/ui";
 
 interface ArticleContentProps {
@@ -22,6 +23,10 @@ interface ArticleContentProps {
 	headings: HeadingItem[];
 	/** 記事のMarkdownコンテンツ */
 	articleContent: Article["content"];
+	/** AIチャットパネルが開いているかどうか */
+	isChatOpen: boolean;
+	/** AIチャットパネルの開閉をトグルするコールバック */
+	onToggleChat: () => void;
 }
 
 /**
@@ -30,6 +35,7 @@ interface ArticleContentProps {
  * @description
  * Markdownコピーボタン、シェアボタン、Markdown本文、目次サイドバーの2カラムレイアウトを表示する。
  * コピーボタンはインラインフィードバック（ローディング → 成功表示2秒）を持つ。
+ * 「記事について質問」ボタンのトグルは親コンポーネントに委譲する。
  */
 export function ArticleContent({
 	article,
@@ -37,9 +43,12 @@ export function ArticleContent({
 	articleUrl,
 	headings,
 	articleContent,
+	isChatOpen,
+	onToggleChat,
 }: ArticleContentProps) {
 	const t = useTranslations("article");
 	const tShare = useTranslations("share");
+	const tChat = useTranslations("articleChat");
 	const [isCopying, setIsCopying] = useState(false);
 	const [isCopied, setIsCopied] = useState(false);
 
@@ -69,37 +78,67 @@ export function ArticleContent({
 	}, [articleContent, tShare]);
 
 	return (
-		<div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8 lg:gap-12">
-			<div className="min-w-0 space-y-8 order-2 lg:order-1">
-				{/* Markdownコピーボタン + シェアボタン（上部） */}
+		<div
+			className={cn(
+				"grid grid-cols-1 gap-8",
+				isChatOpen
+					? "min-[1424px]:grid-cols-[1fr_300px] min-[1424px]:gap-12"
+					: "lg:grid-cols-[1fr_300px] lg:gap-12"
+			)}
+		>
+			<div
+				className={cn(
+					"min-w-0 space-y-8",
+					"order-2",
+					isChatOpen ? "min-[1424px]:order-1" : "lg:order-1"
+				)}
+			>
+				{/* Markdownコピーボタン + 記事について質問ボタン + シェアボタン（上部） */}
 				<div className="flex justify-between items-center">
-					<button
-						type="button"
-						onClick={handleCopyMarkdown}
-						disabled={isCopying}
-						className="flex items-center gap-1.5 rounded-md pr-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
-						aria-label="Copy Markdown"
-					>
-						{isCopying ? (
-							<Loader2 className="h-4 w-4 animate-spin" />
-						) : isCopied ? (
-							<Check className="h-4 w-4 text-success-foreground" />
-						) : (
-							<svg
-								role="img"
-								viewBox="0 0 24 24"
-								className="h-4 w-4"
-								fill="currentColor"
-								aria-label={siMarkdown.title}
-							>
-								<title>{siMarkdown.title}</title>
-								<path d={siMarkdown.path} />
-							</svg>
-						)}
-						{isCopied
-							? tShare("copyMarkdownSuccess")
-							: tShare("copyMarkdownTooltip")}
-					</button>
+					<div className="flex items-center">
+						<button
+							type="button"
+							onClick={handleCopyMarkdown}
+							disabled={isCopying}
+							className="flex items-center gap-1.5 rounded-md pr-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+							aria-label="Copy Markdown"
+						>
+							{isCopying ? (
+								<Loader2 className="h-4 w-4 animate-spin" />
+							) : isCopied ? (
+								<Check className="h-4 w-4 text-success-foreground" />
+							) : (
+								<svg
+									role="img"
+									viewBox="0 0 24 24"
+									className="h-4 w-4"
+									fill="currentColor"
+									aria-label={siMarkdown.title}
+								>
+									<title>{siMarkdown.title}</title>
+									<path d={siMarkdown.path} />
+								</svg>
+							)}
+							{isCopied
+								? tShare("copyMarkdownSuccess")
+								: tShare("copyMarkdownTooltip")}
+						</button>
+						<button
+							type="button"
+							onClick={onToggleChat}
+							className={cn(
+								"flex items-center gap-1.5 rounded-md px-3 py-2 text-sm transition-colors cursor-pointer",
+								isChatOpen
+									? "text-primary"
+									: "text-muted-foreground hover:text-foreground"
+							)}
+							aria-label={tChat("openChat")}
+							aria-expanded={isChatOpen}
+						>
+							<Sparkles className="h-4 w-4" />
+							{tChat("openChat")}
+						</button>
+					</div>
 					<ShareButtons url={articleUrl} title={article.title} />
 				</div>
 
@@ -119,8 +158,15 @@ export function ArticleContent({
 				</div>
 			</div>
 
-			{/* 目次サイドバー */}
-			<aside className="order-1 lg:order-2 lg:sticky lg:top-20 lg:h-fit lg:w-[300px]">
+			{/* 目次: チャット開時はインライン表示（order-1）、閉時はサイドバー */}
+			<aside
+				className={cn(
+					"order-1",
+					isChatOpen
+						? "min-[1424px]:order-2 min-[1424px]:sticky min-[1424px]:top-20 min-[1424px]:h-fit min-[1424px]:w-[300px]"
+						: "lg:order-2 lg:sticky lg:top-20 lg:h-fit lg:w-[300px]"
+				)}
+			>
 				<div className="rounded-lg border bg-card p-6 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto">
 					<TableOfContents headings={headings} title={t("tableOfContents")} />
 				</div>

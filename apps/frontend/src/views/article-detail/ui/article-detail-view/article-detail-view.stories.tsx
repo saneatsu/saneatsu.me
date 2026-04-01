@@ -1,12 +1,20 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { expect, within } from "storybook/test";
+import { expect, userEvent, within } from "storybook/test";
 
 import type { Article } from "@/shared";
+import { ChatPanelPortalProvider } from "@/shared/ui";
 
 import { ArticleDetailView } from "./article-detail-view";
 
 const meta: Meta<typeof ArticleDetailView> = {
 	component: ArticleDetailView,
+	decorators: [
+		(Story) => (
+			<ChatPanelPortalProvider>
+				<Story />
+			</ChatPanelPortalProvider>
+		),
+	],
 	parameters: {
 		viewport: {
 			defaultViewport: "reset",
@@ -333,11 +341,8 @@ export const SemanticStructureCheck: Story = {
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		const canvas = within(canvasElement);
 
-		// main要素の確認
-		const main = canvas.getByRole("main");
-		expect(main).toBeInTheDocument();
-
 		// article要素の確認
+		// main要素はレイアウト側（LayoutShell）で提供されるため、ArticleDetailView単体には存在しない
 		const article = canvas.getByRole("article");
 		expect(article).toBeInTheDocument();
 
@@ -933,4 +938,30 @@ export const VeryHighViewCount: Story = {
 		locale: "ja",
 	},
 	parameters: {},
+};
+
+/**
+ * チャット開時にTOCがインライン表示されることを確認するテスト
+ */
+export const TocVisibleWhenChatOpen: Story = {
+	name: "チャット開時にTOCがインライン表示される",
+	tags: ["validation"],
+	args: {
+		article: mockArticle,
+		locale: "ja",
+	},
+	parameters: {},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+
+		// チャットを開く
+		const chatButton = canvas.getByRole("button", {
+			name: /記事について質問/,
+		});
+		await userEvent.click(chatButton);
+
+		// TOCが表示されていることを確認
+		const toc = canvas.getByRole("complementary");
+		await expect(toc).toBeVisible();
+	},
 };

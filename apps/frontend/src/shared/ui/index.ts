@@ -68,7 +68,6 @@ export {
 	CardHeader,
 	CardTitle,
 } from "./card/card";
-
 // Chart
 export {
 	ChartContainer,
@@ -78,6 +77,11 @@ export {
 	ChartTooltip,
 	ChartTooltipContent,
 } from "./chart/chart";
+// Chat Panel Portal
+export {
+	ChatPanelPortalProvider,
+	useChatPanelPortal,
+} from "./chat-panel-portal/chat-panel-portal-context";
 
 // Checkbox
 export { Checkbox } from "./checkbox/checkbox";
