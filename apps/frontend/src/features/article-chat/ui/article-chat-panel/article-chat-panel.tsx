@@ -1,6 +1,6 @@
 "use client";
 
-import { Bot, Send, X } from "lucide-react";
+import { ArrowUp, Bot, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
 	type ChangeEvent,
@@ -141,14 +141,14 @@ export function ArticleChatPanel({
 
 			{/* 入力エリア */}
 			<div className="p-3 border-t">
-				<div className="flex gap-2">
+				<div className="relative">
 					<Textarea
 						ref={textareaRef}
 						value={inputValue}
 						onChange={handleInputChange}
 						onKeyDown={handleKeyDown}
 						placeholder={t("inputPlaceholder")}
-						className="min-h-[40px] max-h-[240px] text-sm resize-none overflow-y-auto"
+						className="min-h-[40px] max-h-[240px] pr-10 text-sm resize-none overflow-y-auto"
 						rows={1}
 						disabled={isLoading}
 						aria-label={t("inputLabel")}
@@ -156,12 +156,12 @@ export function ArticleChatPanel({
 					<Button
 						type="button"
 						size="icon"
-						className="h-auto shrink-0 self-end"
+						className="absolute right-1.5 bottom-1.5 h-7 w-7 rounded-md"
 						onClick={handleSubmit}
 						disabled={isLoading || !inputValue.trim()}
 						aria-label={t("send")}
 					>
-						<Send className="h-4 w-4" />
+						<ArrowUp className="h-4 w-4" />
 					</Button>
 				</div>
 				<p className="text-xs text-muted-foreground mt-1.5">{t("hint")}</p>
