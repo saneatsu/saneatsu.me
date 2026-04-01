@@ -98,7 +98,7 @@ export function ArticleDetailView({
 			{/* AIチャットパネル（画面右端に固定表示） */}
 			{isChatOpen && (
 				<div
-					className="fixed top-0 right-0 z-50 h-dvh border-l bg-background shadow-lg"
+					className="fixed top-0 right-0 z-50 h-dvh border-l bg-background"
 					style={{ width: CHAT_PANEL_WIDTH }}
 				>
 					<ArticleChatPanel
