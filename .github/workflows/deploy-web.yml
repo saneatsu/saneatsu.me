@@ -71,6 +71,8 @@ jobs:
       BASIC_AUTH_PASSWORD: ${{ secrets.BASIC_AUTH_PASSWORD }}
       # Google Form
       NEXT_PUBLIC_GOOGLE_FORM_RESPONSES_URL: ${{ secrets.NEXT_PUBLIC_GOOGLE_FORM_RESPONSES_URL }}
+      # Gemini API
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
   # Webをデプロイ
   web-deploy:

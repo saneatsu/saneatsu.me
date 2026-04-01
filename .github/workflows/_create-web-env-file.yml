@@ -37,6 +37,9 @@ on:
       # Google Form
       NEXT_PUBLIC_GOOGLE_FORM_RESPONSES_URL:
         required: false
+      # Gemini API
+      GEMINI_API_KEY:
+        required: false
 
 env:
   ENV: ${{ inputs.ENV }}
@@ -60,6 +63,7 @@ jobs:
           BASIC_AUTH_USER: ${{ secrets.BASIC_AUTH_USER }}
           BASIC_AUTH_PASSWORD: ${{ secrets.BASIC_AUTH_PASSWORD }}
           NEXT_PUBLIC_GOOGLE_FORM_RESPONSES_URL: ${{ secrets.NEXT_PUBLIC_GOOGLE_FORM_RESPONSES_URL }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           ENV_FILE=".env"
           echo "Creating Web $ENV_FILE for ${{ env.ENV }} environment..."
@@ -92,6 +96,11 @@ jobs:
           # Google Form（オプション）
           if [ -n "$NEXT_PUBLIC_GOOGLE_FORM_RESPONSES_URL" ]; then
             echo "NEXT_PUBLIC_GOOGLE_FORM_RESPONSES_URL=$NEXT_PUBLIC_GOOGLE_FORM_RESPONSES_URL" >> $ENV_FILE
+          fi
+
+          # Gemini API（オプション）
+          if [ -n "$GEMINI_API_KEY" ]; then
+            echo "GEMINI_API_KEY=$GEMINI_API_KEY" >> $ENV_FILE
           fi
 
           echo "✅ Created Web $ENV_FILE with ${{ env.ENV }} configuration"

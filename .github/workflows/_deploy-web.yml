@@ -91,7 +91,8 @@ jobs:
             --var GOOGLE_CLIENT_SECRET:"$GOOGLE_CLIENT_SECRET" \
             --var ADMIN_EMAILS:"$ADMIN_EMAILS" \
             --var BASIC_AUTH_USER:"$BASIC_AUTH_USER" \
-            --var BASIC_AUTH_PASSWORD:"$BASIC_AUTH_PASSWORD"
+            --var BASIC_AUTH_PASSWORD:"$BASIC_AUTH_PASSWORD" \
+            --var GEMINI_API_KEY:"$GEMINI_API_KEY"
         env:
           CLOUDFLARE_ENV: ${{ env.ENV }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
