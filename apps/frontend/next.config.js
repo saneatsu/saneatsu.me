@@ -30,6 +30,7 @@ const nextConfig = {
 		BASIC_AUTH_USER: process.env.BASIC_AUTH_USER,
 		BASIC_AUTH_PASSWORD: process.env.BASIC_AUTH_PASSWORD,
 		AUTH_TRUST_HOST: process.env.AUTH_TRUST_HOST,
+		GEMINI_API_KEY: process.env.GEMINI_API_KEY,
 	},
 	// Webpack設定でファイルウォッチャーの監視対象を制限（webpackモード用）
 	webpack: (config) => {
