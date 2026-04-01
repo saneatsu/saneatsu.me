@@ -2,11 +2,19 @@ import type { Meta, StoryObj } from "@storybook/nextjs";
 import { expect, within } from "storybook/test";
 
 import type { Article } from "@/shared";
+import { ChatPanelPortalProvider } from "@/shared/ui";
 
 import { ArticleDetailView } from "./article-detail-view";
 
 const meta: Meta<typeof ArticleDetailView> = {
 	component: ArticleDetailView,
+	decorators: [
+		(Story) => (
+			<ChatPanelPortalProvider>
+				<Story />
+			</ChatPanelPortalProvider>
+		),
+	],
 	parameters: {
 		viewport: {
 			defaultViewport: "reset",
@@ -333,11 +341,8 @@ export const SemanticStructureCheck: Story = {
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		const canvas = within(canvasElement);
 
-		// main要素の確認
-		const main = canvas.getByRole("main");
-		expect(main).toBeInTheDocument();
-
 		// article要素の確認
+		// main要素はレイアウト側（LayoutShell）で提供されるため、ArticleDetailView単体には存在しない
 		const article = canvas.getByRole("article");
 		expect(article).toBeInTheDocument();
 

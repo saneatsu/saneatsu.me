@@ -78,8 +78,15 @@ export function ArticleContent({
 	}, [articleContent, tShare]);
 
 	return (
-		<div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8 lg:gap-12">
-			<div className="min-w-0 space-y-8 order-2 lg:order-1">
+		<div
+			className={cn(
+				"grid grid-cols-1 gap-8",
+				!isChatOpen && "lg:grid-cols-[1fr_300px] lg:gap-12"
+			)}
+		>
+			<div
+				className={cn("min-w-0 space-y-8", !isChatOpen && "order-2 lg:order-1")}
+			>
 				{/* Markdownコピーボタン + 記事について質問ボタン + シェアボタン（上部） */}
 				<div className="flex justify-between items-center">
 					<div className="flex items-center">
@@ -146,7 +153,13 @@ export function ArticleContent({
 			</div>
 
 			{/* 目次サイドバー */}
-			<aside className="order-1 lg:order-2 lg:sticky lg:top-20 lg:h-fit lg:w-[300px]">
+			<aside
+				className={cn(
+					!isChatOpen
+						? "order-1 lg:order-2 lg:sticky lg:top-20 lg:h-fit lg:w-[300px]"
+						: ""
+				)}
+			>
 				<div className="rounded-lg border bg-card p-6 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto">
 					<TableOfContents headings={headings} title={t("tableOfContents")} />
 				</div>

@@ -488,10 +488,13 @@
 		"close": "Close chat",
 		"description": "You can ask questions about the content of this article",
 		"openChat": "Ask about article",
-		"inputPlaceholder": "Type your question (Shift+Enter for new line)",
+		"inputPlaceholder": "Type your question",
 		"inputLabel": "Question input",
 		"send": "Send",
-		"hint": "Enter to send, Shift+Enter for new line",
+		"hint": {
+			"mac": "⌘+Enter to send",
+			"win": "Ctrl+Enter to send"
+		},
 		"quickAction": {
 			"summarize": "Please summarize this article",
 			"summarizeLabel": "Summarize article"

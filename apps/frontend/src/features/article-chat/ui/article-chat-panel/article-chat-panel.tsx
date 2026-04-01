@@ -80,11 +80,15 @@ export function ArticleChatPanel({
 	};
 
 	const handleKeyDown = async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-		if (e.key === "Enter" && !e.shiftKey) {
+		if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
 			e.preventDefault();
 			await handleSubmit();
 		}
 	};
+
+	/** navigator.platformでMac環境かどうかを判定する */
+	const isMac =
+		typeof navigator !== "undefined" && /Mac/.test(navigator.platform);
 
 	return (
 		<div className="flex flex-col h-full bg-card overflow-hidden">
@@ -166,7 +170,9 @@ export function ArticleChatPanel({
 						<ArrowUp className="h-4 w-4" />
 					</Button>
 				</div>
-				<p className="text-xs text-muted-foreground mt-1.5">{t("hint")}</p>
+				<p className="text-xs text-muted-foreground mt-1.5">
+					{t(isMac ? "hint.mac" : "hint.win")}
+				</p>
 			</div>
 		</div>
 	);
