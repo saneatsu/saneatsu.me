@@ -13,6 +13,7 @@ import {
 import { Button, Textarea } from "@/shared/ui";
 
 import { useArticleChat } from "../../api/use-article-chat/use-article-chat";
+import { MessageContent } from "../message-content/message-content";
 
 interface ArticleChatPanelProps {
 	/** 記事のMarkdownコンテンツ */
@@ -124,15 +125,19 @@ export function ArticleChatPanel({
 						className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
 					>
 						<div
-							className={`max-w-[85%] rounded-lg px-3 py-2 text-sm whitespace-pre-wrap ${
+							className={`max-w-[85%] rounded-lg px-3 py-2 text-sm ${
 								message.role === "user"
-									? "bg-primary text-primary-foreground"
+									? "whitespace-pre-wrap bg-primary text-primary-foreground"
 									: "bg-muted"
 							}`}
 						>
-							{message.content}
-							{message.isStreaming && (
-								<span className="inline-block w-1 h-3 ml-0.5 bg-current animate-pulse rounded-full" />
+							{message.role === "assistant" ? (
+								<MessageContent
+									content={message.content}
+									isStreaming={message.isStreaming}
+								/>
+							) : (
+								message.content
 							)}
 						</div>
 					</div>
