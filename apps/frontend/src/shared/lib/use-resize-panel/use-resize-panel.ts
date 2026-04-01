@@ -15,11 +15,11 @@ interface UseResizePanelReturn {
 	width: number;
 	/** ドラッグ中かどうか */
 	isResizing: boolean;
-	/** ウィンドウ幅いっぱいに拡大中かどうか */
+	/** maxWidthに拡大中かどうか */
 	isExpanded: boolean;
 	/** ドラッグ開始ハンドラ。リサイズハンドルのonMouseDownに渡す */
 	startResize: (e: React.MouseEvent) => void;
-	/** パネルをウィンドウ幅に拡大する */
+	/** パネルをmaxWidthに拡大する */
 	expand: () => void;
 	/** パネルをdefaultWidthに戻す */
 	collapse: () => void;
@@ -117,11 +117,11 @@ export function useResizePanel({
 		};
 	}, []);
 
-	/** パネルをウィンドウ幅いっぱいに拡大する */
+	/** パネルをmaxWidthに拡大する */
 	const expand = useCallback(() => {
-		setWidth(window.innerWidth);
+		setWidth(maxWidth);
 		setIsExpanded(true);
-	}, []);
+	}, [maxWidth]);
 
 	/** パネルをdefaultWidthに戻す */
 	const collapse = useCallback(() => {

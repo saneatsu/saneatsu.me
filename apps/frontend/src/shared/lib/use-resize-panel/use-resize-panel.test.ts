@@ -249,11 +249,10 @@ describe("useResizePanel", () => {
 		});
 
 		describe("expand/collapse", () => {
-			it("expandでウィンドウ幅に拡大し、isExpandedがtrueになる", () => {
-				// Given: defaultWidth=400で初期化、ウィンドウ幅1200px
-				Object.defineProperty(window, "innerWidth", { value: 1200 });
+			it("expandでmaxWidthに拡大し、isExpandedがtrueになる", () => {
+				// Given: defaultWidth=400, maxWidth=600で初期化
 				const { result } = renderHook(() =>
-					useResizePanel({ defaultWidth: 400 })
+					useResizePanel({ defaultWidth: 400, maxWidth: 600 })
 				);
 
 				// When: expand実行
@@ -261,16 +260,15 @@ describe("useResizePanel", () => {
 					result.current.expand();
 				});
 
-				// Then: 幅がウィンドウ幅になり、isExpandedがtrue
-				expect(result.current.width).toBe(1200);
+				// Then: 幅がmaxWidthになり、isExpandedがtrue
+				expect(result.current.width).toBe(600);
 				expect(result.current.isExpanded).toBe(true);
 			});
 
 			it("expand中にcollapseでdefaultWidthに戻り、isExpandedがfalseになる", () => {
 				// Given: expand済みの状態
-				Object.defineProperty(window, "innerWidth", { value: 1200 });
 				const { result } = renderHook(() =>
-					useResizePanel({ defaultWidth: 400 })
+					useResizePanel({ defaultWidth: 400, maxWidth: 600 })
 				);
 
 				act(() => {
