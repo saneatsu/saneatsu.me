@@ -41,13 +41,16 @@ export function ArticleDetailView({
 	const t = useTranslations("article");
 	const [isChatOpen, setIsChatOpen] = useState(false);
 
-	// チャットパネル開閉時にbodyのmargin-rightを変更し、ヘッダー含むページ全体を左にずらす
+	// チャットパネル開閉時にCSS custom propertyを設定し、ヘッダーのmargin-rightを制御する
+	// bodyのstyleを直接変更するとRadixUIのドロップダウンと競合するため、custom propertyを使用
 	useEffect(() => {
-		document.body.style.marginRight = isChatOpen ? `${CHAT_PANEL_WIDTH}px` : "";
-		document.body.style.transition = "margin-right 300ms";
+		const root = document.documentElement;
+		root.style.setProperty(
+			"--chat-panel-offset",
+			isChatOpen ? `${CHAT_PANEL_WIDTH}px` : "0px"
+		);
 		return () => {
-			document.body.style.marginRight = "";
-			document.body.style.transition = "";
+			root.style.setProperty("--chat-panel-offset", "0px");
 		};
 	}, [isChatOpen]);
 
@@ -63,7 +66,10 @@ export function ArticleDetailView({
 
 	return (
 		<>
-			<main className="container mx-auto px-4 py-6">
+			<main
+				className="container mx-auto px-4 py-6 transition-[margin] duration-300"
+				style={isChatOpen ? { marginRight: CHAT_PANEL_WIDTH } : undefined}
+			>
 				<article className="max-w-6xl mx-auto space-y-8">
 					<ArticleHeader article={article} />
 
