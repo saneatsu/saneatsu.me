@@ -248,6 +248,56 @@ describe("useResizePanel", () => {
 			});
 		});
 
+		describe("expand/collapse", () => {
+			it("expandでウィンドウ幅に拡大し、isExpandedがtrueになる", () => {
+				// Given: defaultWidth=400で初期化、ウィンドウ幅1200px
+				Object.defineProperty(window, "innerWidth", { value: 1200 });
+				const { result } = renderHook(() =>
+					useResizePanel({ defaultWidth: 400 })
+				);
+
+				// When: expand実行
+				act(() => {
+					result.current.expand();
+				});
+
+				// Then: 幅がウィンドウ幅になり、isExpandedがtrue
+				expect(result.current.width).toBe(1200);
+				expect(result.current.isExpanded).toBe(true);
+			});
+
+			it("expand中にcollapseでdefaultWidthに戻り、isExpandedがfalseになる", () => {
+				// Given: expand済みの状態
+				Object.defineProperty(window, "innerWidth", { value: 1200 });
+				const { result } = renderHook(() =>
+					useResizePanel({ defaultWidth: 400 })
+				);
+
+				act(() => {
+					result.current.expand();
+				});
+
+				// When: collapse実行
+				act(() => {
+					result.current.collapse();
+				});
+
+				// Then: 幅がdefaultWidthに戻り、isExpandedがfalse
+				expect(result.current.width).toBe(400);
+				expect(result.current.isExpanded).toBe(false);
+			});
+
+			it("初期状態ではisExpandedがfalseである", () => {
+				// Given: 初期化直後
+				const { result } = renderHook(() =>
+					useResizePanel({ defaultWidth: 400 })
+				);
+
+				// Then: isExpandedはfalse
+				expect(result.current.isExpanded).toBe(false);
+			});
+		});
+
 		describe("リサイズ動作", () => {
 			it("ドラッグでパネル幅が変更される", () => {
 				// Given: defaultWidth=400で初期化

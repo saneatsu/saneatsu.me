@@ -15,8 +15,14 @@ interface UseResizePanelReturn {
 	width: number;
 	/** ドラッグ中かどうか */
 	isResizing: boolean;
+	/** ウィンドウ幅いっぱいに拡大中かどうか */
+	isExpanded: boolean;
 	/** ドラッグ開始ハンドラ。リサイズハンドルのonMouseDownに渡す */
 	startResize: (e: React.MouseEvent) => void;
+	/** パネルをウィンドウ幅に拡大する */
+	expand: () => void;
+	/** パネルをdefaultWidthに戻す */
+	collapse: () => void;
 	/** 幅に応じた動的カーソルクラス */
 	cursorStyle: string;
 }
@@ -39,6 +45,7 @@ export function useResizePanel({
 }: UseResizePanelOptions): UseResizePanelReturn {
 	const [width, setWidth] = useState(defaultWidth);
 	const [isResizing, setIsResizing] = useState(false);
+	const [isExpanded, setIsExpanded] = useState(false);
 
 	const rafIdRef = useRef<number | null>(null);
 	const startXRef = useRef(0);
@@ -110,6 +117,18 @@ export function useResizePanel({
 		};
 	}, []);
 
+	/** パネルをウィンドウ幅いっぱいに拡大する */
+	const expand = useCallback(() => {
+		setWidth(window.innerWidth);
+		setIsExpanded(true);
+	}, []);
+
+	/** パネルをdefaultWidthに戻す */
+	const collapse = useCallback(() => {
+		setWidth(defaultWidth);
+		setIsExpanded(false);
+	}, [defaultWidth]);
+
 	/** 幅に応じた動的カーソルクラス */
 	const cursorStyle =
 		width <= minWidth
@@ -118,5 +137,13 @@ export function useResizePanel({
 				? "cursor-e-resize"
 				: "cursor-ew-resize";
 
-	return { width, isResizing, startResize, cursorStyle };
+	return {
+		width,
+		isResizing,
+		isExpanded,
+		startResize,
+		expand,
+		collapse,
+		cursorStyle,
+	};
 }

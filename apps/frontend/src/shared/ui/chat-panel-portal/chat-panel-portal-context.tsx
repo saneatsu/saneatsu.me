@@ -9,6 +9,12 @@ interface ChatPanelPortalContextValue {
 	setChatNode: (node: ReactNode | null) => void;
 	/** チャットパネルが表示中かどうか */
 	isChatOpen: boolean;
+	/** チャットパネルをウィンドウ幅に拡大する。LayoutShellから注入される */
+	onExpandChat: () => void;
+	/** チャットパネルをデフォルト幅に戻す。LayoutShellから注入される */
+	onCollapseChat: () => void;
+	/** チャットパネルが拡大中かどうか */
+	isChatExpanded: boolean;
 }
 
 const ChatPanelPortalContext =
@@ -39,8 +45,24 @@ export function useChatPanelPortal() {
  * createPortalではなくコンテキスト+状態リフトアップを使用する理由は、
  * サーバーコンポーネントのレイアウトとの連携がシンプルになるため。
  */
-export function ChatPanelPortalProvider({ children }: { children: ReactNode }) {
+interface ChatPanelPortalProviderProps {
+	children: ReactNode;
+	/** チャットパネルをウィンドウ幅に拡大するコールバック */
+	onExpandChat?: () => void;
+	/** チャットパネルをデフォルト幅に戻すコールバック */
+	onCollapseChat?: () => void;
+	/** チャットパネルが拡大中かどうか */
+	isChatExpanded?: boolean;
+}
+
+export function ChatPanelPortalProvider({
+	children,
+	onExpandChat,
+	onCollapseChat,
+	isChatExpanded = false,
+}: ChatPanelPortalProviderProps) {
 	const [chatNode, setChatNode] = useState<ReactNode | null>(null);
+	const noop = () => {};
 
 	return (
 		<ChatPanelPortalContext.Provider
@@ -48,6 +70,9 @@ export function ChatPanelPortalProvider({ children }: { children: ReactNode }) {
 				chatNode,
 				setChatNode,
 				isChatOpen: chatNode !== null,
+				onExpandChat: onExpandChat ?? noop,
+				onCollapseChat: onCollapseChat ?? noop,
+				isChatExpanded,
 			}}
 		>
 			{children}

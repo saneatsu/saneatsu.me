@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 
-import { ChatPanelPortalProvider } from "@/shared/ui";
 import { Footer } from "@/widgets/footer";
 import { Header } from "@/widgets/header";
 import { MobileMenu } from "@/widgets/mobile-menu";
@@ -76,15 +75,13 @@ export default async function LocaleLayout({ children, params }: Props) {
 
 	return (
 		<NextIntlClientProvider messages={messages} locale={locale}>
-			<ChatPanelPortalProvider>
-				<LayoutShell
-					header={<Header />}
-					footer={<Footer />}
-					mobileMenu={<MobileMenu />}
-				>
-					{children}
-				</LayoutShell>
-			</ChatPanelPortalProvider>
+			<LayoutShell
+				header={<Header />}
+				footer={<Footer />}
+				mobileMenu={<MobileMenu />}
+			>
+				{children}
+			</LayoutShell>
 		</NextIntlClientProvider>
 	);
 }

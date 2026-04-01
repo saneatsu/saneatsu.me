@@ -3,7 +3,7 @@
 import { GripVertical } from "lucide-react";
 import type { ReactNode } from "react";
 
-import { useChatPanelPortal } from "@/shared/ui";
+import { ChatPanelPortalProvider, useChatPanelPortal } from "@/shared/ui";
 
 import { useResizePanel } from "../../shared/lib/use-resize-panel/use-resize-panel";
 
@@ -29,20 +29,60 @@ const DEFAULT_CHAT_WIDTH = 380;
  * チャットパネルが開いているとき、コンテンツ列（flex-1）が自然に縮むため、
  * 個別のmarginRight調整やCSS変数ハックが不要になる。
  *
- * 1. チャットパネルの左端にリサイズハンドルを配置
- * 2. ドラッグ操作でパネル幅を280px〜600pxの範囲で変更可能
- * 3. requestAnimationFrameベースで60fpsのスムーズなリサイズを実現
+ * 1. ChatPanelPortalProviderをラップし、expand/collapseをコンテキスト経由で子に公開
+ * 2. チャットパネルの左端にリサイズハンドルを配置
+ * 3. ドラッグ操作でパネル幅を280px〜600pxの範囲で変更可能
+ * 4. expandボタンでウィンドウ幅に拡大、collapseで元の幅に戻す
  */
-export function LayoutShell({
+export function LayoutShell(props: LayoutShellProps) {
+	const { width, cursorStyle, startResize, expand, collapse, isExpanded } =
+		useResizePanel({
+			defaultWidth: DEFAULT_CHAT_WIDTH,
+		});
+
+	return (
+		<ChatPanelPortalProvider
+			onExpandChat={expand}
+			onCollapseChat={collapse}
+			isChatExpanded={isExpanded}
+		>
+			<LayoutShellInner
+				{...props}
+				width={width}
+				cursorStyle={cursorStyle}
+				startResize={startResize}
+			/>
+		</ChatPanelPortalProvider>
+	);
+}
+
+interface LayoutShellInnerProps extends LayoutShellProps {
+	/** 現在のチャットパネル幅（px） */
+	width: number;
+	/** リサイズハンドルのカーソルクラス */
+	cursorStyle: string;
+	/** ドラッグ開始ハンドラ */
+	startResize: (e: React.MouseEvent) => void;
+}
+
+/**
+ * LayoutShellの内部コンポーネント
+ *
+ * @description
+ * ChatPanelPortalProviderの内側で動作し、useChatPanelPortalを利用してチャットパネルを表示する。
+ * LayoutShellから分離している理由は、Providerの外側でuseResizePanelを呼び出し、
+ * expand/collapseをProviderに渡す必要があるため。
+ */
+function LayoutShellInner({
 	header,
 	footer,
 	mobileMenu,
 	children,
-}: LayoutShellProps) {
+	width,
+	cursorStyle,
+	startResize,
+}: LayoutShellInnerProps) {
 	const { chatNode, isChatOpen } = useChatPanelPortal();
-	const { width, cursorStyle, startResize } = useResizePanel({
-		defaultWidth: DEFAULT_CHAT_WIDTH,
-	});
 
 	return (
 		<div className="relative flex min-h-screen">

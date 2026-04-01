@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowUp, Sparkles, X } from "lucide-react";
+import { ArrowUp, Maximize2, Minimize2, Sparkles, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
 	type ChangeEvent,
@@ -10,7 +10,7 @@ import {
 	useState,
 } from "react";
 
-import { Button, Textarea } from "@/shared/ui";
+import { Button, Textarea, useChatPanelPortal } from "@/shared/ui";
 
 import { useArticleChat } from "../../api/use-article-chat/use-article-chat";
 import { MessageContent } from "../message-content/message-content";
@@ -38,6 +38,7 @@ export function ArticleChatPanel({
 	onClose,
 }: ArticleChatPanelProps) {
 	const t = useTranslations("articleChat");
+	const { onExpandChat, onCollapseChat, isChatExpanded } = useChatPanelPortal();
 	const { messages, isLoading, error, sendMessage } = useArticleChat({
 		articleContent,
 	});
@@ -106,16 +107,32 @@ export function ArticleChatPanel({
 						<Sparkles className="h-4 w-4 text-primary" />
 						<span className="text-sm font-medium">{t("title")}</span>
 					</div>
-					<Button
-						type="button"
-						variant="ghost"
-						size="icon"
-						className="h-7 w-7"
-						onClick={onClose}
-						aria-label={t("close")}
-					>
-						<X className="h-4 w-4" />
-					</Button>
+					<div className="flex items-center gap-0.5">
+						<Button
+							type="button"
+							variant="ghost"
+							size="icon"
+							className="h-7 w-7"
+							onClick={isChatExpanded ? onCollapseChat : onExpandChat}
+							aria-label={t(isChatExpanded ? "collapse" : "expand")}
+						>
+							{isChatExpanded ? (
+								<Minimize2 className="h-4 w-4" />
+							) : (
+								<Maximize2 className="h-4 w-4" />
+							)}
+						</Button>
+						<Button
+							type="button"
+							variant="ghost"
+							size="icon"
+							className="h-7 w-7"
+							onClick={onClose}
+							aria-label={t("close")}
+						>
+							<X className="h-4 w-4" />
+						</Button>
+					</div>
 				</div>
 			</div>
 

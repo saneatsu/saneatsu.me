@@ -486,6 +486,8 @@
 	"articleChat": {
 		"title": "AI Chat",
 		"close": "Close chat",
+		"expand": "Expand chat",
+		"collapse": "Collapse chat",
 		"description": "You can ask questions about the content of this article",
 		"openChat": "Ask about article",
 		"inputPlaceholder": "Type your question",

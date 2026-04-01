@@ -6,6 +6,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 // vitest.setup.mtsのグローバルモックを解除して実際の翻訳プロバイダーを使う
 vi.unmock("next-intl");
 
+import { ChatPanelPortalProvider } from "@/shared/ui";
+
 import { ArticleChatPanel } from "./article-chat-panel";
 
 // --- モック ---
@@ -31,6 +33,8 @@ const messages = {
 	articleChat: {
 		title: "AIチャット",
 		close: "チャットを閉じる",
+		expand: "チャットを拡大する",
+		collapse: "チャットを縮小する",
 		description: "この記事の内容について質問できます",
 		openChat: "記事について質問",
 		inputPlaceholder: "質問を入力してください",
@@ -55,7 +59,9 @@ const messages = {
 function renderPanel() {
 	return render(
 		<NextIntlClientProvider locale="ja" messages={messages}>
-			<ArticleChatPanel articleContent="テスト記事" onClose={vi.fn()} />
+			<ChatPanelPortalProvider>
+				<ArticleChatPanel articleContent="テスト記事" onClose={vi.fn()} />
+			</ChatPanelPortalProvider>
 		</NextIntlClientProvider>
 	);
 }

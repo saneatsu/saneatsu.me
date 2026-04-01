@@ -495,6 +495,8 @@
 	"articleChat": {
 		"title": "AIチャット",
 		"close": "チャットを閉じる",
+		"expand": "チャットを拡大する",
+		"collapse": "チャットを縮小する",
 		"description": "この記事の内容について質問できます",
 		"openChat": "記事について質問",
 		"inputPlaceholder": "質問を入力してください",
