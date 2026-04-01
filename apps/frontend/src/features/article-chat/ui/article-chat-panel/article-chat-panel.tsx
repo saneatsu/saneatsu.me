@@ -87,7 +87,7 @@ export function ArticleChatPanel({
 	};
 
 	return (
-		<div className="flex flex-col h-full border rounded-lg bg-card overflow-hidden">
+		<div className="flex flex-col h-full bg-card overflow-hidden">
 			{/* ヘッダー */}
 			<div className="flex items-center justify-between p-3 border-b bg-muted/30">
 				<div className="flex items-center gap-2">
