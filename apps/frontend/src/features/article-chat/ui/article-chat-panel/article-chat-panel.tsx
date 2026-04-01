@@ -88,22 +88,24 @@ export function ArticleChatPanel({
 
 	return (
 		<div className="flex flex-col h-full bg-card overflow-hidden">
-			{/* ヘッダー */}
-			<div className="flex items-center justify-between p-3 border-b bg-muted/30">
-				<div className="flex items-center gap-2">
-					<Bot className="h-4 w-4 text-primary" />
-					<span className="text-sm font-medium">{t("title")}</span>
+			{/* ヘッダー: サイトヘッダーと同じ構造（外側にborder-b、内側にh-14）で横線の高さを揃える */}
+			<div className="border-b bg-muted/30">
+				<div className="flex items-center justify-between h-14 px-3">
+					<div className="flex items-center gap-2">
+						<Bot className="h-4 w-4 text-primary" />
+						<span className="text-sm font-medium">{t("title")}</span>
+					</div>
+					<Button
+						type="button"
+						variant="ghost"
+						size="icon"
+						className="h-7 w-7"
+						onClick={onClose}
+						aria-label={t("close")}
+					>
+						<X className="h-4 w-4" />
+					</Button>
 				</div>
-				<Button
-					type="button"
-					variant="ghost"
-					size="icon"
-					className="h-7 w-7"
-					onClick={onClose}
-					aria-label={t("close")}
-				>
-					<X className="h-4 w-4" />
-				</Button>
 			</div>
 
 			{/* メッセージ履歴 */}
