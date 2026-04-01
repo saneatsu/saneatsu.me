@@ -1,9 +1,17 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { type NextRequest, NextResponse } from "next/server";
 
+import type { ArticleChatErrorCode } from "@/features/article-chat/model/article-chat-error-code";
+
 /** リクエストボディの最大文字数 */
 const MAX_ARTICLE_CONTENT_LENGTH = 100_000;
-const MAX_MESSAGE_LENGTH = 2_000;
+/** メッセージの最大文字数（フロントエンドのi18n翻訳パラメータとしても使用するためexport） */
+export const MAX_MESSAGE_LENGTH = 2_000;
+
+/** エラーコードに型制約をかけたJSONレスポンスを生成する */
+function errorResponse(error: ArticleChatErrorCode, status: number) {
+	return NextResponse.json({ error }, { status });
+}
 
 /**
  * 記事AIチャット API Route
@@ -27,57 +35,38 @@ export async function POST(request: NextRequest) {
 	try {
 		body = await request.json();
 	} catch {
-		return NextResponse.json(
-			{ error: "リクエストの形式が正しくありません。再度お試しください。" },
-			{ status: 400 }
-		);
+		return errorResponse("INVALID_REQUEST", 400);
 	}
 
 	const { message, articleContent } = body;
 
 	// 2. バリデーション
 	if (!message || !articleContent) {
-		return NextResponse.json(
-			{ error: "質問内容と記事コンテンツは必須です。入力を確認してください。" },
-			{ status: 400 }
-		);
+		return errorResponse("REQUIRED_FIELDS", 400);
 	}
 
 	if (message.length > MAX_MESSAGE_LENGTH) {
-		return NextResponse.json(
-			{
-				error: `質問は${MAX_MESSAGE_LENGTH}文字以内で入力してください。`,
-			},
-			{ status: 400 }
-		);
+		return errorResponse("MESSAGE_TOO_LONG", 400);
 	}
 
 	if (articleContent.length > MAX_ARTICLE_CONTENT_LENGTH) {
-		return NextResponse.json(
-			{ error: "記事のコンテンツが大きすぎます。" },
-			{ status: 400 }
-		);
+		return errorResponse("CONTENT_TOO_LARGE", 400);
 	}
 
 	// 3. Gemini APIでストリーミング生成
 	const apiKey = process.env.GEMINI_API_KEY;
 	if (!apiKey) {
-		return NextResponse.json(
-			{
-				error: "AI機能が現在利用できません。管理者にお問い合わせください。",
-			},
-			{ status: 500 }
-		);
+		return errorResponse("AI_UNAVAILABLE", 500);
 	}
 
 	const genAI = new GoogleGenerativeAI(apiKey);
-	const systemPrompt = `あなたは以下の記事の内容についての質問に答えるアシスタントです。
-記事の内容に関係のない質問には答えず、「この記事の内容についてのご質問にのみお答えできます」と返してください。
-回答はユーザーの質問の言語に合わせてください。
+	const systemPrompt = `You are an assistant that answers questions about the article below.
+If the question is unrelated to the article, reply: "I can only answer questions about this article."
+Respond in the same language as the user's question.
 
---- 記事の内容 ---
+--- Article Content ---
 ${articleContent}
---- 記事の内容ここまで ---`;
+--- End of Article Content ---`;
 
 	const model = genAI.getGenerativeModel({
 		model: "gemini-2.5-flash",
@@ -91,14 +80,9 @@ ${articleContent}
 	} catch (error) {
 		console.error("Gemini API error:", error);
 		const isRateLimit = error instanceof Error && error.message.includes("429");
-		return NextResponse.json(
-			{
-				error: isRateLimit
-					? "APIのリクエスト制限に達しました。しばらく時間をおいてから再度お試しください。"
-					: "AI応答の生成中にエラーが発生しました。もう一度お試しください。",
-			},
-			{ status: isRateLimit ? 429 : 500 }
-		);
+		return isRateLimit
+			? errorResponse("RATE_LIMIT_EXCEEDED", 429)
+			: errorResponse("GENERATION_FAILED", 500);
 	}
 
 	// 5. ReadableStreamでクライアントにチャンクを転送
@@ -114,7 +98,7 @@ ${articleContent}
 				controller.close();
 			} catch (error) {
 				console.error("Gemini stream error:", error);
-				controller.error(new Error("AI応答の生成中にエラーが発生しました。"));
+				controller.error(new Error("Stream generation failed"));
 			}
 		},
 	});

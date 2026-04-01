@@ -92,9 +92,7 @@ describe("POST /api/article-chat", () => {
 				// Then: 400 error is returned
 				expect(response.status).toBe(400);
 				const body = await response.json();
-				expect(body.error).toBe(
-					"リクエストの形式が正しくありません。再度お試しください。"
-				);
+				expect(body.error).toBe("INVALID_REQUEST");
 			});
 
 			it("should return 400 when message is missing", async () => {
@@ -108,9 +106,7 @@ describe("POST /api/article-chat", () => {
 				// Then: 400 error is returned
 				expect(response.status).toBe(400);
 				const body = await response.json();
-				expect(body.error).toBe(
-					"質問内容と記事コンテンツは必須です。入力を確認してください。"
-				);
+				expect(body.error).toBe("REQUIRED_FIELDS");
 			});
 
 			it("should return 400 when articleContent is missing", async () => {
@@ -124,9 +120,7 @@ describe("POST /api/article-chat", () => {
 				// Then: 400 error is returned
 				expect(response.status).toBe(400);
 				const body = await response.json();
-				expect(body.error).toBe(
-					"質問内容と記事コンテンツは必須です。入力を確認してください。"
-				);
+				expect(body.error).toBe("REQUIRED_FIELDS");
 			});
 
 			it("should return 400 when both message and articleContent are missing", async () => {
@@ -140,9 +134,7 @@ describe("POST /api/article-chat", () => {
 				// Then: 400 error is returned
 				expect(response.status).toBe(400);
 				const body = await response.json();
-				expect(body.error).toBe(
-					"質問内容と記事コンテンツは必須です。入力を確認してください。"
-				);
+				expect(body.error).toBe("REQUIRED_FIELDS");
 			});
 
 			it("should return 400 when message exceeds 2000 characters", async () => {
@@ -159,7 +151,7 @@ describe("POST /api/article-chat", () => {
 				// Then: 400 error is returned
 				expect(response.status).toBe(400);
 				const body = await response.json();
-				expect(body.error).toBe("質問は2000文字以内で入力してください。");
+				expect(body.error).toBe("MESSAGE_TOO_LONG");
 			});
 
 			it("should succeed when message is exactly 2000 characters", async () => {
@@ -192,7 +184,7 @@ describe("POST /api/article-chat", () => {
 				// Then: 400 error is returned
 				expect(response.status).toBe(400);
 				const body = await response.json();
-				expect(body.error).toBe("記事のコンテンツが大きすぎます。");
+				expect(body.error).toBe("CONTENT_TOO_LARGE");
 			});
 		});
 
@@ -212,9 +204,7 @@ describe("POST /api/article-chat", () => {
 				// Then: 500 error is returned
 				expect(response.status).toBe(500);
 				const body = await response.json();
-				expect(body.error).toBe(
-					"AI機能が現在利用できません。管理者にお問い合わせください。"
-				);
+				expect(body.error).toBe("AI_UNAVAILABLE");
 			});
 		});
 
@@ -260,9 +250,7 @@ describe("POST /api/article-chat", () => {
 				// Then: 429 error is returned as JSON response
 				expect(response.status).toBe(429);
 				const body = await response.json();
-				expect(body.error).toBe(
-					"APIのリクエスト制限に達しました。しばらく時間をおいてから再度お試しください。"
-				);
+				expect(body.error).toBe("RATE_LIMIT_EXCEEDED");
 				expect(consoleErrorSpy).toHaveBeenCalledWith(
 					"Gemini API error:",
 					expect.any(Error)
@@ -290,9 +278,7 @@ describe("POST /api/article-chat", () => {
 				// Then: 500 error is returned as JSON response
 				expect(response.status).toBe(500);
 				const body = await response.json();
-				expect(body.error).toBe(
-					"AI応答の生成中にエラーが発生しました。もう一度お試しください。"
-				);
+				expect(body.error).toBe("GENERATION_FAILED");
 				expect(consoleErrorSpy).toHaveBeenCalledWith(
 					"Gemini API error:",
 					expect.any(Error)
