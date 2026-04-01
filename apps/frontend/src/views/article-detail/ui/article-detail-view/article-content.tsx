@@ -81,11 +81,17 @@ export function ArticleContent({
 		<div
 			className={cn(
 				"grid grid-cols-1 gap-8",
-				!isChatOpen && "lg:grid-cols-[1fr_300px] lg:gap-12"
+				isChatOpen
+					? "min-[1424px]:grid-cols-[1fr_300px] min-[1424px]:gap-12"
+					: "lg:grid-cols-[1fr_300px] lg:gap-12"
 			)}
 		>
 			<div
-				className={cn("min-w-0 space-y-8", !isChatOpen && "order-2 lg:order-1")}
+				className={cn(
+					"min-w-0 space-y-8",
+					"order-2",
+					isChatOpen ? "min-[1424px]:order-1" : "lg:order-1"
+				)}
 			>
 				{/* Markdownコピーボタン + 記事について質問ボタン + シェアボタン（上部） */}
 				<div className="flex justify-between items-center">
@@ -152,12 +158,13 @@ export function ArticleContent({
 				</div>
 			</div>
 
-			{/* 目次サイドバー */}
+			{/* 目次: チャット開時はインライン表示（order-1）、閉時はサイドバー */}
 			<aside
 				className={cn(
-					!isChatOpen
-						? "order-1 lg:order-2 lg:sticky lg:top-20 lg:h-fit lg:w-[300px]"
-						: ""
+					"order-1",
+					isChatOpen
+						? "min-[1424px]:order-2 min-[1424px]:sticky min-[1424px]:top-20 min-[1424px]:h-fit min-[1424px]:w-[300px]"
+						: "lg:order-2 lg:sticky lg:top-20 lg:h-fit lg:w-[300px]"
 				)}
 			>
 				<div className="rounded-lg border bg-card p-6 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto">
