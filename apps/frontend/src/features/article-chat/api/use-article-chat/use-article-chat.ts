@@ -1,7 +1,12 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { MAX_MESSAGE_LENGTH } from "@/app/api/article-chat/route";
+
+import type { ArticleChatErrorCode } from "../../model/article-chat-error-code";
+import { ARTICLE_CHAT_ERROR_CODES } from "../../model/article-chat-error-code";
 import type { ChatMessage } from "../../model/chat-message";
 
 interface UseArticleChatOptions {
@@ -35,6 +40,7 @@ interface UseArticleChatReturn {
 export function useArticleChat({
 	articleContent,
 }: UseArticleChatOptions): UseArticleChatReturn {
+	const t = useTranslations("articleChat");
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -94,10 +100,19 @@ export function useArticleChat({
 
 				if (!response.ok || !response.body) {
 					const errorData = await response.json().catch(() => null);
-					throw new Error(
-						errorData?.error ??
-							"回答の取得に失敗しました。もう一度お試しください。"
-					);
+					const errorCode = errorData?.error as string | undefined;
+					// ランタイムでの型ガード（APIから返された文字列が有効なエラーコードかを判定）
+					const isKnownErrorCode =
+						errorCode !== undefined &&
+						ARTICLE_CHAT_ERROR_CODES.includes(
+							errorCode as ArticleChatErrorCode
+						);
+					const errorMessage = isKnownErrorCode
+						? t(`error.${errorCode as ArticleChatErrorCode}`, {
+								maxLength: MAX_MESSAGE_LENGTH,
+							})
+						: t("error.fetchFailed");
+					throw new Error(errorMessage);
 				}
 
 				// 4. ストリームを読み取ってアシスタントメッセージを更新
@@ -131,11 +146,7 @@ export function useArticleChat({
 				// AbortError はユーザーによるキャンセルなのでエラー表示しない
 				if (err instanceof DOMException && err.name === "AbortError") return;
 
-				setError(
-					err instanceof Error
-						? err.message
-						: "予期しないエラーが発生しました。もう一度お試しください。"
-				);
+				setError(err instanceof Error ? err.message : t("error.unknown"));
 				// エラー時はストリーミング中の空メッセージを削除
 				setMessages((prev) =>
 					prev.filter((msg) => msg.id !== assistantMessageId)
@@ -145,7 +156,7 @@ export function useArticleChat({
 				setIsLoading(false);
 			}
 		},
-		[articleContent]
+		[articleContent, t]
 	);
 
 	const clearMessages = useCallback(() => {
