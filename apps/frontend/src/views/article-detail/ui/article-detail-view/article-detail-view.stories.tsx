@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { expect, within } from "storybook/test";
+import { expect, userEvent, within } from "storybook/test";
 
 import type { Article } from "@/shared";
 import { ChatPanelPortalProvider } from "@/shared/ui";
@@ -938,4 +938,30 @@ export const VeryHighViewCount: Story = {
 		locale: "ja",
 	},
 	parameters: {},
+};
+
+/**
+ * チャット開時にTOCがインライン表示されることを確認するテスト
+ */
+export const TocVisibleWhenChatOpen: Story = {
+	name: "チャット開時にTOCがインライン表示される",
+	tags: ["validation"],
+	args: {
+		article: mockArticle,
+		locale: "ja",
+	},
+	parameters: {},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+
+		// チャットを開く
+		const chatButton = canvas.getByRole("button", {
+			name: /記事について質問/,
+		});
+		await userEvent.click(chatButton);
+
+		// TOCが表示されていることを確認
+		const toc = canvas.getByRole("complementary");
+		await expect(toc).toBeVisible();
+	},
 };
