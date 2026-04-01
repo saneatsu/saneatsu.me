@@ -1,0 +1,157 @@
+"use client";
+
+import { useCallback, useEffect, useRef, useState } from "react";
+
+import type { ChatMessage } from "../../model/chat-message";
+
+interface UseArticleChatOptions {
+	/** 記事のMarkdownコンテンツ（APIに送信するコンテキスト） */
+	articleContent: string;
+}
+
+interface UseArticleChatReturn {
+	/** チャットメッセージの履歴 */
+	messages: ChatMessage[];
+	/** ストリーミングリクエスト中かどうか */
+	isLoading: boolean;
+	/** エラーメッセージ（エラーがない場合はnull） */
+	error: string | null;
+	/** ユーザーメッセージを送信する */
+	sendMessage: (message: string) => Promise<void>;
+	/** メッセージ履歴をクリアする */
+	clearMessages: () => void;
+}
+
+/**
+ * 記事AIチャットの状態管理フック
+ *
+ * @description
+ * 1. ユーザーメッセージを messages に追加
+ * 2. /api/article-chat にストリーミングリクエストを送信（AbortController付き）
+ * 3. ReadableStreamDefaultReader でチャンクを逐次受信し assistant メッセージに append
+ * 4. ストリーム終了またはエラー時に isLoading を false に戻す
+ * 5. コンポーネントアンマウント時にリクエストをキャンセルしリソースを解放する
+ */
+export function useArticleChat({
+	articleContent,
+}: UseArticleChatOptions): UseArticleChatReturn {
+	const [messages, setMessages] = useState<ChatMessage[]>([]);
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+
+	/**
+	 * isLoading を useRef で管理し、useCallback の依存配列から除外する
+	 * これにより sendMessage の参照が不要に変わることを防ぐ
+	 */
+	const isLoadingRef = useRef(false);
+	const abortControllerRef = useRef<AbortController | null>(null);
+
+	// コンポーネントアンマウント時にリクエストをキャンセル
+	useEffect(() => {
+		return () => {
+			abortControllerRef.current?.abort();
+		};
+	}, []);
+
+	const sendMessage = useCallback(
+		async (message: string) => {
+			if (!message.trim() || isLoadingRef.current) return;
+
+			// 1. ユーザーメッセージを追加
+			const userMessage: ChatMessage = {
+				id: crypto.randomUUID(),
+				role: "user",
+				content: message.trim(),
+			};
+			setMessages((prev) => [...prev, userMessage]);
+			isLoadingRef.current = true;
+			setIsLoading(true);
+			setError(null);
+
+			// 2. アシスタントの空メッセージ（ストリーミング中）を追加
+			const assistantMessageId = crypto.randomUUID();
+			setMessages((prev) => [
+				...prev,
+				{
+					id: assistantMessageId,
+					role: "assistant",
+					content: "",
+					isStreaming: true,
+				},
+			]);
+
+			// 3. AbortController を作成してリクエストをキャンセル可能にする
+			const controller = new AbortController();
+			abortControllerRef.current = controller;
+
+			try {
+				const response = await fetch("/api/article-chat", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ message, articleContent }),
+					signal: controller.signal,
+				});
+
+				if (!response.ok || !response.body) {
+					const errorData = await response.json().catch(() => null);
+					throw new Error(
+						errorData?.error ??
+							"回答の取得に失敗しました。もう一度お試しください。"
+					);
+				}
+
+				// 4. ストリームを読み取ってアシスタントメッセージを更新
+				const reader = response.body.getReader();
+				const decoder = new TextDecoder();
+
+				try {
+					while (true) {
+						const { done, value } = await reader.read();
+						if (done) break;
+						const chunk = decoder.decode(value, { stream: true });
+						setMessages((prev) =>
+							prev.map((msg) =>
+								msg.id === assistantMessageId
+									? { ...msg, content: msg.content + chunk }
+									: msg
+							)
+						);
+					}
+				} finally {
+					reader.releaseLock();
+				}
+
+				// 5. ストリーミング完了
+				setMessages((prev) =>
+					prev.map((msg) =>
+						msg.id === assistantMessageId ? { ...msg, isStreaming: false } : msg
+					)
+				);
+			} catch (err) {
+				// AbortError はユーザーによるキャンセルなのでエラー表示しない
+				if (err instanceof DOMException && err.name === "AbortError") return;
+
+				setError(
+					err instanceof Error
+						? err.message
+						: "予期しないエラーが発生しました。もう一度お試しください。"
+				);
+				// エラー時はストリーミング中の空メッセージを削除
+				setMessages((prev) =>
+					prev.filter((msg) => msg.id !== assistantMessageId)
+				);
+			} finally {
+				isLoadingRef.current = false;
+				setIsLoading(false);
+			}
+		},
+		[articleContent]
+	);
+
+	const clearMessages = useCallback(() => {
+		setMessages([]);
+		setError(null);
+	}, []);
+
+	return { messages, isLoading, error, sendMessage, clearMessages };
+}
