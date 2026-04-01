@@ -42,7 +42,7 @@ export function ArticleChatPanel({
 		articleContent,
 	});
 	const [inputValue, setInputValue] = useState("");
-	const messagesEndRef = useRef<HTMLDivElement>(null);
+	const scrollContainerRef = useRef<HTMLDivElement>(null);
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 
 	/** テキストエリアの高さを内容に合わせて自動調整する（最大10行） */
@@ -64,8 +64,14 @@ export function ArticleChatPanel({
 	const lastMessageContentLength = lastMessage?.content?.length ?? 0;
 	useEffect(() => {
 		// lastMessageContentLength を参照してストリーミング中の更新でもスクロールする
-		if (lastMessageId && lastMessageContentLength >= 0) {
-			messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+		// scrollIntoViewは祖先スクロールコンテナも巻き込むため使用しない
+		if (
+			lastMessageId &&
+			lastMessageContentLength >= 0 &&
+			scrollContainerRef.current
+		) {
+			scrollContainerRef.current.scrollTop =
+				scrollContainerRef.current.scrollHeight;
 		}
 	}, [lastMessageId, lastMessageContentLength]);
 
@@ -115,6 +121,7 @@ export function ArticleChatPanel({
 
 			{/* メッセージ履歴: overscroll-containでスクロールチェイニングを防止し、記事本文への伝播を防ぐ */}
 			<div
+				ref={scrollContainerRef}
 				role="log"
 				className="flex-1 overflow-y-auto overscroll-contain p-3 space-y-3 min-h-0"
 			>
@@ -149,8 +156,6 @@ export function ArticleChatPanel({
 						{error}
 					</div>
 				)}
-
-				<div ref={messagesEndRef} />
 			</div>
 
 			{/* 入力エリア */}

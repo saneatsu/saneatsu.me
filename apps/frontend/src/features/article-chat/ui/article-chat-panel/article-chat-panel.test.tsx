@@ -9,18 +9,21 @@ vi.unmock("next-intl");
 import { ArticleChatPanel } from "./article-chat-panel";
 
 // --- モック ---
-const { mockSendMessage } = vi.hoisted(() => ({
+const { mockSendMessage, mockUseArticleChat } = vi.hoisted(() => ({
 	mockSendMessage: vi.fn(),
+	mockUseArticleChat: vi.fn(),
 }));
 
+mockUseArticleChat.mockReturnValue({
+	messages: [],
+	isLoading: false,
+	error: null,
+	sendMessage: mockSendMessage,
+	clearMessages: vi.fn(),
+});
+
 vi.mock("../../api/use-article-chat/use-article-chat", () => ({
-	useArticleChat: () => ({
-		messages: [],
-		isLoading: false,
-		error: null,
-		sendMessage: mockSendMessage,
-		clearMessages: vi.fn(),
-	}),
+	useArticleChat: (...args: unknown[]) => mockUseArticleChat(...args),
 }));
 
 // --- 翻訳メッセージ ---
@@ -140,6 +143,61 @@ describe("ArticleChatPanel", () => {
 
 				// Then: overscroll-containクラスが適用されている
 				expect(messageLog.className).toContain("overscroll-contain");
+			});
+
+			it("auto-scroll only changes scrollTop of message area, not scrollIntoView", () => {
+				// Given: メッセージがある状態でレンダリング
+				mockUseArticleChat.mockReturnValue({
+					messages: [
+						{ id: "1", role: "user", content: "テスト質問" },
+						{
+							id: "2",
+							role: "assistant",
+							content: "ストリーミング中の応答",
+							isStreaming: true,
+						},
+					],
+					isLoading: true,
+					error: null,
+					sendMessage: mockSendMessage,
+					clearMessages: vi.fn(),
+				});
+
+				renderPanel();
+
+				// When: メッセージ履歴のログ領域を取得
+				const messageLog = screen.getByRole("log");
+
+				// Then: scrollTopがscrollHeightに設定されている（scrollIntoViewではなくscrollTopで制御）
+				expect(messageLog.scrollTop).toBe(messageLog.scrollHeight);
+			});
+
+			it("scrollIntoView is not called on any element inside the message area", () => {
+				// Given: scrollIntoViewをスパイ
+				const scrollIntoViewSpy = vi.fn();
+				Element.prototype.scrollIntoView = scrollIntoViewSpy;
+
+				mockUseArticleChat.mockReturnValue({
+					messages: [
+						{ id: "1", role: "user", content: "テスト質問" },
+						{
+							id: "2",
+							role: "assistant",
+							content: "応答テキスト",
+							isStreaming: false,
+						},
+					],
+					isLoading: false,
+					error: null,
+					sendMessage: mockSendMessage,
+					clearMessages: vi.fn(),
+				});
+
+				// When: パネルをレンダリング
+				renderPanel();
+
+				// Then: scrollIntoViewが呼ばれない
+				expect(scrollIntoViewSpy).not.toHaveBeenCalled();
 			});
 		});
 
