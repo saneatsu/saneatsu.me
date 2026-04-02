@@ -494,6 +494,7 @@
 	},
 	"articleChat": {
 		"title": "AIチャット",
+		"beta": "ベータ版",
 		"close": "チャットを閉じる",
 		"expand": "チャットを拡大する",
 		"collapse": "チャットを縮小する",

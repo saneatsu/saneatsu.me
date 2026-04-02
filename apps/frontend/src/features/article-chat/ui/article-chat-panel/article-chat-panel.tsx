@@ -18,6 +18,7 @@ import {
 } from "react";
 
 import {
+	Badge,
 	Button,
 	Textarea,
 	Tooltip,
@@ -123,6 +124,9 @@ export function ArticleChatPanel({
 					<div className="flex items-center gap-2">
 						<Sparkles className="h-4 w-4 text-primary" />
 						<span className="text-sm font-medium">{t("title")}</span>
+						<Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+							{t("beta")}
+						</Badge>
 					</div>
 					<div className="flex items-center gap-0.5">
 						<Tooltip>

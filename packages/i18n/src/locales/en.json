@@ -485,6 +485,7 @@
 	},
 	"articleChat": {
 		"title": "AI Chat",
+		"beta": "Beta",
 		"close": "Close chat",
 		"expand": "Expand chat",
 		"collapse": "Collapse chat",
