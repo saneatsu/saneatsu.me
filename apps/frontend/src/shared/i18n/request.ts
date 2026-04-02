@@ -1,6 +1,6 @@
 import type { Locale } from "@saneatsu/i18n";
 import { defaultLocale, locales } from "@saneatsu/i18n";
-import { type RequestConfig, getRequestConfig } from "next-intl/server";
+import { getRequestConfig, type RequestConfig } from "next-intl/server";
 
 function isValidLocale(locale: string): locale is Locale {
 	return locales.includes(locale as Locale);
