@@ -28,6 +28,7 @@ import {
 } from "@/shared/ui";
 
 import { useArticleChat } from "../../api/use-article-chat/use-article-chat";
+import { trackArticleChatOpen } from "../../lib/track-article-chat-event";
 import { MessageContent } from "../message-content/message-content";
 
 interface ArticleChatPanelProps {
@@ -63,6 +64,12 @@ export function ArticleChatPanel({
 	const [inputValue, setInputValue] = useState("");
 	const scrollContainerRef = useRef<HTMLDivElement>(null);
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+	// パネルが開かれた時にGA4イベントを送信
+	// biome-ignore lint/correctness/useExhaustiveDependencies: マウント時に1回だけ送信したいため、意図的にcurrentArticleSlugを依存配列から除外
+	useEffect(() => {
+		trackArticleChatOpen(currentArticleSlug);
+	}, []);
 
 	/** テキストエリアの高さを内容に合わせて自動調整する（最大10行） */
 	const adjustTextareaHeight = useCallback(() => {
