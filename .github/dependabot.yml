@@ -5,6 +5,8 @@ updates:
   # 例: react, next.js, typescript など
   - package-ecosystem: "npm"
     directory: "/"
+    cooldown:
+      default-days: 14 # リリースから14日以内のパッケージはPRを作成しない
     schedule:
       interval: "daily" # 毎日実行
       time: "08:00" # 午前8時（JST）
