@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { MAX_MESSAGE_LENGTH } from "@/app/api/article-chat/route";
+import type { LanguageCode } from "@/shared/model";
 
 import type { ArticleChatErrorCode } from "../../model/article-chat-error-code";
 import { ARTICLE_CHAT_ERROR_CODES } from "../../model/article-chat-error-code";
@@ -13,7 +14,7 @@ interface UseArticleChatOptions {
 	/** 現在閲覧中の記事のslug（記事ページから開いた場合のみ） */
 	currentArticleSlug?: string;
 	/** 記事翻訳の言語 */
-	language: "ja" | "en";
+	language: LanguageCode;
 }
 
 interface UseArticleChatReturn {

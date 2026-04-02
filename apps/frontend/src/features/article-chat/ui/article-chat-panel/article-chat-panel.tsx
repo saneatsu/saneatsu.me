@@ -57,7 +57,7 @@ export function ArticleChatPanel({
 	const { messages, isLoading, error, sendMessage, canRetry, retry } =
 		useArticleChat({
 			currentArticleSlug,
-			language: locale as "ja" | "en",
+			language: locale,
 		});
 	const [inputValue, setInputValue] = useState("");
 	const scrollContainerRef = useRef<HTMLDivElement>(null);
