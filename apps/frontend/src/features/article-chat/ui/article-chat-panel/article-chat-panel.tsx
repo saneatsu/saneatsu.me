@@ -1,7 +1,14 @@
 "use client";
 
-import { ArrowUp, Maximize2, Minimize2, Sparkles, X } from "lucide-react";
-import { useTranslations } from "next-intl";
+import {
+	ArrowUp,
+	Maximize2,
+	Minimize2,
+	RotateCcw,
+	Sparkles,
+	X,
+} from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import {
 	type ChangeEvent,
 	useCallback,
@@ -11,6 +18,7 @@ import {
 } from "react";
 
 import {
+	Badge,
 	Button,
 	Textarea,
 	Tooltip,
@@ -23,32 +31,35 @@ import { useArticleChat } from "../../api/use-article-chat/use-article-chat";
 import { MessageContent } from "../message-content/message-content";
 
 interface ArticleChatPanelProps {
-	/** 記事のMarkdownコンテンツ */
-	articleContent: string;
+	/** 現在閲覧中の記事のslug（記事ページから開いた場合のみ） */
+	currentArticleSlug?: string;
 	/** パネルを閉じるコールバック */
 	onClose: () => void;
 }
 
 /**
- * 記事AIチャットパネルコンポーネント
+ * 横断AIチャットパネルコンポーネント
  *
  * @description
- * 記事の内容について質問できるインラインチャットパネル。
+ * すべての記事を横断して質問できるチャットパネル。
+ * 記事詳細ページから開いた場合は、その記事をコンテキストとして優先的に参照する。
  *
- * 1. クイックアクションボタン（要約）の表示
- * 2. メッセージ履歴のスクロール表示
- * 3. テキスト入力と送信
- * 4. ストリーミング中のアニメーション表示
+ * 1. メッセージ履歴のスクロール表示
+ * 2. テキスト入力と送信
+ * 3. ストリーミング中のアニメーション表示
  */
 export function ArticleChatPanel({
-	articleContent,
+	currentArticleSlug,
 	onClose,
 }: ArticleChatPanelProps) {
 	const t = useTranslations("articleChat");
+	const locale = useLocale();
 	const { onExpandChat, onCollapseChat, isChatExpanded } = useChatPanelPortal();
-	const { messages, isLoading, error, sendMessage } = useArticleChat({
-		articleContent,
-	});
+	const { messages, isLoading, error, sendMessage, canRetry, retry } =
+		useArticleChat({
+			currentArticleSlug,
+			language: locale,
+		});
 	const [inputValue, setInputValue] = useState("");
 	const scrollContainerRef = useRef<HTMLDivElement>(null);
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -113,6 +124,9 @@ export function ArticleChatPanel({
 					<div className="flex items-center gap-2">
 						<Sparkles className="h-4 w-4 text-primary" />
 						<span className="text-sm font-medium">{t("title")}</span>
+						<Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+							{t("beta")}
+						</Badge>
 					</div>
 					<div className="flex items-center gap-0.5">
 						<Tooltip>
@@ -189,7 +203,20 @@ export function ArticleChatPanel({
 				{/* エラー表示 */}
 				{error && (
 					<div className="rounded-lg bg-destructive/10 px-3 py-2 text-xs text-destructive">
-						{error}
+						<p>{error}</p>
+						{canRetry && (
+							<Button
+								type="button"
+								variant="outline"
+								size="sm"
+								className="mt-2 h-7 gap-1 text-xs"
+								onClick={retry}
+								aria-label={t("retry")}
+							>
+								<RotateCcw className="h-3 w-3" />
+								{t("retry")}
+							</Button>
+						)}
 					</div>
 				)}
 			</div>

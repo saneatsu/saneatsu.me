@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 
 export const metadata: Metadata = {
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
 export default async function TermsPage({
 	params,
 }: {
-	params: Promise<{ locale: string }>;
+	params: Promise<{ locale: Locale }>;
 }) {
 	const { locale } = await params;
 	const t = await getTranslations({ locale, namespace: "Terms" });

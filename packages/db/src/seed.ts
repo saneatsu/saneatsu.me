@@ -19,6 +19,7 @@ import {
 	tagTranslations,
 	users,
 } from "./schema";
+import { ARTICLE_CONTENT_TEMPLATES } from "./seed-data/article-content-templates";
 
 // シード用のデータベース接続（ローカルSQLite）
 const client = createClient({
@@ -749,20 +750,14 @@ function generateContributionSeries(days = 365) {
 }
 
 /**
- * ランダムなコンテンツを生成
- * 階層的な見出し構造（h2-h5）を含む
+ * URL/Twitter/Amazon/YouTubeのテスト用セクションを返す
+ *
+ * 記事コンテンツの末尾に追加する外部サービスの埋め込みテスト用セクション。
+ * リンクカードやOEmbed展開の動作確認に使用する。
  */
-function generateRandomContent(title: string, isJapanese: boolean): string {
+function getTestSections(isJapanese: boolean): string {
 	const sections = isJapanese
 		? [
-				"## はじめに\n\nこの記事では、{title}について詳しく解説します。",
-				"### 背景\n\n現代の開発において、この技術が注目される背景を説明します。",
-				"### 目的\n\nこの記事を通じて、実践的なスキルを身につけることを目指します。",
-				"## 基本的な概念\n\n基礎となる概念から理解を深めていきましょう。",
-				"### 主要な概念\n\nまず押さえておくべき重要な概念について説明します。",
-				"#### 概念の詳細\n\nこの概念がなぜ重要なのか、具体的に見ていきます。",
-				"#### 関連する技術\n\n他の技術との関連性についても理解を深めます。",
-				"### 応用的な考え方\n\n基本概念を応用する際のポイントを解説します。",
 				"## URL\n\nhttps://feature-sliced.github.io/documentation/ja/docs/get-started/overview",
 				"## X(Twitter)\n\nhttps://x.com/saneatsu_wakana/status/1942564120492196102",
 				"## Amazon\n### 通常URL\n\nhttps://www.amazon.co.jp/dp/B0DNVXHKR2?smid=A1EZDD7KGL6PDG&ref_=chk_typ_imgToDp&th=1",
@@ -772,14 +767,6 @@ function generateRandomContent(title: string, isJapanese: boolean): string {
 				"### 開始時間付きURL\n\nhttps://youtu.be/ispHaW-UyBE?si=I86bdulFXOhERv5g",
 			]
 		: [
-				"## Introduction\n\nThis article provides a comprehensive guide to {title}.",
-				"### Background\n\nLet's explore why this technology has gained attention in modern development.",
-				"### Objectives\n\nThrough this article, we aim to help you acquire practical skills.",
-				"## Basic Concepts\n\nLet's start with the fundamental concepts you need to understand.",
-				"### Core Concepts\n\nWe'll begin with the essential concepts you should know.",
-				"#### Concept Details\n\nLet's examine why this concept is important in detail.",
-				"#### Related Technologies\n\nWe'll also explore connections with other technologies.",
-				"### Advanced Thinking\n\nKey points for applying basic concepts in practice.",
 				"## URL\n\nhttps://feature-sliced.github.io/documentation/ja/docs/get-started/overview",
 				"## X(Twitter)\n\nhttps://x.com/saneatsu_wakana/status/1942564120492196102",
 				"## Amazon\n### Regular URL\n\nhttps://www.amazon.co.jp/dp/B0DNVXHKR2?smid=A1EZDD7KGL6PDG&ref_=chk_typ_imgToDp&th=1",
@@ -789,7 +776,29 @@ function generateRandomContent(title: string, isJapanese: boolean): string {
 				"### URL with Start Time\n\nhttps://youtu.be/ispHaW-UyBE?si=I86bdulFXOhERv5g",
 			];
 
-	return `# ${title}\n\n${sections.map((section) => section.replace("{title}", title.replace(/ \d+$/, ""))).join("\n\n")}`;
+	return sections.join("\n\n");
+}
+
+/**
+ * テンプレートインデックスに対応する記事コンテンツを組み立てる
+ *
+ * ## Why
+ * 横断AIチャット機能（Gemini Function Calling）のテスト用に、記事ごとにユニークなコンテンツが必要。
+ * 35パターンのテンプレートから記事固有の本文を取得し、末尾にテスト用セクション（URL/Twitter/Amazon/YouTube）を付与する。
+ *
+ * 1. テンプレートインデックスに対応するコンテンツを取得
+ * 2. 記事タイトルを見出しとして付与
+ * 3. テスト用セクションを末尾に追加
+ */
+function buildArticleContent(
+	title: string,
+	templateIndex: number,
+	isJapanese: boolean
+): string {
+	const template =
+		ARTICLE_CONTENT_TEMPLATES[templateIndex % ARTICLE_CONTENT_TEMPLATES.length];
+	const body = isJapanese ? template.ja : template.en;
+	return `# ${title}\n\n${body}\n\n${getTestSections(isJapanese)}`;
 }
 
 /**
@@ -1044,7 +1053,11 @@ async function seed() {
 			articleTranslationData.push({
 				articleId: article.id,
 				title: titleJa,
-				content: generateRandomContent(titleJa, true),
+				content: buildArticleContent(
+					titleJa,
+					i % titleTemplatesJa.length,
+					true
+				),
 				language: "ja" as const,
 			});
 
@@ -1057,7 +1070,11 @@ async function seed() {
 			articleTranslationData.push({
 				articleId: article.id,
 				title: titleEn,
-				content: generateRandomContent(titleEn, false),
+				content: buildArticleContent(
+					titleEn,
+					i % titleTemplatesEn.length,
+					false
+				),
 				language: "en" as const,
 			});
 		}

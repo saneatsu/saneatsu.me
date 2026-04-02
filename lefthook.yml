@@ -24,6 +24,16 @@ pre-commit:
       run: cd apps/frontend && pnpm test-storybook:smart
       # test-storybook:smartは既存サーバーがあれば使用、なければCI modeで起動
 
+# pre-push フック設定
+pre-push:
+  commands:
+    # Turboキャッシュを無視してTypeScriptの型チェックを実行
+    # --force を使う理由: next-intl.d.ts などの型拡張ファイル変更時に
+    # Turboキャッシュが原因で型エラーが検知されないケースがあったため、
+    # push前には必ずフルチェックを行う
+    type-check:
+      run: pnpm turbo run type-check --force
+
 # commit-msg フック設定
 commit-msg:
   commands:

@@ -1,6 +1,6 @@
 import type { Locale } from "@saneatsu/i18n";
 import { defaultLocale, locales } from "@saneatsu/i18n";
-import { getRequestConfig } from "next-intl/server";
+import { getRequestConfig, type RequestConfig } from "next-intl/server";
 
 function isValidLocale(locale: string): locale is Locale {
 	return locales.includes(locale as Locale);
@@ -16,12 +16,13 @@ function isValidLocale(locale: string): locale is Locale {
  */
 export default getRequestConfig(async ({ requestLocale }) => {
 	// requestLocale is provided by Next.js when using the [locale] dynamic segment
-	let locale = await requestLocale;
+	const requestedLocale = await requestLocale;
 
-	// Validate that the incoming locale is valid
-	if (!locale || !isValidLocale(locale)) {
-		locale = defaultLocale;
-	}
+	// バリデーション済みのロケールを使用（無効な場合はデフォルトにフォールバック）
+	const locale =
+		requestedLocale && isValidLocale(requestedLocale)
+			? requestedLocale
+			: defaultLocale;
 
 	// Load all message files for the locale
 	const messages = (await import(`@saneatsu/i18n/src/locales/${locale}.json`))
@@ -30,5 +31,5 @@ export default getRequestConfig(async ({ requestLocale }) => {
 	return {
 		locale,
 		messages,
-	};
+	} satisfies RequestConfig;
 });

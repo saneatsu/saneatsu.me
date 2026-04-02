@@ -11,8 +11,9 @@ import { ChatPanelPortalProvider } from "@/shared/ui";
 import { ArticleChatPanel } from "./article-chat-panel";
 
 // --- モック ---
-const { mockSendMessage, mockUseArticleChat } = vi.hoisted(() => ({
+const { mockSendMessage, mockRetry, mockUseArticleChat } = vi.hoisted(() => ({
 	mockSendMessage: vi.fn(),
+	mockRetry: vi.fn(),
 	mockUseArticleChat: vi.fn(),
 }));
 
@@ -22,6 +23,8 @@ mockUseArticleChat.mockReturnValue({
 	error: null,
 	sendMessage: mockSendMessage,
 	clearMessages: vi.fn(),
+	canRetry: false,
+	retry: mockRetry,
 });
 
 vi.mock("../../api/use-article-chat/use-article-chat", () => ({
@@ -35,7 +38,7 @@ const messages = {
 		close: "チャットを閉じる",
 		expand: "チャットを拡大する",
 		collapse: "チャットを縮小する",
-		description: "この記事の内容について質問できます",
+		description: "すべての記事の内容について質問できます",
 		openChat: "記事について質問",
 		inputPlaceholder: "質問を入力してください",
 		inputLabel: "質問入力",
@@ -48,6 +51,7 @@ const messages = {
 			summarize: "この記事の内容を要約してください",
 			summarizeLabel: "記事を要約する",
 		},
+		retry: "再試行",
 		error: {
 			fetchFailed: "回答の取得に失敗しました。もう一度お試しください",
 			unknown: "予期しないエラーが発生しました。もう一度お試しください",
@@ -60,7 +64,7 @@ function renderPanel() {
 	return render(
 		<NextIntlClientProvider locale="ja" messages={messages}>
 			<ChatPanelPortalProvider>
-				<ArticleChatPanel articleContent="テスト記事" onClose={vi.fn()} />
+				<ArticleChatPanel currentArticleSlug="test-article" onClose={vi.fn()} />
 			</ChatPanelPortalProvider>
 		</NextIntlClientProvider>
 	);
@@ -204,6 +208,74 @@ describe("ArticleChatPanel", () => {
 
 				// Then: scrollIntoViewが呼ばれない
 				expect(scrollIntoViewSpy).not.toHaveBeenCalled();
+			});
+		});
+
+		describe("リトライボタンの表示", () => {
+			it("canRetryがtrueの時リトライボタンが表示される", () => {
+				// Given: canRetryがtrueでエラーがある状態
+				mockUseArticleChat.mockReturnValue({
+					messages: [{ id: "1", role: "user", content: "テスト質問" }],
+					isLoading: false,
+					error:
+						"APIのリクエスト制限に達しました。しばらく時間をおいてから再度お試しください",
+					sendMessage: mockSendMessage,
+					clearMessages: vi.fn(),
+					canRetry: true,
+					retry: mockRetry,
+				});
+
+				// When: パネルをレンダリング
+				renderPanel();
+
+				// Then: リトライボタンが存在する
+				expect(
+					screen.getByRole("button", { name: "再試行" })
+				).toBeInTheDocument();
+			});
+
+			it("リトライボタンをクリックするとretry()が呼ばれる", async () => {
+				// Given: canRetryがtrueの状態
+				mockUseArticleChat.mockReturnValue({
+					messages: [{ id: "1", role: "user", content: "テスト質問" }],
+					isLoading: false,
+					error:
+						"APIのリクエスト制限に達しました。しばらく時間をおいてから再度お試しください",
+					sendMessage: mockSendMessage,
+					clearMessages: vi.fn(),
+					canRetry: true,
+					retry: mockRetry,
+				});
+
+				renderPanel();
+
+				// When: リトライボタンをクリック
+				const retryButton = screen.getByRole("button", { name: "再試行" });
+				await userEvent.click(retryButton);
+
+				// Then: retry関数が呼び出される
+				expect(mockRetry).toHaveBeenCalledOnce();
+			});
+
+			it("canRetryがfalseの時リトライボタンが非表示", () => {
+				// Given: canRetryがfalseでエラーがある状態
+				mockUseArticleChat.mockReturnValue({
+					messages: [{ id: "1", role: "user", content: "テスト質問" }],
+					isLoading: false,
+					error: "回答の取得に失敗しました。もう一度お試しください",
+					sendMessage: mockSendMessage,
+					clearMessages: vi.fn(),
+					canRetry: false,
+					retry: mockRetry,
+				});
+
+				// When: パネルをレンダリング
+				renderPanel();
+
+				// Then: リトライボタンが存在しない
+				expect(
+					screen.queryByRole("button", { name: "再試行" })
+				).not.toBeInTheDocument();
 			});
 		});
 

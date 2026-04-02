@@ -34,6 +34,13 @@ export function MessageContent({
 				plugins={{ code }}
 				isAnimating={isStreaming}
 				linkSafety={{ enabled: false }}
+				components={{
+					a: ({ children, href, ...props }) => (
+						<a {...props} href={href} target="_blank" rel="noopener noreferrer">
+							{children}
+						</a>
+					),
+				}}
 			>
 				{content}
 			</Streamdown>

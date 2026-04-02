@@ -46,7 +46,7 @@ export function ArticleDetailView({
 		if (isChatOpen) {
 			setChatNode(
 				<ArticleChatPanel
-					articleContent={article.content}
+					currentArticleSlug={article.slug}
 					onClose={() => setIsChatOpen(false)}
 				/>
 			);
@@ -54,7 +54,7 @@ export function ArticleDetailView({
 			setChatNode(null);
 		}
 		return () => setChatNode(null);
-	}, [isChatOpen, article.content, setChatNode]);
+	}, [isChatOpen, article.slug, setChatNode]);
 
 	// Markdownから見出しを抽出
 	const headings = extractHeadings(article.content);
