@@ -6,6 +6,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { MAX_MESSAGE_LENGTH } from "@/app/api/article-chat/route";
 import type { LanguageCode } from "@/shared/model";
 
+import {
+	trackArticleChatError,
+	trackArticleChatMessageSent,
+	trackArticleChatResponseComplete,
+} from "../../lib/track-article-chat-event";
 import type { ArticleChatErrorCode } from "../../model/article-chat-error-code";
 import { ARTICLE_CHAT_ERROR_CODES } from "../../model/article-chat-error-code";
 import type { ChatMessage } from "../../model/chat-message";
@@ -76,6 +81,8 @@ export function useArticleChat({
 
 			// リトライ用にメッセージを保持
 			lastMessageRef.current = message;
+
+			trackArticleChatMessageSent(currentArticleSlug, message.trim().length);
 
 			// 1. ユーザーメッセージを追加
 			const userMessage: ChatMessage = {
@@ -162,16 +169,31 @@ export function useArticleChat({
 				}
 
 				// 5. ストリーミング完了
-				setMessages((prev) =>
-					prev.map((msg) =>
+				setMessages((prev) => {
+					const completedMsg = prev.find(
+						(msg) => msg.id === assistantMessageId
+					);
+					if (completedMsg) {
+						trackArticleChatResponseComplete(
+							currentArticleSlug,
+							completedMsg.content.length
+						);
+					}
+					return prev.map((msg) =>
 						msg.id === assistantMessageId ? { ...msg, isStreaming: false } : msg
-					)
-				);
+					);
+				});
 			} catch (err) {
 				// AbortError はユーザーによるキャンセルなのでエラー表示しない
 				if (err instanceof DOMException && err.name === "AbortError") return;
 
-				setError(err instanceof Error ? err.message : t("error.unknown"));
+				const errorMessage =
+					err instanceof Error ? err.message : t("error.unknown");
+				trackArticleChatError(
+					currentArticleSlug,
+					err instanceof Error ? err.message : "unknown"
+				);
+				setError(errorMessage);
 				// エラー時はストリーミング中の空メッセージを削除
 				setMessages((prev) =>
 					prev.filter((msg) => msg.id !== assistantMessageId)
