@@ -501,6 +501,7 @@
 			"summarize": "Please summarize this article",
 			"summarizeLabel": "Summarize article"
 		},
+		"retry": "Retry",
 		"error": {
 			"fetchFailed": "Failed to get response. Please try again",
 			"unknown": "An unexpected error occurred. Please try again",

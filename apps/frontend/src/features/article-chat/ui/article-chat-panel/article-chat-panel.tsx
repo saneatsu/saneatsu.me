@@ -1,6 +1,13 @@
 "use client";
 
-import { ArrowUp, Maximize2, Minimize2, Sparkles, X } from "lucide-react";
+import {
+	ArrowUp,
+	Maximize2,
+	Minimize2,
+	RotateCcw,
+	Sparkles,
+	X,
+} from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import {
 	type ChangeEvent,
@@ -47,10 +54,11 @@ export function ArticleChatPanel({
 	const t = useTranslations("articleChat");
 	const locale = useLocale();
 	const { onExpandChat, onCollapseChat, isChatExpanded } = useChatPanelPortal();
-	const { messages, isLoading, error, sendMessage } = useArticleChat({
-		currentArticleSlug,
-		language: locale as "ja" | "en",
-	});
+	const { messages, isLoading, error, sendMessage, canRetry, retry } =
+		useArticleChat({
+			currentArticleSlug,
+			language: locale as "ja" | "en",
+		});
 	const [inputValue, setInputValue] = useState("");
 	const scrollContainerRef = useRef<HTMLDivElement>(null);
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -191,7 +199,20 @@ export function ArticleChatPanel({
 				{/* エラー表示 */}
 				{error && (
 					<div className="rounded-lg bg-destructive/10 px-3 py-2 text-xs text-destructive">
-						{error}
+						<p>{error}</p>
+						{canRetry && (
+							<Button
+								type="button"
+								variant="outline"
+								size="sm"
+								className="mt-2 h-7 gap-1 text-xs"
+								onClick={retry}
+								aria-label={t("retry")}
+							>
+								<RotateCcw className="h-3 w-3" />
+								{t("retry")}
+							</Button>
+						)}
 					</div>
 				)}
 			</div>

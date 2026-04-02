@@ -27,6 +27,10 @@ interface UseArticleChatReturn {
 	sendMessage: (message: string) => Promise<void>;
 	/** メッセージ履歴をクリアする */
 	clearMessages: () => void;
+	/** 429エラー時にリトライ可能かどうか */
+	canRetry: boolean;
+	/** 前回のメッセージを再送信する */
+	retry: () => Promise<void>;
 }
 
 /**
@@ -47,6 +51,7 @@ export function useArticleChat({
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const [canRetry, setCanRetry] = useState(false);
 
 	/**
 	 * isLoading を useRef で管理し、useCallback の依存配列から除外する
@@ -54,6 +59,8 @@ export function useArticleChat({
 	 */
 	const isLoadingRef = useRef(false);
 	const abortControllerRef = useRef<AbortController | null>(null);
+	/** リトライ用に前回送信したメッセージを保持する */
+	const lastMessageRef = useRef<string | null>(null);
 
 	// コンポーネントアンマウント時にリクエストをキャンセル
 	useEffect(() => {
@@ -66,6 +73,9 @@ export function useArticleChat({
 		async (message: string) => {
 			if (!message.trim() || isLoadingRef.current) return;
 
+			// リトライ用にメッセージを保持
+			lastMessageRef.current = message;
+
 			// 1. ユーザーメッセージを追加
 			const userMessage: ChatMessage = {
 				id: crypto.randomUUID(),
@@ -76,6 +86,7 @@ export function useArticleChat({
 			isLoadingRef.current = true;
 			setIsLoading(true);
 			setError(null);
+			setCanRetry(false);
 
 			// 2. アシスタントの空メッセージ（ストリーミング中）を追加
 			const assistantMessageId = crypto.randomUUID();
@@ -98,10 +109,10 @@ export function useArticleChat({
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
 					body: JSON.stringify({
-					message,
-					currentArticleSlug,
-					language,
-				}),
+						message,
+						currentArticleSlug,
+						language,
+					}),
 					signal: controller.signal,
 				});
 
@@ -114,6 +125,12 @@ export function useArticleChat({
 						ARTICLE_CHAT_ERROR_CODES.includes(
 							errorCode as ArticleChatErrorCode
 						);
+
+					// レートリミットエラーの場合はリトライ可能にする
+					if (errorCode === "RATE_LIMIT_EXCEEDED") {
+						setCanRetry(true);
+					}
+
 					const errorMessage = isKnownErrorCode
 						? t(`error.${errorCode as ArticleChatErrorCode}`, {
 								maxLength: MAX_MESSAGE_LENGTH,
@@ -166,10 +183,25 @@ export function useArticleChat({
 		[currentArticleSlug, language, t]
 	);
 
+	/** 前回のメッセージを再送信する */
+	const retry = useCallback(async () => {
+		if (!lastMessageRef.current) return;
+		await sendMessage(lastMessageRef.current);
+	}, [sendMessage]);
+
 	const clearMessages = useCallback(() => {
 		setMessages([]);
 		setError(null);
+		setCanRetry(false);
 	}, []);
 
-	return { messages, isLoading, error, sendMessage, clearMessages };
+	return {
+		messages,
+		isLoading,
+		error,
+		sendMessage,
+		clearMessages,
+		canRetry,
+		retry,
+	};
 }
