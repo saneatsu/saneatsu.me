@@ -10,8 +10,10 @@ import { ARTICLE_CHAT_ERROR_CODES } from "../../model/article-chat-error-code";
 import type { ChatMessage } from "../../model/chat-message";
 
 interface UseArticleChatOptions {
-	/** 記事のMarkdownコンテンツ（APIに送信するコンテキスト） */
-	articleContent: string;
+	/** 現在閲覧中の記事のslug（記事ページから開いた場合のみ） */
+	currentArticleSlug?: string;
+	/** 記事翻訳の言語 */
+	language: "ja" | "en";
 }
 
 interface UseArticleChatReturn {
@@ -28,7 +30,7 @@ interface UseArticleChatReturn {
 }
 
 /**
- * 記事AIチャットの状態管理フック
+ * 横断AIチャットの状態管理フック
  *
  * @description
  * 1. ユーザーメッセージを messages に追加
@@ -38,7 +40,8 @@ interface UseArticleChatReturn {
  * 5. コンポーネントアンマウント時にリクエストをキャンセルしリソースを解放する
  */
 export function useArticleChat({
-	articleContent,
+	currentArticleSlug,
+	language,
 }: UseArticleChatOptions): UseArticleChatReturn {
 	const t = useTranslations("articleChat");
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -94,7 +97,11 @@ export function useArticleChat({
 				const response = await fetch("/api/article-chat", {
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({ message, articleContent }),
+					body: JSON.stringify({
+					message,
+					currentArticleSlug,
+					language,
+				}),
 					signal: controller.signal,
 				});
 
@@ -156,7 +163,7 @@ export function useArticleChat({
 				setIsLoading(false);
 			}
 		},
-		[articleContent, t]
+		[currentArticleSlug, language, t]
 	);
 
 	const clearMessages = useCallback(() => {

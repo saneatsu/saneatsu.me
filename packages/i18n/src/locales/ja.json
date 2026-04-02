@@ -497,7 +497,7 @@
 		"close": "チャットを閉じる",
 		"expand": "チャットを拡大する",
 		"collapse": "チャットを縮小する",
-		"description": "この記事の内容について質問できます",
+		"description": "すべての記事の内容について質問できます",
 		"openChat": "記事について質問",
 		"inputPlaceholder": "質問を入力してください",
 		"inputLabel": "質問入力",
@@ -514,12 +514,12 @@
 			"fetchFailed": "回答の取得に失敗しました。もう一度お試しください",
 			"unknown": "予期しないエラーが発生しました。もう一度お試しください",
 			"INVALID_REQUEST": "リクエストの形式が正しくありません。再度お試しください",
-			"REQUIRED_FIELDS": "質問内容と記事コンテンツは必須です。入力を確認してください",
+			"REQUIRED_FIELDS": "質問内容は必須です。入力を確認してください",
 			"MESSAGE_TOO_LONG": "質問は{maxLength}文字以内で入力してください",
-			"CONTENT_TOO_LARGE": "記事のコンテンツが大きすぎます",
 			"AI_UNAVAILABLE": "AI機能が現在利用できません。管理者にお問い合わせください",
 			"RATE_LIMIT_EXCEEDED": "APIのリクエスト制限に達しました。しばらく時間をおいてから再度お試しください",
-			"GENERATION_FAILED": "AI応答の生成中にエラーが発生しました。もう一度お試しください"
+			"GENERATION_FAILED": "AI応答の生成中にエラーが発生しました。もう一度お試しください",
+			"ARTICLES_FETCH_FAILED": "記事情報の取得に失敗しました。もう一度お試しください"
 		}
 	},
 	"common": {

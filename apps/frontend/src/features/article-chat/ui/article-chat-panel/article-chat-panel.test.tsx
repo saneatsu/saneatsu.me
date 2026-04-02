@@ -35,7 +35,7 @@ const messages = {
 		close: "チャットを閉じる",
 		expand: "チャットを拡大する",
 		collapse: "チャットを縮小する",
-		description: "この記事の内容について質問できます",
+		description: "すべての記事の内容について質問できます",
 		openChat: "記事について質問",
 		inputPlaceholder: "質問を入力してください",
 		inputLabel: "質問入力",
@@ -60,7 +60,7 @@ function renderPanel() {
 	return render(
 		<NextIntlClientProvider locale="ja" messages={messages}>
 			<ChatPanelPortalProvider>
-				<ArticleChatPanel articleContent="テスト記事" onClose={vi.fn()} />
+				<ArticleChatPanel currentArticleSlug="test-article" onClose={vi.fn()} />
 			</ChatPanelPortalProvider>
 		</NextIntlClientProvider>
 	);

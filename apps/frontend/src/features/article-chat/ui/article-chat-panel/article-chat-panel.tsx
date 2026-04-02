@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowUp, Maximize2, Minimize2, Sparkles, X } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import {
 	type ChangeEvent,
 	useCallback,
@@ -23,31 +23,33 @@ import { useArticleChat } from "../../api/use-article-chat/use-article-chat";
 import { MessageContent } from "../message-content/message-content";
 
 interface ArticleChatPanelProps {
-	/** 記事のMarkdownコンテンツ */
-	articleContent: string;
+	/** 現在閲覧中の記事のslug（記事ページから開いた場合のみ） */
+	currentArticleSlug?: string;
 	/** パネルを閉じるコールバック */
 	onClose: () => void;
 }
 
 /**
- * 記事AIチャットパネルコンポーネント
+ * 横断AIチャットパネルコンポーネント
  *
  * @description
- * 記事の内容について質問できるインラインチャットパネル。
+ * すべての記事を横断して質問できるチャットパネル。
+ * 記事詳細ページから開いた場合は、その記事をコンテキストとして優先的に参照する。
  *
- * 1. クイックアクションボタン（要約）の表示
- * 2. メッセージ履歴のスクロール表示
- * 3. テキスト入力と送信
- * 4. ストリーミング中のアニメーション表示
+ * 1. メッセージ履歴のスクロール表示
+ * 2. テキスト入力と送信
+ * 3. ストリーミング中のアニメーション表示
  */
 export function ArticleChatPanel({
-	articleContent,
+	currentArticleSlug,
 	onClose,
 }: ArticleChatPanelProps) {
 	const t = useTranslations("articleChat");
+	const locale = useLocale();
 	const { onExpandChat, onCollapseChat, isChatExpanded } = useChatPanelPortal();
 	const { messages, isLoading, error, sendMessage } = useArticleChat({
-		articleContent,
+		currentArticleSlug,
+		language: locale as "ja" | "en",
 	});
 	const [inputValue, setInputValue] = useState("");
 	const scrollContainerRef = useRef<HTMLDivElement>(null);

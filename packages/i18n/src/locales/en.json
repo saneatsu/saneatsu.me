@@ -488,7 +488,7 @@
 		"close": "Close chat",
 		"expand": "Expand chat",
 		"collapse": "Collapse chat",
-		"description": "You can ask questions about the content of this article",
+		"description": "You can ask questions about all articles",
 		"openChat": "Ask about article",
 		"inputPlaceholder": "Type your question",
 		"inputLabel": "Question input",
@@ -505,12 +505,12 @@
 			"fetchFailed": "Failed to get response. Please try again",
 			"unknown": "An unexpected error occurred. Please try again",
 			"INVALID_REQUEST": "The request format is invalid. Please try again",
-			"REQUIRED_FIELDS": "Both question and article content are required. Please check your input",
+			"REQUIRED_FIELDS": "A question is required. Please check your input",
 			"MESSAGE_TOO_LONG": "Please keep your question within {maxLength} characters",
-			"CONTENT_TOO_LARGE": "The article content is too large",
 			"AI_UNAVAILABLE": "AI features are currently unavailable. Please contact the administrator",
 			"RATE_LIMIT_EXCEEDED": "API request limit reached. Please wait a moment and try again",
-			"GENERATION_FAILED": "An error occurred while generating the AI response. Please try again"
+			"GENERATION_FAILED": "An error occurred while generating the AI response. Please try again",
+			"ARTICLES_FETCH_FAILED": "Failed to retrieve article information. Please try again"
 		}
 	},
 	"common": {

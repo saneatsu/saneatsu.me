@@ -1,21 +1,61 @@
 import { cleanup, render, screen } from "@testing-library/react";
+import type React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { MessageContent } from "./message-content";
 
 // streamdownのコンポーネントをモックして、Markdown変換結果をテスト可能にする
+// componentsプロップで渡されたカスタムコンポーネントも実際にレンダリングする
 vi.mock("streamdown", () => ({
 	Streamdown: ({
 		children,
 		isAnimating,
+		components,
 	}: {
 		children: string;
 		isAnimating?: boolean;
-	}) => (
-		<div data-testid="streamdown" data-is-animating={isAnimating}>
-			{children}
-		</div>
-	),
+		components?: Record<
+			string,
+			React.ComponentType<React.AnchorHTMLAttributes<HTMLAnchorElement>>
+		>;
+	}) => {
+		// Markdownリンク記法 [text](url) を検出してカスタムaコンポーネントでレンダリング
+		const CustomAnchor = components?.a;
+		const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+		const parts: React.ReactNode[] = [];
+		let lastIndex = 0;
+		let match = linkRegex.exec(children);
+		while (match !== null) {
+			if (match.index > lastIndex) {
+				parts.push(children.slice(lastIndex, match.index));
+			}
+			const [, text, href] = match;
+			if (CustomAnchor) {
+				parts.push(
+					<CustomAnchor key={match.index} href={href}>
+						{text}
+					</CustomAnchor>
+				);
+			} else {
+				parts.push(
+					<a key={match.index} href={href}>
+						{text}
+					</a>
+				);
+			}
+			lastIndex = match.index + match[0].length;
+			match = linkRegex.exec(children);
+		}
+		if (lastIndex < children.length) {
+			parts.push(children.slice(lastIndex));
+		}
+
+		return (
+			<div data-testid="streamdown" data-is-animating={isAnimating}>
+				{parts.length > 0 ? parts : children}
+			</div>
+		);
+	},
 }));
 
 vi.mock("@streamdown/code", () => ({
@@ -85,6 +125,52 @@ describe("MessageContent", () => {
 
 			// Then: isAnimatingがtrueになっている
 			expect(streamdown.dataset.isAnimating).toBe("true");
+		});
+
+		it("renders article links with target='_blank' and rel='noopener noreferrer'", () => {
+			// Given: 記事リンクを含むMarkdownコンテンツ
+			const content =
+				"詳しくは[Next.jsの基本](/blog/nextjs-basics)を参照してください";
+
+			// When: MessageContentをレンダリング
+			render(<MessageContent content={content} />);
+
+			// Then: リンクにtarget="_blank"とrel="noopener noreferrer"が設定される
+			const link = screen.getByRole("link", { name: "Next.jsの基本" });
+			expect(link).toHaveAttribute("target", "_blank");
+			expect(link).toHaveAttribute("rel", "noopener noreferrer");
+			expect(link).toHaveAttribute("href", "/blog/nextjs-basics");
+		});
+
+		it("renders external links with target='_blank' and rel='noopener noreferrer'", () => {
+			// Given: 外部リンクを含むMarkdownコンテンツ
+			const content =
+				"参考: [React公式ドキュメント](https://react.dev)をご覧ください";
+
+			// When: MessageContentをレンダリング
+			render(<MessageContent content={content} />);
+
+			// Then: 外部リンクにもtarget="_blank"とrel="noopener noreferrer"が設定される
+			const link = screen.getByRole("link", {
+				name: "React公式ドキュメント",
+			});
+			expect(link).toHaveAttribute("target", "_blank");
+			expect(link).toHaveAttribute("rel", "noopener noreferrer");
+			expect(link).toHaveAttribute("href", "https://react.dev");
+		});
+
+		it("preserves href correctly for all link types", () => {
+			// Given: 記事リンクと外部リンクの両方を含むコンテンツ
+			const content = "[記事](/blog/test)と[外部](https://example.com)のリンク";
+
+			// When: MessageContentをレンダリング
+			render(<MessageContent content={content} />);
+
+			// Then: 両方のhrefが正しく設定される
+			const links = screen.getAllByRole("link");
+			expect(links).toHaveLength(2);
+			expect(links[0]).toHaveAttribute("href", "/blog/test");
+			expect(links[1]).toHaveAttribute("href", "https://example.com");
 		});
 
 		it("has overflow-hidden to prevent content overflow", () => {
