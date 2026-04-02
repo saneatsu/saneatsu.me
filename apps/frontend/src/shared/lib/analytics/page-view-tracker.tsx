@@ -14,13 +14,12 @@ import { env } from "@/env";
  * window.gtagが存在する場合のみ、ページビューイベントを送信する
  */
 const sendPageView = (url: string) => {
-	// @ts-expect-error gtagはグローバルに存在するが、型定義がないため
-	if (typeof window.gtag !== "undefined") {
-		// @ts-expect-error gtagはグローバルに存在するが、型定義がないため
-		window.gtag("config", env.NEXT_PUBLIC_GA_ID, {
-			page_path: url,
-		});
-	}
+	const measurementId = env.NEXT_PUBLIC_GA_ID;
+	if (!measurementId || typeof window.gtag === "undefined") return;
+
+	window.gtag("config", measurementId, {
+		page_path: url,
+	});
 };
 
 /**
