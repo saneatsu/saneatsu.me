@@ -2,4 +2,5 @@ packages:
   - 'apps/*'
   - 'packages/*'
 
+# dependabot.ymlのcooldown.default-daysと同じ値にすること
 minimumReleaseAge: 14d
