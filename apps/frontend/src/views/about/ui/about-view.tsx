@@ -1,5 +1,6 @@
 "use client";
 
+import { AWS, Playwright, Slack } from "developer-icons";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -109,6 +110,10 @@ const COMPANY_QUERY_KEY = "company" as const;
 type TechItem = {
 	name: string;
 	icon?: SimpleIcon;
+	/** developer-iconsのReactコンポーネント（simple-iconsにないアイコン用） */
+	renderIcon?: React.ComponentType<{ size?: number; className?: string }>;
+	/** アイコンのブランドカラー（renderIcon使用時に必要、#なしhex値） */
+	brandColor?: string;
 };
 
 /**
@@ -211,7 +216,7 @@ export function AboutView() {
 			{ name: "Vitest", icon: siVitest },
 			{ name: "Testing Library", icon: siTestinglibrary },
 			{ name: "Storybook", icon: siStorybook },
-			{ name: "Playwright" },
+			{ name: "Playwright", renderIcon: Playwright, brandColor: "4E6D82" },
 			{ name: "Selenium", icon: siSelenium },
 			{ name: "TanStack", icon: siTanstack },
 			{ name: "Kysely" },
@@ -241,12 +246,12 @@ export function AboutView() {
 			{ name: "Vercel", icon: siVercel },
 			{ name: "Cloudflare", icon: siCloudflare },
 			{ name: "Hetzner", icon: siHetzner },
-			{ name: "AWS" },
+			{ name: "AWS", renderIcon: AWS, brandColor: "E8EAED" },
 			{ name: "Google Cloud", icon: siGooglecloud },
 			{ name: "Docker", icon: siDocker },
 			{ name: "Anaconda", icon: siAnaconda },
 			{ name: "Notion", icon: siNotion },
-			{ name: "Slack" },
+			{ name: "Slack", renderIcon: Slack, brandColor: "4A154B" },
 			{ name: "Stripe", icon: siStripe },
 			{ name: "Asana", icon: siAsana },
 			{ name: "Dependabot", icon: siDependabot },
@@ -450,6 +455,8 @@ export function AboutView() {
 										<BadgeWithIcon
 											key={tech.name}
 											icon={tech.icon}
+											renderIcon={tech.renderIcon}
+											brandColor={tech.brandColor}
 											text={tech.name}
 											backgroundColor={
 												tech.name === "Kysely" ? "#7CE2FE" : undefined
@@ -481,6 +488,8 @@ export function AboutView() {
 										<BadgeWithIcon
 											key={tech.name}
 											icon={tech.icon}
+											renderIcon={tech.renderIcon}
+											brandColor={tech.brandColor}
 											text={tech.name}
 										/>
 									))}

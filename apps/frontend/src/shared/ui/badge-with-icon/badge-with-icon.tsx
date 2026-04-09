@@ -60,6 +60,10 @@ function getIconColor(hex: string): string {
 type BadgeWithIconProps = {
 	/** Simple Iconsのアイコンオブジェクト（オプショナル） */
 	icon?: SimpleIcon;
+	/** developer-icons等のReactコンポーネントアイコン（simple-iconsにないアイコン用） */
+	renderIcon?: React.ComponentType<{ size?: number; className?: string }>;
+	/** アイコンのブランドカラー（renderIcon使用時に必要、#なしhex値） */
+	brandColor?: string;
 	/** 表示するテキスト */
 	text: string;
 	/** カスタムクラス名 */
@@ -78,15 +82,15 @@ type BadgeWithIconProps = {
  * アイコン部分は円形の背景を持ち、各技術のブランドカラーを使用。
  * テキスト部分はsecondaryバッジスタイルで統一。
  *
- * @example
- * ```tsx
- * import { siReact } from "simple-icons";
- *
- * <BadgeWithIcon icon={siReact} text="React" />
- * ```
+ * アイコンのレンダリング優先順位：
+ * 1. `icon`（SimpleIcon）→ SVG pathでレンダリング
+ * 2. `renderIcon`（Reactコンポーネント）→ developer-icons等のコンポーネントとしてレンダリング
+ * 3. どちらもない → テキスト頭文字をフォールバック表示
  */
 export function BadgeWithIcon({
 	icon,
+	renderIcon: RenderIcon,
+	brandColor,
 	text,
 	className,
 	backgroundColor,
@@ -94,21 +98,34 @@ export function BadgeWithIcon({
 	// デフォルトの背景色（アイコンがない場合）
 	const defaultBgColor = "6B7280"; // Tailwind gray-500
 
-	// 背景色を決定（優先順位：1. backgroundColor, 2. icon.hex, 3. defaultBgColor）
+	/**
+	 * 背景色を決定する
+	 * 優先順位：1. icon.hex, 2. brandColor（renderIcon用）, 3. backgroundColor, 4. defaultBgColor
+	 */
 	const bgColorHex = icon
 		? icon.hex
-		: backgroundColor
-			? backgroundColor.replace("#", "")
-			: defaultBgColor;
+		: brandColor
+			? brandColor
+			: backgroundColor
+				? backgroundColor.replace("#", "")
+				: defaultBgColor;
 
 	return (
 		<div className={cn("inline-flex items-center overflow-hidden", className)}>
-			{/* アイコン部分：円形背景 */}
+			{/* アイコン部分：円形背景
+			 * renderIcon（マルチカラーSVG）使用時は brandColor がなければ bg-secondary を使用し、
+			 * アイコン本来の色を活かす。brandColor 指定時はそのブランドカラー背景を使用する。
+			 */}
 			<div
-				className="flex h-7 w-7 shrink-0 items-center justify-center rounded-l-full"
-				style={{
-					backgroundColor: `#${bgColorHex}`,
-				}}
+				className={cn(
+					"flex h-7 w-7 shrink-0 items-center justify-center rounded-l-full",
+					RenderIcon && !brandColor && "bg-secondary"
+				)}
+				style={
+					RenderIcon && !brandColor
+						? undefined
+						: { backgroundColor: `#${bgColorHex}` }
+				}
 			>
 				{icon ? (
 					<svg
@@ -121,6 +138,11 @@ export function BadgeWithIcon({
 						<title>{icon.title}</title>
 						<path d={icon.path} />
 					</svg>
+				) : RenderIcon ? (
+					<RenderIcon
+						size={14}
+						className={brandColor ? "text-white" : undefined}
+					/>
 				) : (
 					<span
 						className="text-sm font-semibold"
