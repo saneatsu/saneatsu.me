@@ -62,13 +62,11 @@ type BadgeWithIconProps = {
 	icon?: SimpleIcon;
 	/** developer-icons等のReactコンポーネントアイコン（simple-iconsにないアイコン用） */
 	renderIcon?: React.ComponentType<{ size?: number; className?: string }>;
-	/** アイコンのブランドカラー（renderIcon使用時に必要、#なしhex値） */
-	brandColor?: string;
 	/** 表示するテキスト */
 	text: string;
 	/** カスタムクラス名 */
 	className?: string;
-	/** カスタム背景色（アイコンがない場合に使用、#付きのhex値） */
+	/** カスタム背景色（#付きのhex値） */
 	backgroundColor?: string;
 };
 
@@ -90,7 +88,6 @@ type BadgeWithIconProps = {
 export function BadgeWithIcon({
 	icon,
 	renderIcon: RenderIcon,
-	brandColor,
 	text,
 	className,
 	backgroundColor,
@@ -100,29 +97,30 @@ export function BadgeWithIcon({
 
 	/**
 	 * 背景色を決定する
-	 * 優先順位：1. icon.hex, 2. brandColor（renderIcon用）, 3. backgroundColor, 4. defaultBgColor
+	 * 優先順位：1. icon.hex, 2. backgroundColor, 3. defaultBgColor
 	 */
 	const bgColorHex = icon
 		? icon.hex
-		: brandColor
-			? brandColor
-			: backgroundColor
-				? backgroundColor.replace("#", "")
-				: defaultBgColor;
+		: backgroundColor
+			? backgroundColor.replace("#", "")
+			: defaultBgColor;
+
+	/** アイコンまたはbackgroundColorが指定されている場合、カスタム背景色を使用する */
+	const hasCustomBg = !!(icon || backgroundColor);
 
 	return (
 		<div className={cn("inline-flex items-center overflow-hidden", className)}>
 			{/* アイコン部分：円形背景
-			 * renderIcon（マルチカラーSVG）使用時は brandColor がなければ bg-secondary を使用し、
-			 * アイコン本来の色を活かす。brandColor 指定時はそのブランドカラー背景を使用する。
+			 * renderIcon（マルチカラーSVG）使用時は backgroundColor がなければ bg-secondary を使用し、
+			 * アイコン本来の色を活かす。backgroundColor 指定時はその背景色を使用する。
 			 */}
 			<div
 				className={cn(
 					"flex h-7 w-7 shrink-0 items-center justify-center rounded-l-full",
-					RenderIcon && !brandColor && "bg-secondary"
+					RenderIcon && !hasCustomBg && "bg-secondary"
 				)}
 				style={
-					RenderIcon && !brandColor
+					RenderIcon && !hasCustomBg
 						? undefined
 						: { backgroundColor: `#${bgColorHex}` }
 				}
@@ -141,7 +139,7 @@ export function BadgeWithIcon({
 				) : RenderIcon ? (
 					<RenderIcon
 						size={14}
-						className={brandColor ? "text-white" : undefined}
+						className={hasCustomBg ? "text-white" : undefined}
 					/>
 				) : (
 					<span

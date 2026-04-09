@@ -112,8 +112,8 @@ type TechItem = {
 	icon?: SimpleIcon;
 	/** developer-iconsのReactコンポーネント（simple-iconsにないアイコン用） */
 	renderIcon?: React.ComponentType<{ size?: number; className?: string }>;
-	/** アイコンのブランドカラー（renderIcon使用時に必要、#なしhex値） */
-	brandColor?: string;
+	/** カスタム背景色（#付きのhex値） */
+	backgroundColor?: string;
 };
 
 /**
@@ -216,10 +216,14 @@ export function AboutView() {
 			{ name: "Vitest", icon: siVitest },
 			{ name: "Testing Library", icon: siTestinglibrary },
 			{ name: "Storybook", icon: siStorybook },
-			{ name: "Playwright", renderIcon: Playwright, brandColor: "4E6D82" },
+			{
+				name: "Playwright",
+				renderIcon: Playwright,
+				backgroundColor: "#4E6D82",
+			},
 			{ name: "Selenium", icon: siSelenium },
 			{ name: "TanStack", icon: siTanstack },
-			{ name: "Kysely" },
+			{ name: "Kysely", backgroundColor: "#7CE2FE" },
 			{ name: "Drizzle ORM", icon: siDrizzle },
 			{ name: "Prisma", icon: siPrisma },
 			{ name: "Better Auth", icon: siBetterauth },
@@ -246,12 +250,12 @@ export function AboutView() {
 			{ name: "Vercel", icon: siVercel },
 			{ name: "Cloudflare", icon: siCloudflare },
 			{ name: "Hetzner", icon: siHetzner },
-			{ name: "AWS", renderIcon: AWS, brandColor: "E8EAED" },
+			{ name: "AWS", renderIcon: AWS, backgroundColor: "#E8EAED" },
 			{ name: "Google Cloud", icon: siGooglecloud },
 			{ name: "Docker", icon: siDocker },
 			{ name: "Anaconda", icon: siAnaconda },
 			{ name: "Notion", icon: siNotion },
-			{ name: "Slack", renderIcon: Slack, brandColor: "4A154B" },
+			{ name: "Slack", renderIcon: Slack, backgroundColor: "#4A154B" },
 			{ name: "Stripe", icon: siStripe },
 			{ name: "Asana", icon: siAsana },
 			{ name: "Dependabot", icon: siDependabot },
@@ -456,11 +460,8 @@ export function AboutView() {
 											key={tech.name}
 											icon={tech.icon}
 											renderIcon={tech.renderIcon}
-											brandColor={tech.brandColor}
+											backgroundColor={tech.backgroundColor}
 											text={tech.name}
-											backgroundColor={
-												tech.name === "Kysely" ? "#7CE2FE" : undefined
-											}
 										/>
 									))}
 								</div>
@@ -489,7 +490,7 @@ export function AboutView() {
 											key={tech.name}
 											icon={tech.icon}
 											renderIcon={tech.renderIcon}
-											brandColor={tech.brandColor}
+											backgroundColor={tech.backgroundColor}
 											text={tech.name}
 										/>
 									))}
