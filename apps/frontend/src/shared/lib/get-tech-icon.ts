@@ -12,6 +12,8 @@ import {
 	siPrimevue,
 	siPython,
 	siPytorch,
+	siReact,
+	siRemix,
 	siRubyonrails,
 	siShadcnui,
 	siStorybook,
@@ -41,6 +43,8 @@ const TECH_ICON_MAP: Record<string, SimpleIcon> = {
 	flask: siFlask,
 	pytorch: siPytorch,
 	nuxt: siNuxt,
+	react: siReact,
+	remix: siRemix,
 	vuetify: siVuetify,
 	// AWS: simple-iconsにAWSのアイコンがないため、アイコンなしで表示
 	flutter: siFlutter,
