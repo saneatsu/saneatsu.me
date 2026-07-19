@@ -91,6 +91,7 @@ import {
 	AnchorHeading,
 	BadgeWithIcon,
 	Button,
+	PageContainer,
 	Sheet,
 	SheetContent,
 	SheetHeader,
@@ -383,8 +384,8 @@ export function AboutView() {
 	}, []);
 
 	return (
-		<main className="container mx-auto px-4 py-8">
-			<div className="max-w-4xl mx-auto space-y-16">
+		<>
+			<PageContainer className="space-y-16">
 				{/* タイトル */}
 				<section className="text-center">
 					<h1 className="text-4xl font-bold">{t("title")}</h1>
@@ -561,7 +562,7 @@ export function AboutView() {
 						</div>
 					</section>
 				</div>
-			</div>
+			</PageContainer>
 
 			{/* 経歴詳細Sheet */}
 			<Sheet open={isSheetOpen} onOpenChange={handleSheetClose}>
@@ -578,6 +579,6 @@ export function AboutView() {
 					)}
 				</SheetContent>
 			</Sheet>
-		</main>
+		</>
 	);
 }
