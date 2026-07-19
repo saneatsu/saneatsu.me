@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
 import type { GalleryImage } from "@/entities/gallery";
 import {
@@ -23,7 +23,7 @@ import { Button, Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui";
  * 3. 画像クリックで拡大モーダルを表示
  * 4. ページネーションで次ページ・前ページに移動
  */
-export default function GalleryPage() {
+function GalleryContent() {
 	const t = useTranslations();
 	const router = useRouter();
 	const pathname = usePathname();
@@ -257,5 +257,20 @@ export default function GalleryPage() {
 				onOpenChange={handleModalClose}
 			/>
 		</div>
+	);
+}
+
+/**
+ * ギャラリー一覧ページ
+ *
+ * @description
+ * GalleryContent は useSearchParams を使うため Suspense 境界で囲む。
+ * 囲まないと静的プリレンダー時にページ全体が CSR bailout となり、本番ビルドが失敗する。
+ */
+export default function GalleryPage() {
+	return (
+		<Suspense>
+			<GalleryContent />
+		</Suspense>
 	);
 }

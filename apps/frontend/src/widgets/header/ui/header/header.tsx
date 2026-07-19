@@ -23,8 +23,15 @@ export function Header() {
 		);
 	};
 
+	/*
+		ガラス（半透明マテリアル）のヘッダー。
+		- backdrop-blur-xl + saturate で下のコンテンツが透けて流れる質感を出す
+		- ハードな下罫線ではなく after:のグラデでscroll edgeを柔らかくフェードさせる
+		  （sticky下の1px罫線は硬く見えるため、Appleのscroll edge effectに倣う）
+		- backdrop-filter非対応環境では supports- のフォールバックで背景を濃くする
+	*/
 	return (
-		<header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
+		<header className="sticky top-0 z-50 w-full bg-background/70 backdrop-blur-xl backdrop-saturate-150 supports-backdrop-filter:bg-background/60 after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:h-4 after:bg-gradient-to-b after:from-background/60 after:to-transparent after:content-['']">
 			<div className="container mx-auto px-4">
 				<div className="max-w-7xl mx-auto flex h-14 items-center">
 					<div className="mr-4 flex">

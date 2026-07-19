@@ -26,7 +26,11 @@
 	"home": {
 		"hero": {
 			"title": "saneatsu.me",
-			"description": "Articles about programming, development tools, and daily insights on technology and lifestyle."
+			"description": "CEO of ALIA LLC, and an engineer who loves making things. I work across the whole stack — frontend, backend, and mobile — and care about the details, aiming for products that feel good to use. Here I write about the things I think about day to day.",
+			"aboutPrompt": "For a fuller profile and background,",
+			"aboutLink": "visit About",
+			"contactPrompt": "Open to work inquiries — feel free to reach out",
+			"contactLink": "Contact"
 		},
 		"popularArticles": {
 			"title": "Popular Articles"
@@ -74,11 +78,11 @@
 			"title": "About Me",
 			"profile": {
 				"title": "Profile",
-				"content": "I'm an engineer born in Yamagata, raised in Hokkaido, and currently based in Tokyo. For more details, please see the \"Career\" section below."
+				"content": "I'm an engineer born in Yamagata, raised in Hokkaido, and currently based in Tokyo. I'm the CEO of ALIA LLC. For more details, please see the \"Career\" section below."
 			},
 			"interests": {
 				"title": "Interests & Hobbies",
-				"hobbies": "I've been creating software for a long time, but I also enjoy hands-on crafts like ikebana (Sogetsu school) and embroidery."
+				"hobbies": "I've been creating software for a long time, but I also enjoy hands-on crafts like ikebana (Sogetsu school)."
 			}
 		},
 		"tech": {
@@ -110,13 +114,36 @@
 				"employmentType": "Employment Type",
 				"role": "Role",
 				"category": "Category",
-				"description": "Description",
+				"description": "Work Details",
 				"content": "Business Content",
 				"techStack": "Tech Stack",
 				"other": "Other",
 				"present": "Present"
 			},
 			"timeline": [
+				{
+					"slug": "activecore",
+					"period": {
+						"from": "2026-04",
+						"to": null
+					},
+					"companyName": "activecore, Inc.",
+					"role": ["Product Manager", "Frontend Engineer", "Backend Engineer"],
+					"employmentType": "Contract",
+					"description": [
+						{
+							"title": "Product Overview",
+							"content": "Building a web system that analyzes purchasing data to forecast and recommend products.\n\nI work remotely and, while there is a team, I operate mostly independently. Rather than being handed tasks, I repeatedly discover problems myself and build products to validate hypotheses.",
+							"techStack": ["Remix", "React", "Tailwind CSS", "shadcn/ui"]
+						},
+						{
+							"title": "Product Manager / Engineer",
+							"content": "- Own the entire cycle from problem discovery to hypothesis validation on my own\n- Handle product-management work (finding problems, forming hypotheses, prioritizing)\n- Implement both the frontend and the backend"
+						}
+					],
+					"category": "work",
+					"logoUrls": ["/company-logo/activecore-logo.png"]
+				},
 				{
 					"slug": "mobile-order-lab-and-tacoms",
 					"period": {
@@ -282,6 +309,11 @@
 		"contact": {
 			"title": "SNS & Websites",
 			"dmNote": "(Quickest way to reach me!)"
+		},
+		"hire": {
+			"title": "Work with me",
+			"description": "I'm available for app and web development, and for advisory or tech-lead support for development teams. Feel free to get in touch.",
+			"cta": "Go to the contact form"
 		}
 	},
 	"contact": {
@@ -524,6 +556,7 @@
 		"draft": "Draft",
 		"clearFilters": "Clear Filters",
 		"blogNotice": {
+			"title": "About this blog",
 			"principle1": "Articles are published without waiting for perfection and are continuously updated. Content reflects the time of writing and may change over time",
 			"principle3": "This approach is inspired by GitLab's transparency-focused culture",
 			"bookLink": "The GitLab Handbook (Remote Work Best Practices)"

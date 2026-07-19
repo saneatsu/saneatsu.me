@@ -40,7 +40,6 @@ export { BadgeWithIcon } from "./badge-with-icon/badge-with-icon";
 
 // Blog Notice
 export { BlogNotice } from "./blog-notice/blog-notice";
-
 // Breadcrumb
 export {
 	Breadcrumb,
@@ -54,10 +53,8 @@ export {
 export type { ButtonProps } from "./button/button";
 // Button
 export { Button, buttonVariants } from "./button/button";
-
 // Calendar
 export { Calendar, type CalendarProps } from "./calendar/calendar";
-
 // Card
 export {
 	Card,
@@ -82,10 +79,8 @@ export {
 	ChatPanelPortalProvider,
 	useChatPanelPortal,
 } from "./chat-panel-portal/chat-panel-portal-context";
-
 // Checkbox
 export { Checkbox } from "./checkbox/checkbox";
-
 // Command
 export {
 	Command,
@@ -98,7 +93,6 @@ export {
 	CommandSeparator,
 	CommandShortcut,
 } from "./command/command";
-
 // Context Menu
 export {
 	ContextMenu,
@@ -117,13 +111,11 @@ export {
 	ContextMenuSubTrigger,
 	ContextMenuTrigger,
 } from "./context-menu/context-menu";
-
 // Coordinates Input
 export {
 	CoordinatesInput,
 	type CoordinatesInputProps,
 } from "./coordinates-input/coordinates-input";
-
 // Data Table
 export type {
 	DataTableColumn,
@@ -239,6 +231,8 @@ export {
 	OG_IMAGE_CONTENT_TYPE,
 	OG_IMAGE_SIZE,
 } from "./og-image/og-image-constants";
+// Page Container
+export { PageContainer } from "./page-container/page-container";
 // Popover
 export {
 	Popover,

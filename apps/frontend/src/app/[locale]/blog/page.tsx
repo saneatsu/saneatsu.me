@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 
-import { BlogNotice } from "@/shared/ui";
+import { BlogNotice, PageContainer } from "@/shared/ui";
 import { ArticlesList, TagFilter } from "@/widgets";
 
 /**
@@ -14,20 +14,18 @@ export default function ArticlesPage() {
 	const t = useTranslations();
 
 	return (
-		<main className="container mx-auto px-4 py-8">
-			<div className="max-w-5xl mx-auto space-y-6">
-				<section className="text-center">
-					<h1 className="text-4xl font-bold">{t("blog.title")}</h1>
-				</section>
+		<PageContainer className="space-y-6">
+			<section className="text-center">
+				<h1 className="text-4xl font-bold">{t("blog.title")}</h1>
+			</section>
 
-				{/* Blog運営方針 */}
-				<BlogNotice />
+			{/* Blog運営方針 */}
+			<BlogNotice />
 
-				{/* タグフィルター */}
-				<TagFilter />
+			{/* タグフィルター */}
+			<TagFilter />
 
-				<ArticlesList />
-			</div>
-		</main>
+			<ArticlesList />
+		</PageContainer>
 	);
 }
