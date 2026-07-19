@@ -75,14 +75,14 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 			 * 基本情報（期間・雇用形態・役職・技術スタック）
 			 *
 			 * これらは「項目名: 値」という対応関係を持つメタ情報なので、
-			 * 定義リスト(dl/dt/dd)で表現する。dt を項目名、dd を値にすることで
-			 * 「小さな見出しが値の上に乗っている」という曖昧さをなくし、
-			 * ラベルと値の対応をアクセシビリティ上も明示する。
+			 * 定義リスト(dl/dt/dd)で表現し、ラベルと値の対応をアクセシビリティ上も明示する。
+			 * 見出し(dt)は text-base font-bold とし、業務詳細セクションの見出し(text-lg)より
+			 * 一段小さくすることで「業務詳細 > 基本情報の各見出し」という軽い差をつけている。
 			 */}
 			<dl className="space-y-5">
 				{/* 期間 */}
 				<div>
-					<dt className="text-sm font-medium text-muted-foreground">
+					<dt className="text-base font-bold">
 						{t("experience.detail.period")}
 					</dt>
 					<dd className="mt-1 text-base">
@@ -93,7 +93,7 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 				{/* 雇用形態 */}
 				{item.employmentType && (
 					<div>
-						<dt className="text-sm font-medium text-muted-foreground">
+						<dt className="text-base font-bold">
 							{t("experience.detail.employmentType")}
 						</dt>
 						<dd className="mt-1 text-base">{item.employmentType}</dd>
@@ -103,7 +103,7 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 				{/* 役職 */}
 				{item.role && item.role.length > 0 && (
 					<div>
-						<dt className="text-sm font-medium text-muted-foreground">
+						<dt className="text-base font-bold">
 							{t("experience.detail.role")}
 						</dt>
 						<dd className="mt-1 flex flex-wrap gap-2">
@@ -122,7 +122,7 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 				{/* 技術スタック */}
 				{item.techStack && item.techStack.length > 0 && (
 					<div>
-						<dt className="text-sm font-medium text-muted-foreground">
+						<dt className="text-base font-bold">
 							{t("experience.detail.techStack")}
 						</dt>
 						<dd className="mt-2 flex flex-wrap gap-2">
@@ -133,8 +133,6 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 					</div>
 				)}
 			</dl>
-
-			<Separator />
 
 			{/*
 			 * 業務詳細セクション
