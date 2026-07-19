@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 
 import { GoogleAnalytics, PageViewTracker } from "@/shared/lib";
 
@@ -64,7 +65,14 @@ export default function RootLayout({
 			<GoogleAnalytics />
 			<body>
 				<Providers>
-					<PageViewTracker />
+					{/*
+					 * PageViewTracker は useSearchParams を使うため、Suspense 境界で
+					 * 囲む必要がある。囲まないと静的プリレンダー時に該当ページ全体が
+					 * CSR bailout となり、terms など完全静的なページのビルドが失敗する。
+					 */}
+					<Suspense fallback={null}>
+						<PageViewTracker />
+					</Suspense>
 					{children}
 				</Providers>
 			</body>

@@ -2,6 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { Suspense } from "react";
 
 import { GoogleLogo } from "@/shared/image";
 import {
@@ -14,7 +15,15 @@ import {
 	CardTitle,
 } from "@/shared/ui";
 
-export default function LoginPage() {
+/**
+ * ログインフォーム本体
+ *
+ * @description
+ * useSearchParams を使うため Suspense 境界の内側に置く必要がある。
+ * 境界の外に置くと静的プリレンダー時にページ全体が CSR bailout となり、
+ * 本番ビルドが失敗する。
+ */
+function LoginContent() {
 	const searchParams = useSearchParams();
 	const error = searchParams.get("error");
 
@@ -54,5 +63,13 @@ export default function LoginPage() {
 				</CardContent>
 			</Card>
 		</div>
+	);
+}
+
+export default function LoginPage() {
+	return (
+		<Suspense>
+			<LoginContent />
+		</Suspense>
 	);
 }
