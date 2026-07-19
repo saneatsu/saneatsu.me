@@ -18,7 +18,7 @@ export function BlogNotice() {
 
 	return (
 		<section className="space-y-3">
-			<h2 className="text-2xl font-bold">{t("title")}</h2>
+			<h2 className="text-2xl font-bold tracking-tight">{t("title")}</h2>
 			<div className="space-y-2 text-foreground leading-relaxed">
 				{/* 運営方針: まず公開してから改善する */}
 				<p>{t("principle1")}</p>
