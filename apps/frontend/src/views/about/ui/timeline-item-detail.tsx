@@ -7,7 +7,7 @@ import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import type { SimpleIcon } from "simple-icons";
 
-import { getTechIcon } from "@/shared/lib";
+import { getTechMeta } from "@/shared/lib";
 import type { TimelineItem } from "@/shared/types";
 import { BadgeWithIcon, MarkdownPreview } from "@/shared/ui";
 
@@ -183,11 +183,15 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 									</h5>
 									<div className="flex flex-wrap gap-2">
 										{desc.techStack.map((techName) => {
-											const icon = getTechIcon(techName);
+											// SSOTからメタ情報を取得し、simple-iconsに無い技術（AWS・Playwright等）も
+											// renderIcon / backgroundColor を渡すことで正しくアイコン表示する
+											const meta = getTechMeta(techName);
 											return (
 												<BadgeWithIcon
 													key={techName}
-													icon={icon}
+													icon={meta?.icon}
+													renderIcon={meta?.renderIcon}
+													backgroundColor={meta?.backgroundColor}
 													text={techName}
 												/>
 											);

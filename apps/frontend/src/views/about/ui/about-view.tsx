@@ -1,90 +1,17 @@
 "use client";
 
-import { AWS, Playwright, Slack } from "developer-icons";
 import { ArrowRight } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import type { SimpleIcon } from "simple-icons";
-import {
-	siAnaconda,
-	siAsana,
-	siBetterauth,
-	siBiome,
-	siCloudflare,
-	siCss,
-	siDart,
-	siDependabot,
-	siDjango,
-	siDocker,
-	siDotnet,
-	siDrizzle,
-	siExpo,
-	siFastify,
-	siFlask,
-	siFlutter,
-	siGit,
-	siGithub,
-	siGithubactions,
-	siGooglebigquery,
-	siGooglecloud,
-	siHetzner,
-	siHono,
-	siHtml5,
-	siJavascript,
-	siKeras,
-	siKonva,
-	siLefthook,
-	siMantine,
-	siMeilisearch,
-	siMui,
-	siNextdotjs,
-	siNodedotjs,
-	siNotion,
-	siNuxt,
-	siOpencv,
-	siPinia,
-	siPostgresql,
-	siPrettier,
-	siPrimevue,
-	siPrisma,
-	siPython,
-	siPytorch,
-	siQiita,
-	siRadixui,
-	siReact,
-	siReacthookform,
-	siRemix,
-	siRubyonrails,
-	siSass,
-	siSelenium,
-	siShadcnui,
-	siSqlite,
-	siStorybook,
-	siStripe,
-	siSupabase,
-	siTailwindcss,
-	siTanstack,
-	siTensorflow,
-	siTestinglibrary,
-	siTurso,
-	siTypescript,
-	siVercel,
-	siVite,
-	siVitest,
-	siVuedotjs,
-	siVuetify,
-	siX,
-	siXyflow,
-	siZenn,
-	siZod,
-} from "simple-icons";
-
+import { siGithub, siQiita, siX, siZenn } from "simple-icons";
 import type { ContributionCopy } from "@/features/contributions";
 import {
 	ContributionHeatmap,
 	usePublicContributions,
 } from "@/features/contributions";
+import { techStackByCategory } from "@/shared/config";
 import { Link } from "@/shared/lib";
 import type { TimelineItem } from "@/shared/types";
 import {
@@ -107,18 +34,6 @@ import { TimelineItemDetail } from "./timeline-item-detail";
  * クエリパラメータ名の定数
  */
 const COMPANY_QUERY_KEY = "company" as const;
-
-/**
- * 技術アイテムの型定義
- */
-type TechItem = {
-	name: string;
-	icon?: SimpleIcon;
-	/** developer-iconsのReactコンポーネント（simple-iconsにないアイコン用） */
-	renderIcon?: React.ComponentType<{ size?: number; className?: string }>;
-	/** カスタム背景色（#付きのhex値） */
-	backgroundColor?: string;
-};
 
 /**
  * SNS・Webサイトアイテムの型定義
@@ -170,100 +85,13 @@ export function AboutView() {
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
 
-	// 技術スタックの定義（アイコン付き）
-	const techStack: {
-		languages: TechItem[];
-		frameworks: TechItem[];
-		databases: TechItem[];
-		tools: TechItem[];
-	} = {
-		languages: [
-			{ name: "TypeScript", icon: siTypescript },
-			{ name: "JavaScript", icon: siJavascript },
-			{ name: "Python", icon: siPython },
-			{ name: "Dart", icon: siDart },
-			{ name: "HTML5", icon: siHtml5 },
-			{ name: "CSS", icon: siCss },
-			{ name: "Visual Basic", icon: siDotnet },
-			{ name: "VBA", icon: siDotnet },
-		],
-		frameworks: [
-			{ name: "React", icon: siReact },
-			{ name: "Next.js", icon: siNextdotjs },
-			{ name: "Vue.js", icon: siVuedotjs },
-			{ name: "Nuxt", icon: siNuxt },
-			{ name: "Remix", icon: siRemix },
-			{ name: "React Native", icon: siReact },
-			{ name: "Expo", icon: siExpo },
-			{ name: "NativeWind", icon: siTailwindcss },
-			{ name: "Flutter", icon: siFlutter },
-			{ name: "Rails", icon: siRubyonrails },
-			{ name: "Sass", icon: siSass },
-			{ name: "Tailwind CSS", icon: siTailwindcss },
-			{ name: "MUI", icon: siMui },
-			{ name: "Vuetify", icon: siVuetify },
-			{ name: "Radix UI", icon: siRadixui },
-			{ name: "shadcn/ui", icon: siShadcnui },
-			{ name: "Mantine", icon: siMantine },
-			{ name: "PrimeVue", icon: siPrimevue },
-			{ name: "Pinia", icon: siPinia },
-			{ name: "Node.js", icon: siNodedotjs },
-			{ name: "Hono", icon: siHono },
-			{ name: "Fastify", icon: siFastify },
-			{ name: "Flask", icon: siFlask },
-			{ name: "Django", icon: siDjango },
-			{ name: "PyTorch", icon: siPytorch },
-			{ name: "TensorFlow", icon: siTensorflow },
-			{ name: "Keras", icon: siKeras },
-			{ name: "OpenCV", icon: siOpencv },
-			{ name: "Vite", icon: siVite },
-			{ name: "Vitest", icon: siVitest },
-			{ name: "Testing Library", icon: siTestinglibrary },
-			{ name: "Storybook", icon: siStorybook },
-			{
-				name: "Playwright",
-				renderIcon: Playwright,
-				backgroundColor: "#4E6D82",
-			},
-			{ name: "Selenium", icon: siSelenium },
-			{ name: "TanStack", icon: siTanstack },
-			{ name: "Kysely", backgroundColor: "#7CE2FE" },
-			{ name: "Drizzle ORM", icon: siDrizzle },
-			{ name: "Prisma", icon: siPrisma },
-			{ name: "Better Auth", icon: siBetterauth },
-			{ name: "Zod", icon: siZod },
-			{ name: "React Hook Form", icon: siReacthookform },
-			{ name: "React Flow", icon: siXyflow },
-			{ name: "Konva", icon: siKonva },
-			{ name: "Lefthook", icon: siLefthook },
-			{ name: "Biome", icon: siBiome },
-			{ name: "Prettier", icon: siPrettier },
-		],
-		databases: [
-			{ name: "PostgreSQL", icon: siPostgresql },
-			{ name: "SQLite", icon: siSqlite },
-			{ name: "Supabase", icon: siSupabase },
-			{ name: "Turso", icon: siTurso },
-			{ name: "BigQuery", icon: siGooglebigquery },
-			{ name: "Meilisearch", icon: siMeilisearch },
-		],
-		tools: [
-			{ name: "Git", icon: siGit },
-			{ name: "GitHub", icon: siGithub },
-			{ name: "GitHub Actions", icon: siGithubactions },
-			{ name: "Vercel", icon: siVercel },
-			{ name: "Cloudflare", icon: siCloudflare },
-			{ name: "Hetzner", icon: siHetzner },
-			{ name: "AWS", renderIcon: AWS, backgroundColor: "#E8EAED" },
-			{ name: "Google Cloud", icon: siGooglecloud },
-			{ name: "Docker", icon: siDocker },
-			{ name: "Anaconda", icon: siAnaconda },
-			{ name: "Notion", icon: siNotion },
-			{ name: "Slack", renderIcon: Slack, backgroundColor: "#4A154B" },
-			{ name: "Stripe", icon: siStripe },
-			{ name: "Asana", icon: siAsana },
-			{ name: "Dependabot", icon: siDependabot },
-		],
+	// 技術スタックの定義はSSOT（shared/config/tech-stack.ts）から取得する。
+	// カテゴリごとに定義順で並ぶため、表示順もSSOTの記述順に一致する。
+	const techStack = {
+		languages: techStackByCategory("languages"),
+		frameworks: techStackByCategory("frameworks"),
+		databases: techStackByCategory("databases"),
+		tools: techStackByCategory("tools"),
 	};
 
 	// SNS・Webサイトの定義（アイコン付き）
@@ -449,6 +277,8 @@ export function AboutView() {
 										<BadgeWithIcon
 											key={tech.name}
 											icon={tech.icon}
+											renderIcon={tech.renderIcon}
+											backgroundColor={tech.backgroundColor}
 											text={tech.name}
 										/>
 									))}
@@ -479,6 +309,8 @@ export function AboutView() {
 										<BadgeWithIcon
 											key={tech.name}
 											icon={tech.icon}
+											renderIcon={tech.renderIcon}
+											backgroundColor={tech.backgroundColor}
 											text={tech.name}
 										/>
 									))}
