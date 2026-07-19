@@ -136,9 +136,6 @@ importers:
       react-dom:
         specifier: ^19.2.7
         version: 19.2.7(react@19.2.7)
-      zod:
-        specifier: 4.3.6
-        version: 4.3.6
     devDependencies:
       '@docusaurus/module-type-aliases':
         specifier: ^3.9.2
@@ -475,9 +472,6 @@ importers:
       next-intl:
         specifier: ^4.13.1
         version: 4.13.1(next@16.2.10(@playwright/test@1.58.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)(typescript@5.9.3)
-      zod:
-        specifier: 4.3.6
-        version: 4.3.6
     devDependencies:
       typescript:
         specifier: ^5.9.3

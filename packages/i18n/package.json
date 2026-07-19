@@ -14,8 +14,7 @@
 		"test:coverage": "vitest run --coverage --passWithNoTests"
 	},
 	"dependencies": {
-		"next-intl": "^4.13.1",
-		"zod": "4.3.6"
+		"next-intl": "^4.13.1"
 	},
 	"devDependencies": {
 		"typescript": "^5.9.3"
