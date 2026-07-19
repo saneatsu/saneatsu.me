@@ -122,6 +122,29 @@
 			},
 			"timeline": [
 				{
+					"slug": "activecore",
+					"period": {
+						"from": "2026-04",
+						"to": null
+					},
+					"companyName": "activecore, Inc.",
+					"role": ["Product Manager", "Frontend Engineer", "Backend Engineer"],
+					"employmentType": "Contract",
+					"description": [
+						{
+							"title": "Product Overview",
+							"content": "Building a web system that analyzes purchasing data to forecast and recommend products.\n\nI work remotely and, while there is a team, I operate mostly independently. Rather than being handed tasks, I repeatedly discover problems myself and build products to validate hypotheses.",
+							"techStack": ["Remix", "React", "Tailwind CSS", "shadcn/ui"]
+						},
+						{
+							"title": "Product Manager / Engineer",
+							"content": "- Own the entire cycle from problem discovery to hypothesis validation on my own\n- Handle product-management work (finding problems, forming hypotheses, prioritizing)\n- Implement both the frontend and the backend"
+						}
+					],
+					"category": "work",
+					"logoUrls": ["/company-logo/activecore-logo.webp"]
+				},
+				{
 					"slug": "mobile-order-lab-and-tacoms",
 					"period": {
 						"from": "2025-03",

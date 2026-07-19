@@ -122,6 +122,33 @@
 			},
 			"timeline": [
 				{
+					"slug": "activecore",
+					"period": {
+						"from": "2026-04",
+						"to": null
+					},
+					"companyName": "株式会社アクティブコア",
+					"role": [
+						"プロダクトマネージャー",
+						"フロントエンドエンジニア",
+						"バックエンドエンジニア"
+					],
+					"employmentType": "業務委託",
+					"description": [
+						{
+							"title": "プロダクト概要",
+							"content": "購買データを分析し、予測・推薦を行う Web システムを開発している。\n\nリモートで稼働し、チームはあるが基本的に個人で動いている。タスクを渡される形式ではなく、自分で課題を発見し、仮説検証のためのプロダクトを作ることを繰り返している。",
+							"techStack": ["Remix", "React", "Tailwind CSS", "shadcn/ui"]
+						},
+						{
+							"title": "プロダクトマネージャー・エンジニア",
+							"content": "- 課題の発見から仮説検証までを個人で一気通貫に担当\n- プロダクトマネジメント的な動き（課題発見・仮説立案・優先順位付け）\n- フロントエンド・バックエンドの両方を実装"
+						}
+					],
+					"category": "work",
+					"logoUrls": ["/company-logo/activecore-logo.webp"]
+				},
+				{
 					"slug": "mobile-order-lab-and-tacoms",
 					"period": {
 						"from": "2025-03",
