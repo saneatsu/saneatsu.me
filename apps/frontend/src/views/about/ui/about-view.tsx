@@ -1,6 +1,7 @@
 "use client";
 
 import { AWS, Playwright, Slack } from "developer-icons";
+import { ArrowRight } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -84,10 +85,12 @@ import {
 	ContributionHeatmap,
 	usePublicContributions,
 } from "@/features/contributions";
+import { Link } from "@/shared/lib";
 import type { TimelineItem } from "@/shared/types";
 import {
 	AnchorHeading,
 	BadgeWithIcon,
+	Button,
 	Sheet,
 	SheetContent,
 	SheetHeader,
@@ -496,6 +499,24 @@ export function AboutView() {
 									))}
 								</div>
 							</div>
+						</div>
+					</section>
+
+					{/* お仕事のご相談セクション（Contactフォームへ誘導） */}
+					<section className="space-y-4 pb-12 border-b">
+						<AnchorHeading level="h2" id="hire">
+							{t("hire.title")}
+						</AnchorHeading>
+						<div className="rounded-xl border bg-muted/30 p-5 md:p-6 space-y-4">
+							<p className="max-w-prose text-muted-foreground">
+								{t("hire.description")}
+							</p>
+							<Button asChild>
+								<Link href="/contact">
+									{t("hire.cta")}
+									<ArrowRight className="h-4 w-4" />
+								</Link>
+							</Button>
 						</div>
 					</section>
 
