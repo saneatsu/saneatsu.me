@@ -33,10 +33,13 @@ export function ArticleCard({ article }: ArticleCardProps) {
 		.slice(0, 150);
 
 	return (
-		<Link href={`/blog/${article.slug}`}>
-			<div className="group cursor-pointer flex flex-row items-start gap-4">
+		<Link
+			href={`/blog/${article.slug}`}
+			className="group block rounded-2xl border border-border bg-card p-4 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+		>
+			<div className="flex flex-row items-start gap-4">
 				{/* サムネイル画像またはフォールバック */}
-				<div className="relative w-28 md:w-40 aspect-video overflow-hidden rounded-md shrink-0">
+				<div className="relative w-28 md:w-40 aspect-video overflow-hidden rounded-lg shrink-0">
 					{article.cfImageId ? (
 						<Image
 							src={getCloudflareImageUrl(article.cfImageId, "medium") ?? ""}
@@ -58,7 +61,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
 					break-words（単語境界のみ改行）では不十分なため、任意の文字で改行するbreak-allを使用
 				*/}
 				<div className="flex-1 flex flex-col py-0 min-w-0">
-					<h3 className="text-sm md:text-base font-semibold line-clamp-3 mb-2 group-hover:underline transition-all break-all">
+					<h3 className="text-sm md:text-base font-semibold line-clamp-3 mb-2 tracking-tight break-all group-hover:text-foreground">
 						{article.title}
 					</h3>
 
