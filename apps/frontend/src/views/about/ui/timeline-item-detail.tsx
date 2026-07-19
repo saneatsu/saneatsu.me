@@ -9,7 +9,7 @@ import type { SimpleIcon } from "simple-icons";
 
 import { getTechIcon } from "@/shared/lib";
 import type { TimelineItem } from "@/shared/types";
-import { BadgeWithIcon, MarkdownPreview, Separator } from "@/shared/ui";
+import { BadgeWithIcon, MarkdownPreview } from "@/shared/ui";
 
 /**
  * TimelineItemDetailコンポーネントのProps
@@ -50,7 +50,7 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 		<div className="space-y-8">
 			{/* 会社名セクション */}
 			<div>
-				<h2 className="text-2xl font-bold flex items-center gap-3">
+				<h2 className="text-2xl font-bold tracking-tight flex items-center gap-3 border-b-4 border-double border-border pb-2">
 					{item.logoUrls && item.logoUrls.length > 0 && (
 						<div className="flex items-center gap-2">
 							{item.logoUrls.map((logoUrl, index) => (
@@ -69,23 +69,21 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 				</h2>
 			</div>
 
-			<Separator />
-
 			{/*
 			 * 基本情報（期間・雇用形態・役職・技術スタック）
 			 *
 			 * これらは「項目名: 値」という対応関係を持つメタ情報なので、
 			 * 定義リスト(dl/dt/dd)で表現し、ラベルと値の対応をアクセシビリティ上も明示する。
-			 * 見出し(dt)は text-base font-bold とし、業務詳細セクションの見出し(text-lg)より
-			 * 一段小さくすることで「業務詳細 > 基本情報の各見出し」という軽い差をつけている。
+			 * 見出し(dt)は業務詳細セクションの見出しと同じ text-lg font-bold ＋ 実線の下線
+			 * (border-b)にして、トップレベルのセクション見出しとして同じ扱いに揃えている。
 			 */}
 			<dl className="space-y-5">
 				{/* 期間 */}
 				<div>
-					<dt className="text-base font-bold">
+					<dt className="text-lg font-bold border-b border-border pb-1">
 						{t("experience.detail.period")}
 					</dt>
-					<dd className="mt-1 text-base">
+					<dd className="mt-2 text-base">
 						{formatPeriod(item.period.from, item.period.to)}
 					</dd>
 				</div>
@@ -93,20 +91,20 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 				{/* 雇用形態 */}
 				{item.employmentType && (
 					<div>
-						<dt className="text-base font-bold">
+						<dt className="text-lg font-bold border-b border-border pb-1">
 							{t("experience.detail.employmentType")}
 						</dt>
-						<dd className="mt-1 text-base">{item.employmentType}</dd>
+						<dd className="mt-2 text-base">{item.employmentType}</dd>
 					</div>
 				)}
 
 				{/* 役職 */}
 				{item.role && item.role.length > 0 && (
 					<div>
-						<dt className="text-base font-bold">
+						<dt className="text-lg font-bold border-b border-border pb-1">
 							{t("experience.detail.role")}
 						</dt>
-						<dd className="mt-1 flex flex-wrap gap-2">
+						<dd className="mt-2 flex flex-wrap gap-2">
 							{item.role.map((r, index) => (
 								<span key={r} className="text-base">
 									{r}
@@ -122,7 +120,7 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 				{/* 技術スタック */}
 				{item.techStack && item.techStack.length > 0 && (
 					<div>
-						<dt className="text-base font-bold">
+						<dt className="text-lg font-bold border-b border-border pb-1">
 							{t("experience.detail.techStack")}
 						</dt>
 						<dd className="mt-2 flex flex-wrap gap-2">
@@ -149,12 +147,12 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 			 * 小見出し(h5) と一段ずつ下げ、大小が素直に下る構造にしている。
 			 */}
 			<div className="space-y-6">
-				<h3 className="text-lg font-bold">
+				<h3 className="text-lg font-bold border-b border-border pb-1">
 					{t("experience.detail.description")}
 				</h3>
 
 				<div className="space-y-8">
-					{item.description.map((desc, index) => (
+					{item.description.map((desc) => (
 						<div key={desc.title} className="space-y-3">
 							{/* 案件・役割のタイトル */}
 							<h4 className="text-base font-bold">{desc.title}</h4>
@@ -211,15 +209,6 @@ export function TimelineItemDetail({ item }: TimelineItemDetailProps) {
 										remarkPlugins={[remarkGfm, remarkBreaks]}
 									/>
 								</div>
-							)}
-
-							{/*
-							 * 最後の項目以外は区切り線を表示。
-							 * セクション境界の Separator より弱くするため bg-border/50 で薄くし、
-							 * 「セクション境界＝濃い線 / ブロック間＝薄い線」と粒度に段差をつける。
-							 */}
-							{index < item.description.length - 1 && (
-								<Separator className="my-6 bg-border/50" />
 							)}
 						</div>
 					))}
