@@ -27,6 +27,8 @@
 		"hero": {
 			"title": "saneatsu.me",
 			"description": "CEO of ALIA LLC, and an engineer who loves making things. I work across the whole stack — frontend, backend, and mobile — and care about the details, aiming for products that feel good to use. Here I write about the things I think about day to day.",
+			"aboutPrompt": "For a fuller profile and background,",
+			"aboutLink": "visit About",
 			"contactPrompt": "Open to work inquiries — feel free to reach out",
 			"contactLink": "Contact"
 		},
