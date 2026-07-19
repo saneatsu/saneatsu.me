@@ -114,7 +114,7 @@
 				"employmentType": "雇用形態",
 				"role": "役職",
 				"category": "カテゴリー",
-				"description": "説明",
+				"description": "業務詳細",
 				"content": "業務内容",
 				"techStack": "技術スタック",
 				"other": "その他",
