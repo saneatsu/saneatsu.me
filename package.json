@@ -30,19 +30,19 @@
 		"seed": "cd packages/db && pnpm db:seed"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.4.6",
-		"@commitlint/cli": "^20.5.0",
-		"@commitlint/config-conventional": "^20.5.0",
+		"@biomejs/biome": "^2.5.2",
+		"@commitlint/cli": "^21.2.0",
+		"@commitlint/config-conventional": "^21.2.0",
 		"@types/node": "^25.3.5",
-		"@vitest/coverage-v8": "^4.0.18",
-		"@vitest/ui": "^4.0.18",
-		"concurrently": "^9.2.1",
+		"@vitest/coverage-v8": "^4.1.9",
+		"@vitest/ui": "^4.1.9",
+		"concurrently": "^10.0.3",
 		"identity-obj-proxy": "^3.0.0",
-		"lefthook": "^2.1.4",
-		"turbo": "^2.8.14",
+		"lefthook": "^2.1.9",
+		"turbo": "^2.10.3",
 		"typescript": "^5.9.3",
-		"vitest": "^4.0.18",
-		"wrangler": "^4.71.0"
+		"vitest": "^4.1.9",
+		"wrangler": "^4.107.0"
 	},
 	"engines": {
 		"node": ">=18.0.0",

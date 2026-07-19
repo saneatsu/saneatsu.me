@@ -113,8 +113,8 @@
 		"@types/react": "^19.2.14",
 		"@types/react-dom": "^19.2.3",
 		"@types/textarea-caret": "^3.0.4",
-		"@vitejs/plugin-react": "^5.1.4",
-		"concurrently": "^9.2.1",
+		"@vitejs/plugin-react": "^5.2.0",
+		"concurrently": "^10.0.3",
 		"jsdom": "29.0.0",
 		"msw": "^2.12.10",
 		"msw-storybook-addon": "^2.0.6",
@@ -123,8 +123,8 @@
 		"storybook": "^10.3.3",
 		"tailwindcss-animate": "^1.0.7",
 		"typescript": "^5.9.3",
-		"vitest": "^4.0.18",
-		"wait-on": "^9.0.4"
+		"vitest": "^4.1.9",
+		"wait-on": "^9.0.10"
 	},
 	"msw": {
 		"workerDirectory": [
