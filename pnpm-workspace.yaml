@@ -2,5 +2,8 @@ packages:
   - 'apps/*'
   - 'packages/*'
 
-# dependabot.ymlのcooldown.default-daysと同じ値にすること
-minimumReleaseAge: 14d
+# 公開後この時間が経過するまで新バージョンをインストールしない（サプライチェーン対策）。
+# pnpm の minimumReleaseAge は「分」単位の数値を期待する。
+# "14d" のような文字列は正しく解釈されず、公開後かなり経った版まで弾いてしまうため、
+# dependabot.yml の cooldown.default-days: 14 と揃えて 14日 = 14 * 24 * 60 = 20160 分を指定する。
+minimumReleaseAge: 20160
