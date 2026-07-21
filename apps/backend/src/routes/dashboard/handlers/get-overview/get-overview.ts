@@ -1,10 +1,11 @@
 import type { RouteHandler } from "@hono/zod-openapi";
 import type { DashboardOverviewResponse } from "@saneatsu/schemas";
-import { and, count, desc, eq, gte, inArray, sql } from "drizzle-orm";
+import { and, count, desc, eq, gte, inArray, lt, sql } from "drizzle-orm";
 
 import type { Env } from "@/env";
 import { getDatabase } from "@/lib/database";
 import { getContributionSummary } from "@/lib/get-contribution-summary";
+import { getThisMonthRangeJst } from "@/lib/get-this-month-range";
 
 import type { getDashboardOverviewRoute } from "./get-overview.openapi";
 
@@ -48,12 +49,17 @@ export const getDashboardOverview: Handler = async (c) => {
 		const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 		const startOfMonthStr = startOfMonth.toISOString().split("T")[0];
 
+		// 今月の範囲（JST基準）。created_atはUTCのISO 8601文字列で保存されるため、
+		// JSTの月初〜翌月初もUTCのISO 8601文字列で受け取り、そのまま文字列比較に使う
+		const thisMonthRange = getThisMonthRangeJst(now);
+
 		// 3. 記事統計の取得（概要版）
 		const [
 			totalArticlesResult,
 			publishedArticlesResult,
 			draftArticlesResult,
 			archivedArticlesResult,
+			thisMonthArticlesResult,
 		] = await Promise.all([
 			db.select({ count: count() }).from(articles),
 			db
@@ -68,6 +74,17 @@ export const getDashboardOverview: Handler = async (c) => {
 				.select({ count: count() })
 				.from(articles)
 				.where(eq(articles.status, "archived")),
+			// 今月の新規作成記事数（published + draft、JSTの月範囲を排他上限付きで集計）
+			db
+				.select({ count: count() })
+				.from(articles)
+				.where(
+					and(
+						inArray(articles.status, ["published", "draft"]),
+						gte(articles.createdAt, thisMonthRange.start),
+						lt(articles.createdAt, thisMonthRange.end)
+					)
+				),
 		]);
 
 		// 4. 閲覧数統計
@@ -203,7 +220,7 @@ export const getDashboardOverview: Handler = async (c) => {
 				publishedArticles: publishedArticlesResult[0]?.count || 0,
 				draftArticles: draftArticlesResult[0]?.count || 0,
 				archivedArticles: archivedArticlesResult[0]?.count || 0,
-				thisMonthArticles: 0, // 概要版では省略
+				thisMonthArticles: thisMonthArticlesResult[0]?.count || 0,
 				totalViews: Number(totalViewsResult[0]?.totalViews) || 0,
 				thisMonthViews: Number(thisMonthViewsResult[0]?.thisMonthViews) || 0,
 			},
