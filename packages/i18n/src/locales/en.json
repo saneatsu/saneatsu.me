@@ -30,7 +30,8 @@
 			"aboutPrompt": "For a fuller profile and background,",
 			"aboutLink": "visit About",
 			"contactPrompt": "Open to work inquiries — feel free to reach out",
-			"contactLink": "Contact"
+			"contactLink": "Contact",
+			"photoAlt": "Profile photo of saneatsu"
 		},
 		"popularArticles": {
 			"title": "Popular Articles"
