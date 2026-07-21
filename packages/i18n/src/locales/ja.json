@@ -30,7 +30,8 @@
 			"aboutPrompt": "プロフィールや経歴の詳細は",
 			"aboutLink": "Aboutページへ",
 			"contactPrompt": "お仕事のご相談も承っています。お気軽にどうぞ",
-			"contactLink": "お問い合わせ"
+			"contactLink": "お問い合わせ",
+			"photoAlt": "saneatsuのプロフィール写真"
 		},
 		"popularArticles": {
 			"title": "人気記事"
