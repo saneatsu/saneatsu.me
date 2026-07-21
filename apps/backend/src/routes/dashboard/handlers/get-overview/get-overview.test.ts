@@ -88,6 +88,13 @@ describe("GET /dashboard/overview - ダッシュボード概要取得", () => {
 			}),
 		};
 
+		// 今月の新規記事数のモック（published + draft をJST月範囲で集計）
+		const thisMonthArticlesCountMock = {
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockResolvedValue([{ count: 7 }]),
+			}),
+		};
+
 		// 総閲覧数のモック（articlesテーブルから取得、言語フィルターなし）
 		const totalViewsMock = {
 			from: vi.fn().mockResolvedValue([{ totalViews: 5000 }]),
@@ -196,6 +203,7 @@ describe("GET /dashboard/overview - ダッシュボード概要取得", () => {
 			.mockReturnValueOnce(publishedArticlesCountMock) // 公開済み記事数
 			.mockReturnValueOnce(draftArticlesCountMock) // 下書き記事数
 			.mockReturnValueOnce(archivedArticlesCountMock) // アーカイブ記事数
+			.mockReturnValueOnce(thisMonthArticlesCountMock) // 今月の新規記事数
 			.mockReturnValueOnce(totalViewsMock) // 総閲覧数
 			.mockReturnValueOnce(thisMonthViewsMock) // 今月の閲覧数
 			.mockReturnValueOnce(topArticlesMock) // 人気記事トップ5
@@ -228,6 +236,7 @@ describe("GET /dashboard/overview - ダッシュボード概要取得", () => {
 		expect(data.articleStats.publishedArticles).toBe(80);
 		expect(data.articleStats.draftArticles).toBe(15);
 		expect(data.articleStats.archivedArticles).toBe(5);
+		expect(data.articleStats.thisMonthArticles).toBe(7);
 		expect(data.articleStats.totalViews).toBe(5000);
 
 		// 人気記事が取得できていること
@@ -289,6 +298,13 @@ describe("GET /dashboard/overview - ダッシュボード概要取得", () => {
 			}),
 		};
 
+		// 今月の新規記事数のモック（published + draft をJST月範囲で集計）
+		const thisMonthArticlesCountMock = {
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockResolvedValue([{ count: 12 }]),
+			}),
+		};
+
 		// 総閲覧数のモック（articlesテーブルから取得、言語フィルターなし）
 		const totalViewsMock = {
 			from: vi.fn().mockResolvedValue([{ totalViews: 10000 }]),
@@ -333,6 +349,7 @@ describe("GET /dashboard/overview - ダッシュボード概要取得", () => {
 			.mockReturnValueOnce(publishedArticlesCountMock) // 公開済み記事数
 			.mockReturnValueOnce(draftArticlesCountMock) // 下書き記事数
 			.mockReturnValueOnce(archivedArticlesCountMock) // アーカイブ記事数
+			.mockReturnValueOnce(thisMonthArticlesCountMock) // 今月の新規記事数
 			.mockReturnValueOnce(totalViewsMock) // 総閲覧数
 			.mockReturnValueOnce(thisMonthViewsMock) // 今月の閲覧数
 			.mockReturnValueOnce(topArticlesMock) // 人気記事トップ5
@@ -362,6 +379,7 @@ describe("GET /dashboard/overview - ダッシュボード概要取得", () => {
 		expect(data.articleStats.publishedArticles).toBe(150);
 		expect(data.articleStats.draftArticles).toBe(30);
 		expect(data.articleStats.archivedArticles).toBe(20);
+		expect(data.articleStats.thisMonthArticles).toBe(12);
 		expect(data.articleStats.totalViews).toBe(10000);
 		expect(data.contributions).toBeDefined();
 	});
