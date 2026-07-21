@@ -12,12 +12,13 @@ import { ArticlesList, PopularArticlesList } from "@/widgets";
  * ヒーローに表示するプロフィール写真のパス。
  *
  * @description
- * まだ写真ファイルが用意できていないため、暫定で `null` を指定している。
- * 写真を用意したら `apps/frontend/public/images/` に画像（例: profile.webp）を
- * 置き、ここを `"/images/profile.webp"` のように差し替えるだけで表示される。
- * `null` の間はプロフィールアイコンのプレースホルダーが表示される。
+ * GitHubアバターをそのまま利用している。`next.config.js` で
+ * `images.unoptimized: true` を指定しているため、外部URLでも
+ * `remotePatterns` の許可設定なしで表示できる。
+ * `null` にするとプロフィールアイコンのプレースホルダーが表示される。
  */
-const PROFILE_IMAGE_SRC: string | null = null;
+const PROFILE_IMAGE_SRC: string | null =
+	"https://avatars.githubusercontent.com/u/16120550?s=400&v=4";
 
 /**
  * ホームページのメインビューコンポーネント
