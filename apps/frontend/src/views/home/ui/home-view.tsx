@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 
 import { Link } from "@/shared/lib";
-import { BlogNotice, PageContainer } from "@/shared/ui";
+import { BlogNotice, Button, PageContainer } from "@/shared/ui";
 import { ArticlesList, PopularArticlesList } from "@/widgets";
 
 /**
@@ -60,31 +60,29 @@ export function HomeView() {
 					<p className="text-base leading-relaxed text-foreground">
 						{t("hero.description")}
 					</p>
-					{/* Aboutページへの導線（お問い合わせと同じ塗りボタン） */}
-					<div className="flex flex-wrap items-center gap-x-4 gap-y-3">
+					{/* Aboutページへの導線（お問い合わせと同じリンクスタイル） */}
+					<div className="flex flex-wrap items-center gap-x-2 gap-y-2">
 						<span className="text-sm text-muted-foreground">
 							{t("hero.aboutPrompt")}
 						</span>
-						<Link
-							href="/about"
-							className="group inline-flex items-center gap-1.5 rounded-full bg-foreground px-5 py-2.5 text-sm font-semibold text-background shadow-sm transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 active:scale-95 motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:active:scale-100"
-						>
-							{t("hero.aboutLink")}
-							<ArrowRight className="h-4 w-4 transition-transform duration-300 ease-out group-hover:translate-x-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0" />
-						</Link>
+						<Button asChild variant="link" className="h-auto p-0">
+							<Link href="/about">
+								{t("hero.aboutLink")}
+								<ArrowRight className="h-4 w-4" />
+							</Link>
+						</Button>
 					</div>
 					{/* お仕事相談への導線（Contactページへ誘導） */}
-					<div className="flex flex-wrap items-center gap-x-4 gap-y-3">
+					<div className="flex flex-wrap items-center gap-x-2 gap-y-2">
 						<span className="text-sm text-muted-foreground">
 							{t("hero.contactPrompt")}
 						</span>
-						<Link
-							href="/contact"
-							className="group inline-flex items-center gap-1.5 rounded-full bg-foreground px-5 py-2.5 text-sm font-semibold text-background shadow-sm transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 active:scale-95 motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:active:scale-100"
-						>
-							{t("hero.contactLink")}
-							<ArrowRight className="h-4 w-4 transition-transform duration-300 ease-out group-hover:translate-x-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0" />
-						</Link>
+						<Button asChild variant="link" className="h-auto p-0">
+							<Link href="/contact">
+								{t("hero.contactLink")}
+								<ArrowRight className="h-4 w-4" />
+							</Link>
+						</Button>
 					</div>
 				</div>
 
