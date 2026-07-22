@@ -32,3 +32,8 @@ jobs:
 
       - name: Report Coverage
         uses: davelosert/vitest-coverage-report-action@v2
+
+      # ミドルウェアテストはメインのVitestから除外されているため個別に実行する。
+      # (別環境・別setupが必要。理由の詳細は vitest.config.middleware.mts を参照)
+      - name: Run middleware tests
+        run: pnpm --filter @saneatsu/frontend test:middleware
