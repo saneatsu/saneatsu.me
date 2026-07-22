@@ -20,6 +20,11 @@ export default defineConfig({
 			"dist/**",
 			"build/**",
 			"**/*.stories.{js,jsx,ts,tsx}",
+			// ミドルウェアテストは別設定(vitest.config.middleware.mts)で実行するため除外する。
+			// 理由: このメイン設定はjsdom環境で、setup(vitest.setup.mts)がnext/serverを
+			// グローバルにモックしている。一方ミドルウェアテストはnode環境かつ本物の
+			// NextResponse(status/locationヘッダー)の検証が必要で、両者は両立しない
+			// グローバル設定を要求するため分離している。CIでは`pnpm test:middleware`で個別実行する。
 			"**/*.middleware.test.{js,ts,mjs,mts}",
 			"**/*.bak/**",
 		],
