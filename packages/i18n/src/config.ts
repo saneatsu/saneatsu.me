@@ -3,7 +3,9 @@
  */
 
 export const locales = ["ja", "en"] as const;
-export const defaultLocale = "ja" as const;
+// ブラウザの言語が未対応・不明な場合のフォールバック先。
+// 日本語以外のユーザーにも読めるよう、既定は英語（en）とする。
+export const defaultLocale = "en" as const;
 
 export type Locale = (typeof locales)[number];
 
