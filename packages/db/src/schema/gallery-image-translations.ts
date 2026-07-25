@@ -22,8 +22,8 @@ export const galleryImageTranslations = sqliteTable(
 		galleryImageId: integer("gallery_image_id")
 			.notNull()
 			.references(() => galleryImages.id, { onDelete: "cascade" }),
-		/** 言語コード（ja, en） */
-		language: text("language", { enum: ["ja", "en"] }).notNull(),
+		/** 言語コード（ja, en, es） */
+		language: text("language", { enum: ["ja", "en", "es"] }).notNull(),
 		/** 画像タイトル */
 		title: text("title"),
 		/** 画像の説明 */

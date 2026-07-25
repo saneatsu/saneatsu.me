@@ -232,6 +232,18 @@ export const uploadGalleryImageHandler: Handler = async (c) => {
 			});
 		}
 
+		// スペイン語の翻訳データ
+		if (translationResult.es.title || translationResult.es.description) {
+			translationsToInsert.push({
+				galleryImageId: newGalleryImage.id,
+				language: "es" as const,
+				title: translationResult.es.title,
+				description: translationResult.es.description,
+				createdAt: now,
+				updatedAt: now,
+			});
+		}
+
 		if (translationsToInsert.length > 0) {
 			await db.insert(galleryImageTranslations).values(translationsToInsert);
 		}

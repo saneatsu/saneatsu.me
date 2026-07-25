@@ -76,7 +76,7 @@ export const ArticleSuggestionsQuerySchema = z.object({
 		description: "検索クエリ文字列",
 	}),
 	/** 言語 */
-	lang: z.enum(["ja", "en"]).optional().default("ja").openapi({
+	lang: z.enum(["ja", "en", "es"]).optional().default("ja").openapi({
 		example: "ja",
 		description: "表示言語",
 	}),
@@ -160,7 +160,7 @@ export const ArticleCheckSlugResponseSchema = z.object({
 export const ArticlesQuerySchema = z.object({
 	page: z.string().regex(/^\d+$/).optional().default("1"),
 	limit: z.string().regex(/^\d+$/).optional().default("10"),
-	language: z.enum(["ja", "en"]).optional().default("ja"),
+	language: z.enum(["ja", "en", "es"]).optional().default("ja"),
 	status: z.enum(["all", "draft", "published", "archived"]).optional(),
 	search: z.string().optional(),
 	sortBy: z.string().optional(),
@@ -206,7 +206,7 @@ export const ArticleDetailParamSchema = z.object({
  * 記事詳細取得のクエリパラメータスキーマ
  */
 export const ArticleDetailQuerySchema = z.object({
-	lang: z.enum(["ja", "en"]).optional().default("ja").openapi({
+	lang: z.enum(["ja", "en", "es"]).optional().default("ja").openapi({
 		example: "ja",
 		description: "表示言語",
 	}),

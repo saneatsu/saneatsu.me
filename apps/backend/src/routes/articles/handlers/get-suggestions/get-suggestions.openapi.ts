@@ -38,7 +38,7 @@ export const ArticleSuggestionsQuerySchema = z.object({
 		example: "Next",
 		description: "検索クエリ文字列（空文字列の場合は全記事を取得）",
 	}),
-	lang: z.enum(["ja", "en"]).optional().default("ja").openapi({
+	lang: z.enum(["ja", "en", "es"]).optional().default("ja").openapi({
 		example: "ja",
 		description: "表示言語",
 	}),

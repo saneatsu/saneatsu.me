@@ -29,7 +29,7 @@ export const getPublicContributionsRoute = createRoute({
 				example: "365",
 				description: "日数。30/90/180/365 のいずれか",
 			}),
-			locale: z.enum(["ja", "en"]).optional().openapi({
+			locale: z.enum(["ja", "en", "es"]).optional().openapi({
 				example: "ja",
 				description: "UI向けの言語（レスポンス内容は同じ）",
 			}),

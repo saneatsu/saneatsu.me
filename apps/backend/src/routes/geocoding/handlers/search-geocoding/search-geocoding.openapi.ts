@@ -13,7 +13,7 @@ const SearchGeocodingQuerySchema = z.object({
 	/**
 	 * 言語コード（ja, en）
 	 */
-	language: z.enum(["ja", "en"]).optional().openapi({
+	language: z.enum(["ja", "en", "es"]).optional().openapi({
 		example: "ja",
 	}),
 	/**

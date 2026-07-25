@@ -167,61 +167,73 @@ export const updateArticle: Handler = async (c) => {
 			});
 		}
 
-		// 7. 英語への自動翻訳を実行（公開記事の場合のみ）
+		// 7. 各対応言語への自動翻訳を実行（公開記事の場合のみ）
+		// 日本語（ja）は原文なので翻訳対象外。en・es を Gemini で生成する。
 		const warnings: Array<{ code: string; message: string }> = [];
+		// 翻訳先の言語コードと、警告メッセージ用の日本語表示名の対応
+		const AUTO_TRANSLATE_TARGETS = [
+			{ language: "en", label: "英語" },
+			{ language: "es", label: "スペイン語" },
+		] as const;
 
 		if (status === "published") {
-			try {
-				const translationService = createTranslationService({
-					GEMINI_API_KEY: c.env.GEMINI_API_KEY,
-				});
+			const translationService = createTranslationService({
+				GEMINI_API_KEY: c.env.GEMINI_API_KEY,
+			});
 
-				// 記事を翻訳
-				const translatedArticle = await translationService.translateArticle(
-					title,
-					content
-				);
+			// 各言語を並列で翻訳し、Upsert する。1言語が失敗しても他言語は続行する。
+			await Promise.all(
+				AUTO_TRANSLATE_TARGETS.map(async ({ language, label }) => {
+					try {
+						const translatedArticle = await translationService.translateArticle(
+							title,
+							content,
+							language
+						);
 
-				if (translatedArticle) {
-					// 英語版をUpsert
-					// レコードがない場合は新規作成、ある場合は更新
-					await db
-						.insert(articleTranslations)
-						.values({
-							articleId,
-							language: "en",
-							title: translatedArticle.title,
-							content: translatedArticle.content,
-						})
-						.onConflictDoUpdate({
-							target: [
-								articleTranslations.articleId,
-								articleTranslations.language,
-							],
-							set: {
-								title: translatedArticle.title,
-								content: translatedArticle.content,
-							},
+						if (translatedArticle) {
+							// レコードがない場合は新規作成、ある場合は更新
+							await db
+								.insert(articleTranslations)
+								.values({
+									articleId,
+									language,
+									title: translatedArticle.title,
+									content: translatedArticle.content,
+								})
+								.onConflictDoUpdate({
+									target: [
+										articleTranslations.articleId,
+										articleTranslations.language,
+									],
+									set: {
+										title: translatedArticle.title,
+										content: translatedArticle.content,
+									},
+								});
+						} else {
+							warnings.push({
+								code: "TRANSLATION_FAILED",
+								message: `${label}への自動翻訳に失敗しました。記事の更新は正常に完了しています。`,
+							});
+						}
+					} catch (error) {
+						// 翻訳エラーが発生してもメインの処理は続行
+						console.error(
+							`Translation to ${language} error for article ${articleId}:`,
+							error
+						);
+						const errorMessage =
+							error instanceof Error
+								? error.message
+								: `${label}への自動翻訳中にエラーが発生しました`;
+						warnings.push({
+							code: "TRANSLATION_FAILED",
+							message: `${errorMessage}。記事の更新は正常に完了しています。`,
 						});
-				} else {
-					warnings.push({
-						code: "TRANSLATION_FAILED",
-						message:
-							"英語への自動翻訳に失敗しました。記事の更新は正常に完了しています。",
-					});
-				}
-			} catch (error) {
-				// 翻訳エラーが発生してもメインの処理は続行
-				console.error(`Translation error for article ${articleId}:`, error);
-				const errorMessage =
-					error instanceof Error
-						? error.message
-						: "英語への自動翻訳中にエラーが発生しました";
-				warnings.push({
-					code: "TRANSLATION_FAILED",
-					message: `${errorMessage}。記事の更新は正常に完了しています。`,
-				});
-			}
+					}
+				})
+			);
 		} else if (status === "draft") {
 			console.log(`Article ${articleId} is a draft, skipping translation`);
 		}

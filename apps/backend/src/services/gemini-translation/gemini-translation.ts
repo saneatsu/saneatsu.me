@@ -2,11 +2,34 @@ import type { GenerativeModel } from "@google/generative-ai";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 /**
+ * 翻訳先の言語コード
+ *
+ * @description
+ * 翻訳元は常に日本語（ja）なので、翻訳先の言語のみを型で表現する。
+ * サイトのサポート言語（@saneatsu/i18n の locales）から日本語を除いたもの。
+ */
+export type TargetLanguage = "en" | "es";
+
+/**
+ * 翻訳先言語コードと、プロンプトで使う言語名の対応表
+ *
+ * @description
+ * Gemini へのプロンプトは英語ではなく「自然な◯◯語に翻訳して」と
+ * 言語名で指示するため、コードから表示名への変換表を持つ。
+ */
+const TARGET_LANGUAGE_NAMES: Record<TargetLanguage, string> = {
+	en: "英語",
+	es: "スペイン語",
+};
+
+/**
  * Gemini APIを使った翻訳サービス
  *
  * @description
- * - 記事（タイトル・本文）の翻訳: Markdown形式を保持した日英翻訳
- * - タグ名の翻訳: 適切な英語表現への変換
+ * - 記事（タイトル・本文）の翻訳: Markdown形式を保持した日本語→多言語翻訳
+ * - タグ名の翻訳: 適切な英語（スラッグ用）表現への変換
+ *
+ * 翻訳元は常に日本語で、翻訳先は `TargetLanguage`（英語・スペイン語など）を指定する。
  */
 export class GeminiTranslationService {
 	private genAI: GoogleGenerativeAI;
@@ -22,18 +45,24 @@ export class GeminiTranslationService {
 	 * 記事の翻訳プロンプトを生成
 	 * @param title - 記事のタイトル
 	 * @param content - 記事の本文（Markdown形式）
+	 * @param targetLanguage - 翻訳先の言語コード
 	 * @returns 翻訳用プロンプト
 	 */
-	private createTranslationPrompt(title: string, content: string): string {
-		return `以下の日本語の記事を英語に翻訳してください。
+	private createTranslationPrompt(
+		title: string,
+		content: string,
+		targetLanguage: TargetLanguage
+	): string {
+		const languageName = TARGET_LANGUAGE_NAMES[targetLanguage];
+		return `以下の日本語の記事を${languageName}に翻訳してください。
 
 重要な条件：
 1. Markdown記法を完全に保持してください（見出し、リスト、リンク、コードブロック、表など）
 2. [[記事名]] のようなWikiLink記法はそのまま保持してください
 3. コードブロック内のコードは翻訳しないでください
 4. URLやファイルパスは変更しないでください
-5. 自然で読みやすい英語にしてください
-6. 専門用語は適切な英語表現を使用してください
+5. 自然で読みやすい${languageName}にしてください
+6. 専門用語は適切な${languageName}表現を使用してください
 
 翻訳する記事：
 タイトル: ${title}
@@ -48,18 +77,24 @@ CONTENT:
 	}
 
 	/**
-	 * 記事を日本語から英語に翻訳
+	 * 記事を日本語から指定言語に翻訳
 	 * @param title - 日本語のタイトル
 	 * @param content - 日本語の本文
+	 * @param targetLanguage - 翻訳先の言語コード（省略時は英語）
 	 * @returns 翻訳結果（タイトルと本文）
 	 */
 	async translateArticle(
 		title: string,
-		content: string
+		content: string,
+		targetLanguage: TargetLanguage = "en"
 	): Promise<{ title: string; content: string } | null> {
 		try {
 			// 翻訳プロンプトを生成
-			const prompt = this.createTranslationPrompt(title, content);
+			const prompt = this.createTranslationPrompt(
+				title,
+				content,
+				targetLanguage
+			);
 
 			// Gemini APIを呼び出し
 			const result = await this.model.generateContent(prompt);

@@ -6,7 +6,7 @@ import { createRoute, z } from "@hono/zod-openapi";
 const GalleryImageTranslationSchema = z.object({
 	id: z.number(),
 	galleryImageId: z.number(),
-	language: z.enum(["ja", "en"]),
+	language: z.enum(["ja", "en", "es"]),
 	title: z.string().nullable(),
 	description: z.string().nullable(),
 	createdAt: z.string(),

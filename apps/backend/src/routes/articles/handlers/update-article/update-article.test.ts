@@ -182,7 +182,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 
 		expect(mockDb.update).toHaveBeenCalledTimes(1); // 記事の更新
 		expect(mockDb.delete).toHaveBeenCalledTimes(2); // タグ削除 + ギャラリー画像削除
-		expect(mockDb.insert).toHaveBeenCalledTimes(3); // 日本語翻訳のUpsert + 英語翻訳のUpsert + タグ追加
+		expect(mockDb.insert).toHaveBeenCalledTimes(4); // 日本語翻訳 + 英語翻訳 + スペイン語翻訳 + タグ追加
 	});
 
 	it("存在しないIDの場合、404エラーを返す", async () => {
@@ -400,12 +400,18 @@ describe("PUT /articles/:id - 記事更新", () => {
 
 			// 改善後の検証: UPDATEは1回（記事のみ）、翻訳はINSERTでUpsert
 			expect(mockDb.update).toHaveBeenCalledTimes(1);
-			expect(mockDb.insert).toHaveBeenCalledTimes(3); // タグ追加 + 日本語翻訳 + 英語翻訳
+			expect(mockDb.insert).toHaveBeenCalledTimes(4); // タグ追加 + 日本語翻訳 + 英語翻訳 + スペイン語翻訳
 
-			// 翻訳サービスが呼ばれたことを確認
+			// 翻訳サービスが英語・スペイン語の2言語で呼ばれたことを確認
 			expect(mockTranslateArticle).toHaveBeenCalledWith(
 				"更新された記事",
-				"これは更新された内容です。"
+				"これは更新された内容です。",
+				"en"
+			);
+			expect(mockTranslateArticle).toHaveBeenCalledWith(
+				"更新された記事",
+				"これは更新された内容です。",
+				"es"
 			);
 		});
 
@@ -1137,7 +1143,8 @@ describe("PUT /articles/:id - 記事更新", () => {
 			mockDb.update.mockReturnValueOnce(updateMock);
 			mockDb.insert
 				.mockReturnValueOnce(upsertJaMock)
-				.mockReturnValueOnce(upsertEnMock);
+				.mockReturnValueOnce(upsertEnMock)
+				.mockReturnValueOnce(upsertEnMock); // スペイン語翻訳Upsert（enモック再利用）
 			mockDb.delete
 				.mockReturnValueOnce(deleteMock) // タグ削除
 				.mockReturnValueOnce(deleteMock); // ギャラリー画像削除
@@ -1160,9 +1167,16 @@ describe("PUT /articles/:id - 記事更新", () => {
 
 			// Assert
 			expect(res.status).toBe(200);
+			// 公開記事は英語とスペイン語の2言語に翻訳される
 			expect(mockTranslateArticle).toHaveBeenCalledWith(
 				"公開記事",
-				"公開コンテンツ"
+				"公開コンテンツ",
+				"en"
+			);
+			expect(mockTranslateArticle).toHaveBeenCalledWith(
+				"公開記事",
+				"公開コンテンツ",
+				"es"
 			);
 		});
 	});
@@ -1267,6 +1281,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 			mockDb.insert
 				.mockReturnValueOnce(upsertJaMock) // 日本語翻訳Upsert
 				.mockReturnValueOnce(upsertEnMock) // 英語翻訳Upsert
+				.mockReturnValueOnce(upsertEnMock) // スペイン語翻訳Upsert（enモック再利用）
 				.mockReturnValueOnce(insertMock); // ギャラリー画像挿入
 
 			mockDb.delete
@@ -1295,9 +1310,9 @@ describe("PUT /articles/:id - 記事更新", () => {
 			expect(res.status).toBe(200);
 
 			// ギャラリー画像の挿入が呼ばれたことを確認
-			expect(mockDb.insert).toHaveBeenCalledTimes(3); // 日本語翻訳 + 英語翻訳 + ギャラリー画像
+			expect(mockDb.insert).toHaveBeenCalledTimes(4); // 日本語翻訳 + 英語翻訳 + スペイン語翻訳 + ギャラリー画像
 			// 最後の insert 呼び出しがギャラリー画像の挿入
-			const galleryImageInsertCall = mockDb.insert.mock.calls[2];
+			const galleryImageInsertCall = mockDb.insert.mock.calls[3];
 			expect(galleryImageInsertCall[0]).toEqual({}); // articleGalleryImages テーブル
 
 			// values が正しく呼ばれたことを確認
@@ -1402,6 +1417,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 			mockDb.insert
 				.mockReturnValueOnce(upsertJaMock)
 				.mockReturnValueOnce(upsertEnMock)
+				.mockReturnValueOnce(upsertEnMock) // スペイン語翻訳Upsert（enモック再利用）
 				.mockReturnValueOnce(insertMock);
 
 			mockDb.delete
@@ -1538,6 +1554,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 			mockDb.insert
 				.mockReturnValueOnce(upsertJaMock)
 				.mockReturnValueOnce(upsertEnMock)
+				.mockReturnValueOnce(upsertEnMock) // スペイン語翻訳Upsert（enモック再利用）
 				.mockReturnValueOnce(insertMock);
 
 			mockDb.delete
@@ -1665,6 +1682,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 			mockDb.insert
 				.mockReturnValueOnce(upsertJaMock)
 				.mockReturnValueOnce(upsertEnMock)
+				.mockReturnValueOnce(upsertEnMock) // スペイン語翻訳Upsert（enモック再利用）
 				.mockReturnValueOnce(insertMock);
 
 			mockDb.delete
@@ -1783,7 +1801,8 @@ describe("PUT /articles/:id - 記事更新", () => {
 			mockDb.update.mockReturnValue(updateMock);
 			mockDb.insert
 				.mockReturnValueOnce(upsertJaMock)
-				.mockReturnValueOnce(upsertEnMock);
+				.mockReturnValueOnce(upsertEnMock)
+				.mockReturnValueOnce(upsertEnMock); // スペイン語翻訳Upsert（enモック再利用）
 			// ギャラリー画像挿入は呼ばれない（空配列のため）
 
 			mockDb.delete
@@ -1811,7 +1830,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 			expect(res.status).toBe(200);
 
 			// ギャラリー画像挿入は呼ばれない
-			expect(mockDb.insert).toHaveBeenCalledTimes(2); // 日本語翻訳 + 英語翻訳のみ
+			expect(mockDb.insert).toHaveBeenCalledTimes(3); // 日本語翻訳 + 英語翻訳 + スペイン語翻訳のみ
 		});
 
 		it("should work when content has no image URLs", async () => {
@@ -1892,7 +1911,8 @@ describe("PUT /articles/:id - 記事更新", () => {
 			mockDb.update.mockReturnValue(updateMock);
 			mockDb.insert
 				.mockReturnValueOnce(upsertJaMock)
-				.mockReturnValueOnce(upsertEnMock);
+				.mockReturnValueOnce(upsertEnMock)
+				.mockReturnValueOnce(upsertEnMock); // スペイン語翻訳Upsert（enモック再利用）
 			// ギャラリー画像挿入は呼ばれない（画像URLがないため）
 
 			mockDb.delete
@@ -1919,7 +1939,7 @@ describe("PUT /articles/:id - 記事更新", () => {
 			expect(res.status).toBe(200);
 
 			// ギャラリー画像挿入は呼ばれない
-			expect(mockDb.insert).toHaveBeenCalledTimes(2); // 日本語翻訳 + 英語翻訳のみ
+			expect(mockDb.insert).toHaveBeenCalledTimes(3); // 日本語翻訳 + 英語翻訳 + スペイン語翻訳のみ
 		});
 	});
 });

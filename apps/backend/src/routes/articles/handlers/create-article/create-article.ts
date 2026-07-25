@@ -106,37 +106,49 @@ export const createArticle: Handler = async (c) => {
 			});
 		}
 
-		// 6. 英語への自動翻訳を実行（公開記事の場合のみ）
+		// 6. 各対応言語への自動翻訳を実行（公開記事の場合のみ）
+		// 日本語（ja）は原文なので翻訳対象外。en・es を Gemini で生成する。
+		// 1言語の翻訳が失敗しても他言語の保存は続行できるよう、言語ごとに独立してエラーを握りつぶす。
+		const AUTO_TRANSLATE_TARGET_LANGUAGES = ["en", "es"] as const;
 		if (status === "published" && c.env.GEMINI_API_KEY) {
-			try {
-				const translationService = createTranslationService({
-					GEMINI_API_KEY: c.env.GEMINI_API_KEY,
-				});
+			const translationService = createTranslationService({
+				GEMINI_API_KEY: c.env.GEMINI_API_KEY,
+			});
 
-				// 翻訳を実行
-				const translatedArticle = await translationService.translateArticle(
-					title,
-					content
-				);
+			// 各言語を並列で翻訳し、成功したものだけ保存する
+			await Promise.all(
+				AUTO_TRANSLATE_TARGET_LANGUAGES.map(async (targetLanguage) => {
+					try {
+						const translatedArticle = await translationService.translateArticle(
+							title,
+							content,
+							targetLanguage
+						);
 
-				if (translatedArticle) {
-					// 英語版を保存
-					await db.insert(articleTranslations).values({
-						articleId: newArticle.id,
-						language: "en",
-						title: translatedArticle.title,
-						content: translatedArticle.content,
-					});
-					console.log(`Article ${newArticle.id} translated successfully`);
-				} else {
-					console.warn(
-						`Translation failed for article ${newArticle.id}, continuing without translation`
-					);
-				}
-			} catch (error) {
-				// 翻訳エラーが発生してもメインの処理は続行
-				console.error(`Translation error for article ${newArticle.id}:`, error);
-			}
+						if (translatedArticle) {
+							await db.insert(articleTranslations).values({
+								articleId: newArticle.id,
+								language: targetLanguage,
+								title: translatedArticle.title,
+								content: translatedArticle.content,
+							});
+							console.log(
+								`Article ${newArticle.id} translated to ${targetLanguage} successfully`
+							);
+						} else {
+							console.warn(
+								`Translation to ${targetLanguage} failed for article ${newArticle.id}, continuing without it`
+							);
+						}
+					} catch (error) {
+						// 翻訳エラーが発生してもメインの処理は続行
+						console.error(
+							`Translation to ${targetLanguage} error for article ${newArticle.id}:`,
+							error
+						);
+					}
+				})
+			);
 		} else if (status === "draft") {
 			console.log(`Article ${newArticle.id} is a draft, skipping translation`);
 		} else {
