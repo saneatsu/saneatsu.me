@@ -1,9 +1,14 @@
 import type { GalleryImageStatus } from "@saneatsu/db";
+import type { Locale } from "@saneatsu/i18n";
 
 /**
  * 言語コード
+ *
+ * @remarks
+ * サイトのサポート言語（@saneatsu/i18n の Locale）と常に一致させるため、
+ * ロケール定義を単一のソース・オブ・トゥルースとしてエイリアスする。
  */
-export type LanguageCode = "ja" | "en";
+export type LanguageCode = Locale;
 
 /**
  * ギャラリー画像のステータス（再エクスポート）

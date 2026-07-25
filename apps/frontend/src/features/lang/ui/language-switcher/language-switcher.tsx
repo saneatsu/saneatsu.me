@@ -15,6 +15,7 @@ import {
 const languages = [
 	{ code: "ja", label: "日本語", flag: "🇯🇵" },
 	{ code: "en", label: "English", flag: "🇺🇸" },
+	{ code: "es", label: "Español", flag: "🇪🇸" },
 ] as const;
 
 export function LanguageSwitcher() {

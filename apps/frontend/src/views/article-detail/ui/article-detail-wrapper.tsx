@@ -23,7 +23,7 @@ export async function ArticleDetailWrapper({
 }: ArticleDetailWrapperProps) {
 	try {
 		const articleResponse = await fetchArticle(slug, {
-			lang: locale as "ja" | "en",
+			lang: locale as "ja" | "en" | "es",
 		});
 
 		return <ArticleDetailView article={articleResponse.data} locale={locale} />;

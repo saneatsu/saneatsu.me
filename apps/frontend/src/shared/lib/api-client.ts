@@ -137,7 +137,7 @@ export async function fetchArticles(
 		query: {
 			page: query.page,
 			limit: query.limit,
-			language: query.lang as "ja" | "en" | undefined,
+			language: query.lang as "ja" | "en" | "es" | undefined,
 			status: query.status as "published" | "draft" | "archived" | undefined,
 			search: query.search,
 			sortBy: query.sortBy as
@@ -246,7 +246,7 @@ export async function fetchAllArticles(
 		query: {
 			page: query.page,
 			limit: query.limit,
-			language: query.lang as "ja" | "en" | undefined,
+			language: query.lang as "ja" | "en" | "es" | undefined,
 			status: query.status as "published" | "draft" | "archived" | undefined,
 			search: query.search,
 			sortBy: query.sortBy as

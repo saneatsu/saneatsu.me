@@ -21,7 +21,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
 	// 更新日の相対日付フォーマット
 	const updatedDateInfo = formatRelativeDate(
 		article.updatedAt ?? null,
-		locale as "ja" | "en"
+		locale as "ja" | "en" | "es"
 	);
 
 	// コンテンツから本文の抜粋を生成

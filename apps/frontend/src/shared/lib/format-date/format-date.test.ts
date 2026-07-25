@@ -238,6 +238,32 @@ describe("formatRelativeDate", () => {
 			expect(result?.formatted).toBeDefined();
 		});
 
+		it("英語ロケールでは英語の月名で日付を整形する", () => {
+			// Arrange: 11日以上前の日付（通常の日付形式になる）
+			const currentDate = new Date("2024-01-31T10:00:00.000Z");
+			const isoString = "2024-01-15T10:00:00.000Z";
+
+			// Act: enロケールで整形
+			const result = formatRelativeDate(isoString, "en", currentDate);
+
+			// Assert: en-USで整形され英語の月名(January)を含む
+			expect(result?.isRelative).toBe(false);
+			expect(result?.formatted).toContain("January");
+		});
+
+		it("スペイン語ロケールではスペイン語の月名で日付を整形する", () => {
+			// Arrange: 11日以上前の日付（通常の日付形式になる）
+			const currentDate = new Date("2024-01-31T10:00:00.000Z");
+			const isoString = "2024-01-15T10:00:00.000Z";
+
+			// Act: esロケールで整形
+			const result = formatRelativeDate(isoString, "es", currentDate);
+
+			// Assert: es-ESで整形されスペイン語の月名(enero)を含む
+			expect(result?.isRelative).toBe(false);
+			expect(result?.formatted).toContain("enero");
+		});
+
 		it("入力がnullの場合はundefinedを返す", () => {
 			// Arrange: nullを用意
 			const isoString = null;

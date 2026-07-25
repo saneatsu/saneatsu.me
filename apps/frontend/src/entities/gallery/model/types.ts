@@ -9,7 +9,7 @@ export type GalleryImageTranslation = {
 	/** ギャラリー画像ID */
 	galleryImageId: number;
 	/** 言語コード */
-	language: "ja" | "en";
+	language: "ja" | "en" | "es";
 	/** 画像タイトル */
 	title: string | null;
 	/** 画像の説明 */
@@ -95,7 +95,7 @@ export type GalleryImageUploadResponse = {
  */
 export type GalleryImageUpdateTranslation = {
 	/** 言語コード */
-	language: "ja" | "en";
+	language: "ja" | "en" | "es";
 	/** タイトル（オプショナル） */
 	title?: string;
 	/** 説明（オプショナル） */
@@ -205,7 +205,7 @@ export type GeocodingSearchParams = {
 	/** 検索クエリ（住所、地名など） */
 	q: string;
 	/** 言語コード */
-	language?: "ja" | "en";
+	language?: "ja" | "en" | "es";
 	/** 結果の最大数 */
 	limit?: number;
 };

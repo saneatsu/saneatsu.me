@@ -13,7 +13,7 @@ type UseGetRelatedOptions = {
 	/** 記事のスラッグ */
 	slug: string;
 	/** 言語 */
-	lang?: "ja" | "en";
+	lang?: "ja" | "en" | "es";
 	/** 取得する記事数 */
 	limit?: number;
 	/** React Queryの設定 */

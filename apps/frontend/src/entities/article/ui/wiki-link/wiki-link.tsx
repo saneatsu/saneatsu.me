@@ -12,7 +12,7 @@ export interface WikiLinkProps extends ComponentPropsWithoutRef<"a"> {
 	/** リンク先のURL */
 	href: string;
 	/** 言語設定 */
-	language?: "ja" | "en";
+	language?: "ja" | "en" | "es";
 	/** デフォルトの表示テキスト（タイトル取得中の表示用） */
 	children: React.ReactNode;
 }

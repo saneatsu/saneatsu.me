@@ -21,7 +21,7 @@ export function PopularArticlesList() {
 		refetch,
 	} = useGetAllArticles({
 		page: 1,
-		language: locale as "ja" | "en",
+		language: locale as "ja" | "en" | "es",
 		limit: 10, // トップ10を表示
 		status: ["published"],
 		sortBy: "viewCount", // 閲覧数でソート

@@ -11,7 +11,7 @@ export interface GoogleMapsEmbedProps {
 	query?: string;
 	zoom?: number;
 	mapType?: GoogleMapsMapType;
-	language?: "ja" | "en";
+	language?: "ja" | "en" | "es";
 	className?: string;
 	embedSrc?: string;
 }

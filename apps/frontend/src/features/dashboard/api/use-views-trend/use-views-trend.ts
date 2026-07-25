@@ -11,7 +11,7 @@ import { extractErrorMessage, queryKeys, useHonoClient } from "@/shared/lib";
  */
 type UseViewsTrendOptions = {
 	/** 言語 */
-	language?: "ja" | "en";
+	language?: "ja" | "en" | "es";
 	/** 表示期間（日数） */
 	days?: 30 | 90 | 180 | 360;
 	/** React Queryの設定 */

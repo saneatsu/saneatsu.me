@@ -15,7 +15,7 @@ type UseGetAllArticlesOptions = {
 	/** 1ページあたりの記事数 */
 	limit?: number;
 	/** 言語 */
-	language?: "ja" | "en";
+	language?: "ja" | "en" | "es";
 	/** 記事のステータス（複数選択可能） */
 	status?: ArticleStatus[];
 	/** タグID（複数選択可能） */

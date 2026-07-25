@@ -19,6 +19,15 @@ export interface Tag {
 		ja: string | null; // FIXME:
 		/** 英語の翻訳 */
 		en: string | null; // FIXME:
+		/**
+		 * スペイン語の翻訳（任意）
+		 *
+		 * @remarks
+		 * タグは英語のスラッグ的な識別子のみを自動生成しており、
+		 * スペイン語のタグ名は生成していない。そのため任意プロパティとし、
+		 * 未提供の場合は表示側で en → ja → slug の順にフォールバックする。
+		 */
+		es?: string | null;
 	};
 }
 

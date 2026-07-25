@@ -12,7 +12,7 @@ export interface AddressSearchProps {
 	/** 住所選択時のコールバック */
 	onSelect: (coordinates: Coordinates, address: string) => void;
 	/** 検索言語（デフォルト: ja）*/
-	language?: "ja" | "en";
+	language?: "ja" | "en" | "es";
 	/** 検索結果の最大数（デフォルト: 5）*/
 	limit?: number;
 	/** プレースホルダーテキスト */
