@@ -16,12 +16,14 @@
 	"language": {
 		"japanese": "日本語",
 		"english": "English",
+		"spanish": "Español",
 		"switch": "Switch language"
 	},
 	"LocaleSwitcher": {
 		"label": "Switch language",
 		"ja": "日本語",
-		"en": "English"
+		"en": "English",
+		"es": "Español"
 	},
 	"home": {
 		"hero": {

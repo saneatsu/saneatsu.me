@@ -1,0 +1,771 @@
+{
+	"navigation": {
+		"home": "Inicio",
+		"blog": "Blog",
+		"about": "Perfil",
+		"gallery": "Galería",
+		"contact": "Contacto",
+		"top": "Arriba"
+	},
+	"theme": {
+		"light": "Claro",
+		"dark": "Oscuro",
+		"system": "Sistema",
+		"toggle": "Cambiar tema"
+	},
+	"language": {
+		"japanese": "日本語",
+		"english": "English",
+		"spanish": "Español",
+		"switch": "Cambiar idioma"
+	},
+	"LocaleSwitcher": {
+		"label": "Cambiar idioma",
+		"ja": "日本語",
+		"en": "English",
+		"es": "Español"
+	},
+	"home": {
+		"hero": {
+			"title": "saneatsu.me",
+			"description": "CEO de ALIA LLC e ingeniero al que le encanta crear cosas. Trabajo en todo el stack —frontend, backend y móvil— y cuido los detalles, buscando productos que resulten agradables de usar. Aquí escribo sobre las cosas en las que pienso cada día.",
+			"aboutPrompt": "Para conocer un perfil más completo y mi trayectoria,",
+			"aboutLink": "visita el Perfil",
+			"contactPrompt": "Abierto a propuestas de trabajo: no dudes en escribirme",
+			"contactLink": "Contacto",
+			"photoAlt": "Foto de perfil de saneatsu"
+		},
+		"popularArticles": {
+			"title": "Artículos populares"
+		},
+		"articles": {
+			"title": "Últimos artículos"
+		}
+	},
+	"blog": {
+		"title": "Blog",
+		"tagFilter": {
+			"title": "Etiquetas",
+			"selected": "seleccionadas",
+			"placeholder": "Etiquetas",
+			"noResults": "No se encontraron resultados",
+			"clear": "Limpiar",
+			"clearLabel": "Limpiar filtro de etiquetas"
+		}
+	},
+	"about": {
+		"title": "Perfil",
+		"blog": {
+			"title": "Sobre este blog",
+			"purpose": {
+				"title": "Propósito",
+				"items": [
+					"Compartir información técnica",
+					"Registrar lo que voy aprendiendo",
+					"Portafolio",
+					"Ordenar mis ideas y compartirlas y estructurarlas con el equipo"
+				]
+			},
+			"history": {
+				"title": "Historia",
+				"content": "El desarrollo comenzó en julio de 2025. Para más detalles sobre el stack técnico y la motivación, consulta el artículo [Creé un sitio llamado saneatsu.me](/es/blog/made-this-site)."
+			},
+			"policy": {
+				"title": "Política editorial",
+				"principle1": "Los artículos se publican sin esperar a que sean perfectos y se actualizan de forma continua. El contenido refleja el momento en que se escribió y puede cambiar con el tiempo",
+				"principle2": "Este enfoque está inspirado en la cultura de transparencia de GitLab",
+				"bookLink": "The GitLab Handbook (buenas prácticas de trabajo remoto)"
+			}
+		},
+		"author": {
+			"title": "Sobre mí",
+			"profile": {
+				"title": "Perfil",
+				"content": "Soy un ingeniero nacido en Yamagata, criado en Hokkaido y actualmente afincado en Tokio. Soy el CEO de ALIA LLC. Para más detalles, consulta la sección «Trayectoria» más abajo."
+			},
+			"interests": {
+				"title": "Intereses y aficiones",
+				"hobbies": "Llevo mucho tiempo creando software, pero también disfruto de manualidades como el ikebana (escuela Sogetsu)."
+			}
+		},
+		"tech": {
+			"title": "Stack técnico",
+			"languages": {
+				"title": "Lenguajes"
+			},
+			"frameworks": {
+				"title": "Frameworks y librerías"
+			},
+			"databases": {
+				"title": "Bases de datos"
+			},
+			"tools": {
+				"title": "Herramientas de desarrollo"
+			}
+		},
+		"experience": {
+			"title": "Trayectoria",
+			"category": {
+				"work": "Trabajo",
+				"education": "Formación",
+				"project": "Proyecto",
+				"skill": "Habilidad"
+			},
+			"detail": {
+				"title": "Detalles de la experiencia",
+				"period": "Periodo",
+				"employmentType": "Tipo de contrato",
+				"role": "Rol",
+				"category": "Categoría",
+				"description": "Detalles del trabajo",
+				"content": "Contenido de la actividad",
+				"techStack": "Stack técnico",
+				"other": "Otros",
+				"present": "Actualidad"
+			},
+			"timeline": [
+				{
+					"slug": "activecore",
+					"period": {
+						"from": "2026-04",
+						"to": null
+					},
+					"companyName": "activecore, Inc.",
+					"role": [
+						"Product Manager",
+						"Ingeniero Frontend",
+						"Ingeniero Backend"
+					],
+					"employmentType": "Contrato",
+					"description": [
+						{
+							"title": "Descripción del producto",
+							"content": "Desarrollo de un sistema web que analiza datos de compra para prever y recomendar productos.\n\nTrabajo en remoto y, aunque hay un equipo, opero de forma bastante independiente. En lugar de que me asignen tareas, descubro problemas por mí mismo de forma continua y creo productos para validar hipótesis.",
+							"techStack": ["Remix", "React", "Tailwind CSS", "shadcn/ui"]
+						},
+						{
+							"title": "Product Manager / Ingeniero",
+							"content": "- Me encargo por mi cuenta de todo el ciclo, desde el descubrimiento del problema hasta la validación de la hipótesis\n- Realizo tareas de gestión de producto (encontrar problemas, formular hipótesis, priorizar)\n- Implemento tanto el frontend como el backend"
+						}
+					],
+					"category": "work",
+					"logoUrls": ["/company-logo/activecore-logo.png"]
+				},
+				{
+					"slug": "mobile-order-lab-and-tacoms",
+					"period": {
+						"from": "2025-03",
+						"to": "2026-03"
+					},
+					"companyName": "Mobile Order Lab, Inc.・tacoms, Inc.",
+					"role": ["Asesor", "Scrum Master", "Tech Lead", "Ingeniero Frontend"],
+					"employmentType": "Contrato",
+					"description": [
+						{
+							"title": "Sobre la integración de negocios",
+							"content": "Dado que Mobile Order Lab, Inc. y tacoms, Inc. se han fusionado, mostramos los logotipos de ambas empresas.\n\nPara más detalles, consulta el [comunicado de prensa sobre la integración de negocios](https://prtimes.jp/main/html/rd/p/000000047.000077961.html)."
+						},
+						{
+							"title": "Autónomo",
+							"content": "Trabajando 4 horas al día. Aunque escribí código, mi función principal era reforzar las capacidades base del equipo de frontend y actuar como asesor del equipo de desarrollo.\n\nCompartí distintas ideas sobre qué podíamos hacer para mejorar y, mientras escribía código concreto, contribuí a construir una cultura de equipo en la que aprendemos y mejoramos de forma continua para desarrollar mejor.",
+							"techStack": [
+								"Next.js",
+								"Tailwind CSS",
+								"Vitest",
+								"Storybook",
+								"Playwright"
+							]
+						},
+						{
+							"title": "Asesor",
+							"content": "- Facilitar retrospectivas\n- Definir objetivos de producto\n- Leer y comentar la Guía de Scrum\n- Diseñar reuniones eficaces\n- Organizar hojas de ruta\n- Introducir la IA y compartir conocimiento"
+						},
+						{
+							"title": "Product Owner / Scrum Master",
+							"content": "- Introduje GitHub Project para organizar el backlog\n- Diseñé sesiones de Refinamiento eficaces\n- Impartí sesiones de estudio sobre Scrum"
+						},
+						{
+							"title": "Ingeniero líder",
+							"content": "- Diseñé la arquitectura general del frontend\n- Construí la infraestructura de pruebas desde cero (antes era inexistente), impartí sesiones de estudio y la integré en el ciclo de desarrollo\n  - Vitest, Storybook, Playwright\n- Introduje Feature-Slice Design\n- Construí una cultura de refactorización aumentando las pruebas y dividiendo componentes grandes en piezas de tamaño adecuado\n- Impartí sesiones de estudio sobre Cycle Time y Four Keys, visualicé las métricas y realicé retrospectivas semanales para mejorar el ciclo de aprendizaje del equipo\n- Reduje el lead time\n- Impartí sesiones de estudio\n  - Las sesiones de estudio semanales se siguen celebrando incluso después de dejar el equipo"
+						}
+					],
+					"category": "work",
+					"logoUrls": [
+						"/company-logo/mobile-order-lab-logo.png",
+						"/company-logo/tacoms-logo.webp"
+					]
+				},
+				{
+					"slug": "algoage-inc",
+					"period": {
+						"from": "2018-07",
+						"to": "2025-02"
+					},
+					"companyName": "Algoage, Inc.",
+					"role": [
+						"Project Manager",
+						"Product Manager",
+						"Tech Lead",
+						"Scrum Master",
+						"Ingeniero Frontend",
+						"Ingeniero Backend",
+						"Ingeniero Móvil",
+						"Diseñador Web",
+						"Ingeniero de Machine Learning"
+					],
+					"description": [
+						{
+							"title": "2023-09: Creación de un editor de flujos de ramificación de chat",
+							"content": "Creación de un editor que facilita crear flujos de ramificación de chat y previsualizarlos en la interfaz de LINE.\n\nPara mejorar de raíz las operaciones, analicé e identifiqué los cuellos de botella principales y creé un producto de demostración en una semana yo solo, lanzándolo internamente.\nContinué el desarrollo en mi tiempo libre y, a partir de noviembre de 2023, el producto fue reconocido y el equipo se puso en marcha. Creé un editor rico para diseñar flujos usando Next.js y React Flow. Con un equipo que incluía a un ingeniero de primer año, creamos un producto v0.1 en unos 8 meses, reduciendo el lead time hasta un 75 %.",
+							"techStack": [
+								"Next.js",
+								"React Flow",
+								"Tailwind CSS",
+								"shadcn/ui",
+								"Vercel"
+							]
+						},
+						{
+							"title": "2020-09: Desarrollo de DMM Chat Boost CV",
+							"content": "Desarrollo de [DMM Chat Boost CV](https://chatboost.dmm.com/cv/).",
+							"techStack": ["Vue.js", "PrimeVue", "Rails", "AWS", "Cloudflare"],
+							"other": "En febrero de 2020 nos convertimos en filial de DMM y, al mismo tiempo, trasladamos la oficina a la actual ubicación de Yushima.\nAumentamos el número de empleados hasta unos 200 y el desarrollo comenzó en serio usando Scrum, con asesores invitados."
+						},
+						{
+							"title": "2019-10: Desarrollo de una app de salud para una constructora",
+							"content": "Desarrollo de una app de salud para una empresa constructora.",
+							"techStack": ["Nuxt", "Vuetify", "AWS", "Flutter"]
+						},
+						{
+							"title": "2019-06: Creación de una app de transcripción de audio de reuniones",
+							"content": "Creación de una app de transcripción de audio de reuniones.",
+							"techStack": [
+								"Python",
+								"Flask",
+								"OpenCV",
+								"Keras",
+								"TensorFlow",
+								"PyTorch"
+							],
+							"other": "Alquilamos una oficina de 1K en Mita, y los tres miembros de la empresa vivíamos en el mismo edificio de apartamentos cercano (plantas 4, 5 y 7) e íbamos a trabajar juntos."
+						},
+						{
+							"title": "2018-12: Desarrollo de un sistema de generación de vídeo de personajes",
+							"content": "Desarrollo de un sistema que genera vídeos de un personaje en movimiento a partir de una sola imagen de busto del personaje como entrada.",
+							"techStack": [
+								"Python",
+								"Flask",
+								"OpenCV",
+								"Keras",
+								"TensorFlow",
+								"PyTorch"
+							]
+						},
+						{
+							"title": "2018-07: Desarrollo de un sistema para crear planos de habitaciones a partir de varias fotos",
+							"content": "Desarrollo de un sistema para crear planos de habitaciones a partir de varias fotos.",
+							"techStack": [
+								"Python",
+								"OpenCV",
+								"Keras",
+								"TensorFlow",
+								"PyTorch"
+							],
+							"other": "En aquel momento aún no teníamos oficina, así que básicamente trabajábamos en casa del fundador con dos escritorios juntos.\nComo todos los miembros de la empresa eran miembros iniciales pertenecientes a [KERNEL](https://deepcore.jp/kernel), de vez en cuando también empezamos a trabajar en [KERNEL HONGO](https://ut-base.info/facilities/8).\nAdemás, dentro de la empresa, por turnos leíamos y presentábamos artículos relacionados con el machine learning cada semana."
+						}
+					],
+					"category": "work",
+					"logoUrls": ["/company-logo/algoage-logo.webp"],
+					"employmentType": "Empleado a tiempo completo"
+				},
+				{
+					"slug": "accenture",
+					"period": {
+						"from": "2017-08",
+						"to": "2018-06"
+					},
+					"companyName": "Accenture",
+					"role": [
+						"Project Manager",
+						"Ingeniero Frontend",
+						"Ingeniero Backend"
+					],
+					"description": [
+						{
+							"title": "2018-02: Sistema de detección de anomalías con IA para fábrica",
+							"content": "Desarrollé un sistema que detecta anomalías en las líneas de producción de fábricas mediante análisis de imágenes.",
+							"techStack": ["Python", "Django"]
+						},
+						{
+							"title": "2017-12: Desarrollo de producto interno",
+							"content": "Desarrollé productos internos en SONY, desde la definición de requisitos hasta la implementación.",
+							"techStack": ["VBA"]
+						}
+					],
+					"category": "work",
+					"logoUrls": ["/company-logo/accenture-logo.svg"],
+					"employmentType": "Empleado a tiempo completo"
+				}
+			]
+		},
+		"contributions": {
+			"title": "Escribiendo caracteres",
+			"description": "Un vistazo a mi volumen de escritura en japonés durante los últimos 365 días.",
+			"cta": "Leer más publicaciones"
+		},
+		"recommendedArticles": {
+			"title": "Mi forma de trabajar",
+			"description": "Cómo enfoco mi trabajo y qué es lo que más valoro. Escribo sobre las cosas en las que pienso a través de mi trabajo y aprendizaje diarios. Espero que te dé una idea de quién soy."
+		},
+		"contact": {
+			"title": "Redes sociales y sitios web",
+			"dmNote": "(¡La forma más rápida de contactarme!)"
+		},
+		"hire": {
+			"title": "Trabaja conmigo",
+			"description": "Estoy disponible para desarrollo de apps y web, y para dar apoyo como asesor o tech lead a equipos de desarrollo. No dudes en escribirme.",
+			"cta": "Ir al formulario de contacto"
+		}
+	},
+	"contact": {
+		"title": "Contacto",
+		"description": "No dudes en escribirme a través del siguiente formulario para cualquier pregunta o consulta.",
+		"required": "Obligatorio",
+		"name": {
+			"label": "Nombre",
+			"placeholder": "Juan Pérez"
+		},
+		"company": {
+			"label": "Empresa",
+			"placeholder": "Example Inc."
+		},
+		"jobTitle": {
+			"label": "Cargo",
+			"placeholder": "Ingeniero (opcional)"
+		},
+		"email": {
+			"label": "Correo electrónico",
+			"placeholder": "example@email.com"
+		},
+		"subject": {
+			"label": "Asunto",
+			"placeholder": "Asunto de tu consulta"
+		},
+		"category": {
+			"label": "Categoría",
+			"placeholder": "Selecciona una categoría",
+			"options": {
+				"business": "Negocio / Colaboración",
+				"feedback": "Comentarios",
+				"bug-report": "Informe de error",
+				"other": "Otro"
+			}
+		},
+		"message": {
+			"label": "Mensaje",
+			"placeholder": "Escribe tu mensaje"
+		},
+		"submit": "Enviar",
+		"submitting": "Enviando...",
+		"submitted": "Enviado",
+		"success": {
+			"title": "Enviado correctamente",
+			"message": "Gracias por tu consulta. Te responderé lo antes posible.",
+			"sendAnother": "Enviar otra consulta"
+		},
+		"error": {
+			"submitFailed": "No se pudo enviar. Inténtalo de nuevo más tarde."
+		}
+	},
+	"contributions": {
+		"title": "Actividad de escritura",
+		"subtitle": "Caracteres japoneses en los últimos 365 días",
+		"rangeLabel": "Últimos {days} días",
+		"summary": {
+			"totalJaChars": "Caracteres japoneses"
+		},
+		"legend": {
+			"less": "Menos",
+			"more": "Más"
+		},
+		"error": "No se pudo cargar la actividad de escritura",
+		"retry": "Reintentar",
+		"units": {
+			"jaChars": "caracteres"
+		}
+	},
+	"footer": {
+		"copyright": "© {year} Saneatsu WAKANA. Todos los derechos reservados.",
+		"privacy": "Política de privacidad",
+		"terms": "Términos del servicio"
+	},
+	"admin": {
+		"articles": {
+			"new": {
+				"title": "Crear nuevo artículo - Administración",
+				"description": "Crear un nuevo artículo"
+			}
+		},
+		"gallery": {
+			"title": "Gestión de la galería",
+			"description": "Gestionar y subir imágenes",
+			"list": {
+				"title": "Lista de la galería - Administración",
+				"description": "Lista de imágenes de la galería",
+				"empty": "No se encontraron imágenes",
+				"newImage": "Añadir nueva imagen"
+			},
+			"new": {
+				"title": "Subir imagen - Administración",
+				"description": "Subir una nueva imagen"
+			},
+			"edit": {
+				"title": "Editar imagen - Administración",
+				"description": "Editar la información de la imagen"
+			}
+		}
+	},
+	"loading": "Cargando...",
+	"error": {
+		"title": "Se produjo un error",
+		"message": "Lo sentimos, se ha producido un error inesperado.",
+		"retry": "Reintentar",
+		"goHome": "Ir al inicio"
+	},
+	"article": {
+		"publishedAt": "Publicado",
+		"updatedAt": "Actualizado",
+		"viewCount": "Visto {count} veces",
+		"readMore": "Leer más",
+		"backToList": "Volver a los artículos",
+		"justNow": "Justo ahora",
+		"minutesAgo": "hace {minutes} minutos",
+		"hoursAgo": "hace {hours} horas",
+		"today": "Hoy",
+		"daysAgo": "hace {days} días",
+		"notFound": {
+			"title": "Artículo no encontrado",
+			"message": "El artículo que buscas no existe o puede que se haya eliminado."
+		},
+		"relatedArticles": {
+			"title": "Artículos relacionados",
+			"loading": "Cargando...",
+			"error": "No se pudieron cargar los artículos relacionados"
+		},
+		"tableOfContents": "Índice de contenidos"
+	},
+	"gallery": {
+		"title": "Galería",
+		"form": {
+			"file": "Archivo de imagen",
+			"fileSelect": "Seleccionar archivo",
+			"fileHelp": "Puedes subir imágenes JPEG, PNG, GIF o WebP (máx. 10 MB)",
+			"address": "Dirección",
+			"addressPlaceholder": "Shibuya, Tokio...",
+			"addressHelp": "Buscar coordenadas a partir de la dirección",
+			"searchAddress": "Buscar dirección",
+			"coordinates": "Coordenadas",
+			"latitude": "Latitud",
+			"longitude": "Longitud",
+			"latitudePlaceholder": "35.6762",
+			"longitudePlaceholder": "139.6503",
+			"coordinatesHelp": "Haz clic en el mapa para fijar las coordenadas",
+			"takenAt": "Fecha de la toma",
+			"takenAtPlaceholder": "Selecciona la fecha de la toma...",
+			"titleJa": "Título (japonés)",
+			"titleJaPlaceholder": "東京タワーの夜景",
+			"titleEn": "Título (inglés)",
+			"titleEnPlaceholder": "Tokyo Tower at Night",
+			"descriptionJa": "Descripción (japonés)",
+			"descriptionJaPlaceholder": "東京のシンボル、東京タワーがライトアップされた美しい夜景",
+			"descriptionEn": "Descripción (inglés)",
+			"descriptionEnPlaceholder": "The iconic Tokyo Tower illuminated beautifully at night",
+			"submit": "Subir",
+			"update": "Actualizar",
+			"cancel": "Cancelar",
+			"delete": "Eliminar",
+			"deleteConfirm": "¿Seguro que quieres eliminar esta imagen?",
+			"uploading": "Subiendo...",
+			"updating": "Actualizando...",
+			"deleting": "Eliminando..."
+		},
+		"message": {
+			"uploadSuccess": "Imagen subida correctamente",
+			"uploadError": "No se pudo subir la imagen",
+			"updateSuccess": "Imagen actualizada correctamente",
+			"updateError": "No se pudo actualizar la imagen",
+			"deleteSuccess": "Imagen eliminada correctamente",
+			"deleteError": "No se pudo eliminar la imagen",
+			"geocodingSuccess": "Coordenadas obtenidas a partir de la dirección",
+			"geocodingError": "No se pudieron obtener las coordenadas a partir de la dirección",
+			"geocodingNoResults": "No se encontró ninguna dirección coincidente"
+		},
+		"table": {
+			"image": "Imagen",
+			"title": "Título",
+			"location": "Ubicación",
+			"takenAt": "Fecha de la toma",
+			"createdAt": "Fecha de creación",
+			"actions": "Acciones",
+			"noLocation": "Sin ubicación",
+			"noDate": "Fecha desconocida"
+		},
+		"notFound": {
+			"title": "Imagen no encontrada",
+			"message": "La imagen que buscas no existe o puede que se haya eliminado."
+		}
+	},
+	"share": {
+		"copyLink": "Enlace copiado",
+		"copyLinkError": "No se pudo copiar el enlace",
+		"copyLinkTooltip": "Copiar el enlace del artículo",
+		"shareOnX": "Publicar en X",
+		"shareOnFacebook": "Publicar en Facebook",
+		"addToHatena": "Añadir a Hatena Bookmark",
+		"copyMarkdownSuccess": "¡Copiado!",
+		"copyMarkdownError": "No se pudo copiar el Markdown. Inténtalo de nuevo",
+		"copyMarkdownTooltip": "Copiar Markdown"
+	},
+	"articleChat": {
+		"title": "Chat con IA",
+		"beta": "Beta",
+		"close": "Cerrar chat",
+		"expand": "Expandir chat",
+		"collapse": "Contraer chat",
+		"description": "Puedes hacer preguntas sobre todos los artículos",
+		"openChat": "Preguntar sobre el artículo",
+		"inputPlaceholder": "Escribe tu pregunta",
+		"inputLabel": "Campo de la pregunta",
+		"send": "Enviar",
+		"hint": {
+			"mac": "⌘+Enter para enviar",
+			"win": "Ctrl+Enter para enviar"
+		},
+		"quickAction": {
+			"summarize": "Por favor, resume este artículo",
+			"summarizeLabel": "Resumir artículo"
+		},
+		"retry": "Reintentar",
+		"error": {
+			"fetchFailed": "No se pudo obtener respuesta. Inténtalo de nuevo",
+			"unknown": "Se produjo un error inesperado. Inténtalo de nuevo",
+			"INVALID_REQUEST": "El formato de la solicitud no es válido. Inténtalo de nuevo",
+			"REQUIRED_FIELDS": "Se requiere una pregunta. Revisa lo que has escrito",
+			"MESSAGE_TOO_LONG": "Por favor, limita tu pregunta a {maxLength} caracteres",
+			"AI_UNAVAILABLE": "Las funciones de IA no están disponibles en este momento. Contacta con el administrador",
+			"RATE_LIMIT_EXCEEDED": "Se alcanzó el límite de solicitudes de la API. Espera un momento e inténtalo de nuevo",
+			"GENERATION_FAILED": "Se produjo un error al generar la respuesta de la IA. Inténtalo de nuevo",
+			"ARTICLES_FETCH_FAILED": "No se pudo obtener la información del artículo. Inténtalo de nuevo"
+		}
+	},
+	"common": {
+		"required": "Obligatorio",
+		"search": "Buscar",
+		"filterByStatus": "Filtrar por estado",
+		"allStatus": "Todos",
+		"published": "Publicado",
+		"draft": "Borrador",
+		"clearFilters": "Limpiar filtros",
+		"blogNotice": {
+			"title": "Sobre este blog",
+			"principle1": "Los artículos se publican sin esperar a que sean perfectos y se actualizan de forma continua. El contenido refleja el momento en que se escribió y puede cambiar con el tiempo",
+			"principle3": "Este enfoque está inspirado en la cultura de transparencia de GitLab",
+			"bookLink": "The GitLab Handbook (buenas prácticas de trabajo remoto)"
+		}
+	},
+	"pagination": {
+		"previous": "Anterior",
+		"next": "Siguiente",
+		"pageIndicator": "Página {page} de {totalPages}",
+		"viewAllArticles": "Ver todos los artículos"
+	},
+	"articlesList": {
+		"loadFailed": "No se pudieron cargar los artículos.",
+		"retry": "Reintentar",
+		"empty": "No se encontraron artículos."
+	},
+	"validation": {
+		"required": "Este campo es obligatorio",
+		"tooSmall": {
+			"string": {
+				"exact": "Debe tener exactamente {minimum} caracteres",
+				"inclusive": "Debe tener al menos {minimum} caracteres",
+				"notInclusive": "Debe tener más de {minimum} caracteres"
+			},
+			"number": {
+				"exact": "Debe ser exactamente {minimum}",
+				"inclusive": "Debe ser al menos {minimum}",
+				"notInclusive": "Debe ser mayor que {minimum}"
+			},
+			"array": {
+				"exact": "Debe tener exactamente {minimum} elementos",
+				"inclusive": "Debe tener al menos {minimum} elementos",
+				"notInclusive": "Debe tener más de {minimum} elementos"
+			}
+		},
+		"tooBig": {
+			"string": {
+				"exact": "Debe tener exactamente {maximum} caracteres",
+				"inclusive": "Debe tener como máximo {maximum} caracteres",
+				"notInclusive": "Debe tener menos de {maximum} caracteres"
+			},
+			"number": {
+				"exact": "Debe ser exactamente {maximum}",
+				"inclusive": "Debe ser como máximo {maximum}",
+				"notInclusive": "Debe ser menor que {maximum}"
+			},
+			"array": {
+				"exact": "Debe tener exactamente {maximum} elementos",
+				"inclusive": "Debe tener como máximo {maximum} elementos",
+				"notInclusive": "Debe tener menos de {maximum} elementos"
+			}
+		},
+		"invalidType": {
+			"string": "Debe ser una cadena de texto",
+			"number": "Debe ser un número",
+			"boolean": "Debe ser un valor booleano",
+			"date": "Debe ser una fecha",
+			"object": "Debe ser un objeto",
+			"array": "Debe ser una lista"
+		},
+		"invalidString": {
+			"email": "Introduce una dirección de correo electrónico válida",
+			"url": "Introduce una URL válida",
+			"uuid": "Introduce un UUID válido",
+			"datetime": "Introduce una fecha y hora válidas",
+			"date": "Introduce una fecha válida",
+			"time": "Introduce una hora válida",
+			"ip": "Introduce una dirección IP válida",
+			"regex": "Formato no válido"
+		},
+		"custom": {
+			"article": {
+				"titleRequired": "Introduce un título",
+				"titleTooLong": "El título debe tener 200 caracteres o menos",
+				"contentRequired": "Introduce el contenido",
+				"contentTooLong": "El contenido debe tener 50000 caracteres o menos",
+				"slugRequired": "Introduce un slug",
+				"slugInvalid": "El slug debe empezar por una letra minúscula o un número, con guiones simples entre palabras",
+				"atLeastOneTranslation": "Crea el artículo al menos en un idioma",
+				"maxTranslations": "Admite hasta 2 idiomas"
+			},
+			"gallery": {
+				"fileRequired": "Selecciona un archivo de imagen",
+				"fileInvalidType": "Selecciona una imagen JPEG, PNG, GIF o WebP",
+				"fileTooLarge": "El tamaño del archivo debe ser de 10 MB o menos",
+				"titleJaRequired": "Introduce un título en japonés",
+				"titleJaTooLong": "El título en japonés debe tener 200 caracteres o menos",
+				"titleEnRequired": "Introduce un título en inglés",
+				"titleEnTooLong": "El título en inglés debe tener 200 caracteres o menos",
+				"descriptionJaTooLong": "La descripción en japonés debe tener 1000 caracteres o menos",
+				"descriptionEnTooLong": "La descripción en inglés debe tener 1000 caracteres o menos",
+				"latitudeInvalid": "La latitud debe estar entre -90 y 90",
+				"longitudeInvalid": "La longitud debe estar entre -180 y 180",
+				"coordinatesRequired": "Introduce las coordenadas",
+				"takenAtInvalid": "Selecciona una fecha y hora válidas"
+			},
+			"pagination": {
+				"pagePositive": "El número de página debe ser un entero positivo",
+				"limitRange": "El límite debe estar entre 1 y 100"
+			},
+			"common": {
+				"languageInvalid": "Selecciona japonés, inglés o español",
+				"statusInvalid": "Estado no válido",
+				"slugRequired": "Introduce un slug",
+				"slugTooLong": "El slug debe tener 100 caracteres o menos",
+				"slugInvalid": "El slug debe empezar por una letra minúscula o un número, con guiones simples entre palabras",
+				"emailInvalid": "Introduce una dirección de correo electrónico válida",
+				"datetimeInvalid": "Introduce un formato de fecha y hora válido",
+				"idPositive": "El ID debe ser un entero positivo"
+			}
+		}
+	},
+	"Privacy": {
+		"title": "Política de privacidad",
+		"introduction": {
+			"title": "Introducción",
+			"content": "saneatsu.me (el «Sitio») es un sitio web personal que ofrece artículos técnicos y contenido de blog. El Sitio no recopila ninguna información personal de los usuarios (incluidas direcciones de correo electrónico, nombres o fotos de perfil)."
+		},
+		"thirdParty": {
+			"title": "Servicios de terceros",
+			"content": "El Sitio utiliza Google Analytics para el análisis de accesos. Google Analytics usa cookies para recopilar datos sobre el comportamiento de los visitantes de forma no identificable personalmente. Para obtener información sobre los datos recopilados y cómo se utilizan, consulta la Política de Privacidad de Google."
+		},
+		"contact": {
+			"title": "Contacto",
+			"content": "Para consultas sobre esta Política de privacidad, contacta con saneatsu.wakana@gmail.com."
+		},
+		"changes": {
+			"title": "Cambios en esta política",
+			"content": "Esta Política de privacidad puede modificarse cuando sea necesario."
+		},
+		"lastUpdated": "Última actualización"
+	},
+	"Terms": {
+		"title": "Términos del servicio",
+		"acceptance": {
+			"title": "Aceptación de los términos",
+			"content": "Al utilizar saneatsu.me (el «Sitio»), se considera que has aceptado estos Términos del servicio."
+		},
+		"service": {
+			"title": "Descripción del servicio",
+			"content": "El Sitio es un sitio web personal que ofrece artículos técnicos y contenido de blog. Parte del contenido puede incluir traducciones asistidas por IA o texto generado, y el Sitio no garantiza su exactitud. El contenido del servicio puede cambiar sin previo aviso."
+		},
+		"affiliate": {
+			"title": "Enlaces de afiliados y publicidad",
+			"content": "Este sitio participa en el Programa de Afiliados de Amazon, un programa de publicidad de afiliados diseñado para que los sitios puedan obtener comisiones publicitarias anunciando y enlazando a Amazon.co.jp. Si haces clic en un enlace de un artículo y realizas una compra, este sitio puede recibir una comisión de referencia. La existencia o no de una comisión de referencia no afecta al precio del producto. Es posible que en el futuro añadamos otros programas de afiliados o anuncios. Todos los artículos de este sitio pueden contener enlaces de afiliados, incluidos los de Amazon Afiliados."
+		},
+		"externalLinks": {
+			"title": "Enlaces externos",
+			"content": "Este sitio contiene enlaces a sitios web externos. El Sitio no asume ninguna responsabilidad por el contenido, los servicios o las transacciones de los sitios enlazados. Consulta la política de privacidad y los términos del servicio de cada sitio cuando utilices sitios externos."
+		},
+		"userObligations": {
+			"title": "Obligaciones del usuario",
+			"content": "Los usuarios deben cumplir lo siguiente al navegar por el Sitio y al enviar consultas u otra información:",
+			"items": {
+				"lawful": "No realizar actividades que infrinjan las leyes o el orden público y la moral",
+				"respectful": "No vulnerar los derechos ni la privacidad de otras personas",
+				"accurate": "Proporcionar información precisa y actualizada al enviar consultas o comentarios",
+				"security": "No realizar accesos no autorizados ni actividades que sobrecarguen el sistema"
+			}
+		},
+		"prohibited": {
+			"title": "Actividades prohibidas",
+			"content": "Se prohíben las siguientes actividades:",
+			"items": {
+				"illegal": "Actividades relacionadas con actos ilegales o delictivos",
+				"harmful": "Actividades que dañen la reputación o la credibilidad de otras personas",
+				"spam": "Spam u otras actividades molestas",
+				"unauthorized": "Uso comercial o reproducción no autorizados"
+			}
+		},
+		"intellectualProperty": {
+			"title": "Derechos de propiedad intelectual",
+			"content": "Los derechos de autor del contenido del Sitio (textos, imágenes, programas, etc.) pertenecen al Sitio o a sus legítimos titulares. Queda prohibida la copia, reproducción o modificación no autorizadas."
+		},
+		"disclaimer": {
+			"title": "Exención de responsabilidad",
+			"content": "El Sitio no garantiza la exactitud, integridad ni actualidad de la información proporcionada. Salvo en los casos en que la ley exija responsabilidad, el Sitio no se hace responsable de los daños derivados de su uso."
+		},
+		"limitation": {
+			"title": "Limitación de responsabilidad",
+			"content": "El Sitio no se hace responsable de los daños causados por la interrupción, suspensión, finalización, cambio o indisponibilidad del servicio, salvo que se deban a dolo o negligencia grave del Sitio."
+		},
+		"termination": {
+			"title": "Cese del uso",
+			"content": "Si un usuario infringe estos Términos, el Sitio podrá suspender el uso del servicio sin previo aviso."
+		},
+		"governing": {
+			"title": "Ley aplicable",
+			"content": "Estos Términos se rigen e interpretan de acuerdo con la legislación japonesa."
+		},
+		"changes": {
+			"title": "Cambios en los términos",
+			"content": "Estos Términos pueden modificarse cuando sea necesario. Los Términos actualizados entran en vigor cuando se publican en el Sitio. Los cambios importantes se comunicarán por medios razonables en el Sitio."
+		},
+		"contact": {
+			"title": "Contacto",
+			"content": "Para preguntas sobre estos Términos o sobre el funcionamiento del Sitio, contacta con saneatsu.wakana@gmail.com."
+		},
+		"lastUpdated": "Última actualización"
+	}
+}
