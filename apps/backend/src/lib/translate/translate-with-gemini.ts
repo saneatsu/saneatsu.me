@@ -1,18 +1,17 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-/**
- * 翻訳先の言語コード
- *
- * @description
- * 翻訳元は常に日本語（ja）なので、翻訳先の言語のみを型で表現する。
- */
-export type TargetLanguage = "en" | "es";
+import type { TargetLanguage } from "../../services/gemini-translation/gemini-translation";
+
+// 翻訳先の言語コードは gemini-translation.ts（TARGET_LANGUAGES）を単一ソースとし、
+// ここでは型のみを再エクスポートして後方互換を保つ。
+export type { TargetLanguage };
 
 /**
  * 翻訳先言語ごとの Gemini システムプロンプト
  *
  * @description
  * 言語名を英語で明示することで、Gemini が自然な対象言語に翻訳できるようにする。
+ * TARGET_LANGUAGES に言語を足すと、この Record が不足しビルドエラーになる。
  */
 const SYSTEM_INSTRUCTION_BY_LANGUAGE: Record<TargetLanguage, string> = {
 	en: "You are a professional translator. Translate the given Japanese text to natural English. Return only the translated text without any explanations or additional commentary.",

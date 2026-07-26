@@ -8,7 +8,11 @@ import {
 	buildContributionText,
 	recordArticleContribution,
 } from "@/lib/record-article-contribution";
-import { createTranslationService } from "@/services/gemini-translation/gemini-translation";
+import {
+	createTranslationService,
+	TARGET_LANGUAGE_NAMES,
+	TARGET_LANGUAGES,
+} from "@/services/gemini-translation/gemini-translation";
 
 import type { updateArticleRoute } from "./update-article.openapi";
 
@@ -168,13 +172,14 @@ export const updateArticle: Handler = async (c) => {
 		}
 
 		// 7. 各対応言語への自動翻訳を実行（公開記事の場合のみ）
-		// 日本語（ja）は原文なので翻訳対象外。en・es を Gemini で生成する。
+		// 日本語（ja）は原文なので翻訳対象外。翻訳先は TARGET_LANGUAGES から導出し、
+		// 警告メッセージ用の日本語表示名は TARGET_LANGUAGE_NAMES から引く。
+		// これにより対応言語を増やしても update-article 側の変更は不要。
 		const warnings: Array<{ code: string; message: string }> = [];
-		// 翻訳先の言語コードと、警告メッセージ用の日本語表示名の対応
-		const AUTO_TRANSLATE_TARGETS = [
-			{ language: "en", label: "英語" },
-			{ language: "es", label: "スペイン語" },
-		] as const;
+		const AUTO_TRANSLATE_TARGETS = TARGET_LANGUAGES.map((language) => ({
+			language,
+			label: TARGET_LANGUAGE_NAMES[language],
+		}));
 
 		if (status === "published") {
 			const translationService = createTranslationService({

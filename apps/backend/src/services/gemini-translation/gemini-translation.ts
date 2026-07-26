@@ -2,22 +2,32 @@ import type { GenerativeModel } from "@google/generative-ai";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 /**
- * 翻訳先の言語コード
+ * 自動翻訳の対応言語（＝翻訳先ロケール）の一覧
  *
  * @description
- * 翻訳元は常に日本語（ja）なので、翻訳先の言語のみを型で表現する。
- * サイトのサポート言語（@saneatsu/i18n の locales）から日本語を除いたもの。
+ * サイトが「Geminiで翻訳できる言語」の単一のソース・オブ・トゥルース。
+ * 翻訳元は常に日本語（ja）なのでここには含めない。
+ * 記事・ギャラリー・タグの自動翻訳、およびバックフィルスクリプトは
+ * すべてこの配列を参照するため、言語を1つ増やす手順はこうなる:
+ *   1. この配列に locale を追加する（例: "ko"）
+ *   2. TARGET_LANGUAGE_NAMES / SYSTEM_INSTRUCTION_BY_LANGUAGE は
+ *      Record<TargetLanguage> なので、追記漏れを TypeScript がエラーで教えてくれる
+ *   3. 併せて i18n の locales・DB の language enum・UI の <locale>.json も追加する
  */
-export type TargetLanguage = "en" | "es";
+export const TARGET_LANGUAGES = ["en", "es"] as const;
+
+/** 翻訳先の言語コード（TARGET_LANGUAGES から導出） */
+export type TargetLanguage = (typeof TARGET_LANGUAGES)[number];
 
 /**
- * 翻訳先言語コードと、プロンプトで使う言語名の対応表
+ * 翻訳先言語コードと、プロンプトで使う言語名（日本語）の対応表
  *
  * @description
- * Gemini へのプロンプトは英語ではなく「自然な◯◯語に翻訳して」と
- * 言語名で指示するため、コードから表示名への変換表を持つ。
+ * Gemini へのプロンプトは「自然な◯◯語に翻訳して」と言語名で指示するため、
+ * コードから表示名への変換表を持つ。警告メッセージのラベルにも再利用する。
+ * TARGET_LANGUAGES に言語を足すと、この Record が不足しビルドエラーになる。
  */
-const TARGET_LANGUAGE_NAMES: Record<TargetLanguage, string> = {
+export const TARGET_LANGUAGE_NAMES: Record<TargetLanguage, string> = {
 	en: "英語",
 	es: "スペイン語",
 };

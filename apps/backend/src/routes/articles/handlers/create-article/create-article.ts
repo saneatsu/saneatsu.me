@@ -8,7 +8,10 @@ import {
 	buildContributionText,
 	recordArticleContribution,
 } from "@/lib/record-article-contribution";
-import { createTranslationService } from "@/services/gemini-translation/gemini-translation";
+import {
+	createTranslationService,
+	TARGET_LANGUAGES,
+} from "@/services/gemini-translation/gemini-translation";
 
 import type { createArticleRoute } from "./create-article.openapi";
 
@@ -107,9 +110,9 @@ export const createArticle: Handler = async (c) => {
 		}
 
 		// 6. 各対応言語への自動翻訳を実行（公開記事の場合のみ）
-		// 日本語（ja）は原文なので翻訳対象外。en・es を Gemini で生成する。
+		// 日本語（ja）は原文なので翻訳対象外。翻訳先は TARGET_LANGUAGES（en・es…）から導出するため、
+		// 対応言語を増やしても create-article 側の変更は不要。
 		// 1言語の翻訳が失敗しても他言語の保存は続行できるよう、言語ごとに独立してエラーを握りつぶす。
-		const AUTO_TRANSLATE_TARGET_LANGUAGES = ["en", "es"] as const;
 		if (status === "published" && c.env.GEMINI_API_KEY) {
 			const translationService = createTranslationService({
 				GEMINI_API_KEY: c.env.GEMINI_API_KEY,
@@ -117,7 +120,7 @@ export const createArticle: Handler = async (c) => {
 
 			// 各言語を並列で翻訳し、成功したものだけ保存する
 			await Promise.all(
-				AUTO_TRANSLATE_TARGET_LANGUAGES.map(async (targetLanguage) => {
+				TARGET_LANGUAGES.map(async (targetLanguage) => {
 					try {
 						const translatedArticle = await translationService.translateArticle(
 							title,

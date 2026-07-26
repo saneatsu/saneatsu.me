@@ -1,19 +1,21 @@
 import { describe, expect, it } from "vitest";
 
-import { pickMissing } from "./backfill-es-translations";
+import { pickMissing } from "./backfill-translations";
 
 /**
  * pickMissing のテスト観点表（等価分割・境界値）
  *
- * | # | 観点                         | sources           | existingEsIds | 期待結果            |
- * |---|------------------------------|-------------------|---------------|---------------------|
- * | 1 | 一部に es あり（正常系）     | id 1,2,3          | [2]           | id 1,3              |
- * | 2 | es が全く無い                | id 1,2            | []            | id 1,2（全件）      |
- * | 3 | 全件に es あり               | id 1,2            | [1,2]         | []（空）            |
- * | 4 | sources が空                 | []                | [1]           | []（空）            |
- * | 5 | existingEsIds に重複         | id 1,2            | [1,1]         | id 2                |
- * | 6 | existingEsIds に無関係な ID  | id 1,2            | [99]          | id 1,2（全件）      |
- * | 7 | getId が別フィールドを参照   | galleryImageId    | [10]          | 該当以外            |
+ * existingTargetIds = 既に対象言語（en/es/ko…）の翻訳を持つ ID
+ *
+ * | # | 観点                          | sources        | existingTargetIds | 期待結果        |
+ * |---|-------------------------------|----------------|-------------------|-----------------|
+ * | 1 | 一部に対象言語あり（正常系）  | id 1,2,3       | [2]               | id 1,3          |
+ * | 2 | 対象言語が全く無い            | id 1,2         | []                | id 1,2（全件）  |
+ * | 3 | 全件に対象言語あり            | id 1,2         | [1,2]             | []（空）        |
+ * | 4 | sources が空                  | []             | [1]               | []（空）        |
+ * | 5 | existingTargetIds に重複      | id 1,2         | [1,1]             | id 2            |
+ * | 6 | existingTargetIds に無関係ID  | id 1,2         | [99]              | id 1,2（全件）  |
+ * | 7 | getId が別フィールドを参照    | galleryImageId | [10]              | 該当以外        |
  */
 
 type SourceRow = { articleId: number; title: string };

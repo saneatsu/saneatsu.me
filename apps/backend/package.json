@@ -14,7 +14,7 @@
 	"scripts": {
 		"build": "tsc",
 		"dev": "tsx watch src/dev.ts",
-		"db:backfill-es": "tsx src/scripts/backfill-es-translations.ts",
+		"db:backfill": "tsx src/scripts/backfill-translations.ts",
 		"dev:worker": "wrangler dev",
 		"start": "node dist/index.js",
 		"deploy": "wrangler deploy",

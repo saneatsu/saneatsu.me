@@ -17,6 +17,9 @@ vi.mock("@/services/gemini-translation/gemini-translation", () => ({
 	createTranslationService: vi.fn(() => ({
 		translateArticle: mockTranslateArticle,
 	})),
+	// ハンドラが翻訳対象言語の導出に使う定数。実値と同じ en・es を渡す。
+	TARGET_LANGUAGES: ["en", "es"] as const,
+	TARGET_LANGUAGE_NAMES: { en: "英語", es: "スペイン語" },
 }));
 
 // モック設定
