@@ -6,13 +6,16 @@ import {
 } from "@/shared/lib/testing/middleware-test-utils";
 import { middleware } from "./middleware";
 
-// NextAuth.jsのgetTokenをモック
-vi.mock("next-auth/jwt", () => ({
-	getToken: vi.fn(),
+// middlewareが依存するauthモジュールをモックする。
+// 実体をimportするとnext-authが読み込まれ、テスト環境で
+// next/serverの解決に失敗するため、authごとモックしてセッションを制御する。
+const { mockAuth } = vi.hoisted(() => ({
+	mockAuth: vi.fn(),
 }));
 
-const { getToken } = await import("next-auth/jwt");
-const mockGetToken = vi.mocked(getToken);
+vi.mock("./app/api/auth/[...nextauth]/auth", () => ({
+	auth: mockAuth,
+}));
 
 describe("middleware", () => {
 	beforeEach(() => {
@@ -22,26 +25,20 @@ describe("middleware", () => {
 	describe("認証チェック機能", () => {
 		it("/adminパスへの認証済みアクセスは通常処理される", async () => {
 			// 認証済みのトークンを返す
-			mockGetToken.mockResolvedValue({
-				id: "1",
-				email: "test@example.com",
-				name: "Test",
-				picture: "",
+			mockAuth.mockResolvedValue({
+				user: { email: "test@example.com", name: "Test" },
 			});
 
 			const request = createMockNextRequest("http://localhost:3333/admin");
 			const response = await middleware(request);
 
 			expectNext(response);
-			expect(mockGetToken).toHaveBeenCalledWith({
-				req: request,
-				secret: "test-secret",
-			});
+			expect(mockAuth).toHaveBeenCalled();
 		});
 
 		it("/adminパスへの未認証アクセスはログインページへリダイレクトされる", async () => {
 			// 未認証（null）を返す
-			mockGetToken.mockResolvedValue(null);
+			mockAuth.mockResolvedValue(null);
 
 			const request = createMockNextRequest("http://localhost:3333/admin");
 			const response = await middleware(request);
@@ -53,7 +50,7 @@ describe("middleware", () => {
 		});
 
 		it("/admin/articlesへの未認証アクセスもリダイレクトされる", async () => {
-			mockGetToken.mockResolvedValue(null);
+			mockAuth.mockResolvedValue(null);
 
 			const request = createMockNextRequest(
 				"http://localhost:3333/admin/articles"
@@ -67,7 +64,7 @@ describe("middleware", () => {
 		});
 
 		it("認証チェック時にcallbackUrlが正しく設定される", async () => {
-			mockGetToken.mockResolvedValue(null);
+			mockAuth.mockResolvedValue(null);
 
 			const request = createMockNextRequest(
 				"http://localhost:3333/admin/tags?filter=tech"
@@ -109,8 +106,8 @@ describe("middleware", () => {
 			const request = createMockNextRequest("http://localhost:3333/articles");
 			const response = await middleware(request);
 
-			// デフォルトロケールは "ja"
-			expectRedirect(response, "http://localhost:3333/ja/articles");
+			// デフォルトロケールは "en"
+			expectRedirect(response, "http://localhost:3333/en/articles");
 		});
 
 		it("複数言語の優先度（q値）が正しく処理される", async () => {
@@ -134,7 +131,8 @@ describe("middleware", () => {
 			});
 			const response = await middleware(request);
 
-			expectRedirect(response, "http://localhost:3333/ja/articles");
+			// デフォルトロケールは "en"
+			expectRedirect(response, "http://localhost:3333/en/articles");
 		});
 
 		it("既にロケールが含まれている場合、リダイレクトされない", async () => {
@@ -166,29 +164,30 @@ describe("middleware", () => {
 			const response = await middleware(request);
 
 			expectNext(response);
-			// getTokenが呼ばれないことを確認
-			expect(mockGetToken).not.toHaveBeenCalled();
+			// auth()が呼ばれないことを確認
+			expect(mockAuth).not.toHaveBeenCalled();
 		});
 
 		it("/loginパスは言語ルーティングをスキップする", async () => {
+			// /loginはBasic認証で保護されているため、有効な資格情報を付与する。
+			// （環境変数未設定時のデフォルトはadmin:password）
+			const credentials = Buffer.from("admin:password").toString("base64");
 			const request = createMockNextRequest("http://localhost:3333/login", {
 				headers: {
+					authorization: `Basic ${credentials}`,
 					"accept-language": "ja-JP,ja;q=0.9",
 				},
 			});
 			const response = await middleware(request);
 
-			// リダイレクトされない
+			// ロケールリダイレクトされない
 			expectNext(response);
 		});
 
 		it("/admin/loginのような複合パスも正しく処理される", async () => {
 			// 認証済みの場合
-			mockGetToken.mockResolvedValue({
-				id: "1",
-				email: "test@example.com",
-				name: "Test",
-				picture: "",
+			mockAuth.mockResolvedValue({
+				user: { email: "test@example.com", name: "Test" },
 			});
 
 			const request = createMockNextRequest(
@@ -197,7 +196,7 @@ describe("middleware", () => {
 			const response = await middleware(request);
 
 			// /adminで始まるので認証チェックが行われる
-			expect(mockGetToken).toHaveBeenCalled();
+			expect(mockAuth).toHaveBeenCalled();
 			expectNext(response);
 		});
 	});

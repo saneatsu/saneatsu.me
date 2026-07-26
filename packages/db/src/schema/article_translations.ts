@@ -15,8 +15,8 @@ export const articleTranslations = sqliteTable(
 		title: text("title").notNull(),
 		/** Markdown形式の本文 */
 		content: text("content").notNull(),
-		/** 言語コード（ja: 日本語, en: 英語） */
-		language: text("language", { enum: ["ja", "en"] }).notNull(),
+		/** 言語コード（ja: 日本語, en: 英語, es: スペイン語） */
+		language: text("language", { enum: ["ja", "en", "es"] }).notNull(),
 		/** 記事ID（外部キー） */
 		articleId: integer("article_id")
 			.notNull()

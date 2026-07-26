@@ -20,4 +20,9 @@ export const localeItems = (
 		value: "en",
 		label: t("en"),
 	},
+	{
+		flag: "🇪🇸",
+		value: "es",
+		label: t("es"),
+	},
 ];

@@ -8,7 +8,7 @@ import { SLUG_REGEX } from "./slug";
  */
 
 /** 言語コード */
-export const languageSchema = z.enum(["ja", "en"], {
+export const languageSchema = z.enum(["ja", "en", "es"], {
 	error: () => i18nMessage("validation.custom.common.languageInvalid"),
 });
 

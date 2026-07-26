@@ -66,6 +66,10 @@ describe("Unit Test", () => {
 					title: "Test Title",
 					description: "Test Description",
 				},
+				es: {
+					title: "Título de prueba",
+					description: "Descripción de prueba",
+				},
 			});
 
 			mockUploadImage.mockResolvedValue({

@@ -1,3 +1,5 @@
+import type { Locale } from "@saneatsu/i18n";
+import { locales } from "@saneatsu/i18n";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
@@ -8,10 +10,6 @@ import { Header } from "@/widgets/header";
 import { MobileMenu } from "@/widgets/mobile-menu";
 
 import { LayoutShell } from "./layout-shell";
-
-// サポートされているロケール
-const locales = ["ja", "en"] as const;
-type Locale = (typeof locales)[number];
 
 function isValidLocale(locale: string): locale is Locale {
 	return locales.includes(locale as Locale);
@@ -44,20 +42,29 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 			description:
 				"Articles about programming, development tools, and daily insights on technology and lifestyle.",
 		},
+		es: {
+			title: "saneatsu.me",
+			description:
+				"Artículos sobre programación, herramientas de desarrollo y reflexiones cotidianas sobre tecnología y estilo de vida.",
+		},
 	};
 
 	const currentMetadata = isValidLocale(locale)
 		? metadata[locale]
-		: metadata.ja;
+		: metadata.en;
 
 	return {
 		title: currentMetadata.title,
 		description: currentMetadata.description,
 		alternates: {
-			languages: {
-				ja: "/ja",
-				en: "/en",
-			},
+			// hreflang: 各言語バージョンの存在を検索エンジンに伝える。
+			// locales に追加した言語は自動的にすべて対象になる。
+			languages: Object.fromEntries(
+				locales.map((supportedLocale) => [
+					supportedLocale,
+					`/${supportedLocale}`,
+				])
+			),
 		},
 	};
 }

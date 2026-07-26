@@ -7,7 +7,7 @@ import type { QueryConfig } from "@/shared/lib";
 import type { DashboardOverviewResponseData } from "@/shared/model";
 
 type UseDashboardContributionsOptions = {
-	language?: "ja" | "en";
+	language?: "ja" | "en" | "es";
 	queryConfig?: QueryConfig<() => Promise<DashboardOverviewResponseData>>;
 };
 

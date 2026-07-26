@@ -24,7 +24,7 @@ function DateCell({ dateString }: { dateString: string | null }) {
 
 	if (!dateString) return <span className="text-muted-foreground">未設定</span>;
 
-	const dateInfo = formatRelativeDate(dateString, locale as "ja" | "en");
+	const dateInfo = formatRelativeDate(dateString, locale as "ja" | "en" | "es");
 
 	if (!dateInfo)
 		return <span className="text-muted-foreground">無効な日付</span>;

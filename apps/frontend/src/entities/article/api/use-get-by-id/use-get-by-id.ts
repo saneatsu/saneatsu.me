@@ -52,7 +52,7 @@ type ArticleWithTags = {
 export const useGetById = (
 	id: number,
 	options?: {
-		language?: "ja" | "en";
+		language?: "ja" | "en" | "es";
 		includeAllTranslations?: boolean;
 		enabled?: boolean;
 		onSuccess?: (data: ArticleWithTags) => void;

@@ -117,7 +117,7 @@ const ArticleParamSchema = z.object({
  * 記事詳細クエリスキーマ
  */
 const ArticleDetailQuerySchema = z.object({
-	lang: z.enum(["ja", "en"]).optional().openapi({
+	lang: z.enum(["ja", "en", "es"]).optional().openapi({
 		example: "ja",
 		description: "言語",
 	}),

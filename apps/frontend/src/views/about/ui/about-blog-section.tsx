@@ -14,7 +14,7 @@ import { AnchorHeading, MarkdownPreview } from "@/shared/ui";
  */
 export function AboutBlogSection() {
 	const t = useTranslations("about.blog");
-	const locale = useLocale() as "ja" | "en";
+	const locale = useLocale() as "ja" | "en" | "es";
 
 	// 翻訳ファイルからブログの目的リストを取得
 	const purposeItems: string[] = t.raw("purpose.items") as string[];

@@ -28,7 +28,7 @@ export interface TagBadgeProps {
  * ```
  */
 export function TagBadge({ tag, className }: TagBadgeProps) {
-	const locale = useLocale() as "ja" | "en";
+	const locale = useLocale() as "ja" | "en" | "es";
 
 	// ロケールに応じたタグ名を取得、なければslugをフォールバック
 	const tagName = tag.translations[locale] || tag.slug;

@@ -121,7 +121,7 @@ export const getDashboardOverviewRoute = createRoute({
 	path: "/overview",
 	request: {
 		query: z.object({
-			language: z.enum(["ja", "en"]).optional().openapi({
+			language: z.enum(["ja", "en", "es"]).optional().openapi({
 				example: "ja",
 				description: "統計データを取得する言語",
 			}),

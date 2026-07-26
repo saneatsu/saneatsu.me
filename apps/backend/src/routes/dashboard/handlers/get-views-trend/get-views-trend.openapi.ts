@@ -4,7 +4,7 @@ import { createRoute, z } from "@hono/zod-openapi";
  * 閲覧数推移用のOpenAPIクエリスキーマ
  */
 const viewsTrendOpenApiQuerySchema = z.object({
-	language: z.enum(["ja", "en"]).optional().openapi({
+	language: z.enum(["ja", "en", "es"]).optional().openapi({
 		example: "ja",
 		description: "統計データを取得する言語",
 	}),

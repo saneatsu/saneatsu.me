@@ -86,7 +86,7 @@ export function TagFilter() {
 			.filter((tag) => tag.articleCount > 0)
 			.map((tag) => ({
 				label:
-					tag.translations[locale as "ja" | "en"] ||
+					tag.translations[locale as "ja" | "en" | "es"] ||
 					tag.translations.ja ||
 					tag.slug,
 				value: tag.id.toString(),

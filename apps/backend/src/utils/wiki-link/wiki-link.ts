@@ -55,7 +55,7 @@ export function extractWikiLinks(content: string): string[] {
 export async function fetchArticleInfoBySlugs(
 	db: DrizzleClient,
 	slugs: string[],
-	language: "ja" | "en"
+	language: "ja" | "en" | "es"
 ): Promise<Map<string, WikiLinkInfo>> {
 	if (slugs.length === 0) {
 		return new Map();
@@ -119,7 +119,7 @@ export async function fetchArticleInfoBySlugs(
 export async function convertWikiLinks(
 	db: DrizzleClient,
 	content: string,
-	language: "ja" | "en"
+	language: "ja" | "en" | "es"
 ): Promise<string> {
 	// Wiki Linkを抽出
 	const slugs = extractWikiLinks(content);

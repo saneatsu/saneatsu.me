@@ -14,7 +14,7 @@ type UseGetGalleryImageByIdOptions = {
 	/** 画像ID */
 	id: number;
 	/** 言語 */
-	language?: "ja" | "en";
+	language?: "ja" | "en" | "es";
 	/** React Queryの設定 */
 	queryConfig?: QueryConfig<() => Promise<GalleryImage>>;
 };

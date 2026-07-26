@@ -1,5 +1,6 @@
 "use client";
 
+import { bcp47ByLocale } from "@saneatsu/i18n";
 import { ArrowRight } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
@@ -78,7 +79,7 @@ export function AboutView() {
 		refetch: refetchPublicContributions,
 	} = usePublicContributions({
 		range: 365,
-		locale: locale === "ja" ? "ja" : "en",
+		locale,
 	});
 
 	const router = useRouter();
@@ -233,7 +234,7 @@ export function AboutView() {
 								void refetchPublicContributions();
 							}}
 							copy={contributionsCopy}
-							locale={locale === "ja" ? "ja-JP" : "en-US"}
+							locale={bcp47ByLocale[locale]}
 							rangeDays={publicContributions?.days.length ?? 365}
 							headingId="contributions"
 						/>

@@ -91,7 +91,10 @@ export function RecentActivities({
 	 * 日時を相対形式で表示
 	 */
 	const formatActivityDateTime = (dateString: string): string => {
-		const dateInfo = formatRelativeDate(dateString, locale as "ja" | "en");
+		const dateInfo = formatRelativeDate(
+			dateString,
+			locale as "ja" | "en" | "es"
+		);
 
 		if (!dateInfo) return dateString;
 

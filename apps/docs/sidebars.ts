@@ -72,6 +72,7 @@ const sidebars: SidebarsConfig = {
 				"deployment/ci-cd",
 				"deployment/environment-variables",
 				"deployment/cloudflare-images",
+				"deployment/i18n-translations",
 			],
 		},
 		// Additional docs will be added as we create them

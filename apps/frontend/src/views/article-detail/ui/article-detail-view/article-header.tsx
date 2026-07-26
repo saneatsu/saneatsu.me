@@ -1,5 +1,6 @@
 "use client";
 
+import { bcp47ByLocale } from "@saneatsu/i18n";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 
@@ -20,18 +21,15 @@ interface ArticleHeaderProps {
  * ロケールや翻訳、日付フォーマットは内部で取得・計算する。
  */
 export function ArticleHeader({ article }: ArticleHeaderProps) {
-	const locale = useLocale() as "ja" | "en";
+	const locale = useLocale() as "ja" | "en" | "es";
 	const t = useTranslations("article");
 
 	const publishedDate = article.publishedAt
-		? new Date(article.publishedAt).toLocaleDateString(
-				locale === "ja" ? "ja-JP" : "en-US",
-				{
-					year: "numeric",
-					month: "long",
-					day: "numeric",
-				}
-			)
+		? new Date(article.publishedAt).toLocaleDateString(bcp47ByLocale[locale], {
+				year: "numeric",
+				month: "long",
+				day: "numeric",
+			})
 		: null;
 
 	// 更新日の相対日付フォーマット
@@ -46,7 +44,11 @@ export function ArticleHeader({ article }: ArticleHeaderProps) {
 				<div className="flex flex-wrap gap-2">
 					{article.tags.map((tag) => (
 						<Badge key={tag.id} variant="outline">
-							{tag.translations[locale]}
+							{/* スペイン語などタグ翻訳が無い言語では en → ja → slug の順にフォールバック */}
+							{tag.translations[locale] ??
+								tag.translations.en ??
+								tag.translations.ja ??
+								tag.slug}
 						</Badge>
 					))}
 				</div>

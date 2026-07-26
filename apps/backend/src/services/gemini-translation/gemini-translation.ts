@@ -2,11 +2,44 @@ import type { GenerativeModel } from "@google/generative-ai";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 /**
+ * 自動翻訳の対応言語（＝翻訳先ロケール）の一覧
+ *
+ * @description
+ * サイトが「Geminiで翻訳できる言語」の単一のソース・オブ・トゥルース。
+ * 翻訳元は常に日本語（ja）なのでここには含めない。
+ * 記事・ギャラリー・タグの自動翻訳、およびバックフィルスクリプトは
+ * すべてこの配列を参照するため、言語を1つ増やす手順はこうなる:
+ *   1. この配列に locale を追加する（例: "ko"）
+ *   2. TARGET_LANGUAGE_NAMES / SYSTEM_INSTRUCTION_BY_LANGUAGE は
+ *      Record<TargetLanguage> なので、追記漏れを TypeScript がエラーで教えてくれる
+ *   3. 併せて i18n の locales・DB の language enum・UI の <locale>.json も追加する
+ */
+export const TARGET_LANGUAGES = ["en", "es"] as const;
+
+/** 翻訳先の言語コード（TARGET_LANGUAGES から導出） */
+export type TargetLanguage = (typeof TARGET_LANGUAGES)[number];
+
+/**
+ * 翻訳先言語コードと、プロンプトで使う言語名（日本語）の対応表
+ *
+ * @description
+ * Gemini へのプロンプトは「自然な◯◯語に翻訳して」と言語名で指示するため、
+ * コードから表示名への変換表を持つ。警告メッセージのラベルにも再利用する。
+ * TARGET_LANGUAGES に言語を足すと、この Record が不足しビルドエラーになる。
+ */
+export const TARGET_LANGUAGE_NAMES: Record<TargetLanguage, string> = {
+	en: "英語",
+	es: "スペイン語",
+};
+
+/**
  * Gemini APIを使った翻訳サービス
  *
  * @description
- * - 記事（タイトル・本文）の翻訳: Markdown形式を保持した日英翻訳
- * - タグ名の翻訳: 適切な英語表現への変換
+ * - 記事（タイトル・本文）の翻訳: Markdown形式を保持した日本語→多言語翻訳
+ * - タグ名の翻訳: 適切な英語（スラッグ用）表現への変換
+ *
+ * 翻訳元は常に日本語で、翻訳先は `TargetLanguage`（英語・スペイン語など）を指定する。
  */
 export class GeminiTranslationService {
 	private genAI: GoogleGenerativeAI;
@@ -22,18 +55,24 @@ export class GeminiTranslationService {
 	 * 記事の翻訳プロンプトを生成
 	 * @param title - 記事のタイトル
 	 * @param content - 記事の本文（Markdown形式）
+	 * @param targetLanguage - 翻訳先の言語コード
 	 * @returns 翻訳用プロンプト
 	 */
-	private createTranslationPrompt(title: string, content: string): string {
-		return `以下の日本語の記事を英語に翻訳してください。
+	private createTranslationPrompt(
+		title: string,
+		content: string,
+		targetLanguage: TargetLanguage
+	): string {
+		const languageName = TARGET_LANGUAGE_NAMES[targetLanguage];
+		return `以下の日本語の記事を${languageName}に翻訳してください。
 
 重要な条件：
 1. Markdown記法を完全に保持してください（見出し、リスト、リンク、コードブロック、表など）
 2. [[記事名]] のようなWikiLink記法はそのまま保持してください
 3. コードブロック内のコードは翻訳しないでください
 4. URLやファイルパスは変更しないでください
-5. 自然で読みやすい英語にしてください
-6. 専門用語は適切な英語表現を使用してください
+5. 自然で読みやすい${languageName}にしてください
+6. 専門用語は適切な${languageName}表現を使用してください
 
 翻訳する記事：
 タイトル: ${title}
@@ -48,18 +87,24 @@ CONTENT:
 	}
 
 	/**
-	 * 記事を日本語から英語に翻訳
+	 * 記事を日本語から指定言語に翻訳
 	 * @param title - 日本語のタイトル
 	 * @param content - 日本語の本文
+	 * @param targetLanguage - 翻訳先の言語コード（省略時は英語）
 	 * @returns 翻訳結果（タイトルと本文）
 	 */
 	async translateArticle(
 		title: string,
-		content: string
+		content: string,
+		targetLanguage: TargetLanguage = "en"
 	): Promise<{ title: string; content: string } | null> {
 		try {
 			// 翻訳プロンプトを生成
-			const prompt = this.createTranslationPrompt(title, content);
+			const prompt = this.createTranslationPrompt(
+				title,
+				content,
+				targetLanguage
+			);
 
 			// Gemini APIを呼び出し
 			const result = await this.model.generateContent(prompt);

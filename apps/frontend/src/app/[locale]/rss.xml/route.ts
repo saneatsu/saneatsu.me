@@ -1,15 +1,12 @@
+import type { Locale } from "@saneatsu/i18n";
+import { bcp47ByLocale, locales as SUPPORTED_LOCALES } from "@saneatsu/i18n";
 import { NextResponse } from "next/server";
 
 import { extractDescription, fetchArticles } from "@/shared/lib";
 import type { ArticlesResponse } from "@/shared/model";
 
-const SUPPORTED_LOCALES = ["ja", "en"] as const;
-type Locale = (typeof SUPPORTED_LOCALES)[number];
-
-const LOCALE_LANGUAGE_MAP: Record<Locale, string> = {
-	ja: "ja-JP",
-	en: "en-US",
-};
+// BCP 47 言語タグはロケール設定の単一ソースから取得する
+const LOCALE_LANGUAGE_MAP = bcp47ByLocale;
 
 const FEED_METADATA: Record<Locale, { title: string; description: string }> = {
 	ja: {
@@ -21,6 +18,11 @@ const FEED_METADATA: Record<Locale, { title: string; description: string }> = {
 		title: "saneatsu.me (English)",
 		description:
 			"Articles about programming, development tools, and daily insights on technology and lifestyle.",
+	},
+	es: {
+		title: "saneatsu.me (Español)",
+		description:
+			"Artículos sobre programación, herramientas de desarrollo y reflexiones cotidianas sobre tecnología y estilo de vida.",
 	},
 };
 

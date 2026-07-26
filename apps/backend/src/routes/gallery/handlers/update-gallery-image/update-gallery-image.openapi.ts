@@ -4,7 +4,7 @@ import { createRoute, z } from "@hono/zod-openapi";
  * 翻訳データスキーマ
  */
 const TranslationSchema = z.object({
-	language: z.enum(["ja", "en"]).openapi({
+	language: z.enum(["ja", "en", "es"]).openapi({
 		example: "ja",
 		description: "言語コード",
 	}),
@@ -89,7 +89,7 @@ const GalleryImageSchema = z.object({
 		z.object({
 			id: z.number(),
 			galleryImageId: z.number(),
-			language: z.enum(["ja", "en"]),
+			language: z.enum(["ja", "en", "es"]),
 			title: z.string().nullable(),
 			description: z.string().nullable(),
 			createdAt: z.string(),

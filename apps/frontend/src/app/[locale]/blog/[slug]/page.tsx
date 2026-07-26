@@ -1,3 +1,4 @@
+import { openGraphLocaleByLocale } from "@saneatsu/i18n";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 
@@ -33,7 +34,7 @@ export async function generateMetadata({
 	try {
 		// 記事データを取得
 		const articleResponse = await fetchArticle(slug, {
-			lang: locale as "ja" | "en",
+			lang: locale as "ja" | "en" | "es",
 		});
 		const article = articleResponse.data;
 
@@ -72,7 +73,7 @@ export async function generateMetadata({
 						alt: article.title,
 					},
 				],
-				locale: locale === "ja" ? "ja_JP" : "en_US",
+				locale: openGraphLocaleByLocale[locale as "ja" | "en" | "es"],
 			},
 			twitter: {
 				card: "summary_large_image",
@@ -118,7 +119,7 @@ export async function generateMetadata({
 						alt: "saneatsu.me",
 					},
 				],
-				locale: locale === "ja" ? "ja_JP" : "en_US",
+				locale: openGraphLocaleByLocale[locale as "ja" | "en" | "es"],
 			},
 			twitter: {
 				card: "summary_large_image",

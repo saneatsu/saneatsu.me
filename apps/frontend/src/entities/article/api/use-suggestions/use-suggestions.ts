@@ -45,7 +45,7 @@ type UseArticleSuggestionsOptions = {
 	/** 検索クエリ */
 	query: string;
 	/** 言語 */
-	language?: "ja" | "en";
+	language?: "ja" | "en" | "es";
 	/** 最大件数 */
 	limit?: number;
 	/** 特定記事の見出しのみを取得したい場合の記事スラッグ */
@@ -103,7 +103,7 @@ export function useArticleSuggestions({
 		queryFn: async () => {
 			const queryParams: {
 				q: string;
-				lang: "ja" | "en";
+				lang: "ja" | "en" | "es";
 				limit: string;
 				targetSlug?: string;
 			} = {

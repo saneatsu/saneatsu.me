@@ -1,21 +1,40 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+import type { TargetLanguage } from "../../services/gemini-translation/gemini-translation";
+
+// 翻訳先の言語コードは gemini-translation.ts（TARGET_LANGUAGES）を単一ソースとし、
+// ここでは型のみを再エクスポートして後方互換を保つ。
+export type { TargetLanguage };
+
 /**
- * Geminiで日本語から英語に翻訳
+ * 翻訳先言語ごとの Gemini システムプロンプト
  *
  * @description
- * Google Gemini APIを使用して日本語テキストを英語に翻訳する。
+ * 言語名を英語で明示することで、Gemini が自然な対象言語に翻訳できるようにする。
+ * TARGET_LANGUAGES に言語を足すと、この Record が不足しビルドエラーになる。
+ */
+const SYSTEM_INSTRUCTION_BY_LANGUAGE: Record<TargetLanguage, string> = {
+	en: "You are a professional translator. Translate the given Japanese text to natural English. Return only the translated text without any explanations or additional commentary.",
+	es: "You are a professional translator. Translate the given Japanese text to natural Spanish (español). Return only the translated text without any explanations or additional commentary.",
+};
+
+/**
+ * Geminiで日本語から指定言語に翻訳
+ *
+ * @description
+ * Google Gemini APIを使用して日本語テキストを指定した言語に翻訳する。
  *
  * 処理フロー:
  * 1. GoogleGenerativeAIクライアントを初期化
- * 2. gemini-1.5-flashモデルを使用
- * 3. システムプロンプトで翻訳タスクを定義
+ * 2. gemini-2.5-flashモデルを使用
+ * 3. 翻訳先言語に応じたシステムプロンプトで翻訳タスクを定義
  * 4. テキストを翻訳
  * 5. 翻訳結果を返す
  *
  * @param text - 翻訳する日本語テキスト
  * @param apiKey - Gemini API Key
- * @returns 英語に翻訳されたテキスト
+ * @param targetLanguage - 翻訳先の言語コード（省略時は英語）
+ * @returns 指定言語に翻訳されたテキスト
  *
  * @throws APIエラーまたはレスポンスが空の場合にエラーを投げる
  *
@@ -23,14 +42,16 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
  * ```typescript
  * const translated = await translateWithGemini(
  *   "東京タワーの夕景",
- *   env.GEMINI_API_KEY
+ *   env.GEMINI_API_KEY,
+ *   "es"
  * );
- * // => "Tokyo Tower at Sunset"
+ * // => "Torre de Tokio al atardecer"
  * ```
  */
 export async function translateWithGemini(
 	text: string,
-	apiKey: string
+	apiKey: string,
+	targetLanguage: TargetLanguage = "en"
 ): Promise<string> {
 	// 空文字列の場合は翻訳せずに返す
 	if (!text || text.trim().length === 0) {
@@ -43,8 +64,7 @@ export async function translateWithGemini(
 	// gemini-2.5-flashモデルを使用（高速で安価、安定版）
 	const model = genAI.getGenerativeModel({
 		model: "gemini-2.5-flash",
-		systemInstruction:
-			"You are a professional translator. Translate the given Japanese text to natural English. Return only the translated text without any explanations or additional commentary.",
+		systemInstruction: SYSTEM_INSTRUCTION_BY_LANGUAGE[targetLanguage],
 	});
 
 	try {
@@ -77,36 +97,40 @@ export type GalleryTranslationInput = {
 };
 
 /**
- * ギャラリー画像の翻訳結果（日本語と英語）
+ * 1言語分の翻訳（タイトルと説明）
+ */
+type GalleryTranslationText = {
+	title: string | null;
+	description: string | null;
+};
+
+/**
+ * ギャラリー画像の翻訳結果（日本語・英語・スペイン語）
  */
 export type GalleryTranslationResult = {
-	/** 日本語翻訳 */
-	ja: {
-		title: string | null;
-		description: string | null;
-	};
+	/** 日本語翻訳（原文） */
+	ja: GalleryTranslationText;
 	/** 英語翻訳 */
-	en: {
-		title: string | null;
-		description: string | null;
-	};
+	en: GalleryTranslationText;
+	/** スペイン語翻訳 */
+	es: GalleryTranslationText;
 };
 
 /**
  * ギャラリー画像の翻訳データを生成
  *
  * @description
- * 日本語のタイトルと説明を受け取り、Gemini APIで英語に翻訳する。
- * 日本語と英語の両方の翻訳データを返す。
+ * 日本語のタイトルと説明を受け取り、Gemini APIで英語とスペイン語に翻訳する。
+ * 日本語（原文）・英語・スペイン語の翻訳データを返す。
  *
  * 処理フロー:
  * 1. 日本語のタイトルと説明を受け取る
- * 2. それぞれをGemini APIで英語に翻訳
- * 3. 日本語と英語の翻訳データを返す
+ * 2. それぞれをGemini APIで英語・スペイン語に並行翻訳する
+ * 3. 日本語・英語・スペイン語の翻訳データを返す
  *
  * @param input - 日本語の翻訳データ
  * @param apiKey - Gemini API Key
- * @returns 日本語と英語の翻訳データ
+ * @returns 日本語・英語・スペイン語の翻訳データ
  *
  * @example
  * ```typescript
@@ -119,7 +143,8 @@ export type GalleryTranslationResult = {
  * );
  * // => {
  * //   ja: { title: "東京タワーの夕景", description: "..." },
- * //   en: { title: "Tokyo Tower at Sunset", description: "..." }
+ * //   en: { title: "Tokyo Tower at Sunset", description: "..." },
+ * //   es: { title: "Torre de Tokio al atardecer", description: "..." }
  * // }
  * ```
  */
@@ -131,11 +156,19 @@ export async function translateGalleryImage(
 	const titleJa = input.titleJa?.trim() || null;
 	const descriptionJa = input.descriptionJa?.trim() || null;
 
-	// タイトルと説明を並行翻訳
-	const [titleEn, descriptionEn] = await Promise.all([
-		titleJa ? translateWithGemini(titleJa, apiKey) : Promise.resolve(null),
+	// タイトルと説明を、英語・スペイン語それぞれについて並行翻訳する
+	const [titleEn, descriptionEn, titleEs, descriptionEs] = await Promise.all([
+		titleJa
+			? translateWithGemini(titleJa, apiKey, "en")
+			: Promise.resolve(null),
 		descriptionJa
-			? translateWithGemini(descriptionJa, apiKey)
+			? translateWithGemini(descriptionJa, apiKey, "en")
+			: Promise.resolve(null),
+		titleJa
+			? translateWithGemini(titleJa, apiKey, "es")
+			: Promise.resolve(null),
+		descriptionJa
+			? translateWithGemini(descriptionJa, apiKey, "es")
 			: Promise.resolve(null),
 	]);
 
@@ -147,6 +180,10 @@ export async function translateGalleryImage(
 		en: {
 			title: titleEn,
 			description: descriptionEn,
+		},
+		es: {
+			title: titleEs,
+			description: descriptionEs,
 		},
 	};
 }

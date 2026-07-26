@@ -1,4 +1,5 @@
 import type { Locale } from "@saneatsu/i18n";
+import { bcp47ByLocale } from "@saneatsu/i18n";
 
 /**
  * ISO 8601形式の日時をdatetime-local形式に変換する
@@ -134,8 +135,8 @@ export function formatRelativeDate(
 		}
 
 		// 10日より前の場合は通常の日付形式
-		// LocaleをIntl.LocalesArgument形式に変換
-		const localeCode = locale === "ja" ? "ja-JP" : "en-US";
+		// LocaleをIntl.LocalesArgument形式（BCP 47）に変換
+		const localeCode = bcp47ByLocale[locale];
 		const formatted = targetDate.toLocaleDateString(localeCode, {
 			year: "numeric",
 			month: "long",

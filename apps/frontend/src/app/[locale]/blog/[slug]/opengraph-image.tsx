@@ -39,7 +39,7 @@ export default async function Image({ params }: OgImageProps) {
 	try {
 		// 記事データを取得
 		const articleResponse = await fetchArticle(slug, {
-			lang: locale as "ja" | "en",
+			lang: locale as "ja" | "en" | "es",
 		});
 		const article = articleResponse.data;
 

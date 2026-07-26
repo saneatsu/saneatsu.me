@@ -49,7 +49,7 @@ export function ArticlesList({ limit }: ArticlesListProps) {
 		refetch,
 	} = useGetAllArticles({
 		page: limit ? 1 : page, // limitが指定されている場合は常に1ページ目
-		language: locale as "ja" | "en",
+		language: locale as "ja" | "en" | "es",
 		limit: limit || 24,
 		status: ["published"],
 		sortBy: "updatedAt",

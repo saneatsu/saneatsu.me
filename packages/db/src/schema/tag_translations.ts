@@ -11,8 +11,8 @@ export const tagTranslations = sqliteTable("tag_translations", {
 	id: integer("id").primaryKey({ autoIncrement: true }),
 	/** タグ名 */
 	name: text("name").notNull(),
-	/** 言語コード（ja: 日本語, en: 英語） */
-	language: text("language", { enum: ["ja", "en"] }).notNull(),
+	/** 言語コード（ja: 日本語, en: 英語, es: スペイン語） */
+	language: text("language", { enum: ["ja", "en", "es"] }).notNull(),
 	/** タグID（外部キー） */
 	tagId: integer("tag_id")
 		.notNull()

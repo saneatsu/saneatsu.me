@@ -46,7 +46,7 @@ interface CustomMarkdownEditorProps {
 	/** 追加のCSSクラス */
 	className?: string;
 	/** 言語（Wiki Link用） */
-	language?: "ja" | "en";
+	language?: "ja" | "en" | "es";
 	/** 英語コンテンツ（プレビュー表示用） */
 	enContent?: string;
 	/** タグ検知時のコールバック */

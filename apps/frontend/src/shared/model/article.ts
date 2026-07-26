@@ -1,3 +1,5 @@
+import type { Locale } from "@saneatsu/i18n";
+
 import type { PaginationInfo } from "./common";
 import type { Tag } from "./tag";
 
@@ -8,8 +10,13 @@ export type ArticleStatus = "published" | "draft" | "archived";
 
 /**
  * 言語コード
+ *
+ * @remarks
+ * サイトのサポート言語（@saneatsu/i18n の Locale）と常に一致させるため、
+ * ロケール定義を単一のソース・オブ・トゥルースとしてエイリアスする。
+ * 言語を追加するときは config.ts の locales だけを更新すればよい。
  */
-export type LanguageCode = "ja" | "en";
+export type LanguageCode = Locale;
 
 /**
  * 記事オブジェクト（API レスポンス用）
@@ -154,6 +161,7 @@ export const ARTICLE_STATUS_CONFIG: Record<
 export const LANGUAGE_CONFIG: Record<LanguageCode, { label: string }> = {
 	ja: { label: "日本語" },
 	en: { label: "English" },
+	es: { label: "Español" },
 };
 
 /**

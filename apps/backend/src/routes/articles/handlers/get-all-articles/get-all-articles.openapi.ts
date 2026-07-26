@@ -12,7 +12,7 @@ const articlesOpenApiQuerySchema = z.object({
 		example: "10",
 		description: "1ページあたりの記事数",
 	}),
-	language: z.enum(["ja", "en"]).optional().openapi({
+	language: z.enum(["ja", "en", "es"]).optional().openapi({
 		example: "ja",
 		description: "言語",
 	}),

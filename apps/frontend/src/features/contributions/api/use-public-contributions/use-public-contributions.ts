@@ -11,7 +11,7 @@ type ContributionRange = 30 | 90 | 180 | 365;
 
 type UsePublicContributionsOptions = {
 	range?: ContributionRange;
-	locale?: "ja" | "en";
+	locale?: "ja" | "en" | "es";
 	queryConfig?: QueryConfig<() => Promise<ContributionSummary>>;
 };
 
@@ -19,7 +19,7 @@ type PublicContributionsClient = {
 	public: {
 		contributions: {
 			$get: (params: {
-				query: { range: string; locale: "ja" | "en" };
+				query: { range: string; locale: "ja" | "en" | "es" };
 			}) => Promise<Response>;
 		};
 	};

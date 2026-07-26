@@ -17,6 +17,9 @@ vi.mock("@/services/gemini-translation/gemini-translation", () => ({
 	createTranslationService: vi.fn(() => ({
 		translateArticle: mockTranslateArticle,
 	})),
+	// ハンドラが翻訳対象言語の導出に使う定数。実値と同じ en・es を渡す。
+	TARGET_LANGUAGES: ["en", "es"] as const,
+	TARGET_LANGUAGE_NAMES: { en: "英語", es: "スペイン語" },
 }));
 
 // モック設定
@@ -986,9 +989,16 @@ describe("POST /articles - 記事作成", () => {
 
 			// Assert
 			expect(res.status).toBe(201);
+			// 公開記事は英語とスペイン語の2言語に翻訳される
 			expect(mockTranslateArticle).toHaveBeenCalledWith(
 				"公開記事",
-				"公開コンテンツ"
+				"公開コンテンツ",
+				"en"
+			);
+			expect(mockTranslateArticle).toHaveBeenCalledWith(
+				"公開記事",
+				"公開コンテンツ",
+				"es"
 			);
 		});
 	});
@@ -1090,6 +1100,7 @@ describe("POST /articles - 記事作成", () => {
 				.mockReturnValueOnce(insertArticleMock) // 記事作成
 				.mockReturnValueOnce(insertTranslationJaMock) // 日本語翻訳
 				.mockReturnValueOnce(insertTranslationEnMock) // 英語翻訳
+				.mockReturnValueOnce(insertTranslationEnMock) // スペイン語翻訳（enモックを再利用）
 				.mockReturnValueOnce(insertGalleryImagesMock); // ギャラリー画像挿入
 
 			// Act
@@ -1113,9 +1124,9 @@ describe("POST /articles - 記事作成", () => {
 			expect(res.status).toBe(201);
 
 			// ギャラリー画像の挿入が呼ばれたことを確認
-			expect(mockDb.insert).toHaveBeenCalledTimes(4); // 記事 + 日本語翻訳 + 英語翻訳 + ギャラリー画像
+			expect(mockDb.insert).toHaveBeenCalledTimes(5); // 記事 + 日本語翻訳 + 英語翻訳 + スペイン語翻訳 + ギャラリー画像
 			// 最後の insert 呼び出しがギャラリー画像の挿入
-			const galleryImageInsertCall = mockDb.insert.mock.calls[3];
+			const galleryImageInsertCall = mockDb.insert.mock.calls[4];
 			expect(galleryImageInsertCall[0]).toEqual({}); // articleGalleryImages テーブル
 
 			// values が正しく呼ばれたことを確認
@@ -1218,6 +1229,7 @@ describe("POST /articles - 記事作成", () => {
 				.mockReturnValueOnce(insertArticleMock)
 				.mockReturnValueOnce(insertTranslationJaMock)
 				.mockReturnValueOnce(insertTranslationEnMock)
+				.mockReturnValueOnce(insertTranslationEnMock) // スペイン語翻訳（enモックを再利用）
 				.mockReturnValueOnce(insertGalleryImagesMock);
 
 			// Act
@@ -1347,6 +1359,7 @@ describe("POST /articles - 記事作成", () => {
 				.mockReturnValueOnce(insertArticleMock)
 				.mockReturnValueOnce(insertTranslationJaMock)
 				.mockReturnValueOnce(insertTranslationEnMock)
+				.mockReturnValueOnce(insertTranslationEnMock) // スペイン語翻訳（enモックを再利用）
 				.mockReturnValueOnce(insertGalleryImagesMock);
 
 			// Act
@@ -1467,6 +1480,7 @@ describe("POST /articles - 記事作成", () => {
 				.mockReturnValueOnce(insertArticleMock)
 				.mockReturnValueOnce(insertTranslationJaMock)
 				.mockReturnValueOnce(insertTranslationEnMock)
+				.mockReturnValueOnce(insertTranslationEnMock) // スペイン語翻訳（enモックを再利用）
 				.mockReturnValueOnce(insertGalleryImagesMock);
 
 			// Act
@@ -1578,7 +1592,8 @@ describe("POST /articles - 記事作成", () => {
 			mockDb.insert
 				.mockReturnValueOnce(insertArticleMock)
 				.mockReturnValueOnce(insertTranslationJaMock)
-				.mockReturnValueOnce(insertTranslationEnMock);
+				.mockReturnValueOnce(insertTranslationEnMock)
+				.mockReturnValueOnce(insertTranslationEnMock); // 日本語 + 英語 + スペイン語
 			// ギャラリー画像挿入は呼ばれない（空配列のため）
 
 			// Act
@@ -1601,7 +1616,7 @@ describe("POST /articles - 記事作成", () => {
 			expect(res.status).toBe(201);
 
 			// ギャラリー画像挿入は呼ばれない
-			expect(mockDb.insert).toHaveBeenCalledTimes(3); // 記事 + 日本語翻訳 + 英語翻訳のみ
+			expect(mockDb.insert).toHaveBeenCalledTimes(4); // 記事 + 日本語翻訳 + 英語翻訳 + スペイン語翻訳
 		});
 
 		it("should work when content has no image URLs", async () => {
@@ -1681,7 +1696,8 @@ describe("POST /articles - 記事作成", () => {
 			mockDb.insert
 				.mockReturnValueOnce(insertArticleMock)
 				.mockReturnValueOnce(insertTranslationJaMock)
-				.mockReturnValueOnce(insertTranslationEnMock);
+				.mockReturnValueOnce(insertTranslationEnMock)
+				.mockReturnValueOnce(insertTranslationEnMock); // 日本語 + 英語 + スペイン語
 			// ギャラリー画像挿入は呼ばれない（画像URLがないため）
 
 			// Act
@@ -1703,7 +1719,7 @@ describe("POST /articles - 記事作成", () => {
 			expect(res.status).toBe(201);
 
 			// ギャラリー画像挿入は呼ばれない
-			expect(mockDb.insert).toHaveBeenCalledTimes(3); // 記事 + 日本語翻訳 + 英語翻訳のみ
+			expect(mockDb.insert).toHaveBeenCalledTimes(4); // 記事 + 日本語翻訳 + 英語翻訳 + スペイン語翻訳
 		});
 	});
 });

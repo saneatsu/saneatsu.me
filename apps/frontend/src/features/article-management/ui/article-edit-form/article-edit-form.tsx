@@ -137,10 +137,12 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 	const enContent = article.translations?.en.content || "";
 
 	// タイトルの表示言語
-	const [titleLanguage, setTitleLanguage] = useState<"ja" | "en">("ja");
+	const [titleLanguage, setTitleLanguage] = useState<"ja" | "en" | "es">("ja");
 
 	// プレビューの表示言語
-	const [previewLanguage, setPreviewLanguage] = useState<"ja" | "en">("ja");
+	const [previewLanguage, setPreviewLanguage] = useState<"ja" | "en" | "es">(
+		"ja"
+	);
 
 	/**
 	 * サムネイルURLを生成
@@ -446,7 +448,7 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 									<Tabs
 										value={titleLanguage}
 										onValueChange={(value) =>
-											setTitleLanguage(value as "ja" | "en")
+											setTitleLanguage(value as "ja" | "en" | "es")
 										}
 									>
 										<TabsList className="h-8">
@@ -601,7 +603,7 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 							<Tabs
 								value={previewLanguage}
 								onValueChange={(value) =>
-									setPreviewLanguage(value as "ja" | "en")
+									setPreviewLanguage(value as "ja" | "en" | "es")
 								}
 							>
 								<TabsList className="h-8">

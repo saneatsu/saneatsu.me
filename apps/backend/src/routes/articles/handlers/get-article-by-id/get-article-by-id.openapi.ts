@@ -134,7 +134,7 @@ export const getArticleByIdRoute = createRoute({
 			}),
 		}),
 		query: z.object({
-			lang: z.enum(["ja", "en"]).optional().default("ja").openapi({
+			lang: z.enum(["ja", "en", "es"]).optional().default("ja").openapi({
 				example: "ja",
 				description: "言語",
 			}),

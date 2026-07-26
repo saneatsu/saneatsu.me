@@ -163,7 +163,7 @@ export interface MarkdownPreviewProps {
 	/** 表示するMarkdownコンテンツ */
 	content: string;
 	/** 言語設定（Wiki Link用） */
-	language?: "ja" | "en";
+	language?: "ja" | "en" | "es";
 	/** 追加のCSSクラス */
 	className?: string;
 	/** カスタムコンポーネント */
@@ -288,7 +288,7 @@ function hasBlockImage(children: React.ReactNode): boolean {
  * @param imageUrls - 記事内の全画像URLリスト（Lightboxナビゲーション用）
  */
 export function createDefaultMarkdownComponents(
-	language: "ja" | "en" = "ja",
+	language: "ja" | "en" | "es" = "ja",
 	imageComponent: "article" | "zoomable" = "article",
 	headings?: Array<{ id: string; text: string }>,
 	imageUrls?: string[]
