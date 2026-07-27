@@ -1,63 +1,15 @@
 import type { GalleryImageStatus } from "@saneatsu/db";
 import type { Locale } from "@saneatsu/i18n";
 
-/**
- * ギャラリー画像の翻訳データ
- */
-export type GalleryImageTranslation = {
-	/** 翻訳ID */
-	id: number;
-	/** ギャラリー画像ID */
-	galleryImageId: number;
-	/** 言語コード */
-	language: Locale;
-	/** 画像タイトル */
-	title: string | null;
-	/** 画像の説明 */
-	description: string | null;
-	/** 作成日時 */
-	createdAt: string;
-	/** 更新日時 */
-	updatedAt: string;
-};
+// ギャラリー画像のレスポンス契約型は shared/model で RPC から導出したものを使う
+// （旧: このファイルに手書き重複していた）
+import type {
+	GalleryImage,
+	GalleryImagesResponse,
+	GalleryImageTranslation,
+} from "@/shared/model/gallery";
 
-/**
- * ギャラリー画像の型定義
- */
-export type GalleryImage = {
-	/** 画像ID */
-	id: number;
-	/** Cloudflare Images ID */
-	cfImageId: string;
-	/** 翻訳データ */
-	translations: GalleryImageTranslation[];
-	/** 緯度 */
-	latitude: number | null;
-	/** 経度 */
-	longitude: number | null;
-	/** 撮影日時 */
-	takenAt: string | null;
-	/** ステータス */
-	status: GalleryImageStatus;
-	/** 作成日時 */
-	createdAt: string;
-	/** 更新日時 */
-	updatedAt: string;
-};
-
-/**
- * ギャラリー画像一覧レスポンス
- */
-export type GalleryImagesResponse = {
-	/** 画像一覧 */
-	images: GalleryImage[];
-	/** 総画像数 */
-	total: number;
-	/** 現在のページ番号 */
-	page: number;
-	/** 1ページあたりの画像数 */
-	limit: number;
-};
+export type { GalleryImage, GalleryImagesResponse, GalleryImageTranslation };
 
 /**
  * ギャラリー画像アップロードリクエスト
