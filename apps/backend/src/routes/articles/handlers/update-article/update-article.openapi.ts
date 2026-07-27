@@ -1,6 +1,6 @@
 import { createRoute, z } from "@hono/zod-openapi";
-
 import { SLUG_REGEX } from "@saneatsu/schemas";
+import { errorSchema } from "../../../shared/openapi";
 
 /**
  * 記事更新リクエストスキーマ
@@ -118,22 +118,6 @@ const WarningSchema = z.object({
 });
 
 /**
- * エラースキーマ
- */
-const ErrorSchema = z.object({
-	error: z.object({
-		code: z.string().openapi({
-			example: "NOT_FOUND",
-			description: "エラーコード",
-		}),
-		message: z.string().openapi({
-			example: "Article not found",
-			description: "エラーメッセージ",
-		}),
-	}),
-});
-
-/**
  * 記事更新のルート定義
  */
 export const updateArticleRoute = createRoute({
@@ -176,7 +160,7 @@ export const updateArticleRoute = createRoute({
 		400: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "不正なリクエスト",
@@ -184,7 +168,7 @@ export const updateArticleRoute = createRoute({
 		404: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "記事が見つからない",
@@ -192,7 +176,7 @@ export const updateArticleRoute = createRoute({
 		409: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "スラッグが既に存在",
@@ -200,7 +184,7 @@ export const updateArticleRoute = createRoute({
 		500: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "サーバーエラー",

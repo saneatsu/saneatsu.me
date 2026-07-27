@@ -1,5 +1,6 @@
 import { createRoute, z } from "@hono/zod-openapi";
 import { locales } from "@saneatsu/i18n";
+import { errorSchema } from "../../../shared/openapi";
 
 /**
  * サジェストアイテムのスキーマ
@@ -65,16 +66,6 @@ export const ArticleSuggestionsResponseSchema = z.object({
 });
 
 /**
- * エラースキーマ
- */
-export const ErrorSchema = z.object({
-	error: z.object({
-		code: z.string(),
-		message: z.string(),
-	}),
-});
-
-/**
  * サジェスト取得のルート定義
  */
 export const getSuggestionsRoute = createRoute({
@@ -95,7 +86,7 @@ export const getSuggestionsRoute = createRoute({
 		400: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "不正なリクエスト",
@@ -103,7 +94,7 @@ export const getSuggestionsRoute = createRoute({
 		500: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "サーバーエラー",

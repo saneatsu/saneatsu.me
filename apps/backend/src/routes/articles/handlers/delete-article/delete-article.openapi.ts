@@ -1,4 +1,5 @@
 import { createRoute, z } from "@hono/zod-openapi";
+import { errorSchema } from "../../../shared/openapi";
 
 /**
  * 記事削除レスポンススキーマ
@@ -7,22 +8,6 @@ const ArticleDeleteResponseSchema = z.object({
 	message: z.string().openapi({
 		example: "記事が正常に削除されました",
 		description: "削除成功メッセージ",
-	}),
-});
-
-/**
- * エラースキーマ
- */
-const ErrorSchema = z.object({
-	error: z.object({
-		code: z.string().openapi({
-			example: "NOT_FOUND",
-			description: "エラーコード",
-		}),
-		message: z.string().openapi({
-			example: "記事が見つかりません",
-			description: "エラーメッセージ",
-		}),
 	}),
 });
 
@@ -72,7 +57,7 @@ export const deleteArticleRoute = createRoute({
 		404: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "記事が見つかりません",
@@ -80,7 +65,7 @@ export const deleteArticleRoute = createRoute({
 		500: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "サーバーエラー",

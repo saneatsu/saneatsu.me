@@ -1,5 +1,6 @@
 import { createRoute, z } from "@hono/zod-openapi";
 import { locales } from "@saneatsu/i18n";
+import { errorSchema } from "../../../shared/openapi";
 
 /**
  * 記事スキーマ
@@ -86,22 +87,6 @@ const ArticleSchema = z.object({
 });
 
 /**
- * エラースキーマ
- */
-const ErrorSchema = z.object({
-	error: z.object({
-		code: z.string().openapi({
-			example: "NOT_FOUND",
-			description: "エラーコード",
-		}),
-		message: z.string().openapi({
-			example: "Article not found",
-			description: "エラーメッセージ",
-		}),
-	}),
-});
-
-/**
  * 記事詳細レスポンススキーマ
  */
 const ArticleResponseSchema = z.object({
@@ -150,7 +135,7 @@ export const getArticleRoute = createRoute({
 		404: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "記事が見つからない",
@@ -158,7 +143,7 @@ export const getArticleRoute = createRoute({
 		500: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "サーバーエラー",

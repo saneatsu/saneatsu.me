@@ -1,4 +1,5 @@
 import { createRoute, z } from "@hono/zod-openapi";
+import { errorSchema } from "../../../shared/openapi";
 
 /**
  * タグサジェストスキーマ
@@ -19,22 +20,6 @@ const TagSuggestionSchema = z.object({
 	type: z.literal("tag").openapi({
 		example: "tag",
 		description: "サジェストのタイプ",
-	}),
-});
-
-/**
- * エラースキーマ
- */
-const ErrorSchema = z.object({
-	error: z.object({
-		code: z.string().openapi({
-			example: "DATABASE_ERROR",
-			description: "エラーコード",
-		}),
-		message: z.string().openapi({
-			example: "Failed to fetch tag suggestions",
-			description: "エラーメッセージ",
-		}),
 	}),
 });
 
@@ -71,7 +56,7 @@ export const getTagSuggestionsRoute = createRoute({
 		500: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "サーバーエラー",

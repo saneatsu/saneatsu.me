@@ -1,4 +1,5 @@
 import { createRoute, z } from "@hono/zod-openapi";
+import { errorSchema } from "../../../shared/openapi";
 
 /**
  * 記事スキーマ（簡易版）
@@ -48,22 +49,6 @@ const ResponseSchema = z.object({
 });
 
 /**
- * エラースキーマ
- */
-const ErrorSchema = z.object({
-	error: z.object({
-		code: z.string().openapi({
-			example: "NOT_FOUND",
-			description: "エラーコード",
-		}),
-		message: z.string().openapi({
-			example: "Gallery image not found",
-			description: "エラーメッセージ",
-		}),
-	}),
-});
-
-/**
  * GET /api/gallery/:id/articles - ギャラリー画像を使用している記事一覧取得
  */
 export const getArticlesByGalleryImageRoute = createRoute({
@@ -89,7 +74,7 @@ export const getArticlesByGalleryImageRoute = createRoute({
 		400: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "不正なリクエスト",
@@ -97,7 +82,7 @@ export const getArticlesByGalleryImageRoute = createRoute({
 		404: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "ギャラリー画像が見つからない",
@@ -105,7 +90,7 @@ export const getArticlesByGalleryImageRoute = createRoute({
 		500: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "サーバーエラー",

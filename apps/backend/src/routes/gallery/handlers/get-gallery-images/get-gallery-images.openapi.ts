@@ -1,5 +1,6 @@
 import { createRoute, z } from "@hono/zod-openapi";
 import { locales } from "@saneatsu/i18n";
+import { errorSchema } from "../../../shared/openapi";
 
 /**
  * ギャラリー画像翻訳スキーマ
@@ -45,16 +46,6 @@ const GalleryImagesResponseSchema = z.object({
 	limit: z.number().openapi({
 		example: 20,
 		description: "1ページあたりの画像数",
-	}),
-});
-
-/**
- * エラースキーマ
- */
-const ErrorSchema = z.object({
-	error: z.object({
-		code: z.string(),
-		message: z.string(),
 	}),
 });
 
@@ -114,7 +105,7 @@ export const getGalleryImagesRoute = createRoute({
 		400: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "不正なリクエスト",
@@ -122,7 +113,7 @@ export const getGalleryImagesRoute = createRoute({
 		500: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "サーバーエラー",

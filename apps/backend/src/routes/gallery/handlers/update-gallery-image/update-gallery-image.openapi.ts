@@ -1,5 +1,6 @@
 import { createRoute, z } from "@hono/zod-openapi";
 import { locales } from "@saneatsu/i18n";
+import { errorSchema } from "../../../shared/openapi";
 
 /**
  * 翻訳データスキーマ
@@ -117,16 +118,6 @@ const GalleryImageUpdateResponseSchema = z.object({
 });
 
 /**
- * エラースキーマ
- */
-const ErrorSchema = z.object({
-	error: z.object({
-		code: z.string(),
-		message: z.string(),
-	}),
-});
-
-/**
  * ギャラリー画像更新のルート定義
  *
  * @description
@@ -178,7 +169,7 @@ export const updateGalleryImageRoute = createRoute({
 		400: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description:
@@ -187,7 +178,7 @@ export const updateGalleryImageRoute = createRoute({
 		404: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "画像が見つかりません",
@@ -195,7 +186,7 @@ export const updateGalleryImageRoute = createRoute({
 		500: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "サーバーエラー",
