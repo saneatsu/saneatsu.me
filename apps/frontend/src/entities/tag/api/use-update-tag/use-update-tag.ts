@@ -30,6 +30,7 @@ export function useUpdateTag() {
 				json: {
 					name: data.name,
 					enName: data.enName,
+					esName: data.esName,
 					slug: data.slug,
 				},
 			});

@@ -3,6 +3,7 @@ import { and, eq, not } from "drizzle-orm";
 
 import type { Env } from "@/env";
 import { getDatabase } from "@/lib";
+import { translateWithGemini } from "@/lib/translate";
 import { createTranslationService } from "@/services/gemini-translation/gemini-translation";
 
 import type { updateTagRoute } from "./update-tag.openapi";
@@ -33,7 +34,7 @@ export const updateTag: Handler = async (c) => {
 
 		// 2. パラメータとリクエストボディを取得
 		const { id } = c.req.valid("param");
-		const { name, enName, slug } = c.req.valid("json");
+		const { name, enName, esName, slug } = c.req.valid("json");
 
 		// 3. IDの検証
 		const tagId = Number.parseInt(id, 10);
@@ -158,6 +159,61 @@ export const updateTag: Handler = async (c) => {
 						eq(tagTranslations.language, "en")
 					)
 				);
+		}
+
+		// 8-2. スペイン語への翻訳を実行（手動指定または自動翻訳）
+		// enName と同様に、esName があればそれを使い、無ければ Gemini で自動翻訳する。
+		let spanishName: string | null = null;
+
+		if (esName) {
+			// 手動で提供されたスペイン語名を使用
+			spanishName = esName;
+		} else if (c.env.GEMINI_API_KEY) {
+			// スペイン語名が未指定の場合は自動翻訳（表示名なので自然な訳を得る translateWithGemini を使う）
+			try {
+				spanishName = await translateWithGemini(
+					name,
+					c.env.GEMINI_API_KEY,
+					"es"
+				);
+			} catch (error) {
+				// 翻訳エラーが発生してもメインの処理は続行
+				console.error(`Spanish translation error for tag ${tagId}:`, error);
+			}
+		}
+
+		// スペイン語名が取得できた場合のみ保存
+		// tag_translations には (tagId, language) のユニーク制約が無いため upsert は使えない。
+		// 既存の es 行があれば UPDATE、無ければ INSERT する。
+		if (spanishName) {
+			const existingEs = await db
+				.select({ id: tagTranslations.id })
+				.from(tagTranslations)
+				.where(
+					and(
+						eq(tagTranslations.tagId, tagId),
+						eq(tagTranslations.language, "es")
+					)
+				)
+				.limit(1);
+
+			if (existingEs.length > 0) {
+				await db
+					.update(tagTranslations)
+					.set({ name: spanishName })
+					.where(
+						and(
+							eq(tagTranslations.tagId, tagId),
+							eq(tagTranslations.language, "es")
+						)
+					);
+			} else {
+				await db.insert(tagTranslations).values({
+					tagId,
+					language: "es",
+					name: spanishName,
+				});
+			}
 		}
 
 		// 9. レスポンスを返す
