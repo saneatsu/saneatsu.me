@@ -19,6 +19,26 @@ const SYSTEM_INSTRUCTION_BY_LANGUAGE: Record<TargetLanguage, string> = {
 };
 
 /**
+ * 先頭に付いた既知の言語ラベルを取り除く
+ *
+ * @description
+ * Gemini はシステムプロンプトで「訳文のみ返す」よう指示していても、稀に
+ * `SPANISH:\n訳文` のように言語ラベルを先頭に付けて返すことがある
+ * （実際にタグ翻訳で `SPANISH:\nOrganización de ideas` が混入した）。
+ * このラベルがそのまま DB に保存されるのを防ぐため、**既知の言語ラベルのみ**を除去する。
+ * `Nota:` のような正当な本文の接頭辞を巻き込まないよう、対象ラベルは限定する。
+ *
+ * @param text - Gemini から返った訳文
+ * @returns 先頭ラベルを除去しトリムした訳文
+ */
+export function stripLeadingLanguageLabel(text: string): string {
+	// 例: "SPANISH:", "ESPAÑOL:", "ENGLISH:", "日本語:" など（英語/スペイン語表記の言語名）
+	const leadingLanguageLabel =
+		/^\s*(?:spanish|english|español|inglés|japanese|japonés)\s*[:：]\s*/i;
+	return text.replace(leadingLanguageLabel, "").trim();
+}
+
+/**
  * Geminiで日本語から指定言語に翻訳
  *
  * @description
@@ -77,7 +97,8 @@ export async function translateWithGemini(
 			throw new Error("Translation result is empty");
 		}
 
-		return translatedText.trim();
+		// Gemini が稀に付ける先頭の言語ラベル（例: "SPANISH:"）を除去してから返す
+		return stripLeadingLanguageLabel(translatedText);
 	} catch (error) {
 		console.error("Gemini translation error:", error);
 		throw new Error(
