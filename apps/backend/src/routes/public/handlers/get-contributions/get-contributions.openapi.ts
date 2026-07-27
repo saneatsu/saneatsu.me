@@ -1,4 +1,5 @@
 import { createRoute, z } from "@hono/zod-openapi";
+import { locales } from "@saneatsu/i18n";
 
 const contributionDaySchema = z.object({
 	date: z.string().openapi({ example: "2025-11-11" }),
@@ -29,7 +30,7 @@ export const getPublicContributionsRoute = createRoute({
 				example: "365",
 				description: "日数。30/90/180/365 のいずれか",
 			}),
-			locale: z.enum(["ja", "en", "es"]).optional().openapi({
+			locale: z.enum(locales).optional().openapi({
 				example: "ja",
 				description: "UI向けの言語（レスポンス内容は同じ）",
 			}),

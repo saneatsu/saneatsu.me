@@ -1,4 +1,5 @@
 import { createRoute, z } from "@hono/zod-openapi";
+import { locales } from "@saneatsu/i18n";
 
 /**
  * 記事スキーマ（タグ付き）
@@ -134,7 +135,7 @@ export const getArticleByIdRoute = createRoute({
 			}),
 		}),
 		query: z.object({
-			lang: z.enum(["ja", "en", "es"]).optional().default("ja").openapi({
+			lang: z.enum(locales).optional().default("ja").openapi({
 				example: "ja",
 				description: "言語",
 			}),

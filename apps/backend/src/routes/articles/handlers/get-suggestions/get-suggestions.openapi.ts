@@ -1,4 +1,5 @@
 import { createRoute, z } from "@hono/zod-openapi";
+import { locales } from "@saneatsu/i18n";
 
 /**
  * サジェストアイテムのスキーマ
@@ -38,7 +39,7 @@ export const ArticleSuggestionsQuerySchema = z.object({
 		example: "Next",
 		description: "検索クエリ文字列（空文字列の場合は全記事を取得）",
 	}),
-	lang: z.enum(["ja", "en", "es"]).optional().default("ja").openapi({
+	lang: z.enum(locales).optional().default("ja").openapi({
 		example: "ja",
 		description: "表示言語",
 	}),

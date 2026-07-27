@@ -1,4 +1,5 @@
 import { createRoute, z } from "@hono/zod-openapi";
+import { locales } from "@saneatsu/i18n";
 
 /**
  * 記事スキーマ
@@ -121,7 +122,7 @@ const ArticleParamSchema = z.object({
  * 記事詳細クエリスキーマ
  */
 const ArticleDetailQuerySchema = z.object({
-	lang: z.enum(["ja", "en", "es"]).optional().openapi({
+	lang: z.enum(locales).optional().openapi({
 		example: "ja",
 		description: "言語",
 	}),

@@ -1,4 +1,5 @@
 import { createRoute, z } from "@hono/zod-openapi";
+import { locales } from "@saneatsu/i18n";
 
 /**
  * OpenAPI用クエリパラメータスキーマ
@@ -12,7 +13,7 @@ const articlesOpenApiQuerySchema = z.object({
 		example: "10",
 		description: "1ページあたりの記事数",
 	}),
-	language: z.enum(["ja", "en", "es"]).optional().openapi({
+	language: z.enum(locales).optional().openapi({
 		example: "ja",
 		description: "言語",
 	}),

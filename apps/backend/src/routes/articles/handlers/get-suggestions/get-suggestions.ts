@@ -1,4 +1,6 @@
 import type { RouteHandler } from "@hono/zod-openapi";
+import type { Locale } from "@saneatsu/i18n";
+import { locales } from "@saneatsu/i18n";
 import { and, eq, sql } from "drizzle-orm";
 import type { z } from "zod";
 
@@ -39,7 +41,9 @@ export const getSuggestions: Handler = async (c) => {
 		// 2. クエリパラメータを取得
 		const query = c.req.query();
 		const q = query.q || "";
-		const lang = (query.lang === "en" ? "en" : "ja") as "ja" | "en";
+		const lang: Locale = locales.includes(query.lang as Locale)
+			? (query.lang as Locale)
+			: "ja";
 		const limitStr = query.limit || "20";
 		const limit = parseInt(limitStr || "20", 10);
 		const targetSlug = query.targetSlug;

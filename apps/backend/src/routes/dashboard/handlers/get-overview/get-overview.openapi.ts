@@ -1,4 +1,5 @@
 import { createRoute, z } from "@hono/zod-openapi";
+import { locales } from "@saneatsu/i18n";
 
 /**
  * 記事統計スキーマ
@@ -122,7 +123,7 @@ export const getDashboardOverviewRoute = createRoute({
 	path: "/overview",
 	request: {
 		query: z.object({
-			language: z.enum(["ja", "en", "es"]).optional().openapi({
+			language: z.enum(locales).optional().openapi({
 				example: "ja",
 				description: "統計データを取得する言語",
 			}),

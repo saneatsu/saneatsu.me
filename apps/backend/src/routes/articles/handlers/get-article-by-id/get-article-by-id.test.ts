@@ -135,7 +135,7 @@ describe("GET /articles/admin/:id - 管理画面用記事詳細取得", () => {
 						createdAt: "2024-01-01T00:00:00.000Z",
 						updatedAt: "2024-01-01T00:00:00.000Z",
 						articleCount: 0,
-						translations: { ja: "JavaScript", en: "JavaScript" },
+						translations: { ja: "JavaScript", en: "JavaScript", es: "" },
 					},
 					{
 						id: 2,
@@ -143,7 +143,7 @@ describe("GET /articles/admin/:id - 管理画面用記事詳細取得", () => {
 						createdAt: "2024-01-01T00:00:00.000Z",
 						updatedAt: "2024-01-01T00:00:00.000Z",
 						articleCount: 0,
-						translations: { ja: "TypeScript", en: "TypeScript" },
+						translations: { ja: "TypeScript", en: "TypeScript", es: "" },
 					},
 				],
 			},

@@ -1,10 +1,11 @@
 import { createRoute, z } from "@hono/zod-openapi";
+import { locales } from "@saneatsu/i18n";
 
 /**
  * OpenAPI用クエリパラメータスキーマ
  */
 const relatedArticlesQuerySchema = z.object({
-	language: z.enum(["ja", "en", "es"]).optional().openapi({
+	language: z.enum(locales).optional().openapi({
 		example: "ja",
 		description: "言語",
 	}),

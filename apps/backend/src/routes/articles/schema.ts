@@ -1,4 +1,5 @@
 import { z } from "@hono/zod-openapi";
+import { locales } from "@saneatsu/i18n";
 
 import { SLUG_REGEX } from "@saneatsu/schemas";
 
@@ -76,7 +77,7 @@ export const ArticleSuggestionsQuerySchema = z.object({
 		description: "検索クエリ文字列",
 	}),
 	/** 言語 */
-	lang: z.enum(["ja", "en", "es"]).optional().default("ja").openapi({
+	lang: z.enum(locales).optional().default("ja").openapi({
 		example: "ja",
 		description: "表示言語",
 	}),
@@ -160,7 +161,7 @@ export const ArticleCheckSlugResponseSchema = z.object({
 export const ArticlesQuerySchema = z.object({
 	page: z.string().regex(/^\d+$/).optional().default("1"),
 	limit: z.string().regex(/^\d+$/).optional().default("10"),
-	language: z.enum(["ja", "en", "es"]).optional().default("ja"),
+	language: z.enum(locales).optional().default("ja"),
 	status: z.enum(["all", "draft", "published", "archived"]).optional(),
 	search: z.string().optional(),
 	sortBy: z.string().optional(),
@@ -206,7 +207,7 @@ export const ArticleDetailParamSchema = z.object({
  * 記事詳細取得のクエリパラメータスキーマ
  */
 export const ArticleDetailQuerySchema = z.object({
-	lang: z.enum(["ja", "en", "es"]).optional().default("ja").openapi({
+	lang: z.enum(locales).optional().default("ja").openapi({
 		example: "ja",
 		description: "表示言語",
 	}),

@@ -1,4 +1,5 @@
 import { createRoute, z } from "@hono/zod-openapi";
+import { locales } from "@saneatsu/i18n";
 
 /**
  * ギャラリー画像翻訳スキーマ
@@ -6,7 +7,7 @@ import { createRoute, z } from "@hono/zod-openapi";
 const GalleryImageTranslationSchema = z.object({
 	id: z.number(),
 	galleryImageId: z.number(),
-	language: z.enum(["ja", "en", "es"]),
+	language: z.enum(locales),
 	title: z.string().nullable(),
 	description: z.string().nullable(),
 	createdAt: z.string(),
@@ -68,7 +69,7 @@ export const getGalleryImageByIdRoute = createRoute({
 			}),
 		}),
 		query: z.object({
-			language: z.enum(["ja", "en", "es"]).optional().openapi({
+			language: z.enum(locales).optional().openapi({
 				example: "ja",
 				description:
 					"言語指定（オプショナル）。指定された場合、その言語の翻訳のみを返す",

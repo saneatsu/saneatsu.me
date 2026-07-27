@@ -1,4 +1,5 @@
 import type { RouteHandler } from "@hono/zod-openapi";
+import type { Locale } from "@saneatsu/i18n";
 import { and, eq } from "drizzle-orm";
 
 import type { Env } from "@/env";
@@ -270,7 +271,7 @@ export const updateGalleryImageHandler: Handler = async (c) => {
 			// JSONの場合
 			const jsonBody = c.req.valid("json") as {
 				translations?: Array<{
-					language: "ja" | "en";
+					language: Locale;
 					title?: string;
 					description?: string;
 				}>;

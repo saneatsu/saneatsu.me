@@ -1,10 +1,11 @@
 import { createRoute, z } from "@hono/zod-openapi";
+import { locales } from "@saneatsu/i18n";
 
 /**
  * 翻訳データスキーマ
  */
 const TranslationSchema = z.object({
-	language: z.enum(["ja", "en", "es"]).openapi({
+	language: z.enum(locales).openapi({
 		example: "ja",
 		description: "言語コード",
 	}),
@@ -89,7 +90,7 @@ const GalleryImageSchema = z.object({
 		z.object({
 			id: z.number(),
 			galleryImageId: z.number(),
-			language: z.enum(["ja", "en", "es"]),
+			language: z.enum(locales),
 			title: z.string().nullable(),
 			description: z.string().nullable(),
 			createdAt: z.string(),
