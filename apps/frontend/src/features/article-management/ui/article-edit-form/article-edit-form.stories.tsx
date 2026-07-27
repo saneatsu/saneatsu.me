@@ -56,7 +56,7 @@ const meta: Meta<typeof ArticleEditForm> = {
 							{
 								id: 1,
 								slug: "react",
-								translations: { ja: "React", en: "React" },
+								translations: { ja: "React", en: "React", es: "React" },
 								usageCount: 5,
 								articleCount: 5,
 								createdAt: "2024-01-01T00:00:00Z",
@@ -65,7 +65,11 @@ const meta: Meta<typeof ArticleEditForm> = {
 							{
 								id: 2,
 								slug: "typescript",
-								translations: { ja: "TypeScript", en: "TypeScript" },
+								translations: {
+									ja: "TypeScript",
+									en: "TypeScript",
+									es: "TypeScript",
+								},
 								usageCount: 3,
 								articleCount: 3,
 								createdAt: "2024-01-01T00:00:00Z",
@@ -109,7 +113,7 @@ const mockArticle = {
 		{
 			id: 1,
 			slug: "react",
-			translations: { ja: "React", en: "React" },
+			translations: { ja: "React", en: "React", es: "React" },
 			createdAt: "2024-01-01T00:00:00Z",
 			updatedAt: "2024-01-01T00:00:00Z",
 			articleCount: 5,

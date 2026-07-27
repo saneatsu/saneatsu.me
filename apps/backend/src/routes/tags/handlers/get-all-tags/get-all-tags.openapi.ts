@@ -26,15 +26,15 @@ const TagSchema = z.object({
 	}),
 	translations: z
 		.object({
-			ja: z.string().nullable().openapi({
+			ja: z.string().openapi({
 				example: "タイプスクリプト",
 				description: "日本語の翻訳",
 			}),
-			en: z.string().nullable().openapi({
+			en: z.string().openapi({
 				example: "TypeScript",
 				description: "英語の翻訳",
 			}),
-			es: z.string().nullable().openapi({
+			es: z.string().openapi({
 				example: "TypeScript",
 				description: "スペイン語の翻訳",
 			}),

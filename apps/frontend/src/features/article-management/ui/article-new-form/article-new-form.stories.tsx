@@ -56,12 +56,16 @@ const meta: Meta<typeof ArticleNewForm> = {
 						data: [
 							{
 								id: 1,
-								translations: { ja: "React", en: "React" },
+								translations: { ja: "React", en: "React", es: "React" },
 								usageCount: 5,
 							},
 							{
 								id: 2,
-								translations: { ja: "TypeScript", en: "TypeScript" },
+								translations: {
+									ja: "TypeScript",
+									en: "TypeScript",
+									es: "TypeScript",
+								},
 								usageCount: 3,
 							},
 						],

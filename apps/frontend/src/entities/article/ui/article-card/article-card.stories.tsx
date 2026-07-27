@@ -37,6 +37,7 @@ const testTags: Tag[] = [
 		translations: {
 			ja: "TypeScript",
 			en: "TypeScript",
+			es: "TypeScript",
 		},
 	},
 	{
@@ -48,6 +49,7 @@ const testTags: Tag[] = [
 		translations: {
 			ja: "React",
 			en: "React",
+			es: "React",
 		},
 	},
 	{
@@ -59,6 +61,7 @@ const testTags: Tag[] = [
 		translations: {
 			ja: "Next.js",
 			en: "Next.js",
+			es: "Next.js",
 		},
 	},
 	{
@@ -70,6 +73,7 @@ const testTags: Tag[] = [
 		translations: {
 			ja: "テスト",
 			en: "Testing",
+			es: "Testing",
 		},
 	},
 	{
@@ -81,6 +85,7 @@ const testTags: Tag[] = [
 		translations: {
 			ja: "パフォーマンス",
 			en: "Performance",
+			es: "Performance",
 		},
 	},
 ];
@@ -297,28 +302,6 @@ export const Updated15DaysAgo: Story = {
 			el.textContent?.match(/\d+日前|\d+ days ago/)
 		);
 		expect(hasRelativeFormat).toBe(false);
-	},
-};
-
-export const NoUpdatedAt: Story = {
-	name: "更新日がnullの場合",
-	tags: ["validation"],
-	args: {
-		article: {
-			...baseArticle,
-			updatedAt: null,
-		},
-	},
-	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		const canvas = within(canvasElement);
-
-		// タイトルは表示されていることを確認
-		const title = canvas.getByText("テスト記事のタイトル");
-		expect(title).toBeInTheDocument();
-
-		// 更新日は表示されていないことを確認
-		const updatedLabels = canvas.queryAllByText(/更新日:|Updated:/);
-		expect(updatedLabels.length).toBe(0);
 	},
 };
 

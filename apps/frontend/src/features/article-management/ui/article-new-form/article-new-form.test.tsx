@@ -48,7 +48,7 @@ vi.mock("@/entities/tag", () => ({
 				{
 					id: 1,
 					slug: "test-tag",
-					translations: { ja: "テストタグ", en: "Test Tag" },
+					translations: { ja: "テストタグ", en: "Test Tag", es: "Test Tag" },
 					createdAt: "2024-01-01T00:00:00.000Z",
 					updatedAt: "2024-01-01T00:00:00.000Z",
 					articleCount: 0,

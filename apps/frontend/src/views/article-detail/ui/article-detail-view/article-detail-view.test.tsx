@@ -87,6 +87,7 @@ describe("Unit Test", () => {
 			cfImageId: null,
 			status: "published",
 			publishedAt: "2024-01-15T10:00:00Z",
+			updatedAt: "2024-01-20T10:00:00Z",
 			title: "テスト記事",
 			content: "これはテスト記事の内容です。",
 			viewCount: 42,
@@ -156,9 +157,12 @@ describe("Unit Test", () => {
 		it("should render time element with correct datetime attribute", () => {
 			render(<ArticleDetailView article={mockArticle} locale="ja" />);
 
-			const timeElement = screen.getByRole("time");
-			expect(timeElement).toBeInTheDocument();
-			expect(timeElement).toHaveAttribute("dateTime", "2024-01-15T10:00:00Z");
+			// 公開日・更新日で複数の time 要素が描画されるため、公開日の datetime を持つものを検証する
+			const timeElements = screen.getAllByRole("time");
+			const publishedTime = timeElements.find(
+				(el) => el.getAttribute("datetime") === "2024-01-15T10:00:00Z"
+			);
+			expect(publishedTime).toBeInTheDocument();
 		});
 	});
 });
@@ -170,6 +174,7 @@ describe("Unit Test - Chat panel portal integration", () => {
 		cfImageId: null,
 		status: "published",
 		publishedAt: "2024-01-15T10:00:00Z",
+		updatedAt: "2024-01-20T10:00:00Z",
 		title: "テスト記事",
 		content: "これはテスト記事の内容です。",
 		viewCount: 42,
@@ -238,6 +243,7 @@ describe("Integration Test", () => {
 			cfImageId: null,
 			status: "published",
 			publishedAt: "2024-01-15T10:00:00Z",
+			updatedAt: "2024-01-20T10:00:00Z",
 			title: "テスト記事",
 			content: "これはテスト記事の内容です。",
 			viewCount: 42,

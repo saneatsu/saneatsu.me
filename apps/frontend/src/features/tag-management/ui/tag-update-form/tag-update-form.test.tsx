@@ -51,7 +51,7 @@ vi.mock("sonner", async (importOriginal) => {
 const mockTag: Tag = {
 	id: 1,
 	slug: "typescript",
-	translations: { ja: "タイプスクリプト", en: "TypeScript" },
+	translations: { ja: "タイプスクリプト", en: "TypeScript", es: "" },
 	createdAt: "2024-01-01T00:00:00.000Z",
 	updatedAt: "2024-01-01T00:00:00.000Z",
 	articleCount: 0,
