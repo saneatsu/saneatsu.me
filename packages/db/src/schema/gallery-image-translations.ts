@@ -1,3 +1,4 @@
+import { locales } from "@saneatsu/i18n";
 import { sql } from "drizzle-orm";
 import { integer, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
 
@@ -22,8 +23,8 @@ export const galleryImageTranslations = sqliteTable(
 		galleryImageId: integer("gallery_image_id")
 			.notNull()
 			.references(() => galleryImages.id, { onDelete: "cascade" }),
-		/** 言語コード（ja, en, es） */
-		language: text("language", { enum: ["ja", "en", "es"] }).notNull(),
+		/** 言語コード */
+		language: text("language", { enum: [...locales] }).notNull(),
 		/** 画像タイトル */
 		title: text("title"),
 		/** 画像の説明 */

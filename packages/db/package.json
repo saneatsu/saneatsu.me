@@ -41,6 +41,7 @@
 	},
 	"dependencies": {
 		"@libsql/client": "^0.17.4",
+		"@saneatsu/i18n": "workspace:*",
 		"@t3-oss/env-core": "^0.13.11",
 		"drizzle-orm": "^0.45.2",
 		"zod": "^4.3.6"
