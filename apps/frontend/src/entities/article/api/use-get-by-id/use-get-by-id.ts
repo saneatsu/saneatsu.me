@@ -1,3 +1,4 @@
+import type { Locale } from "@saneatsu/i18n";
 import { useQuery } from "@tanstack/react-query";
 
 import { useHonoClient } from "@/shared/lib";
@@ -52,7 +53,7 @@ type ArticleWithTags = {
 export const useGetById = (
 	id: number,
 	options?: {
-		language?: "ja" | "en" | "es";
+		language?: Locale;
 		includeAllTranslations?: boolean;
 		enabled?: boolean;
 		onSuccess?: (data: ArticleWithTags) => void;

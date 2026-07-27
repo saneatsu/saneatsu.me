@@ -1,4 +1,6 @@
-"use client";
+import type { Locale } from "@saneatsu/i18n";
+
+("use client");
 
 import type { ContributionSummary } from "@saneatsu/schemas";
 import { useQuery } from "@tanstack/react-query";
@@ -11,7 +13,7 @@ type ContributionRange = 30 | 90 | 180 | 365;
 
 type UsePublicContributionsOptions = {
 	range?: ContributionRange;
-	locale?: "ja" | "en" | "es";
+	locale?: Locale;
 	queryConfig?: QueryConfig<() => Promise<ContributionSummary>>;
 };
 
@@ -19,7 +21,7 @@ type PublicContributionsClient = {
 	public: {
 		contributions: {
 			$get: (params: {
-				query: { range: string; locale: "ja" | "en" | "es" };
+				query: { range: string; locale: Locale };
 			}) => Promise<Response>;
 		};
 	};

@@ -1,4 +1,6 @@
-"use client";
+import type { Locale } from "@saneatsu/i18n";
+
+("use client");
 
 import type { ViewsTrendResponse } from "@saneatsu/schemas";
 import { useQuery } from "@tanstack/react-query";
@@ -11,7 +13,7 @@ import { extractErrorMessage, queryKeys, useHonoClient } from "@/shared/lib";
  */
 type UseViewsTrendOptions = {
 	/** 言語 */
-	language?: "ja" | "en" | "es";
+	language?: Locale;
 	/** 表示期間（日数） */
 	days?: 30 | 90 | 180 | 360;
 	/** React Queryの設定 */

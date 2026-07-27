@@ -1,4 +1,6 @@
-"use client";
+import type { Locale } from "@saneatsu/i18n";
+
+("use client");
 
 import type { DashboardOverviewResponse } from "@saneatsu/schemas";
 import { useQuery } from "@tanstack/react-query";
@@ -11,7 +13,7 @@ import { extractErrorMessage, queryKeys, useHonoClient } from "@/shared/lib";
  */
 type UseDashboardOverviewOptions = {
 	/** 言語 */
-	language?: "ja" | "en" | "es";
+	language?: Locale;
 	/** React Queryの設定 */
 	queryConfig?: QueryConfig<() => Promise<DashboardOverviewResponse>>;
 };

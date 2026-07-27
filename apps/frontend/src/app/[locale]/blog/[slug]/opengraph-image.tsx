@@ -1,3 +1,4 @@
+import type { Locale } from "@saneatsu/i18n";
 import { fetchArticle, getCloudflareImageUrl } from "@/shared/lib";
 import {
 	OG_IMAGE_ALT,
@@ -39,7 +40,7 @@ export default async function Image({ params }: OgImageProps) {
 	try {
 		// 記事データを取得
 		const articleResponse = await fetchArticle(slug, {
-			lang: locale as "ja" | "en" | "es",
+			lang: locale as Locale,
 		});
 		const article = articleResponse.data;
 

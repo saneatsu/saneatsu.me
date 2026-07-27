@@ -1,4 +1,6 @@
-"use client";
+import type { Locale } from "@saneatsu/i18n";
+
+("use client");
 
 import { Activity, FileText, Plus, TrendingUp } from "lucide-react";
 import Link from "next/link";
@@ -91,10 +93,7 @@ export function RecentActivities({
 	 * 日時を相対形式で表示
 	 */
 	const formatActivityDateTime = (dateString: string): string => {
-		const dateInfo = formatRelativeDate(
-			dateString,
-			locale as "ja" | "en" | "es"
-		);
+		const dateInfo = formatRelativeDate(dateString, locale as Locale);
 
 		if (!dateInfo) return dateString;
 

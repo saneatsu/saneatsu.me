@@ -1,4 +1,6 @@
-"use client";
+import type { Locale } from "@saneatsu/i18n";
+
+("use client");
 
 import { Calendar, TrendingUp } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -28,7 +30,7 @@ import { Skeleton } from "@/shared/ui/skeleton/skeleton";
  */
 interface ViewsTrendChartProps {
 	/** 言語設定 */
-	language?: "ja" | "en" | "es";
+	language?: Locale;
 	/** 選択された日数 */
 	selectedDays: 30 | 90 | 180 | 360;
 	/** Cardを表示しないオプション */

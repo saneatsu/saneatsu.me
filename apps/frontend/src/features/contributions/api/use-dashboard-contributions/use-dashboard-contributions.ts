@@ -1,4 +1,6 @@
-"use client";
+import type { Locale } from "@saneatsu/i18n";
+
+("use client");
 
 import type { ContributionSummary } from "@saneatsu/schemas";
 import { useDashboardOverview } from "@/features/dashboard";
@@ -7,7 +9,7 @@ import type { QueryConfig } from "@/shared/lib";
 import type { DashboardOverviewResponseData } from "@/shared/model";
 
 type UseDashboardContributionsOptions = {
-	language?: "ja" | "en" | "es";
+	language?: Locale;
 	queryConfig?: QueryConfig<() => Promise<DashboardOverviewResponseData>>;
 };
 

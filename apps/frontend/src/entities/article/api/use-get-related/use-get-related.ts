@@ -1,4 +1,6 @@
-"use client";
+import type { Locale } from "@saneatsu/i18n";
+
+("use client");
 
 import { useQuery } from "@tanstack/react-query";
 
@@ -13,7 +15,7 @@ type UseGetRelatedOptions = {
 	/** 記事のスラッグ */
 	slug: string;
 	/** 言語 */
-	lang?: "ja" | "en" | "es";
+	lang?: Locale;
 	/** 取得する記事数 */
 	limit?: number;
 	/** React Queryの設定 */

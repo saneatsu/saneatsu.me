@@ -1,4 +1,6 @@
-"use client";
+import type { Locale } from "@saneatsu/i18n";
+
+("use client");
 
 import { useMemo, useState } from "react";
 
@@ -11,7 +13,7 @@ export interface GoogleMapsEmbedProps {
 	query?: string;
 	zoom?: number;
 	mapType?: GoogleMapsMapType;
-	language?: "ja" | "en" | "es";
+	language?: Locale;
 	className?: string;
 	embedSrc?: string;
 }

@@ -1,4 +1,6 @@
-"use client";
+import type { Locale } from "@saneatsu/i18n";
+
+("use client");
 
 import { useTheme } from "next-themes";
 import { useRef, useState } from "react";
@@ -46,7 +48,7 @@ interface CustomMarkdownEditorProps {
 	/** 追加のCSSクラス */
 	className?: string;
 	/** 言語（Wiki Link用） */
-	language?: "ja" | "en" | "es";
+	language?: Locale;
 	/** 英語コンテンツ（プレビュー表示用） */
 	enContent?: string;
 	/** タグ検知時のコールバック */

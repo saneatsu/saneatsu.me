@@ -1,4 +1,6 @@
-"use client";
+import type { Locale } from "@saneatsu/i18n";
+
+("use client");
 
 import {
 	AlertCircle,
@@ -163,7 +165,7 @@ export interface MarkdownPreviewProps {
 	/** 表示するMarkdownコンテンツ */
 	content: string;
 	/** 言語設定（Wiki Link用） */
-	language?: "ja" | "en" | "es";
+	language?: Locale;
 	/** 追加のCSSクラス */
 	className?: string;
 	/** カスタムコンポーネント */
@@ -288,7 +290,7 @@ function hasBlockImage(children: React.ReactNode): boolean {
  * @param imageUrls - 記事内の全画像URLリスト（Lightboxナビゲーション用）
  */
 export function createDefaultMarkdownComponents(
-	language: "ja" | "en" | "es" = "ja",
+	language: Locale = "ja",
 	imageComponent: "article" | "zoomable" = "article",
 	headings?: Array<{ id: string; text: string }>,
 	imageUrls?: string[]

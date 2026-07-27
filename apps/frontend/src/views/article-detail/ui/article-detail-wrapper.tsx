@@ -1,3 +1,4 @@
+import type { Locale } from "@saneatsu/i18n";
 import { notFound } from "next/navigation";
 import { fetchArticle } from "@/shared/lib";
 import { ArticleDetailView } from "./article-detail-view/article-detail-view";
@@ -23,7 +24,7 @@ export async function ArticleDetailWrapper({
 }: ArticleDetailWrapperProps) {
 	try {
 		const articleResponse = await fetchArticle(slug, {
-			lang: locale as "ja" | "en" | "es",
+			lang: locale as Locale,
 		});
 
 		return <ArticleDetailView article={articleResponse.data} locale={locale} />;

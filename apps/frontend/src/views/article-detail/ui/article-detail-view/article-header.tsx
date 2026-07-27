@@ -1,6 +1,6 @@
 "use client";
 
-import { bcp47ByLocale } from "@saneatsu/i18n";
+import { bcp47ByLocale, type Locale } from "@saneatsu/i18n";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 
@@ -21,7 +21,7 @@ interface ArticleHeaderProps {
  * ロケールや翻訳、日付フォーマットは内部で取得・計算する。
  */
 export function ArticleHeader({ article }: ArticleHeaderProps) {
-	const locale = useLocale() as "ja" | "en" | "es";
+	const locale = useLocale() as Locale;
 	const t = useTranslations("article");
 
 	const publishedDate = article.publishedAt

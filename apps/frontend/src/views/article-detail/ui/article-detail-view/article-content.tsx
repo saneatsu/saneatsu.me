@@ -1,4 +1,6 @@
-"use client";
+import type { Locale } from "@saneatsu/i18n";
+
+("use client");
 
 import { Check, Loader2, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -16,7 +18,7 @@ interface ArticleContentProps {
 	/** 記事データ */
 	article: Article;
 	/** 現在のロケール */
-	locale: "ja" | "en" | "es";
+	locale: Locale;
 	/** 記事の共有用URL */
 	articleUrl: string;
 	/** Markdownから抽出した見出し一覧 */

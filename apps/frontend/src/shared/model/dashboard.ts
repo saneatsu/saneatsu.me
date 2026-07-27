@@ -1,3 +1,4 @@
+import type { Locale } from "@saneatsu/i18n";
 import type {
 	DashboardOverviewResponse,
 	DashboardStatsQuery,
@@ -13,7 +14,7 @@ import type {
  */
 export interface DashboardStatsRequestQuery {
 	/** 統計データを取得する言語 */
-	language?: "ja" | "en" | "es";
+	language?: Locale;
 	/** 時系列データの期間（日数、7-90日） */
 	timeRange?: string;
 }
@@ -23,7 +24,7 @@ export interface DashboardStatsRequestQuery {
  */
 export interface DashboardOverviewRequestQuery {
 	/** 統計データを取得する言語 */
-	language?: "ja" | "en" | "es";
+	language?: Locale;
 }
 
 /**

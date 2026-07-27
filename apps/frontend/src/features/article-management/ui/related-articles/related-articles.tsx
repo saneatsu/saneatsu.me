@@ -1,4 +1,6 @@
-"use client";
+import type { Locale } from "@saneatsu/i18n";
+
+("use client");
 
 import { useLocale, useTranslations } from "next-intl";
 
@@ -26,7 +28,7 @@ export function RelatedArticles({ slug, limit = 10 }: RelatedArticlesProps) {
 
 	const { data, isLoading, error } = useGetRelated({
 		slug,
-		lang: locale as "ja" | "en" | "es",
+		lang: locale as Locale,
 		limit,
 	});
 
