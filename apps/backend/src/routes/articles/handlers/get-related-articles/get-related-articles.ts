@@ -106,7 +106,7 @@ export const getRelatedArticles: Handler = async (c) => {
 				createdAt: string;
 				updatedAt: string;
 				articleCount: number;
-				translations: { ja: string; en: string };
+				translations: { ja: string; en: string; es: string };
 			}>;
 		}> = [];
 
@@ -202,7 +202,7 @@ export const getRelatedArticles: Handler = async (c) => {
 								createdAt: string;
 								updatedAt: string;
 								articleCount: number;
-								translations: { ja: string; en: string };
+								translations: { ja: string; en: string; es: string };
 							}
 						>();
 
@@ -214,7 +214,7 @@ export const getRelatedArticles: Handler = async (c) => {
 									createdAt: tagData.tagCreatedAt,
 									updatedAt: tagData.tagUpdatedAt,
 									articleCount: 0,
-									translations: { ja: "", en: "" },
+									translations: { ja: "", en: "", es: "" },
 								});
 							}
 
@@ -224,6 +224,8 @@ export const getRelatedArticles: Handler = async (c) => {
 								tag.translations.ja = tagData.tagName;
 							} else if (tagData.tagLanguage === "en") {
 								tag.translations.en = tagData.tagName;
+							} else if (tagData.tagLanguage === "es") {
+								tag.translations.es = tagData.tagName;
 							}
 						}
 
@@ -342,7 +344,7 @@ export const getRelatedArticles: Handler = async (c) => {
 						createdAt: string;
 						updatedAt: string;
 						articleCount: number;
-						translations: { ja: string; en: string };
+						translations: { ja: string; en: string; es: string };
 					}
 				>();
 
@@ -354,7 +356,7 @@ export const getRelatedArticles: Handler = async (c) => {
 							createdAt: tagData.tagCreatedAt,
 							updatedAt: tagData.tagUpdatedAt,
 							articleCount: 0,
-							translations: { ja: "", en: "" },
+							translations: { ja: "", en: "", es: "" },
 						});
 					}
 
@@ -364,6 +366,8 @@ export const getRelatedArticles: Handler = async (c) => {
 						tag.translations.ja = tagData.tagName;
 					} else if (tagData.tagLanguage === "en") {
 						tag.translations.en = tagData.tagName;
+					} else if (tagData.tagLanguage === "es") {
+						tag.translations.es = tagData.tagName;
 					}
 				}
 

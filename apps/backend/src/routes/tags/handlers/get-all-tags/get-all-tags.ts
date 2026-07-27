@@ -85,6 +85,9 @@ export const getAllTags: Handler = async (c) => {
 					en:
 						tagTranslationsForTag.find((t) => t.language === "en")?.name ??
 						null,
+					es:
+						tagTranslationsForTag.find((t) => t.language === "es")?.name ??
+						null,
 				},
 			};
 		});

@@ -84,11 +84,11 @@ describe("GET /tags - タグ一覧取得", () => {
 			expect(data.data).toHaveLength(2);
 			expect(data.data[0]).toEqual({
 				...mockTags[0],
-				translations: { ja: null, en: null },
+				translations: { ja: null, en: null, es: null },
 			});
 			expect(data.data[1]).toEqual({
 				...mockTags[1],
-				translations: { ja: null, en: null },
+				translations: { ja: null, en: null, es: null },
 			});
 			expect(data.data[0].articleCount).toBe(5);
 			expect(data.data[1].articleCount).toBe(3);
@@ -411,6 +411,7 @@ describe("GET /tags - タグ一覧取得", () => {
 				translations: {
 					ja: "タイプスクリプト",
 					en: "TypeScript",
+					es: null,
 				},
 			});
 			expect(data.data[1]).toEqual({
@@ -418,6 +419,7 @@ describe("GET /tags - タグ一覧取得", () => {
 				translations: {
 					ja: "ジャバスクリプト",
 					en: "JavaScript",
+					es: null,
 				},
 			});
 		});
@@ -501,6 +503,7 @@ describe("GET /tags - タグ一覧取得", () => {
 				translations: {
 					ja: "タイプスクリプト",
 					en: "TypeScript",
+					es: null,
 				},
 			});
 			expect(data.data[1]).toEqual({
@@ -508,6 +511,7 @@ describe("GET /tags - タグ一覧取得", () => {
 				translations: {
 					ja: null,
 					en: null,
+					es: null,
 				},
 			});
 		});

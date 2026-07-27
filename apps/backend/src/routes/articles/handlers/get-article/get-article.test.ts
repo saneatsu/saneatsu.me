@@ -164,7 +164,7 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 						createdAt: "2024-01-01T00:00:00.000Z",
 						updatedAt: "2024-01-01T00:00:00.000Z",
 						articleCount: 0,
-						translations: { ja: "TypeScript", en: "TypeScript" },
+						translations: { ja: "TypeScript", en: "TypeScript", es: "" },
 					},
 					{
 						id: 2,
@@ -172,7 +172,7 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 						createdAt: "2024-01-01T00:00:00.000Z",
 						updatedAt: "2024-01-01T00:00:00.000Z",
 						articleCount: 0,
-						translations: { ja: "Next.js", en: "Next.js" },
+						translations: { ja: "Next.js", en: "Next.js", es: "" },
 					},
 				],
 			},
@@ -325,7 +325,7 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 				createdAt: "2024-01-01T00:00:00.000Z",
 				updatedAt: "2024-01-01T00:00:00.000Z",
 				articleCount: 0,
-				translations: { ja: "TypeScript", en: "TypeScript" },
+				translations: { ja: "TypeScript", en: "TypeScript", es: "" },
 			},
 		]);
 	});
@@ -556,7 +556,7 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 				createdAt: "2024-01-01T00:00:00.000Z",
 				updatedAt: "2024-01-01T00:00:00.000Z",
 				articleCount: 0,
-				translations: { ja: "TypeScript", en: "TypeScript" },
+				translations: { ja: "TypeScript", en: "TypeScript", es: "" },
 			},
 			{
 				id: 2,
@@ -564,7 +564,7 @@ describe("GET /articles/:slug - 記事詳細取得", () => {
 				createdAt: "2024-01-01T00:00:00.000Z",
 				updatedAt: "2024-01-01T00:00:00.000Z",
 				articleCount: 0,
-				translations: { ja: "Next.js", en: "Next.js" },
+				translations: { ja: "Next.js", en: "Next.js", es: "" },
 			},
 		]);
 		expect(mockDb.update).toHaveBeenCalled(); // updateが呼ばれたことを確認

@@ -34,6 +34,10 @@ const TagSchema = z.object({
 				example: "TypeScript",
 				description: "英語の翻訳",
 			}),
+			es: z.string().nullable().openapi({
+				example: "TypeScript",
+				description: "スペイン語の翻訳",
+			}),
 		})
 		.openapi({
 			description: "タグの翻訳データ",
