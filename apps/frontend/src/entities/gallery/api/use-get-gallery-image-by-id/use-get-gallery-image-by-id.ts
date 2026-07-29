@@ -1,5 +1,7 @@
 "use client";
 
+import type { Locale } from "@saneatsu/i18n";
+
 import { useQuery } from "@tanstack/react-query";
 
 import type { QueryConfig } from "@/shared/lib";
@@ -14,7 +16,7 @@ type UseGetGalleryImageByIdOptions = {
 	/** 画像ID */
 	id: number;
 	/** 言語 */
-	language?: "ja" | "en" | "es";
+	language?: Locale;
 	/** React Queryの設定 */
 	queryConfig?: QueryConfig<() => Promise<GalleryImage>>;
 };

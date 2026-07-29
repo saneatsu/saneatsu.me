@@ -1,4 +1,5 @@
 import { createRoute, z } from "@hono/zod-openapi";
+import { locales } from "@saneatsu/i18n";
 
 /**
  * 住所・施設検索のクエリパラメータスキーマ
@@ -13,7 +14,7 @@ const SearchGeocodingQuerySchema = z.object({
 	/**
 	 * 言語コード（ja, en）
 	 */
-	language: z.enum(["ja", "en", "es"]).optional().openapi({
+	language: z.enum(locales).optional().openapi({
 		example: "ja",
 	}),
 	/**

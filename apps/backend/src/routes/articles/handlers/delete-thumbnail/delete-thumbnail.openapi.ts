@@ -1,4 +1,5 @@
 import { createRoute, z } from "@hono/zod-openapi";
+import { errorSchema } from "../../../shared/openapi";
 
 /**
  * サムネイル画像削除レスポンススキーマ
@@ -7,22 +8,6 @@ const ThumbnailDeleteResponseSchema = z.object({
 	message: z.string().openapi({
 		example: "サムネイル画像が正常に削除されました",
 		description: "削除成功メッセージ",
-	}),
-});
-
-/**
- * エラースキーマ
- */
-const ErrorSchema = z.object({
-	error: z.object({
-		code: z.string().openapi({
-			example: "NOT_FOUND",
-			description: "エラーコード",
-		}),
-		message: z.string().openapi({
-			example: "Article not found",
-			description: "エラーメッセージ",
-		}),
 	}),
 });
 
@@ -70,7 +55,7 @@ export const deleteThumbnailRoute = createRoute({
 		404: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "記事が見つからない、または画像が存在しない",
@@ -78,7 +63,7 @@ export const deleteThumbnailRoute = createRoute({
 		500: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "サーバーエラー",

@@ -1,3 +1,4 @@
+import { locales } from "@saneatsu/i18n";
 import { z } from "zod";
 
 import { i18nMessage } from "./i18n";
@@ -8,7 +9,7 @@ import { SLUG_REGEX } from "./slug";
  */
 
 /** 言語コード */
-export const languageSchema = z.enum(["ja", "en", "es"], {
+export const languageSchema = z.enum(locales, {
 	error: () => i18nMessage("validation.custom.common.languageInvalid"),
 });
 

@@ -1,3 +1,4 @@
+import type { Locale } from "@saneatsu/i18n";
 import type { Mock } from "vitest";
 
 /**
@@ -39,7 +40,7 @@ export const createMockArticleTranslation = (
 	overrides: Partial<{
 		id?: string;
 		articleId?: string;
-		language?: "ja" | "en";
+		language?: Locale;
 		title?: string;
 		content?: string;
 		viewCount?: number;
@@ -83,7 +84,7 @@ export const createMockTagTranslation = (
 	overrides: Partial<{
 		id?: string;
 		tagId?: string;
-		language?: "ja" | "en";
+		language?: Locale;
 		name?: string;
 		description?: string;
 	}> = {}

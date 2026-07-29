@@ -1,6 +1,6 @@
 import { createRoute, z } from "@hono/zod-openapi";
-
 import { SLUG_REGEX } from "@saneatsu/schemas";
+import { errorSchema } from "../../../shared/openapi";
 
 /**
  * タグ作成リクエストスキーマ
@@ -63,22 +63,6 @@ const TagCreateResponseSchema = z.object({
 });
 
 /**
- * エラースキーマ
- */
-const ErrorSchema = z.object({
-	error: z.object({
-		code: z.string().openapi({
-			example: "SLUG_ALREADY_EXISTS",
-			description: "エラーコード",
-		}),
-		message: z.string().openapi({
-			example: "このスラッグは既に使用されています",
-			description: "エラーメッセージ",
-		}),
-	}),
-});
-
-/**
  * タグ作成のルート定義
  */
 export const createTagRoute = createRoute({
@@ -105,7 +89,7 @@ export const createTagRoute = createRoute({
 		400: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "不正なリクエスト",
@@ -113,7 +97,7 @@ export const createTagRoute = createRoute({
 		409: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "スラッグが既に存在",
@@ -121,7 +105,7 @@ export const createTagRoute = createRoute({
 		500: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "サーバーエラー",

@@ -1,3 +1,4 @@
+import type { Locale } from "@saneatsu/i18n";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 
@@ -21,7 +22,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
 	// 更新日の相対日付フォーマット
 	const updatedDateInfo = formatRelativeDate(
 		article.updatedAt ?? null,
-		locale as "ja" | "en" | "es"
+		locale as Locale
 	);
 
 	// コンテンツから本文の抜粋を生成

@@ -37,6 +37,7 @@ const mockArticle: Article = {
 	cfImageId: null,
 	status: "published",
 	publishedAt: "2024-01-15T10:00:00Z",
+	updatedAt: "2024-01-20T10:00:00Z",
 	title: "テスト記事",
 	content: "これはテスト記事の内容です。",
 	viewCount: 42,

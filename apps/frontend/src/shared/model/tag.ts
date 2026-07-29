@@ -1,43 +1,19 @@
-/**
- * タグオブジェクト（API レスポンス用）
- * バックエンドの TagSchema に対応
- */
-export interface Tag {
-	/** タグのユニークID */
-	id: number;
-	/** タグのスラッグ */
-	slug: string;
-	/** 作成日時 */
-	createdAt: string;
-	/** 更新日時 */
-	updatedAt: string;
-	/** このタグが付けられた記事の数 */
-	articleCount: number;
-	/** タグの翻訳データ */
-	translations: {
-		/** 日本語の翻訳 */
-		ja: string | null; // FIXME:
-		/** 英語の翻訳 */
-		en: string | null; // FIXME:
-		/**
-		 * スペイン語の翻訳（任意）
-		 *
-		 * @remarks
-		 * タグは英語のスラッグ的な識別子のみを自動生成しており、
-		 * スペイン語のタグ名は生成していない。そのため任意プロパティとし、
-		 * 未提供の場合は表示側で en → ja → slug の順にフォールバックする。
-		 */
-		es?: string | null;
-	};
-}
+import type { InferResponseType } from "hono/client";
+
+import type { ApiClient } from "@/shared/lib/hono/client-type";
 
 /**
- * タグ一覧APIのレスポンス
+ * タグ一覧APIのレスポンス（バックエンドの契約から導出）
  */
-export interface TagsResponse {
-	/** タグデータの配列 */
-	data: Tag[];
-}
+export type TagsResponse = InferResponseType<
+	ApiClient["api"]["tags"]["$get"],
+	200
+>;
+
+/**
+ * タグオブジェクト（一覧レスポンスの要素から導出）
+ */
+export type Tag = TagsResponse["data"][number];
 
 /**
  * タグ作成リクエストボディ

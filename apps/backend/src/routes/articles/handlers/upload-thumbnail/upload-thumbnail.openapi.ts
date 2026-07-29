@@ -1,4 +1,5 @@
 import { createRoute, z } from "@hono/zod-openapi";
+import { errorSchema } from "../../../shared/openapi";
 
 /**
  * サムネイル画像アップロードレスポンススキーマ
@@ -16,22 +17,6 @@ const ThumbnailUploadResponseSchema = z.object({
 	message: z.string().openapi({
 		example: "サムネイル画像が正常にアップロードされました",
 		description: "アップロード成功メッセージ",
-	}),
-});
-
-/**
- * エラースキーマ
- */
-const ErrorSchema = z.object({
-	error: z.object({
-		code: z.string().openapi({
-			example: "NOT_FOUND",
-			description: "エラーコード",
-		}),
-		message: z.string().openapi({
-			example: "Article not found",
-			description: "エラーメッセージ",
-		}),
 	}),
 });
 
@@ -95,7 +80,7 @@ export const uploadThumbnailRoute = createRoute({
 		400: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "不正なリクエスト（ファイルが存在しない等）",
@@ -103,7 +88,7 @@ export const uploadThumbnailRoute = createRoute({
 		404: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "記事が見つかりません",
@@ -111,7 +96,7 @@ export const uploadThumbnailRoute = createRoute({
 		500: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "サーバーエラー",

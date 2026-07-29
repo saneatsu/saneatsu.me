@@ -3,7 +3,11 @@ import { eq } from "drizzle-orm";
 
 import type { Env } from "@/env";
 import { getDatabase } from "@/lib";
-import { createTranslationService } from "@/services/gemini-translation/gemini-translation";
+import { translateWithGemini } from "@/lib/translate";
+import {
+	TARGET_LANGUAGE_NAMES,
+	TARGET_LANGUAGES,
+} from "@/services/gemini-translation/gemini-translation";
 
 import type { createTagRoute } from "./create-tag.openapi";
 
@@ -18,7 +22,9 @@ type Handler = RouteHandler<typeof createTagRoute, { Bindings: Env }>;
  * 3. スラッグの重複チェック
  * 4. タグデータを作成
  * 5. タグ翻訳データを作成（日本語）
- * 6. 英語への自動翻訳を実行（非同期）
+ * 6. 対応言語すべてへの自動翻訳を実行
+ *    - GEMINI_API_KEY が未設定の場合はスキップし、日本語のみで作成する
+ *    - 言語ごとに try/catch するため、1言語が失敗しても他の言語は保存される
  * 7. レスポンスを返す
  */
 export const createTag: Handler = async (c) => {
@@ -68,32 +74,41 @@ export const createTag: Handler = async (c) => {
 			name,
 		});
 
-		// 6. 英語への自動翻訳を実行（非同期）
+		// 6. 対応言語すべてへの自動翻訳を実行
+		// 翻訳先は TARGET_LANGUAGES を単一のソースとするため、言語を増やしても
+		// ここは無改修で済む。表示ラベル用途なので、スラッグ生成向けの translateTag
+		// ではなく自然な訳語を返す translateWithGemini を使う
+		// （バックフィルスクリプトおよびタグ更新と同じ扱い）。
 		if (c.env.GEMINI_API_KEY) {
-			try {
-				const translationService = createTranslationService({
-					GEMINI_API_KEY: c.env.GEMINI_API_KEY,
-				});
+			for (const target of TARGET_LANGUAGES) {
+				try {
+					const translatedName = await translateWithGemini(
+						name,
+						c.env.GEMINI_API_KEY,
+						target
+					);
 
-				// タグ名を翻訳
-				const translatedName = await translationService.translateTag(name);
+					// 空の訳語で翻訳行を作ると各言語で空ラベルが表示されてしまうため保存しない
+					if (!translatedName) {
+						console.warn(
+							`Translation for tag ${newTag.id} (${TARGET_LANGUAGE_NAMES[target]}) was empty, skipping`
+						);
+						continue;
+					}
 
-				if (translatedName) {
-					// 英語版を保存
 					await db.insert(tagTranslations).values({
 						tagId: newTag.id,
-						language: "en",
+						language: target,
 						name: translatedName,
 					});
-					console.log(`Tag ${newTag.id} translated successfully`);
-				} else {
-					console.warn(
-						`Translation failed for tag ${newTag.id}, continuing without English translation`
+					console.log(`Tag ${newTag.id} translated to ${target} successfully`);
+				} catch (error) {
+					// 1言語の失敗で他言語やタグ作成自体を巻き込まないよう、言語ごとに握りつぶす
+					console.error(
+						`Translation error for tag ${newTag.id} (${TARGET_LANGUAGE_NAMES[target]}):`,
+						error
 					);
 				}
-			} catch (error) {
-				// 翻訳エラーが発生してもメインの処理は続行
-				console.error(`Translation error for tag ${newTag.id}:`, error);
 			}
 		} else {
 			console.log("GEMINI_API_KEY not configured, skipping translation");

@@ -78,16 +78,14 @@ export const getAllTags: Handler = async (c) => {
 
 			return {
 				...tag,
+				// 記事埋め込みのタグ翻訳と形状を揃えるため、未翻訳は空文字で返す
 				translations: {
 					ja:
-						tagTranslationsForTag.find((t) => t.language === "ja")?.name ??
-						null,
+						tagTranslationsForTag.find((t) => t.language === "ja")?.name ?? "",
 					en:
-						tagTranslationsForTag.find((t) => t.language === "en")?.name ??
-						null,
+						tagTranslationsForTag.find((t) => t.language === "en")?.name ?? "",
 					es:
-						tagTranslationsForTag.find((t) => t.language === "es")?.name ??
-						null,
+						tagTranslationsForTag.find((t) => t.language === "es")?.name ?? "",
 				},
 			};
 		});

@@ -1,4 +1,5 @@
 import { articles, articleTranslations } from "@saneatsu/db/worker";
+import type { Locale } from "@saneatsu/i18n";
 import { and, eq, inArray } from "drizzle-orm";
 import type { DrizzleClient } from "../../lib/db";
 
@@ -55,7 +56,7 @@ export function extractWikiLinks(content: string): string[] {
 export async function fetchArticleInfoBySlugs(
 	db: DrizzleClient,
 	slugs: string[],
-	language: "ja" | "en" | "es"
+	language: Locale
 ): Promise<Map<string, WikiLinkInfo>> {
 	if (slugs.length === 0) {
 		return new Map();
@@ -119,7 +120,7 @@ export async function fetchArticleInfoBySlugs(
 export async function convertWikiLinks(
 	db: DrizzleClient,
 	content: string,
-	language: "ja" | "en" | "es"
+	language: Locale
 ): Promise<string> {
 	// Wiki Linkを抽出
 	const slugs = extractWikiLinks(content);

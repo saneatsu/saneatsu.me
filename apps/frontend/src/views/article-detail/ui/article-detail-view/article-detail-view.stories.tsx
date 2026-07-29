@@ -80,7 +80,7 @@ React Hooksを使って、より良いReactアプリケーションを構築し�
 			createdAt: "2024-01-01T00:00:00Z",
 			updatedAt: "2024-01-01T00:00:00Z",
 			articleCount: 0,
-			translations: { ja: "React", en: "React" },
+			translations: { ja: "React", en: "React", es: "React" },
 		},
 		{
 			id: 2,
@@ -88,7 +88,7 @@ React Hooksを使って、より良いReactアプリケーションを構築し�
 			createdAt: "2024-01-01T00:00:00Z",
 			updatedAt: "2024-01-01T00:00:00Z",
 			articleCount: 0,
-			translations: { ja: "TypeScript", en: "TypeScript" },
+			translations: { ja: "TypeScript", en: "TypeScript", es: "TypeScript" },
 		},
 		{
 			id: 3,
@@ -96,7 +96,7 @@ React Hooksを使って、より良いReactアプリケーションを構築し�
 			createdAt: "2024-01-01T00:00:00Z",
 			updatedAt: "2024-01-01T00:00:00Z",
 			articleCount: 0,
-			translations: { ja: "フック", en: "Hooks" },
+			translations: { ja: "フック", en: "Hooks", es: "Hooks" },
 		},
 	],
 };
@@ -606,33 +606,6 @@ export const Updated15DaysAgo: Story = {
 };
 
 /**
- * 更新日がnullの場合のテスト
- */
-export const UpdatedAtNull: Story = {
-	name: "更新日がnull",
-	tags: ["validation"],
-	args: {
-		article: {
-			...mockArticle,
-			updatedAt: null,
-		},
-		locale: "ja",
-	},
-	parameters: {},
-	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		const canvas = within(canvasElement);
-
-		// 公開日は表示されていることを確認
-		const publishedDate = canvas.getByText(/公開日:/);
-		expect(publishedDate).toBeInTheDocument();
-
-		// 更新日は表示されていないことを確認
-		const updatedDates = canvas.queryAllByText(/更新日:/);
-		expect(updatedDates.length).toBe(0);
-	},
-};
-
-/**
  * 長いタイトル（100文字以上）のテスト
  */
 export const LongTitle: Story = {
@@ -827,7 +800,7 @@ export const ManyTags: Story = {
 					createdAt: "2024-01-01T00:00:00Z",
 					updatedAt: "2024-01-01T00:00:00Z",
 					articleCount: 0,
-					translations: { ja: "React", en: "React" },
+					translations: { ja: "React", en: "React", es: "React" },
 				},
 				{
 					id: 2,
@@ -835,7 +808,11 @@ export const ManyTags: Story = {
 					createdAt: "2024-01-01T00:00:00Z",
 					updatedAt: "2024-01-01T00:00:00Z",
 					articleCount: 0,
-					translations: { ja: "TypeScript", en: "TypeScript" },
+					translations: {
+						ja: "TypeScript",
+						en: "TypeScript",
+						es: "TypeScript",
+					},
 				},
 				{
 					id: 3,
@@ -843,7 +820,7 @@ export const ManyTags: Story = {
 					createdAt: "2024-01-01T00:00:00Z",
 					updatedAt: "2024-01-01T00:00:00Z",
 					articleCount: 0,
-					translations: { ja: "フック", en: "Hooks" },
+					translations: { ja: "フック", en: "Hooks", es: "Hooks" },
 				},
 				{
 					id: 4,
@@ -851,7 +828,11 @@ export const ManyTags: Story = {
 					createdAt: "2024-01-01T00:00:00Z",
 					updatedAt: "2024-01-01T00:00:00Z",
 					articleCount: 0,
-					translations: { ja: "フロントエンド", en: "Frontend" },
+					translations: {
+						ja: "フロントエンド",
+						en: "Frontend",
+						es: "Frontend",
+					},
 				},
 				{
 					id: 5,
@@ -859,7 +840,11 @@ export const ManyTags: Story = {
 					createdAt: "2024-01-01T00:00:00Z",
 					updatedAt: "2024-01-01T00:00:00Z",
 					articleCount: 0,
-					translations: { ja: "JavaScript", en: "JavaScript" },
+					translations: {
+						ja: "JavaScript",
+						en: "JavaScript",
+						es: "JavaScript",
+					},
 				},
 				{
 					id: 6,
@@ -867,7 +852,11 @@ export const ManyTags: Story = {
 					createdAt: "2024-01-01T00:00:00Z",
 					updatedAt: "2024-01-01T00:00:00Z",
 					articleCount: 0,
-					translations: { ja: "Web開発", en: "Web Development" },
+					translations: {
+						ja: "Web開発",
+						en: "Web Development",
+						es: "Web Development",
+					},
 				},
 				{
 					id: 7,
@@ -875,7 +864,11 @@ export const ManyTags: Story = {
 					createdAt: "2024-01-01T00:00:00Z",
 					updatedAt: "2024-01-01T00:00:00Z",
 					articleCount: 0,
-					translations: { ja: "状態管理", en: "State Management" },
+					translations: {
+						ja: "状態管理",
+						en: "State Management",
+						es: "State Management",
+					},
 				},
 				{
 					id: 8,
@@ -883,7 +876,11 @@ export const ManyTags: Story = {
 					createdAt: "2024-01-01T00:00:00Z",
 					updatedAt: "2024-01-01T00:00:00:00Z",
 					articleCount: 0,
-					translations: { ja: "ベストプラクティス", en: "Best Practices" },
+					translations: {
+						ja: "ベストプラクティス",
+						en: "Best Practices",
+						es: "Best Practices",
+					},
 				},
 				{
 					id: 9,
@@ -891,7 +888,11 @@ export const ManyTags: Story = {
 					createdAt: "2024-01-01T00:00:00Z",
 					updatedAt: "2024-01-01T00:00:00Z",
 					articleCount: 0,
-					translations: { ja: "パフォーマンス", en: "Performance" },
+					translations: {
+						ja: "パフォーマンス",
+						en: "Performance",
+						es: "Performance",
+					},
 				},
 				{
 					id: 10,
@@ -899,7 +900,11 @@ export const ManyTags: Story = {
 					createdAt: "2024-01-01T00:00:00Z",
 					updatedAt: "2024-01-01T00:00:00Z",
 					articleCount: 0,
-					translations: { ja: "最適化", en: "Optimization" },
+					translations: {
+						ja: "最適化",
+						en: "Optimization",
+						es: "Optimization",
+					},
 				},
 				{
 					id: 11,
@@ -907,7 +912,7 @@ export const ManyTags: Story = {
 					createdAt: "2024-01-01T00:00:00Z",
 					updatedAt: "2024-01-01T00:00:00Z",
 					articleCount: 0,
-					translations: { ja: "テスト", en: "Testing" },
+					translations: { ja: "テスト", en: "Testing", es: "Testing" },
 				},
 				{
 					id: 12,
@@ -915,7 +920,7 @@ export const ManyTags: Story = {
 					createdAt: "2024-01-01T00:00:00Z",
 					updatedAt: "2024-01-01T00:00:00Z",
 					articleCount: 0,
-					translations: { ja: "デバッグ", en: "Debugging" },
+					translations: { ja: "デバッグ", en: "Debugging", es: "Debugging" },
 				},
 			],
 		},

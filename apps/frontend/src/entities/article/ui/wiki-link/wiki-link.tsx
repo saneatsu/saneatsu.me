@@ -1,5 +1,7 @@
 "use client";
 
+import type { Locale } from "@saneatsu/i18n";
+
 import type { ComponentPropsWithoutRef } from "react";
 
 import { useGetArticleBySlug } from "@/entities/article";
@@ -12,7 +14,7 @@ export interface WikiLinkProps extends ComponentPropsWithoutRef<"a"> {
 	/** リンク先のURL */
 	href: string;
 	/** 言語設定 */
-	language?: "ja" | "en" | "es";
+	language?: Locale;
 	/** デフォルトの表示テキスト（タイトル取得中の表示用） */
 	children: React.ReactNode;
 }

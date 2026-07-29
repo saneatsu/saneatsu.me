@@ -1,4 +1,5 @@
 import { createRoute, z } from "@hono/zod-openapi";
+import { errorSchema } from "../../../shared/openapi";
 
 /**
  * OGP情報スキーマ
@@ -39,22 +40,6 @@ const OgpResponseSchema = z.object({
 });
 
 /**
- * エラースキーマ
- */
-const ErrorSchema = z.object({
-	error: z.object({
-		code: z.string().openapi({
-			example: "INVALID_URL",
-			description: "エラーコード",
-		}),
-		message: z.string().openapi({
-			example: "Invalid URL provided",
-			description: "エラーメッセージ",
-		}),
-	}),
-});
-
-/**
  * OGP取得クエリスキーマ
  */
 const OgpQuerySchema = z.object({
@@ -85,7 +70,7 @@ export const getOgpRoute = createRoute({
 		400: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "無効なURL",
@@ -93,7 +78,7 @@ export const getOgpRoute = createRoute({
 		500: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "サーバーエラー",
@@ -101,7 +86,7 @@ export const getOgpRoute = createRoute({
 		504: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "タイムアウト",

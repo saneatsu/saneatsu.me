@@ -36,6 +36,7 @@ const baseTagJa: Tag = {
 	translations: {
 		ja: "TypeScript",
 		en: "TypeScript",
+		es: "TypeScript",
 	},
 };
 
@@ -51,6 +52,7 @@ const baseTagEn: Tag = {
 	translations: {
 		ja: "React",
 		en: "React",
+		es: "React",
 	},
 };
 
@@ -89,8 +91,9 @@ export const NoTranslation: Story = {
 		tag: {
 			...baseTagJa,
 			translations: {
-				ja: null,
-				en: null,
+				ja: "",
+				en: "",
+				es: "",
 			},
 		},
 	},
@@ -112,6 +115,7 @@ export const LongTagName: Story = {
 			translations: {
 				ja: "これは非常に長いタグ名のテストです",
 				en: "This is a very long tag name test",
+				es: "This is a very long tag name test",
 			},
 		},
 	},
@@ -137,6 +141,7 @@ export const MultipleTagsDemo: Story = {
 					translations: {
 						ja: "Next.js",
 						en: "Next.js",
+						es: "Next.js",
 					},
 				}}
 			/>

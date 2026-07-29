@@ -1,5 +1,7 @@
 "use client";
 
+import type { Locale } from "@saneatsu/i18n";
+
 import { useLocale } from "next-intl";
 
 import { ArticleCard, useGetAllArticles } from "@/entities/article";
@@ -21,7 +23,7 @@ export function PopularArticlesList() {
 		refetch,
 	} = useGetAllArticles({
 		page: 1,
-		language: locale as "ja" | "en" | "es",
+		language: locale as Locale,
 		limit: 10, // トップ10を表示
 		status: ["published"],
 		sortBy: "viewCount", // 閲覧数でソート

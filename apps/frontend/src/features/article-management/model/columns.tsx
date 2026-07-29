@@ -1,5 +1,7 @@
 "use client";
 
+import type { Locale } from "@saneatsu/i18n";
+
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import Image from "next/image";
@@ -45,7 +47,7 @@ function DateCell({ dateString }: { dateString: string | null }) {
 
 	if (!dateString) return <span className="text-muted-foreground">未設定</span>;
 
-	const dateInfo = formatRelativeDate(dateString, locale as "ja" | "en" | "es");
+	const dateInfo = formatRelativeDate(dateString, locale as Locale);
 
 	if (!dateInfo)
 		return <span className="text-muted-foreground">無効な日付</span>;

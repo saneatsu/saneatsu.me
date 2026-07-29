@@ -1,5 +1,7 @@
 "use client";
 
+import type { Locale } from "@saneatsu/i18n";
+
 import { Check, PlusCircle, XCircle } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { parseAsInteger } from "nuqs";
@@ -86,9 +88,7 @@ export function TagFilter() {
 			.filter((tag) => tag.articleCount > 0)
 			.map((tag) => ({
 				label:
-					tag.translations[locale as "ja" | "en" | "es"] ||
-					tag.translations.ja ||
-					tag.slug,
+					tag.translations[locale as Locale] || tag.translations.ja || tag.slug,
 				value: tag.id.toString(),
 				count: tag.articleCount,
 			}));

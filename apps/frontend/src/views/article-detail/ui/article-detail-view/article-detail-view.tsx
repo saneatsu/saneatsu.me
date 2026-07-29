@@ -73,7 +73,7 @@ export function ArticleDetailView({
 
 				<ArticleContent
 					article={article}
-					locale={locale as "ja" | "en" | "es"}
+					locale={locale as Locale}
 					articleUrl={articleUrl}
 					headings={headings}
 					articleContent={article.content}

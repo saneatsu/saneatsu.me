@@ -1,5 +1,7 @@
 "use client";
 
+import type { Locale } from "@saneatsu/i18n";
+
 import { Loader2, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button, type Coordinates, Input } from "@/shared/ui";
@@ -12,7 +14,7 @@ export interface AddressSearchProps {
 	/** 住所選択時のコールバック */
 	onSelect: (coordinates: Coordinates, address: string) => void;
 	/** 検索言語（デフォルト: ja）*/
-	language?: "ja" | "en" | "es";
+	language?: Locale;
 	/** 検索結果の最大数（デフォルト: 5）*/
 	limit?: number;
 	/** プレースホルダーテキスト */

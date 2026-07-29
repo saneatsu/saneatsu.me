@@ -1,4 +1,6 @@
 import { createRoute, z } from "@hono/zod-openapi";
+import { locales } from "@saneatsu/i18n";
+import { errorSchema } from "../../../shared/openapi";
 
 /**
  * ギャラリー画像翻訳スキーマ
@@ -6,7 +8,7 @@ import { createRoute, z } from "@hono/zod-openapi";
 const GalleryImageTranslationSchema = z.object({
 	id: z.number(),
 	galleryImageId: z.number(),
-	language: z.enum(["ja", "en", "es"]),
+	language: z.enum(locales),
 	title: z.string().nullable(),
 	description: z.string().nullable(),
 	createdAt: z.string(),
@@ -26,16 +28,6 @@ const GalleryImageSchema = z.object({
 	status: z.enum(["published", "draft"]),
 	createdAt: z.string(),
 	updatedAt: z.string(),
-});
-
-/**
- * エラースキーマ
- */
-const ErrorSchema = z.object({
-	error: z.object({
-		code: z.string(),
-		message: z.string(),
-	}),
 });
 
 /**
@@ -68,7 +60,7 @@ export const getGalleryImageByIdRoute = createRoute({
 			}),
 		}),
 		query: z.object({
-			language: z.enum(["ja", "en", "es"]).optional().openapi({
+			language: z.enum(locales).optional().openapi({
 				example: "ja",
 				description:
 					"言語指定（オプショナル）。指定された場合、その言語の翻訳のみを返す",
@@ -87,7 +79,7 @@ export const getGalleryImageByIdRoute = createRoute({
 		400: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "不正なリクエスト（IDが不正等）",
@@ -95,7 +87,7 @@ export const getGalleryImageByIdRoute = createRoute({
 		404: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "ギャラリー画像が見つかりません",
@@ -103,7 +95,7 @@ export const getGalleryImageByIdRoute = createRoute({
 		500: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "サーバーエラー",

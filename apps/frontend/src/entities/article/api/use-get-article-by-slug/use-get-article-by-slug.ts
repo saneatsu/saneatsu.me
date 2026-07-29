@@ -1,5 +1,7 @@
 "use client";
 
+import type { Locale } from "@saneatsu/i18n";
+
 import { useQuery } from "@tanstack/react-query";
 
 import type { QueryConfig } from "@/shared/lib";
@@ -13,7 +15,7 @@ export type UseGetArticleBySlugOptions = {
 	/** 記事のスラッグ */
 	slug: string;
 	/** 言語 */
-	language?: "ja" | "en" | "es";
+	language?: Locale;
 	/** React Queryの設定 */
 	queryConfig?: QueryConfig<() => Promise<ArticleResponse>>;
 };

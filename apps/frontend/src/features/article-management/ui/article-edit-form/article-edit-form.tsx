@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { Locale } from "@saneatsu/i18n";
 import { SLUG_REGEX } from "@saneatsu/schemas";
 import { AlertCircle, ExternalLink, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -137,12 +138,10 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 	const enContent = article.translations?.en.content || "";
 
 	// タイトルの表示言語
-	const [titleLanguage, setTitleLanguage] = useState<"ja" | "en" | "es">("ja");
+	const [titleLanguage, setTitleLanguage] = useState<Locale>("ja");
 
 	// プレビューの表示言語
-	const [previewLanguage, setPreviewLanguage] = useState<"ja" | "en" | "es">(
-		"ja"
-	);
+	const [previewLanguage, setPreviewLanguage] = useState<Locale>("ja");
 
 	/**
 	 * サムネイルURLを生成
@@ -447,9 +446,7 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 									<FormLabel required>タイトル</FormLabel>
 									<Tabs
 										value={titleLanguage}
-										onValueChange={(value) =>
-											setTitleLanguage(value as "ja" | "en" | "es")
-										}
+										onValueChange={(value) => setTitleLanguage(value as Locale)}
 									>
 										<TabsList className="h-8">
 											<TabsTrigger value="ja" className="text-xs">
@@ -602,9 +599,7 @@ export function ArticleEditForm({ article }: ArticleEditFormProps) {
 							</div>
 							<Tabs
 								value={previewLanguage}
-								onValueChange={(value) =>
-									setPreviewLanguage(value as "ja" | "en" | "es")
-								}
+								onValueChange={(value) => setPreviewLanguage(value as Locale)}
 							>
 								<TabsList className="h-8">
 									<TabsTrigger value="ja" className="text-xs">

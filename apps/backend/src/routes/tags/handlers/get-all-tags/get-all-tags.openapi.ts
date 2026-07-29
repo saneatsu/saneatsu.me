@@ -1,4 +1,5 @@
 import { createRoute, z } from "@hono/zod-openapi";
+import { errorSchema } from "../../../shared/openapi";
 
 /**
  * タグスキーマ
@@ -26,15 +27,15 @@ const TagSchema = z.object({
 	}),
 	translations: z
 		.object({
-			ja: z.string().nullable().openapi({
+			ja: z.string().openapi({
 				example: "タイプスクリプト",
 				description: "日本語の翻訳",
 			}),
-			en: z.string().nullable().openapi({
+			en: z.string().openapi({
 				example: "TypeScript",
 				description: "英語の翻訳",
 			}),
-			es: z.string().nullable().openapi({
+			es: z.string().openapi({
 				example: "TypeScript",
 				description: "スペイン語の翻訳",
 			}),
@@ -42,22 +43,6 @@ const TagSchema = z.object({
 		.openapi({
 			description: "タグの翻訳データ",
 		}),
-});
-
-/**
- * エラースキーマ
- */
-const ErrorSchema = z.object({
-	error: z.object({
-		code: z.string().openapi({
-			example: "DATABASE_ERROR",
-			description: "エラーコード",
-		}),
-		message: z.string().openapi({
-			example: "Failed to fetch tags",
-			description: "エラーメッセージ",
-		}),
-	}),
 });
 
 /**
@@ -99,7 +84,7 @@ export const getAllTagsRoute = createRoute({
 		500: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "サーバーエラー",

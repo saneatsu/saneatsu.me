@@ -1,78 +1,53 @@
 import type { Locale } from "@saneatsu/i18n";
+import type { InferResponseType } from "hono/client";
 
-import type { PaginationInfo } from "./common";
-import type { Tag } from "./tag";
-
-/**
- * 記事のステータス
- */
-export type ArticleStatus = "published" | "draft" | "archived";
+import type { ApiClient } from "@/shared/lib/hono/client-type";
 
 /**
  * 言語コード
- *
- * @remarks
- * サイトのサポート言語（@saneatsu/i18n の Locale）と常に一致させるため、
- * ロケール定義を単一のソース・オブ・トゥルースとしてエイリアスする。
- * 言語を追加するときは config.ts の locales だけを更新すればよい。
  */
 export type LanguageCode = Locale;
 
 /**
- * 記事オブジェクト（API レスポンス用）
- * バックエンドの ArticleSchema に対応
+ * 記事一覧APIのレスポンス（バックエンドの契約から導出）
  */
-export interface Article {
-	/** 記事のユニークID */
-	id: number;
-	/** 記事のスラッグ */
-	slug: string;
-	/** Cloudflare画像ID */
-	cfImageId: string | null;
-	/** 記事のステータス */
-	status: ArticleStatus;
-	/** 公開日時 */
-	publishedAt: string | null;
-	/** 更新日時 */
-	updatedAt?: string | null;
-	/** 記事のタイトル */
-	title: string;
-	/** 記事の本文 */
-	content: string;
-	/** 記事の閲覧数（記事全体） */
-	viewCount: number;
-	/** 記事に関連付けられたタグ */
-	tags: Tag[];
-}
+export type ArticlesResponse = InferResponseType<
+	ApiClient["api"]["articles"]["$get"],
+	200
+>;
 
 /**
- * 記事一覧APIのレスポンス
+ * 記事オブジェクト（一覧レスポンスの要素から導出）
  */
-export interface ArticlesResponse {
-	/** 記事データの配列 */
-	data: Article[];
-	/** ページネーション情報 */
-	pagination: PaginationInfo;
-}
+export type Article = ArticlesResponse["data"][number];
+
+/**
+ * 記事のステータス
+ */
+export type ArticleStatus = Article["status"];
 
 /**
  * 記事詳細APIのレスポンス
  */
-export interface ArticleResponse {
-	/** 記事データ */
-	data: Article;
-}
+export type ArticleResponse = InferResponseType<
+	ApiClient["api"]["articles"][":slug"]["$get"],
+	200
+>;
 
 /**
  * 関連記事APIのレスポンス（ページネーションなし）
  */
-export interface RelatedArticlesResponse {
-	/** 記事データの配列 */
-	data: Article[];
-}
+export type RelatedArticlesResponse = InferResponseType<
+	ApiClient["api"]["articles"][":slug"]["related"]["$get"],
+	200
+>;
 
 /**
- * 記事一覧取得のクエリパラメータ
+ * 記事一覧取得のクエリパラメータ（フロント側の入力アダプタ）
+ *
+ * @remarks
+ * `lang` はフロント都合のパラメータ名で、API 送信時に `language` に変換される
+ * （api-client.ts 参照）。API 契約そのものではないため導出せず手書きで保持する。
  */
 export interface ArticlesQuery {
 	/** ページ番号 */

@@ -1,5 +1,7 @@
 "use client";
 
+import type { Locale } from "@saneatsu/i18n";
+
 import { useQuery } from "@tanstack/react-query";
 
 import type { QueryConfig } from "@/shared/lib";
@@ -15,7 +17,7 @@ type UseGetAllArticlesOptions = {
 	/** 1ページあたりの記事数 */
 	limit?: number;
 	/** 言語 */
-	language?: "ja" | "en" | "es";
+	language?: Locale;
 	/** 記事のステータス（複数選択可能） */
 	status?: ArticleStatus[];
 	/** タグID（複数選択可能） */

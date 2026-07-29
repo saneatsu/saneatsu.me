@@ -1,3 +1,4 @@
+import type { Locale } from "@saneatsu/i18n";
 import { useLocale } from "next-intl";
 
 import type { Tag } from "@/shared";
@@ -28,7 +29,7 @@ export interface TagBadgeProps {
  * ```
  */
 export function TagBadge({ tag, className }: TagBadgeProps) {
-	const locale = useLocale() as "ja" | "en" | "es";
+	const locale = useLocale() as Locale;
 
 	// ロケールに応じたタグ名を取得。未生成の言語では en → ja → slug の順にフォールバックする
 	// （例: es 訳が無いタグは英語名、それも無ければ日本語名、最後に slug）

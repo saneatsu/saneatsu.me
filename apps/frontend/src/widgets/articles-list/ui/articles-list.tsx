@@ -1,5 +1,7 @@
 "use client";
 
+import type { Locale } from "@saneatsu/i18n";
+
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { parseAsInteger } from "nuqs";
@@ -49,7 +51,7 @@ export function ArticlesList({ limit }: ArticlesListProps) {
 		refetch,
 	} = useGetAllArticles({
 		page: limit ? 1 : page, // limitが指定されている場合は常に1ページ目
-		language: locale as "ja" | "en" | "es",
+		language: locale as Locale,
 		limit: limit || 24,
 		status: ["published"],
 		sortBy: "updatedAt",

@@ -1,4 +1,5 @@
 import { createRoute, z } from "@hono/zod-openapi";
+import { errorSchema } from "../../../shared/openapi";
 
 /**
  * お問い合わせカテゴリの定義
@@ -58,20 +59,6 @@ const SuccessResponseSchema = z.object({
 /**
  * エラーレスポンススキーマ
  */
-const ErrorSchema = z.object({
-	error: z.object({
-		code: z.string().openapi({
-			example: "SUBMISSION_FAILED",
-			description: "エラーコード",
-		}),
-		message: z.string().openapi({
-			example:
-				"お問い合わせの送信に失敗しました。時間をおいて再度お試しください。",
-			description: "エラーメッセージ",
-		}),
-	}),
-});
-
 /**
  * お問い合わせフォーム送信のルート定義
  */
@@ -99,7 +86,7 @@ export const submitContactRoute = createRoute({
 		400: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "バリデーションエラー",
@@ -107,7 +94,7 @@ export const submitContactRoute = createRoute({
 		500: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "Google Formsへの送信失敗",

@@ -1,5 +1,7 @@
 "use client";
 
+import type { Locale } from "@saneatsu/i18n";
+
 import { FileText, Hash } from "lucide-react";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
@@ -28,7 +30,7 @@ export interface ArticleSuggestionsPopoverProps {
 	/** 検索クエリ */
 	query: string;
 	/** 言語設定 */
-	language?: "ja" | "en" | "es";
+	language?: Locale;
 	/** サジェストが選択された時のコールバック */
 	onSelect: (suggestion: SuggestionItem) => void;
 	/** カーソル位置（ポップアップの表示位置用） */

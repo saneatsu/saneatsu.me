@@ -1,4 +1,5 @@
 import { createRoute, z } from "@hono/zod-openapi";
+import { errorSchema } from "../../../shared/openapi";
 
 /**
  * 記事スキーマ
@@ -43,16 +44,6 @@ const ArticleSchema = z.object({
 });
 
 /**
- * エラースキーマ
- */
-const ErrorSchema = z.object({
-	error: z.object({
-		code: z.string(),
-		message: z.string(),
-	}),
-});
-
-/**
  * ステータス更新用のルート定義
  */
 export const updateStatusRoute = createRoute({
@@ -93,7 +84,7 @@ export const updateStatusRoute = createRoute({
 		400: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "Bad Request",
@@ -101,7 +92,7 @@ export const updateStatusRoute = createRoute({
 		404: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "記事が見つかりません",
@@ -109,7 +100,7 @@ export const updateStatusRoute = createRoute({
 		500: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "Internal Server Error",

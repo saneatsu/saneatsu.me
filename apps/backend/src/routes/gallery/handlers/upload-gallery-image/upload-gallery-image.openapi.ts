@@ -1,4 +1,5 @@
 import { createRoute, z } from "@hono/zod-openapi";
+import { errorSchema } from "../../../shared/openapi";
 
 /**
  * ギャラリー画像アップロードレスポンススキーマ
@@ -20,22 +21,6 @@ const GalleryImageUploadResponseSchema = z.object({
 	message: z.string().openapi({
 		example: "ギャラリー画像が正常にアップロードされました",
 		description: "アップロード成功メッセージ",
-	}),
-});
-
-/**
- * エラースキーマ
- */
-const ErrorSchema = z.object({
-	error: z.object({
-		code: z.string().openapi({
-			example: "INVALID_REQUEST",
-			description: "エラーコード",
-		}),
-		message: z.string().openapi({
-			example: "ファイルが指定されていません",
-			description: "エラーメッセージ",
-		}),
 	}),
 });
 
@@ -108,7 +93,7 @@ export const uploadGalleryImageRoute = createRoute({
 		400: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "不正なリクエスト（ファイルが存在しない、サイズ超過等）",
@@ -116,7 +101,7 @@ export const uploadGalleryImageRoute = createRoute({
 		500: {
 			content: {
 				"application/json": {
-					schema: ErrorSchema,
+					schema: errorSchema,
 				},
 			},
 			description: "サーバーエラー",

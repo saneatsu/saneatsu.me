@@ -69,6 +69,9 @@ importers:
       '@saneatsu/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@saneatsu/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
       '@saneatsu/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
@@ -447,6 +450,9 @@ importers:
       '@libsql/client':
         specifier: ^0.17.4
         version: 0.17.4
+      '@saneatsu/i18n':
+        specifier: workspace:*
+        version: link:../i18n
       '@t3-oss/env-core':
         specifier: ^0.13.11
         version: 0.13.11(typescript@5.9.3)(zod@4.3.6)

@@ -57,7 +57,7 @@ const _mockArticles: Article[] = [
 			{
 				id: 1,
 				slug: "react",
-				translations: { ja: "React", en: "React" },
+				translations: { ja: "React", en: "React", es: "React" },
 				createdAt: "2024-01-01T00:00:00Z",
 				updatedAt: "2024-01-01T00:00:00Z",
 				articleCount: 5,
@@ -78,7 +78,7 @@ const _mockArticles: Article[] = [
 			{
 				id: 2,
 				slug: "typescript",
-				translations: { ja: "TypeScript", en: "TypeScript" },
+				translations: { ja: "TypeScript", en: "TypeScript", es: "TypeScript" },
 				createdAt: "2024-01-01T00:00:00Z",
 				updatedAt: "2024-01-01T00:00:00Z",
 				articleCount: 3,
