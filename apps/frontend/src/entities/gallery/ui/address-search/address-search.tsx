@@ -1,6 +1,6 @@
-import type { Locale } from "@saneatsu/i18n";
+"use client";
 
-("use client");
+import type { Locale } from "@saneatsu/i18n";
 
 import { Loader2, Search } from "lucide-react";
 import { useEffect, useState } from "react";

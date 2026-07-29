@@ -1,8 +1,7 @@
-import type { Locale } from "@saneatsu/i18n";
-
-("use client");
+"use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { Locale } from "@saneatsu/i18n";
 import { SLUG_REGEX } from "@saneatsu/schemas";
 import { AlertCircle, ExternalLink, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";

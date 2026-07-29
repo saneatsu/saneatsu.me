@@ -1,6 +1,6 @@
-import type { Locale } from "@saneatsu/i18n";
+"use client";
 
-("use client");
+import type { Locale } from "@saneatsu/i18n";
 
 import { FileText, Hash } from "lucide-react";
 import type { FC } from "react";

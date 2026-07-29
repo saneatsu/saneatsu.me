@@ -1,6 +1,6 @@
-import type { Locale } from "@saneatsu/i18n";
+"use client";
 
-("use client");
+import type { Locale } from "@saneatsu/i18n";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";

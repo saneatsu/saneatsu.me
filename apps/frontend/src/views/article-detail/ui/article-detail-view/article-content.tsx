@@ -1,6 +1,6 @@
-import type { Locale } from "@saneatsu/i18n";
+"use client";
 
-("use client");
+import type { Locale } from "@saneatsu/i18n";
 
 import { Check, Loader2, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
