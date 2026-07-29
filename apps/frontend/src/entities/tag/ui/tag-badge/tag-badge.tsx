@@ -30,8 +30,13 @@ export interface TagBadgeProps {
 export function TagBadge({ tag, className }: TagBadgeProps) {
 	const locale = useLocale() as "ja" | "en" | "es";
 
-	// ロケールに応じたタグ名を取得、なければslugをフォールバック
-	const tagName = tag.translations[locale] || tag.slug;
+	// ロケールに応じたタグ名を取得。未生成の言語では en → ja → slug の順にフォールバックする
+	// （例: es 訳が無いタグは英語名、それも無ければ日本語名、最後に slug）
+	const tagName =
+		tag.translations[locale] ||
+		tag.translations.en ||
+		tag.translations.ja ||
+		tag.slug;
 
 	return (
 		<Badge variant="outline" className={className}>

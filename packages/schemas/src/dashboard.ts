@@ -29,6 +29,7 @@ export const popularArticleTagSchema = z.object({
 	translations: z.object({
 		ja: z.string(),
 		en: z.string(),
+		es: z.string(),
 	}),
 });
 

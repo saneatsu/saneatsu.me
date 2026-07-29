@@ -39,6 +39,12 @@ const tagUpdateSchema = z.object({
 		.max(100, "英語のタグ名は100文字以内で入力してください")
 		.optional()
 		.or(z.literal("")),
+	esName: z
+		.string()
+		.min(1, "スペイン語のタグ名は1文字以上である必要があります")
+		.max(100, "スペイン語のタグ名は100文字以内で入力してください")
+		.optional()
+		.or(z.literal("")),
 	slug: z
 		.string()
 		.min(1, "スラッグは必須です")
@@ -76,6 +82,7 @@ export function TagUpdateForm({ tag }: TagUpdateFormProps) {
 		defaultValues: {
 			name: tag.translations.ja ?? "",
 			enName: tag.translations.en ?? "",
+			esName: tag.translations.es ?? "",
 			slug: tag.slug,
 		},
 	});
@@ -104,6 +111,7 @@ export function TagUpdateForm({ tag }: TagUpdateFormProps) {
 				id: tag.id,
 				name: data.name,
 				enName: data.enName || undefined,
+				esName: data.esName || undefined,
 				slug: data.slug,
 			});
 
@@ -131,6 +139,29 @@ export function TagUpdateForm({ tag }: TagUpdateFormProps) {
 							<p className="text-sm text-destructive mt-1">{formError}</p>
 						</div>
 					)}
+
+					{/* スラッグ（タグ名より上に配置） */}
+					<FormField
+						control={form.control}
+						name="slug"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel required>スラッグ</FormLabel>
+								<FormControl>
+									<Input
+										placeholder="typescript"
+										className="max-w-md"
+										{...field}
+									/>
+								</FormControl>
+								<FormDescription>
+									小文字英数字で始まり、単語をハイフンで区切る形式（例:
+									typescript, web-development）
+								</FormDescription>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
 
 					{/* タグ名（日本語） */}
 					<FormField
@@ -176,23 +207,22 @@ export function TagUpdateForm({ tag }: TagUpdateFormProps) {
 						)}
 					/>
 
-					{/* スラッグ */}
+					{/* タグ名（スペイン語） */}
 					<FormField
 						control={form.control}
-						name="slug"
+						name="esName"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel required>スラッグ</FormLabel>
+								<FormLabel>タグ名（スペイン語）</FormLabel>
 								<FormControl>
 									<Input
-										placeholder="typescript"
+										placeholder="TypeScript"
 										className="max-w-md"
 										{...field}
 									/>
 								</FormControl>
 								<FormDescription>
-									小文字英数字で始まり、単語をハイフンで区切る形式（例:
-									typescript, web-development）
+									スペイン語のタグ名を入力してください。未入力の場合は自動翻訳されます。
 								</FormDescription>
 								<FormMessage />
 							</FormItem>

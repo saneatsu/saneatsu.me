@@ -72,6 +72,10 @@ const ArticleSchema = z.object({
 						example: "TypeScript",
 						description: "英語のタグ名",
 					}),
+					es: z.string().openapi({
+						example: "TypeScript",
+						description: "スペイン語のタグ名",
+					}),
 				}),
 			})
 		)

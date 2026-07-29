@@ -154,7 +154,7 @@ export const getDashboardStats: Handler = async (c) => {
 				number,
 				{
 					id: number;
-					translations: { ja: string; en: string };
+					translations: { ja: string; en: string; es: string };
 				}
 			>();
 
@@ -162,7 +162,7 @@ export const getDashboardStats: Handler = async (c) => {
 				if (!tagsMap.has(tagData.tagId)) {
 					tagsMap.set(tagData.tagId, {
 						id: tagData.tagId,
-						translations: { ja: "", en: "" },
+						translations: { ja: "", en: "", es: "" },
 					});
 				}
 
@@ -172,6 +172,8 @@ export const getDashboardStats: Handler = async (c) => {
 					tag.translations.ja = tagData.tagName;
 				} else if (tagData.tagLanguage === "en") {
 					tag.translations.en = tagData.tagName;
+				} else if (tagData.tagLanguage === "es") {
+					tag.translations.es = tagData.tagName;
 				}
 			}
 

@@ -76,6 +76,8 @@ export interface TagUpdateRequest {
 	name: string;
 	/** 英語のタグ名（1-100文字、オプショナル。未指定の場合は自動翻訳） */
 	enName?: string;
+	/** スペイン語のタグ名（1-100文字、オプショナル。未指定の場合は自動翻訳） */
+	esName?: string;
 	/** タグのスラッグ（小文字英数字で始まり、単語をハイフンで区切る形式、1-100文字） */
 	slug: string;
 }

@@ -261,5 +261,27 @@ describe("TagUpdateForm", () => {
 				expect(toast.success).toHaveBeenCalled();
 			});
 		});
+
+		describe("スペイン語タグ名", () => {
+			it("スペイン語名を入力して送信するとesNameが渡される", async () => {
+				// Given: フォームをレンダリングし、スペイン語欄に入力
+				const user = userEvent.setup();
+				render(<TagUpdateForm tag={mockTag} />, { wrapper });
+
+				const esInput = screen.getByLabelText("タグ名（スペイン語）");
+				await user.type(esInput, "Mecanografiado");
+
+				// When: フォームを送信
+				const submitButton = screen.getByRole("button", { name: "更新" });
+				await user.click(submitButton);
+
+				// Then: mutation に esName が含まれる
+				await waitFor(() => {
+					expect(mockMutateAsync).toHaveBeenCalledWith(
+						expect.objectContaining({ esName: "Mecanografiado" })
+					);
+				});
+			});
+		});
 	});
 });
